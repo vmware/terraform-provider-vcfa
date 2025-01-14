@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
-	"github.com/vmware/terraform-provider-vcfa/v1/vcfa"
+	"github.com/vmware/terraform-provider-vcfa/vcfa"
 )
 
 func main() {
