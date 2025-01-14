@@ -21,14 +21,14 @@ var BuildVersion = "unset"
 // When 'nameRegexp' is not empty - it will return only those matching the regexp
 // When 'includeDeprecated' is false - it will skip out the resources which have a DeprecationMessage set
 func DataSources(nameRegexp string, includeDeprecated bool) (map[string]*schema.Resource, error) {
-	return vcdSchemaFilter(globalDataSourceMap, nameRegexp, includeDeprecated)
+	return vcfaSchemaFilter(globalDataSourceMap, nameRegexp, includeDeprecated)
 }
 
 // Resources is a public function which allows filtering and access all defined resources
 // When 'nameRegexp' is not empty - it will return only those matching the regexp
 // When 'includeDeprecated' is false - it will skip out the resources which have a DeprecationMessage set
 func Resources(nameRegexp string, includeDeprecated bool) (map[string]*schema.Resource, error) {
-	return vcdSchemaFilter(globalResourceMap, nameRegexp, includeDeprecated)
+	return vcfaSchemaFilter(globalResourceMap, nameRegexp, includeDeprecated)
 }
 
 var globalDataSourceMap = map[string]*schema.Resource{
@@ -300,11 +300,11 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 	return vcdClient, providerDiagnostics
 }
 
-// vcdSchemaFilter is a function which allows to filters and export type 'map[string]*schema.Resource' which may hold
+// vcfaSchemaFilter is a function which allows to filters and export type 'map[string]*schema.Resource' which may hold
 // Terraform's native resource or data source list
 // When 'nameRegexp' is not empty - it will return only those matching the regexp
 // When 'includeDeprecated' is false - it will skip out the resources which have a DeprecationMessage set
-func vcdSchemaFilter(schemaMap map[string]*schema.Resource, nameRegexp string, includeDeprecated bool) (map[string]*schema.Resource, error) {
+func vcfaSchemaFilter(schemaMap map[string]*schema.Resource, nameRegexp string, includeDeprecated bool) (map[string]*schema.Resource, error) {
 	var (
 		err error
 		re  *regexp.Regexp

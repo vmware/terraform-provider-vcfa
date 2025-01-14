@@ -1,6 +1,6 @@
 //go:build ALL || functional
 
-package vcd
+package vcfa
 
 import (
 	"fmt"
@@ -15,15 +15,15 @@ func TestAccVcdVersion(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
-	vcdClient := createSystemTemporaryVCDConnection()
+	vcdClient := createSystemTemporaryVCFAConnection()
 	currentVersion, err := vcdClient.Client.GetVcdShortVersion()
 	if err != nil {
-		t.Fatalf("could not get VCD version: %s", err)
+		t.Fatalf("could not get VCFA version: %s", err)
 	}
 
 	apiVersion, err := vcdClient.VCDClient.Client.MaxSupportedVersion()
 	if err != nil {
-		t.Fatalf("could not get VCD API version: %s", err)
+		t.Fatalf("could not get VCFA API version: %s", err)
 	}
 
 	var params = StringMap{
@@ -65,7 +65,7 @@ func TestAccVcdVersion(t *testing.T) {
 	step6 := templateFill(testAccVcdVersionWithoutArguments, params)
 	debugPrintf("#[DEBUG] CONFIGURATION step6: %s", step6)
 
-	if vcdShortTest {
+	if vcfaShortTest {
 		t.Skip(acceptanceTestsSkipped)
 		return
 	}
@@ -76,50 +76,50 @@ func TestAccVcdVersion(t *testing.T) {
 			{
 				Config: step1,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcd_version.version", "id", fmt.Sprintf("vcd_version='%s',condition='>= 99.99.99',fail_if_not_match='false'", currentVersion)),
-					resource.TestCheckResourceAttr("data.vcd_version.version", "vcd_version", currentVersion),
-					resource.TestCheckResourceAttr("data.vcd_version.version", "api_version", apiVersion),
-					resource.TestCheckResourceAttr("data.vcd_version.version", "matches_condition", "false"),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("vcfa_tm_version='%s',condition='>= 99.99.99',fail_if_not_match='false'", currentVersion)),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "vcfa_tm_version", currentVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "api_version", apiVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "matches_condition", "false"),
 				),
 			},
 			{
 				Config:      step2,
-				ExpectError: regexp.MustCompile(fmt.Sprintf(`the VCD version '%s' doesn't match the version constraint '>= 99.99.99'`, currentVersion)),
+				ExpectError: regexp.MustCompile(fmt.Sprintf(`the VCFA version '%s' doesn't match the version constraint '>= 99.99.99'`, currentVersion)),
 			},
 			{
 				Config: step3,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcd_version.version", "id", fmt.Sprintf("vcd_version='%s',condition='= %s',fail_if_not_match='true'", currentVersion, currentVersion)),
-					resource.TestCheckResourceAttr("data.vcd_version.version", "vcd_version", currentVersion),
-					resource.TestCheckResourceAttr("data.vcd_version.version", "api_version", apiVersion),
-					resource.TestCheckResourceAttr("data.vcd_version.version", "matches_condition", "true"),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("vcfa_tm_version='%s',condition='= %s',fail_if_not_match='true'", currentVersion, currentVersion)),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "vcfa_tm_version", currentVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "api_version", apiVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "matches_condition", "true"),
 				),
 			},
 			{
 				Config: step4,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcd_version.version", "id", fmt.Sprintf("vcd_version='%s',condition='~> %s.%s',fail_if_not_match='true'", currentVersion, versionTokens[0], versionTokens[1])),
-					resource.TestCheckResourceAttr("data.vcd_version.version", "vcd_version", currentVersion),
-					resource.TestCheckResourceAttr("data.vcd_version.version", "api_version", apiVersion),
-					resource.TestCheckResourceAttr("data.vcd_version.version", "matches_condition", "true"),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("vcfa_tm_version='%s',condition='~> %s.%s',fail_if_not_match='true'", currentVersion, versionTokens[0], versionTokens[1])),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "vcfa_tm_version", currentVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "api_version", apiVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "matches_condition", "true"),
 				),
 			},
 			{
 				Config: step5,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcd_version.version", "id", fmt.Sprintf("vcd_version='%s',condition='!= 10.3.0',fail_if_not_match='true'", currentVersion)),
-					resource.TestCheckResourceAttr("data.vcd_version.version", "vcd_version", currentVersion),
-					resource.TestCheckResourceAttr("data.vcd_version.version", "api_version", apiVersion),
-					resource.TestCheckResourceAttr("data.vcd_version.version", "matches_condition", "true"),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("vcfa_tm_version='%s',condition='!= 10.3.0',fail_if_not_match='true'", currentVersion)),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "vcfa_tm_version", currentVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "api_version", apiVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "matches_condition", "true"),
 				),
 			},
 			{
 				Config: step6,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcd_version.version", "id", fmt.Sprintf("vcd_version='%s',condition='',fail_if_not_match='false'", currentVersion)),
-					resource.TestCheckResourceAttr("data.vcd_version.version", "vcd_version", currentVersion),
-					resource.TestCheckResourceAttr("data.vcd_version.version", "api_version", apiVersion),
-					resource.TestCheckNoResourceAttr("data.vcd_version.version", "matches_condition"),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("vcfa_tm_version='%s',condition='',fail_if_not_match='false'", currentVersion)),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "vcfa_tm_version", currentVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "api_version", apiVersion),
+					resource.TestCheckNoResourceAttr("data.vcfa_tm_version.version", "matches_condition"),
 				),
 			},
 		},
@@ -129,13 +129,13 @@ func TestAccVcdVersion(t *testing.T) {
 
 const testAccVcdVersion = `
 {{.SkipBinaryTest}}
-data "vcd_version" "version" {
+data "vcfa_tm_version" "version" {
   condition         = "{{.Condition}}"
   fail_if_not_match = {{.FailIfNotMatch}}
 }
 `
 
 const testAccVcdVersionWithoutArguments = `
-data "vcd_version" "version" {
+data "vcfa_tm_version" "version" {
 }
 `
