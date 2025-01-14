@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccVcdVersion(t *testing.T) {
+func TestAccVcfTmVersion(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
@@ -33,36 +33,36 @@ func TestAccVcdVersion(t *testing.T) {
 	}
 	testParamsNotEmpty(t, params)
 
-	step1 := templateFill(testAccVcdVersion, params)
+	step1 := templateFill(testAccVcfTmVersion, params)
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s", step1)
 
 	params["FuncName"] = t.Name() + "-step2"
 	params["FailIfNotMatch"] = "true"
 	params["SkipBinaryTest"] = "# skip-binary-test - This one triggers an error"
-	step2 := templateFill(testAccVcdVersion, params)
+	step2 := templateFill(testAccVcfTmVersion, params)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s", step2)
 
 	params["FuncName"] = t.Name() + "-step3"
 	params["Condition"] = "= " + currentVersion
 	params["SkipBinaryTest"] = " "
-	step3 := templateFill(testAccVcdVersion, params)
+	step3 := templateFill(testAccVcfTmVersion, params)
 	debugPrintf("#[DEBUG] CONFIGURATION step3: %s", step3)
 
 	params["FuncName"] = t.Name() + "-step4"
 	versionTokens := strings.Split(currentVersion, ".")
 	params["Condition"] = fmt.Sprintf("~> %s.%s", versionTokens[0], versionTokens[1])
-	step4 := templateFill(testAccVcdVersion, params)
+	step4 := templateFill(testAccVcfTmVersion, params)
 	debugPrintf("#[DEBUG] CONFIGURATION step4: %s", step4)
 
 	params["FuncName"] = t.Name() + "-step5"
 	params["Condition"] = "!= 10.3.0"
-	step5 := templateFill(testAccVcdVersion, params)
+	step5 := templateFill(testAccVcfTmVersion, params)
 	debugPrintf("#[DEBUG] CONFIGURATION step5: %s", step5)
 
 	params["FuncName"] = t.Name() + "-step6"
 	params["Condition"] = " " // Not used, but illustrates the point of this check
 	params["FailIfNotMatch"] = " "
-	step6 := templateFill(testAccVcdVersionWithoutArguments, params)
+	step6 := templateFill(testAccVcfTmVersionWithoutArguments, params)
 	debugPrintf("#[DEBUG] CONFIGURATION step6: %s", step6)
 
 	if vcfaShortTest {
@@ -84,7 +84,7 @@ func TestAccVcdVersion(t *testing.T) {
 			},
 			{
 				Config:      step2,
-				ExpectError: regexp.MustCompile(fmt.Sprintf(`the VCFA version '%s' doesn't match the version constraint '>= 99.99.99'`, currentVersion)),
+				ExpectError: regexp.MustCompile(fmt.Sprintf(`the VCFA Tenant Manager version '%s' doesn't match the version constraint '>= 99.99.99'`, currentVersion)),
 			},
 			{
 				Config: step3,
@@ -127,7 +127,7 @@ func TestAccVcdVersion(t *testing.T) {
 	postTestChecks(t)
 }
 
-const testAccVcdVersion = `
+const testAccVcfTmVersion = `
 {{.SkipBinaryTest}}
 data "vcfa_tm_version" "version" {
   condition         = "{{.Condition}}"
@@ -135,7 +135,7 @@ data "vcfa_tm_version" "version" {
 }
 `
 
-const testAccVcdVersionWithoutArguments = `
+const testAccVcfTmVersionWithoutArguments = `
 data "vcfa_tm_version" "version" {
 }
 `

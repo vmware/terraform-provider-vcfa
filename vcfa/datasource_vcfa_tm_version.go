@@ -29,7 +29,7 @@ func datasourceVcfaTmVersion() *schema.Resource {
 				Computed:    true,
 				Description: "Whether VCFA Tenant Manager matches the condition or not",
 			},
-			"vcfa_version": {
+			"vcfa_tm_version": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Description: "The VCFA Tenant Manager version",
@@ -54,7 +54,7 @@ func datasourceVcfaTmVersionRead(_ context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("could not get VCFA Tenant Manager API version: %s", err)
 	}
 
-	dSet(d, "vcfa_version", vcfaVersion)
+	dSet(d, "vcfa_tm_version", vcfaVersion)
 	dSet(d, "api_version", apiVersion)
 
 	if condition, ok := d.GetOk("condition"); ok {
@@ -74,6 +74,6 @@ func datasourceVcfaTmVersionRead(_ context.Context, d *schema.ResourceData, meta
 	}
 
 	// The ID is artificial, and we try to identify each data source instance unequivocally through its parameters.
-	d.SetId(fmt.Sprintf("vcfa_version='%s',condition='%s',fail_if_not_match='%t'", vcfaVersion, d.Get("condition"), d.Get("fail_if_not_match")))
+	d.SetId(fmt.Sprintf("vcfa_tm_version='%s',condition='%s',fail_if_not_match='%t'", vcfaVersion, d.Get("condition"), d.Get("fail_if_not_match")))
 	return nil
 }

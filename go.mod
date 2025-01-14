@@ -1,4 +1,4 @@
-module github.com/vmware/terraform-provider-vcfa
+module github.com/vmware/terraform-provider-vcfa/v1
 
 go 1.22.3
 
