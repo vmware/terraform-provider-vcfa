@@ -152,7 +152,7 @@ func debugPrintf(format string, args ...interface{}) {
 }
 
 // This is a global mutexKV for all resources
-var vcdMutexKV = newMutexKV()
+var vcfaMutexKV = newMutexKV()
 
 func (cli *VCDClient) getOrgName(d *schema.ResourceData) string {
 	orgName := d.Get("org").(string)
@@ -280,7 +280,7 @@ func callFuncName() string {
 
 // buildUserAgent helps to construct HTTP User-Agent header
 func buildUserAgent(version, sysOrg string) string {
-	userAgent := fmt.Sprintf("terraform-provider-vcd/%s (%s/%s; isProvider:%t)",
+	userAgent := fmt.Sprintf("terraform-provider-vcfa/%s (%s/%s; isProvider:%t)",
 		version, runtime.GOOS, runtime.GOARCH, strings.ToLower(sysOrg) == "system")
 
 	return userAgent

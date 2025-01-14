@@ -35,10 +35,10 @@ import (
 
 // #nosec G101 -- These credentials are fake for testing purposes
 const (
-	envSecondVcdUrl      = "VCFA_URL2"
-	envSecondVcdUser     = "VCFA_USER2"
-	envSecondVcdPassword = "VCFA_PASSWORD2"
-	envSecondVcdSysOrg   = "VCFA_SYSORG2"
+	envSecondVcfaUrl      = "VCFA_URL2"
+	envSecondVcfaUser     = "VCFA_USER2"
+	envSecondVcfaPassword = "VCFA_PASSWORD2"
+	envSecondVcfaSysOrg   = "VCFA_SYSORG2"
 )
 
 func init() {
@@ -79,7 +79,7 @@ type TestConfig struct {
 		ApiTokenFile            string `json:"api_token_file,omitempty"`
 		ServiceAccountTokenFile string `json:"service_account_token_file,omitempty"`
 
-		// Versions are filled by the VCF provisioning task, and allow tests to
+		// Versions are filled by the VCFA provisioning task, and allow tests to
 		// check for compatibility without using an extra connection
 		VcdVersion string `json:"vcdVersion,omitempty"`
 		ApiVersion string `json:"apiVersion,omitempty"`
@@ -361,15 +361,15 @@ var (
 )
 
 const (
-	providerVcdSystem    = "vcfa"
-	providerVcdOrg1      = "vcfaorg1"
-	providerVcdOrg1Alias = "vcfa.org1"
-	providerVcdOrg2      = "vcfaorg2"
-	providerVcdOrg2Alias = "vcfa.org2"
-	providerVcdSystem1   = "vcfasys1"
-	providerVcdSys1Alias = "vcfa.sys1"
-	providerVcdSystem2   = "vcfasys2"
-	providerVcdSys2Alias = "vcfa.sys2"
+	providerVcfaSystem    = "vcfa"
+	providerVcfaOrg1      = "vcfaorg1"
+	providerVcfaOrg1Alias = "vcfa.org1"
+	providerVcfaOrg2      = "vcfaorg2"
+	providerVcfaOrg2Alias = "vcfa.org2"
+	providerVcfaSystem1   = "vcfasys1"
+	providerVcfaSys1Alias = "vcfa.sys1"
+	providerVcfaSystem2   = "vcfasys2"
+	providerVcfaSys2Alias = "vcfa.sys2"
 
 	customTemplatesDirectory        = "test-templates"
 	testArtifactsDirectory          = "test-artifacts"
@@ -387,7 +387,7 @@ const (
 # comment {{.Comment}}
 # date {{.Timestamp}}
 # file {{.CallerFileName}}
-# VCF version {{.VcdVersion}}
+# VCFA version {{.VcfaVersion}}
 # API version {{.ApiVersion}}
 
 provider "vcfa" {
@@ -612,9 +612,9 @@ func templateFill(tmpl string, inputData StringMap) string {
 				panic(fmt.Errorf("error creating directory %s: %s", testArtifactsDirectory, err))
 			}
 		}
-		reProvider1 := regexp.MustCompile(`\bprovider\s*=\s*` + providerVcdOrg1)
-		reProvider2 := regexp.MustCompile(`\bprovider\s*=\s*` + providerVcdOrg2)
-		reSystemProvider2 := regexp.MustCompile(`\bprovider\s*=\s*` + providerVcdSystem2)
+		reProvider1 := regexp.MustCompile(`\bprovider\s*=\s*` + providerVcfaOrg1)
+		reProvider2 := regexp.MustCompile(`\bprovider\s*=\s*` + providerVcfaOrg2)
+		reSystemProvider2 := regexp.MustCompile(`\bprovider\s*=\s*` + providerVcfaSystem2)
 
 		templateText := string(populatedStr)
 
@@ -627,15 +627,15 @@ func templateFill(tmpl string, inputData StringMap) string {
 		if vcfaAddProvider && (usingProvider1 || usingProvider2 || usingSysProvider2) {
 			if usingProvider1 {
 				templateText = fmt.Sprintf("%s\n%s", templateText, getOrgProviderText("org1", testConfig.VCD.Org))
-				templateText = strings.Replace(templateText, providerVcdOrg1, providerVcdOrg1Alias, -1)
+				templateText = strings.Replace(templateText, providerVcfaOrg1, providerVcfaOrg1Alias, -1)
 			}
 			if usingProvider2 {
 				templateText = fmt.Sprintf("%s\n%s", templateText, getOrgProviderText("org2", testConfig.VCD.Org+"-1"))
-				templateText = strings.Replace(templateText, providerVcdOrg2, providerVcdOrg2Alias, -1)
+				templateText = strings.Replace(templateText, providerVcfaOrg2, providerVcfaOrg2Alias, -1)
 			}
 			if usingSysProvider2 {
 				templateText = fmt.Sprintf("%s\n%s", templateText, getSysProviderText("sys2"))
-				templateText = strings.Replace(templateText, providerVcdSystem2, providerVcdSys2Alias, -1)
+				templateText = strings.Replace(templateText, providerVcfaSystem2, providerVcfaSys2Alias, -1)
 			}
 		}
 		resourceFile := path.Join(testArtifactsDirectory, caller) + ".tf"
@@ -867,10 +867,10 @@ func setTestEnv() {
 	}
 }
 
-// getVcdVersion returns the VCFA version (three digits + build number)
+// getVcfaVersion returns the VCFA version (three digits + build number)
 // To get the version, we establish a new connection with the credentials
 // chosen for the current test.
-func getVcdVersion(config TestConfig) (string, error) {
+func getVcfaVersion(config TestConfig) (string, error) {
 	vcdClient, err := getTestVCFAFromJson(config)
 	if vcdClient == nil || err != nil {
 		return "", err
@@ -951,7 +951,7 @@ func TestMain(m *testing.M) {
 			fmt.Println("No configuration file found")
 			os.Exit(1)
 		}
-		versionInfo, err := getVcdVersion(testConfig)
+		versionInfo, err := getVcfaVersion(testConfig)
 		if err == nil {
 			versionInfo = fmt.Sprintf("(version %s)", versionInfo)
 		}
@@ -1250,8 +1250,8 @@ func newEnvVarHelper() *envHelper {
 	return &envHelper{vars: make(map[string]string)}
 }
 
-// saveVcdVars checks all env vars with VCFA prefix and saves them in a map
-func (env *envHelper) saveVcdVars() {
+// saveVcfaVars checks all env vars with VCFA prefix and saves them in a map
+func (env *envHelper) saveVcfaVars() {
 	for _, envVar := range os.Environ() {
 		if strings.HasPrefix(envVar, "VCFA") {
 			// os.Environ returns a slice of "key=value" strings. The first "=" separated "key" and
@@ -1266,15 +1266,15 @@ func (env *envHelper) saveVcdVars() {
 
 }
 
-// unsetVcdVars unsets all environment variables with prefix "VCFA"
-func (env *envHelper) unsetVcdVars() {
+// unsetVcfaVars unsets all environment variables with prefix "VCFA"
+func (env *envHelper) unsetVcfaVars() {
 	for keyName := range env.vars {
 		os.Unsetenv(keyName)
 	}
 }
 
-// restoreVcdVars restores all env variables with prefix "VCFA" stored in parent struct
-func (env *envHelper) restoreVcdVars() {
+// restoreVcfaVars restores all env variables with prefix "VCFA" stored in parent struct
+func (env *envHelper) restoreVcfaVars() {
 	for keyName, valueName := range env.vars {
 		err := os.Setenv(keyName, valueName)
 		if err != nil {
@@ -1536,11 +1536,11 @@ func getTestListFile(fileType string) string {
 	if testConfig.Provider.Url == "" {
 		return ""
 	}
-	testingVcdIp := strings.Replace(testConfig.Provider.Url, "https://", "", -1)
-	testingVcdIp = strings.Replace(testingVcdIp, "/api", "", -1)
-	testingVcdIp = strings.Replace(testingVcdIp, "/", "", -1)
-	testingVcdIp = strings.Replace(testingVcdIp, ".", "-", -1)
-	return fmt.Sprintf("vcfa_test_%s_list-%s.txt", fileType, testingVcdIp)
+	testingVcfaIp := strings.Replace(testConfig.Provider.Url, "https://", "", -1)
+	testingVcfaIp = strings.Replace(testingVcfaIp, "/api", "", -1)
+	testingVcfaIp = strings.Replace(testingVcfaIp, "/", "", -1)
+	testingVcfaIp = strings.Replace(testingVcfaIp, ".", "-", -1)
+	return fmt.Sprintf("vcfa_test_%s_list-%s.txt", fileType, testingVcfaIp)
 }
 
 // isTestInFile returns true if a given test name is found in the wanted (pass/fail) list
@@ -1625,9 +1625,9 @@ func noTestCredentials() bool {
 	return testConfig.Provider.User == ""
 }
 
-// skipTestForVcdExactVersion allows to skip tests for specific VCFA version
+// skipTestForVcfaExactVersion allows to skip tests for specific VCFA version
 // exactSkipVersion must match exact VCFA version (e.g. 10.2.2.17855680)
-func skipTestForVcdExactVersion(t *testing.T, exactSkipVersion, skipReason string) {
+func skipTestForVcfaExactVersion(t *testing.T, exactSkipVersion, skipReason string) {
 	vcdClient := createTemporaryVCFAConnection(false)
 
 	vcfaVersion, err := vcdClient.Client.GetVcdFullVersion()
@@ -1660,7 +1660,7 @@ provider "vcfa" {
   user                 = "{{.OrgUser}}"
   password             = "{{.OrgUserPassword}}"
   auth_type            = "integrated"
-  url                  = "{{.VcdUrl}}"
+  url                  = "{{.VcfaUrl}}"
   sysorg               = "{{.Org}}"
   org                  = "{{.Org}}"
   allow_unverified_ssl = "true"
@@ -1672,7 +1672,7 @@ provider "vcfa" {
 	data := StringMap{
 		"OrgUser":         testConfig.TestEnvBuild.OrgUser,
 		"OrgUserPassword": testConfig.TestEnvBuild.OrgUserPassword,
-		"VcdUrl":          testConfig.Provider.Url,
+		"VcfaUrl":         testConfig.Provider.Url,
 		"SysOrg":          orgName,
 		"Org":             orgName,
 		"ProviderName":    providerName,
@@ -1695,7 +1695,7 @@ provider "vcfa" {
   user                 = "{{.User}}"
   password             = "{{.UserPassword}}"
   auth_type            = "integrated"
-  url                  = "{{.VcdUrl}}"
+  url                  = "{{.VcfaUrl}}"
   sysorg               = "{{.Org}}"
   org                  = "{{.Org}}"
   allow_unverified_ssl = "true"
@@ -1705,11 +1705,11 @@ provider "vcfa" {
 }`
 
 	data := StringMap{
-		"User":         os.Getenv(envSecondVcdUser),
-		"UserPassword": os.Getenv(envSecondVcdPassword),
-		"VcdUrl":       os.Getenv(envSecondVcdUrl),
-		"SysOrg":       os.Getenv(envSecondVcdSysOrg),
-		"Org":          os.Getenv(envSecondVcdSysOrg),
+		"User":         os.Getenv(envSecondVcfaUser),
+		"UserPassword": os.Getenv(envSecondVcfaPassword),
+		"VcfaUrl":      os.Getenv(envSecondVcfaUrl),
+		"SysOrg":       os.Getenv(envSecondVcfaSysOrg),
+		"Org":          os.Getenv(envSecondVcfaSysOrg),
 		"ProviderName": providerName,
 		"Alias":        "",
 	}

@@ -203,13 +203,13 @@ func testOrgProvider(orgSuffix string) *schema.Provider {
 // two Org users, taking the credentials from the configuration file
 func buildMultipleProviders() map[string]func() (*schema.Provider, error) {
 	providers := map[string]func() (*schema.Provider, error){
-		providerVcdSystem: func() (*schema.Provider, error) {
+		providerVcfaSystem: func() (*schema.Provider, error) {
 			return testAccProvider, nil
 		},
-		providerVcdOrg1: func() (*schema.Provider, error) {
+		providerVcfaOrg1: func() (*schema.Provider, error) {
 			return testOrgProvider(""), nil
 		},
-		providerVcdOrg2: func() (*schema.Provider, error) {
+		providerVcfaOrg2: func() (*schema.Provider, error) {
 			return testOrgProvider("-1"), nil
 		},
 	}
@@ -247,10 +247,10 @@ func buildMultipleSysProviders(vcfaUrl, user, password, org string) map[string]f
 		return createSysVCFAConnection(vcfaUrl, user, password, org), nil
 	}
 	providers := map[string]func() (*schema.Provider, error){
-		providerVcdSystem: func() (*schema.Provider, error) {
+		providerVcfaSystem: func() (*schema.Provider, error) {
 			return testAccProvider, nil
 		},
-		providerVcdSystem2: func() (*schema.Provider, error) {
+		providerVcfaSystem2: func() (*schema.Provider, error) {
 			return newProvider, nil
 		},
 	}

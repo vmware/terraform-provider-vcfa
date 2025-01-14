@@ -36,7 +36,7 @@ func TestProviderVersion(t *testing.T) {
 		panic(fmt.Errorf("could not read index file %s: %v", indexFile, err))
 	}
 
-	vcfaHeader := `# VMware Cloud Foundation Automation`
+	vcfaHeader := `# VMware Cloud Foundation Automation Provider`
 	expectedText := vcfaHeader + ` ` + currentProviderVersion
 	reExpectedVersion := regexp.MustCompile(`(?m)^` + expectedText)
 	reFoundVersion := regexp.MustCompile(`(?m)^` + vcfaHeader + ` \d+\.\d+`)
@@ -109,7 +109,7 @@ func TestGetMajorVersion(t *testing.T) {
 	t.Logf("%s", version)
 }
 
-func TestVcdResources(t *testing.T) {
+func TestVcfaResources(t *testing.T) {
 	type args struct {
 		nameRegexp        string
 		includeDeprecated bool
@@ -131,8 +131,8 @@ func TestVcdResources(t *testing.T) {
 		},
 		{
 			name:    "MatchExactResourceName",
-			args:    args{nameRegexp: "vcd_vapp_vm", includeDeprecated: false},
-			wantLen: 1, // should return only one because exact name was given
+			args:    args{nameRegexp: "vcfa_deleteme", includeDeprecated: false}, // TODO: VCFA: Change this to correct resource once there's one
+			wantLen: 1,                                                           // should return only one because exact name was given
 			lenOnly: true,
 			wantErr: false,
 		},
@@ -171,7 +171,7 @@ func TestVcdResources(t *testing.T) {
 	}
 }
 
-func TestVcdDataSources(t *testing.T) {
+func TestVcfaDataSources(t *testing.T) {
 	type args struct {
 		nameRegexp        string
 		includeDeprecated bool
@@ -193,7 +193,7 @@ func TestVcdDataSources(t *testing.T) {
 		},
 		{
 			name:    "MatchExactDataSourceName",
-			args:    args{nameRegexp: "vcd_vapp_vm", includeDeprecated: false},
+			args:    args{nameRegexp: "vcfa_tm_version", includeDeprecated: false},
 			wantLen: 1, // should return only one because exact name was given
 			lenOnly: true,
 			wantErr: false,
@@ -233,7 +233,7 @@ func TestVcdDataSources(t *testing.T) {
 	}
 }
 
-func TestVcdSchemaFilter(t *testing.T) {
+func TestVcfaSchemaFilter(t *testing.T) {
 
 	fakeSchema := make(map[string]*schema.Resource)
 	terraformObject := schema.Resource{}
