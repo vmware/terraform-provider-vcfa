@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
-	"github.com/vmware/terraform-provider-vcd/v4/vcd"
+	"github.com/vmware/terraform-provider-vcfa/v1/vcfa"
 )
 
 func main() {
 	plugin.Serve(&plugin.ServeOpts{
-		ProviderFunc: vcd.Provider})
+		ProviderFunc: vcfa.Provider})
 }
