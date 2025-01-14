@@ -35,7 +35,7 @@ type Config struct {
 	AllowSATokenFile        bool   // Setting to suppress Service Account Token File security warnings
 	SysOrg                  string // Org used for authentication
 	Org                     string // Default Org used for API operations
-	Vdc                     string // Default (optional) VCFA for API operations
+	Vdc                     string // Default (optional) VDC for API operations
 	Href                    string
 	MaxRetryTimeout         int
 	InsecureFlag            bool
@@ -63,7 +63,7 @@ type VCDClient struct {
 	*govcd.VCDClient
 	SysOrg          string
 	Org             string // name of default Org
-	Vdc             string // name of default VCFA
+	Vdc             string // name of default VDC
 	MaxRetryTimeout int
 	InsecureFlag    bool
 }
@@ -75,7 +75,7 @@ const (
 	// Most common error messages in the library
 
 	// Used when a call to GetOrgAndVdc fails. The placeholder is for the error
-	errorRetrievingOrgAndVdc = "error retrieving Org and VCFA: %s"
+	errorRetrievingOrgAndVdc = "error retrieving Org and VDC: %s"
 
 	// Used when a call to GetOrgAndVdc fails. The placeholders are for vdc, org, and the error
 	errorRetrievingVdcFromOrg = "error retrieving VDC %s from Org %s: %s"
