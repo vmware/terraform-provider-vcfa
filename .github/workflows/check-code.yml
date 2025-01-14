@@ -29,6 +29,7 @@ jobs:
       - name: vet
         run: make vet
 
+# TODO: VCFA: This reports a lot of unused methods
 #      - name: static
 #        run: make static
 
