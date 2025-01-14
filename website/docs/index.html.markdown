@@ -14,7 +14,7 @@ Use the navigation to the left to read about the available resources. Please ref
 [CHANGELOG.md](https://github.com/vmware/terraform-provider-vcfa/blob/main/CHANGELOG.md)
 to track feature additions.
 
-~> **NOTE:** The VMware Cloud Foundation Automation Provider documentation pages include *v2.x+* or *v3.x+* labels in resource and/or field
+~> **NOTE:** The VMware Cloud Foundation Automation Provider documentation pages include *v1.x+* or *v2.x+* labels in resource and/or field
 descriptions. These labels are designed to show at which provider version a certain feature was introduced.
 When upgrading the provider please check for such labels for the resources you are using.
 
@@ -23,8 +23,6 @@ When upgrading the provider please check for such labels for the resources you a
 The following Cloud Director versions are supported by this provider:
 
 * 9.0
-
-Also Cloud Director Service (CDS) is supported.
 
 ## Connecting as Org Admin
 
@@ -141,7 +139,7 @@ When using a token, the fields `user` and `password` will be ignored, but they n
 
 ## Connecting with an API token/API token file
 
-With VCFA 10.3.1+, you can connect using an API token, as defined in the [documentation](https://docs.vmware.com/en/VMware-Cloud-Director/10.3/VMware-Cloud-Director-Service-Provider-Admin-Portal-Guide/GUID-A1B3B2FA-7B2C-4EE1-9D1B-188BE703EEDE.html).
+With VCFA 9.0+, you can connect using an API token, as defined in the [documentation](https://docs.vmware.com/en/VMware-Cloud-Director/10.3/VMware-Cloud-Director-Service-Provider-Admin-Portal-Guide/GUID-A1B3B2FA-7B2C-4EE1-9D1B-188BE703EEDE.html).
 The API token is not a bearer token, but one will be created and automatically used by the Terraform provider when an API
 token is supplied. You can create an API token file by utilizing the [`vcfa_api_token`][api-token] resource.
 
@@ -199,7 +197,7 @@ Note that when connecting with API tokens you can't create or modify users, role
 
 ## Connecting with a Service Account API token
 
-With VCFA 10.4.0+, similar to API token file, you can connect using a service account API token, as 
+With VCFA 9.0+, similar to API token file, you can connect using a service account API token, as 
 defined in the 
 [documentation](https://blogs.vmware.com/cloudprovider/2022/07/cloud-director-service-accounts.html). 
 Because a new API token is provided on every authentication request, 
@@ -342,19 +340,19 @@ The following arguments are used to configure the VMware Cloud Foundation Automa
 * `api_token` - (Optional; *v3.5+*) This is the API token that a System or organization administrator can create and 
    distribute to users. It is used instead of username and password (in combination with `auth_type=api_token`). When
    this field is filled, username and password are ignored. An API token can also be specified with the `VCFA_API_TOKEN`
-   environment variable. This token requires at least VCFA 10.3.1. There are restrictions to its use, as defined in
+   environment variable. This token requires at least VCFA 9.0. There are restrictions to its use, as defined in
    [the documentation](https://docs.vmware.com/en/VMware-Cloud-Director/10.3/VMware-Cloud-Director-Service-Provider-Admin-Portal-Guide/GUID-A1B3B2FA-7B2C-4EE1-9D1B-188BE703EEDE.html)
 
 * `api_token_file` - (Optional; *v3.10+*)) Same as `api_token`, only provided 
    as a JSON file. Can also be specified with the `VCFA_API_TOKEN_FILE` environment variable.
  
-* `service_account_token_file` - (Optional; *v3.9+, VCFA 10.4+*) This is the file that contains a Service Account API token. The
+* `service_account_token_file` - (Optional; *v3.9+, VCFA 9.0+*) This is the file that contains a Service Account API token. The
    path to the file could be provided as absolute or relative to the working directory. It is used instead of username
    and password (in combination with `auth_type=service_account_token_file`. The file can also be specified with the 
    `VCFA_SA_TOKEN_FILE` environment variable. There are restrictions to its use, as defined in 
    [the documentation](https://docs.vmware.com/en/VMware-Cloud-Director/10.4/VMware-Cloud-Director-Service-Provider-Admin-Portal-Guide/GUID-8CD3C8BE-3187-4769-B960-3E3315492C16.html)
 
-* `allow_service_account_token_file` - (Optional; *v3.9+, VCFA 10.4+*) When using `auth_type=service_account_token_file`,
+* `allow_service_account_token_file` - (Optional; *v3.9+, VCFA 9.0+*) When using `auth_type=service_account_token_file`,
   if set to `true`, will suppress a warning to the user about the service account token file containing *sensitive information*.
   Can also be set with `VCFA_ALLOW_SA_TOKEN_FILE`.
 

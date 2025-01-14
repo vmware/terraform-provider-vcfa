@@ -110,7 +110,7 @@ func Provider() *schema.Provider {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("VCFA_SA_TOKEN_FILE", nil),
-				Description: "The Service Account API token file instead of username/password for VCFA API operations. (Requires VCFA 10.4.0+)",
+				Description: "The Service Account API token file instead of username/password for VCFA API operations. (Requires VCFA 9.0+)",
 			},
 
 			"allow_service_account_token_file": {

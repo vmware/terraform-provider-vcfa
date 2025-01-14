@@ -12,7 +12,7 @@ then
         echo "File ./VERSION not found"
         echo "run this command from the repository root directory as .changes/init.sh"
         echo ""
-        echo "or supply a version on the command line: ./init.sh v4.0.0"
+        echo "or supply a version on the command line: ./init.sh v1.0.0"
         exit 1
     fi
 
