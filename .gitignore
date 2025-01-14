@@ -1,0 +1,57 @@
+*.dll
+*.exe
+.DS_Store
+example.tf
+terraform.tfplan
+terraform.tfstate
+bin/
+modules-dev/
+/pkg/
+website/.vagrant
+website/.bundle
+website/build
+website/node_modules
+.vagrant/
+*.backup
+./*.tfstate
+.terraform/
+*.log
+*.bak
+*~
+.*.swp
+.idea
+.vscode/
+*.iml
+*.test
+*.iml
+
+# Ignore test coverage files
+*.cover
+
+vcfa_test_config*.json
+vcfa/vcfa_test_config*.json
+vcfa_test_config*.json
+vcfa/go-vcloud-director.log
+vcfa/test-artifacts
+website/vendor
+vcfa/org_user_pwd.txt
+vcfa/vcfa_test_pass_list*.txt
+tmp/
+examples/**/terraform.tfvars
+examples/**/.terraform*
+
+# Test exclusions
+!command/test-fixtures/**/*.tfstate
+!command/test-fixtures/**/.terraform/
+vcfa/*-tests-end-in-node-*-*.txt
+vcfa/*-tests-planned-in-node-*-*.txt
+vcfa/*-tests-processed-in-node-*-*.txt
+vcfa/*-tests-retrieved-in-node-*-*.txt
+vcfa/*-out-*.txt
+
+# Go workspace
+go.work
+go.work.sum
+
+# File cache directory
+test-resources/cache/*
