@@ -37,6 +37,6 @@ echo ""
 echo ""
 echo "## ${version} (Unreleased)"
 echo ""
-echo "Changes in progress for v${version} are available at [.changes/v${version}](https://github.com/vmware/terraform-provider-vcd/tree/main/.changes/v${version}) until the release."
+echo "Changes in progress for v${version} are available at [.changes/v${version}](https://github.com/vmware/terraform-provider-vcfa/tree/main/.changes/v${version}) until the release."
 echo ""
 

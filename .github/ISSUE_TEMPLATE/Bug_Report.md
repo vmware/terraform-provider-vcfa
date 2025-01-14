@@ -47,7 +47,7 @@ Replicate the issue after setting the environment variables listed above and it 
 new files in the working directory: `tf.log` and `go-vcloud-director.log`. The `tf.log` is a general
 Terraform debug log (more information about it is in
 https://www.terraform.io/docs/internals/debugging.html) while the `go-vcloud-director.log` is a
-specific log file for `terraform-provider-vcd` containing debug information about performed API
+specific log file for `terraform-provider-vcfa` containing debug information about performed API
 calls. Please attach both of them to your [Gist](https://gist.github.com).
 
 ### Panic Output

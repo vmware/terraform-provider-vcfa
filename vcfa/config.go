@@ -40,13 +40,13 @@ type Config struct {
 	MaxRetryTimeout         int
 	InsecureFlag            bool
 
-	// UseSamlAdfs specifies if SAML auth is used for authenticating VCD instead of local login.
+	// UseSamlAdfs specifies if SAML auth is used for authenticating VCFA instead of local login.
 	// The following conditions must be met so that authentication SAML authentication works:
 	// * SAML IdP (Identity Provider) is Active Directory Federation Service (ADFS)
 	// * Authentication endpoint "/adfs/services/trust/13/usernamemixed" must be enabled on ADFS
 	// server
 	UseSamlAdfs bool
-	// CustomAdfsRptId allows to set custom Relaying Party Trust identifier. By default VCD Entity
+	// CustomAdfsRptId allows to set custom Relaying Party Trust identifier. By default VCFA Entity
 	// ID is used as Relaying Party Trust identifier.
 	CustomAdfsRptId string
 	// CustomAdfsCookie

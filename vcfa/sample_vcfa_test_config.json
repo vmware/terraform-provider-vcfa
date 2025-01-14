@@ -1,6 +1,6 @@
 {
   "//": "Sample test configuration file for Tenant Manager",
-  "//": "Rename this file to vcd_test_config.json and change the values to suit your system",
+  "//": "Rename this file to vcfa_test_config.json and change the values to suit your system",
   "//": "You can safely remove the comments or leave them. The parser will ignore them.",
   "provider": {
     "//"  : "This section contains credentials related to the vCD connection of Sys or Org user",
