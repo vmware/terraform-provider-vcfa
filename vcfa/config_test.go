@@ -230,8 +230,8 @@ const (
 # comment {{.Comment}}
 # date {{.Timestamp}}
 # file {{.CallerFileName}}
-# VCFA version {{.VcfaVersion}}
-# API version {{.tmApiVersion}}
+# VCFA version {{.TmVersion}}
+# API version {{.TmApiVersion}}
 
 provider "vcfa" {
   user                 = "{{.PrUser}}"

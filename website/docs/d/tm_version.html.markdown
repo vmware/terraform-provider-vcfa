@@ -7,7 +7,7 @@ description: |-
   its maximum supported API version and perform some optional checks with version constraints.
 ---
 
-# vcfa\_version
+# vcfa\_tm\_version
 
 Provides a data source to fetch the Tenant Manager version from VMware Cloud Foundation Automation, its maximum supported API version and
 perform some optional checks with version constraints.
@@ -62,5 +62,5 @@ The following arguments are supported:
 ## Attribute Reference
 
 * `matches_condition` - It is true if the VCFA Tenant Manager version matches the constraint set in `condition`
-* `vcfa_tm_version` - The VCFA Tenant Manager version
-* `api_version` - The maximum supported API version
+* `tm_version` - The VCFA Tenant Manager version
+* `tm_api_version` - The maximum supported VCFA Tenant Manager API version

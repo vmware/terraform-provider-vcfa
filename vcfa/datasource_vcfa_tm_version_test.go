@@ -76,9 +76,9 @@ func TestAccVcfTmVersion(t *testing.T) {
 			{
 				Config: step1,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("vcfa_tm_version='%s',condition='>= 99.99.99',fail_if_not_match='false'", currentVersion)),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "vcfa_tm_version", currentVersion),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "api_version", apiVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("tm_version='%s',condition='>= 99.99.99',fail_if_not_match='false'", currentVersion)),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_version", currentVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_api_version", apiVersion),
 					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "matches_condition", "false"),
 				),
 			},
@@ -89,36 +89,36 @@ func TestAccVcfTmVersion(t *testing.T) {
 			{
 				Config: step3,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("vcfa_tm_version='%s',condition='= %s',fail_if_not_match='true'", currentVersion, currentVersion)),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "vcfa_tm_version", currentVersion),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "api_version", apiVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("tm_version='%s',condition='= %s',fail_if_not_match='true'", currentVersion, currentVersion)),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_version", currentVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_api_version", apiVersion),
 					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "matches_condition", "true"),
 				),
 			},
 			{
 				Config: step4,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("vcfa_tm_version='%s',condition='~> %s.%s',fail_if_not_match='true'", currentVersion, versionTokens[0], versionTokens[1])),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "vcfa_tm_version", currentVersion),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "api_version", apiVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("tm_version='%s',condition='~> %s.%s',fail_if_not_match='true'", currentVersion, versionTokens[0], versionTokens[1])),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_version", currentVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_api_version", apiVersion),
 					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "matches_condition", "true"),
 				),
 			},
 			{
 				Config: step5,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("vcfa_tm_version='%s',condition='!= 10.3.0',fail_if_not_match='true'", currentVersion)),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "vcfa_tm_version", currentVersion),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "api_version", apiVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("tm_version='%s',condition='!= 10.3.0',fail_if_not_match='true'", currentVersion)),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_version", currentVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_api_version", apiVersion),
 					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "matches_condition", "true"),
 				),
 			},
 			{
 				Config: step6,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("vcfa_tm_version='%s',condition='',fail_if_not_match='false'", currentVersion)),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "vcfa_tm_version", currentVersion),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "api_version", apiVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("tm_version='%s',condition='',fail_if_not_match='false'", currentVersion)),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_version", currentVersion),
+					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_api_version", apiVersion),
 					resource.TestCheckNoResourceAttr("data.vcfa_tm_version.version", "matches_condition"),
 				),
 			},

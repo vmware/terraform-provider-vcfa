@@ -132,25 +132,6 @@ function acceptance_test {
     fi
 }
 
-function multiple_test {
-    filter=$1
-    if [ -z "$filter" ]
-    then
-        filter='TestAccVcfaV.pp.*Multi'
-    fi
-    if [ -n "$VERBOSE" ]
-    then
-        echo "# check for config file"
-        echo "TF_ACC=1 go test -race -v -timeout $timeout -tags 'api multivm multinetwork' -run '$filter'"
-    fi
-
-    if [ -z "$DRY_RUN" ]
-    then
-        check_for_config_file
-        TF_ACC=1 go test -race -v -timeout $timeout -tags 'api multivm multinetwork' -run "$filter"
-    fi
-}
-
 function binary_test {
     cd $source_dir
     if [ ! -d test-artifacts ]

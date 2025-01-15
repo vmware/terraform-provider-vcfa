@@ -6,8 +6,6 @@ The official Terraform provider for VCF Automation 9+ by Broadcom
 ## Part of Terraform
 
 - Website: https://www.terraform.io
-- [![Gitter chat](https://badges.gitter.im/hashicorp-terraform/Lobby.png)](https://gitter.im/hashicorp-terraform/Lobby)
-- Mailing list: [Google Groups](http://groups.google.com/group/terraform-tool)
 - [Hashicorp Discuss](https://discuss.hashicorp.com/c/terraform-core/27)
 
 <img src="https://www.datocms-assets.com/2885/1629941242-logo-terraform-main.svg" width="600px">
