@@ -108,46 +108,9 @@ test-search: testunit
 testacc-race-seq: testunit
 	@sh -c "'$(CURDIR)/scripts/runtest.sh' sequential-acceptance"
 
-# Runs the acceptance test with tag 'multiple'
-testmulti: fmtcheck
-	@sh -c "'$(CURDIR)/scripts/runtest.sh' multiple"
-
 # Runs the acceptance test for org
 testorg: fmtcheck
 	@sh -c "'$(CURDIR)/scripts/runtest.sh' org"
-
-# Runs the acceptance test for catalog
-testcatalog: fmtcheck
-	@sh -c "'$(CURDIR)/scripts/runtest.sh' catalog"
-
-# Runs the acceptance test for vapp
-testvapp: fmtcheck
-	@sh -c "'$(CURDIR)/scripts/runtest.sh' vapp"
-
-# Runs the acceptance test for lb
-testlb: fmtcheck
-	@sh -c "'$(CURDIR)/scripts/runtest.sh' lb"
-
-# Runs the acceptance test for user
-testuser: fmtcheck
-	@sh -c "'$(CURDIR)/scripts/runtest.sh' user"
-
-# Runs the acceptance test for vm
-testvm: fmtcheck
-	@sh -c "'$(CURDIR)/scripts/runtest.sh' vm"
-
-# Runs the acceptance test for gateway
-testgateway: fmtcheck
-	@sh -c "'$(CURDIR)/scripts/runtest.sh' gateway"
-
-# Runs the acceptance test for network
-testnetwork: fmtcheck
-	@sh -c "'$(CURDIR)/scripts/runtest.sh' network"
-
-# Runs the acceptance test for external network
-testextnetwork: fmtcheck
-	@sh -c "'$(CURDIR)/scripts/runtest.sh' extnetwork"
-
 
 # runs Tenant Manager test using Terraform binary as system administrator using binary with race detection enabled
 testtm-binary: installrace

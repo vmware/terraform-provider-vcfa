@@ -32,9 +32,8 @@ function check_exit_code {
     fi
 }
 
-accepted_commands=(static token short acceptance sequential-acceptance multiple binary
-    binary-prepare catalog gateway vapp vm network extnetwork multinetwork 
-    short-provider lb user acceptance-orguser short-provider-orguser search binary-validate)
+accepted_commands=(static token short acceptance sequential-acceptance binary
+    binary-prepare short-provider acceptance-orguser short-provider-orguser binary-validate)
 
 accepted="[${accepted_commands[*]}]"
 
@@ -386,47 +385,14 @@ case $wanted in
     sequential-acceptance)
         acceptance_test functional "-race --parallel=1"
         ;;
-    search)
-        acceptance_test search
-        ;;
-    multinetwork)
-        multiple_test TestAccVcfaVappNetworkMulti
-        ;;
-    multiple)
-        multiple_test
-        ;;
-    catalog)
-        acceptance_test catalog
-        ;;
     org)
         acceptance_test org
-        ;;
-    vapp)
-        acceptance_test vapp
-        ;;
-    user)
-        acceptance_test user
-        ;;
-    lb)
-        acceptance_test lb
-        ;;
-    vm)
-        acceptance_test vm
         ;;
     tm-acceptance)
         acceptance_test tm
         ;;
     tm-coverage)
         acceptance_test tm "-coverprofile=tm.cover"
-        ;;
-    network)
-        acceptance_test network
-        ;;
-    gateway)
-        acceptance_test gateway
-        ;;
-    extnetwork)
-        acceptance_test extnetwork
         ;;
     *)
         echo "Unhandled testing method $wanted"
