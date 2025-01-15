@@ -124,9 +124,6 @@ type TestConfig struct {
 		VcenterSupervisor     string `json:"vcenterSupervisor"`
 		VcenterSupervisorZone string `json:"vcenterSupervisorZone"`
 	} `json:"tm,omitempty"`
-	VCD struct {
-		Org string `json:"org"`
-	} `json:"vcd"`
 	Logging struct {
 		Enabled         bool   `json:"enabled,omitempty"`
 		LogFileName     string `json:"logFileName,omitempty"`
@@ -363,7 +360,7 @@ func templateFill(tmpl string, inputData StringMap) string {
 		data["ApiToken"] = testConfig.Provider.ApiToken
 		data["PrUrl"] = testConfig.Provider.Url
 		data["PrSysOrg"] = testConfig.Provider.SysOrg
-		data["PrOrg"] = testConfig.VCD.Org
+		data["PrOrg"] = testConfig.Provider.SysOrg
 		data["AllowInsecure"] = testConfig.Provider.AllowInsecure
 		data["MaxRetryTimeout"] = testConfig.Provider.MaxRetryTimeout
 		data["VersionRequired"] = currentProviderVersion
@@ -453,11 +450,11 @@ func templateFill(tmpl string, inputData StringMap) string {
 		// with properly aliased ones (for use in the binary tests)
 		if vcfaAddProvider && (usingProvider1 || usingProvider2 || usingSysProvider2) {
 			if usingProvider1 {
-				templateText = fmt.Sprintf("%s\n%s", templateText, getOrgProviderText("org1", testConfig.VCD.Org))
+				templateText = fmt.Sprintf("%s\n%s", templateText, getOrgProviderText("org1", testConfig.Provider.SysOrg))
 				templateText = strings.Replace(templateText, providerVcfaOrg1, providerVcfaOrg1Alias, -1)
 			}
 			if usingProvider2 {
-				templateText = fmt.Sprintf("%s\n%s", templateText, getOrgProviderText("org2", testConfig.VCD.Org+"-1"))
+				templateText = fmt.Sprintf("%s\n%s", templateText, getOrgProviderText("org2", testConfig.Provider.SysOrg))
 				templateText = strings.Replace(templateText, providerVcfaOrg2, providerVcfaOrg2Alias, -1)
 			}
 			if usingSysProvider2 {
@@ -555,10 +552,6 @@ func getConfigStruct(config string) TestConfig {
 		newRetryTimeout := fmt.Sprintf("%d", configStruct.Provider.MaxRetryTimeout)
 		_ = os.Setenv("VCFA_MAX_RETRY_TIMEOUT", newRetryTimeout)
 	}
-	if configStruct.Provider.SysOrg == "" {
-		configStruct.Provider.SysOrg = configStruct.VCD.Org
-	}
-
 	if configStruct.Provider.Token != "" && configStruct.Provider.Password == "" {
 		configStruct.Provider.Password = "TOKEN"
 	}
@@ -578,7 +571,7 @@ func getConfigStruct(config string) TestConfig {
 
 	_ = os.Setenv("VCFA_URL", configStruct.Provider.Url)
 	_ = os.Setenv("VCFA_SYS_ORG", configStruct.Provider.SysOrg)
-	_ = os.Setenv("VCFA_ORG", configStruct.VCD.Org)
+	_ = os.Setenv("VCFA_ORG", configStruct.Provider.SysOrg)
 	if configStruct.Provider.UseVcdConnectionCache {
 		enableConnectionCache = true
 	}

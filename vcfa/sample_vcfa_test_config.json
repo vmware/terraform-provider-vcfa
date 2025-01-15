@@ -37,10 +37,6 @@
     "//": "This value changes the default for the test suite. If no value is provided, it will set to 300",
     "maxRetryTimeout": 300
   },
-  "vcd": {
-    "//": "This default admin Org",
-    "org": "System"
-  },
   "tm": {
     "org": "tf-test",
     "createRegion": true,
