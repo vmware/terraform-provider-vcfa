@@ -43,6 +43,9 @@ var globalResourceMap = map[string]*schema.Resource{
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
+
+			// TODO: VCFA: Revisit and review the existing options
+
 			"user": {
 				Type:        schema.TypeString,
 				Optional:    true,
