@@ -47,9 +47,9 @@ func init() {
 	setBoolFlag(&vcfaShowCount, "vcfa-show-count", "VCFA_SHOW_COUNT", "Show number of pass/fail tests")
 	setBoolFlag(&vcfaReRunFailed, "vcfa-re-run-failed", "VCFA_RE_RUN_FAILED", "Run only tests that failed in a previous run")
 	setBoolFlag(&testDistributedNetworks, "vcfa-test-distributed", "", "enables testing of distributed network")
-	setBoolFlag(&enableDebug, "vcfa-debug", "GOVCFA_DEBUG", "enables debug output")
+	setBoolFlag(&enableDebug, "vcfa-debug", "GOVCD_DEBUG", "enables debug output")
 	setBoolFlag(&vcfaTestVerbose, "vcfa-verbose", "TEST_VERBOSE", "enables verbose output")
-	setBoolFlag(&enableTrace, "vcfa-trace", "GOVCFA_TRACE", "enables function calls tracing")
+	setBoolFlag(&enableTrace, "vcfa-trace", "GOVCD_TRACE", "enables function calls tracing")
 	setBoolFlag(&vcfaShortTest, "vcfa-short", "VCFA_SHORT_TEST", "runs short test")
 	setBoolFlag(&vcfaAddProvider, "vcfa-add-provider", envVcfaAddProvider, "add provider to test scripts")
 	setBoolFlag(&vcfaSkipTemplateWriting, "vcfa-skip-template-write", envVcfaSkipTemplateWriting, "Skip writing templates to file")
@@ -635,7 +635,7 @@ func getConfigStruct(config string) TestConfig {
 // setTestEnv enables environment variables that are also used in non-test code
 func setTestEnv() {
 	if enableDebug {
-		_ = os.Setenv("GOVCFA_DEBUG", "1")
+		_ = os.Setenv("GOVCD_DEBUG", "1")
 	}
 }
 
