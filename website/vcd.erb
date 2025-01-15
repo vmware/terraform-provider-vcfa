@@ -1,0 +1,41 @@
+<% wrap_layout :inner do %>
+  <% content_for :sidebar do %>
+    <div class="docs-sidebar hidden-print affix-top" role="complementary">
+      <ul class="nav docs-sidenav">
+        <li<%= sidebar_current("docs-home") %>>
+          <a href="/docs/providers/index.html">All Providers</a>
+        </li>
+        <li<%= sidebar_current("docs-vcfa-index") %>>
+          <a href="/docs/providers/vcfa/index.html">VMware Cloud Foundation Automation Provider</a>
+        </li>
+
+        <li<%= sidebar_current("docs-vcfa-guides") %>>
+          <a href="#">Guides</a>
+          <ul class="nav nav-visible">
+            <li<%= sidebar_current("docs-vcfa-guides-deleteme") %>>
+              <a href="/docs/providers/vcfa/guides/deleteme.html">vcfa_placeholder</a>
+            </li>
+          </ul>
+        </li>
+
+        <li<%= sidebar_current("docs-vcfa-data-source") %>>
+          <a href="#">Data Sources</a>
+          <ul class="nav">
+            <li<%= sidebar_current("docs-vcfa-data-source-tm-version") %>>
+              <a href="/docs/providers/vcfa/d/tm_version.html">vcfa_tm_version</a>
+            </li>
+          </ul>
+        </li>
+        <li<%= sidebar_current("docs-vcfa-resource") %>>
+          <a href="#">Resources</a>
+          <ul class="nav nav-visible">
+            <li<%= sidebar_current("docs-vcfa-resource-deleteme") %>>
+              <a href="/docs/providers/vcfa/r/deleteme.html">vcfa_placeholder</a>
+            </li>
+           </ul>
+        </li>
+      </ul>
+    </div>
+  <% end %>
+  <%= yield %>
+<% end %>
