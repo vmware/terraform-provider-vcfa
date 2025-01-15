@@ -159,4 +159,3 @@ minutes, and then connect again.
 [service-account]: /providers/vmware/vcfa/latest/docs/resources/service_account
 [service-account-script]: https://github.com/vmware/terraform-provider-vcfa/blob/main/scripts/create_service_account.sh
 [api-token]: /providers/vmware/vcfa/latest/docs/resource/api_token
-
