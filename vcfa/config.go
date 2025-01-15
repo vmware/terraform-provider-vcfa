@@ -14,7 +14,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
-	"github.com/vmware/go-vcloud-director/v3/util"
 )
 
 func init() {
@@ -71,25 +70,6 @@ type VCDClient struct {
 // StringMap type is used to simplify reading resource definitions
 type StringMap map[string]interface{}
 
-const (
-	// Most common error messages in the library
-
-	// Used when a call to GetOrgAndVdc fails. The placeholder is for the error
-	errorRetrievingOrgAndVdc = "error retrieving Org and VDC: %s"
-
-	// Used when a call to GetOrgAndVdc fails. The placeholders are for vdc, org, and the error
-	errorRetrievingVdcFromOrg = "error retrieving VDC %s from Org %s: %s"
-
-	// Used when we can't get a valid edge gateway. The placeholder is for the error
-	errorUnableToFindEdgeGateway = "unable to find edge gateway: %s"
-
-	// Used when a task fails. The placeholder is for the error
-	errorCompletingTask = "error completing tasks: %s"
-
-	// Used when a call to GetAdminOrgFromResource fails. The placeholder is for the error
-	errorRetrievingOrg = "error retrieving Org: %s"
-)
-
 // Cache values for vCD connection.
 // When the Client() function is called with the same parameters, it will return
 // a cached value instead of connecting again.
@@ -110,14 +90,6 @@ type cacheStorage struct {
 	// cacheClientServedCount records how many times we have cached a connection
 	cacheClientServedCount int
 	sync.Mutex
-}
-
-// reset clears cache to force re-authentication
-func (c *cacheStorage) reset() {
-	c.Lock()
-	defer c.Unlock()
-	c.cacheClientServedCount = 0
-	c.conMap = make(map[string]cachedConnection)
 }
 
 var (
@@ -149,25 +121,6 @@ func debugPrintf(format string, args ...interface{}) {
 	if enableDebug {
 		fmt.Printf(format, args...)
 	}
-}
-
-// This is a global mutexKV for all resources
-var vcfaMutexKV = newMutexKV()
-
-func (cli *VCDClient) getOrgName(d *schema.ResourceData) string {
-	orgName := d.Get("org").(string)
-	if orgName == "" {
-		orgName = cli.Org
-	}
-	return orgName
-}
-
-func (cli *VCDClient) getVdcName(d *schema.ResourceData) string {
-	orgName := d.Get("vdc").(string)
-	if orgName == "" {
-		orgName = cli.Vdc
-	}
-	return orgName
 }
 
 // TODO Look into refactoring this into a method of *Config
@@ -284,19 +237,6 @@ func buildUserAgent(version, sysOrg string) string {
 		version, runtime.GOOS, runtime.GOARCH, strings.ToLower(sysOrg) == "system")
 
 	return userAgent
-}
-
-// logForScreen writes to go-vcloud-director log with a tag that can be used to
-// filter messages directed at the user.
-// * origin is the name of the resource that originates the message
-// * msg is the text that will end up in the logs
-//
-// To display its content at run time, you should run the command below in a separate
-// terminal screen while `terraform apply` is running
-//
-//	tail -f go-vcloud-director.log | grep '\[SCREEN\]'
-func logForScreen(origin, msg string) {
-	util.Logger.Printf("[SCREEN] {%s} %s\n", origin, msg)
 }
 
 // dSet sets the value of a schema property, discarding the error

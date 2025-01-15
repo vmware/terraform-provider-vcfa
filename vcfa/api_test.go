@@ -35,21 +35,14 @@ At least one of the following tags should be defined:
    * functional:   Runs all the acceptance tests
    * unit:         Runs unit tests that don't need a live VCFA
 
-   * network:      Runs network related tests
-   * gateway:      Runs edge gateway related tests
-   * org:          Runs org related tests
-   * vdc:          Runs vdc related tests
-
 Examples:
 
   go test -tags unit -v -timeout=45m .
   go test -tags functional -v -timeout=45m .
-  go test -tags "org vdc" -v -timeout=5m .
 
 Tagged tests can also run using make
   make testunit
   make testacc
-  make testcatalog
 `
 	t.Logf(helpText)
 }

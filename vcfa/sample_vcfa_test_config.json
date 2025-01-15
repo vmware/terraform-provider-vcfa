@@ -6,6 +6,8 @@
     "//"  : "This section contains credentials related to the vCD connection of Sys or Org user",
     "user": "root",
     "password": "somePassword",
+    "tmVersion": "10.7.0",
+    "tmApiVersion": "40.0",
     "token": "Access token to be used instead of username/password",
 
     "//": "If useSamlAdfs is true - client will try to authenticate against ADFS using SAML.",

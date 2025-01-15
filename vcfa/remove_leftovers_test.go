@@ -12,10 +12,5 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 		fmt.Printf("Start leftovers removal\n")
 	}
 
-	if govcdClient.Client.IsTm() {
-		fmt.Printf("Skipping leftover removal for TM\n")
-		return nil
-	}
-
 	return nil
 }

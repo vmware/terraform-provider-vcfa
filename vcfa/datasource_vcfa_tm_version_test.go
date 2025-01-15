@@ -1,4 +1,4 @@
-//go:build ALL || functional
+//go:build ALL || tm || functional
 
 package vcfa
 

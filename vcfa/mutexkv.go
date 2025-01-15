@@ -54,13 +54,6 @@ func (m *mutexKV) get(key string) *sync.Mutex {
 	return mutex
 }
 
-// Returns a properly initalized mutexKV
-func newMutexKV() *mutexKV {
-	return &mutexKV{
-		store: make(map[string]*sync.Mutex),
-	}
-}
-
 // newMutexKVSilent returns a properly initalized mutexKV with the silent property set
 func newMutexKVSilent() *mutexKV {
 	return &mutexKV{

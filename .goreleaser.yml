@@ -12,7 +12,7 @@ builds:
     flags:
       - -trimpath
     ldflags:
-      - '-s -w -X github.com/vmware/terraform-provider-vcfa/vcf.BuildVersion={{.Env.BUILDVERSION}}'
+      - '-s -w -X github.com/vmware/terraform-provider-vcfa/vcfa.BuildVersion={{.Env.BUILDVERSION}}'
     goos:
       - freebsd
       - windows
