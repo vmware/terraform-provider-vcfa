@@ -70,7 +70,7 @@ type VCDClient struct {
 // StringMap type is used to simplify reading resource definitions
 type StringMap map[string]interface{}
 
-// Cache values for vCD connection.
+// Cache values for VCFA connection.
 // When the Client() function is called with the same parameters, it will return
 // a cached value instead of connecting again.
 // This makes the Client() function both deterministic and fast.

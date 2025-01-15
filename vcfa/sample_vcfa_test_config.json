@@ -3,7 +3,7 @@
   "//": "Rename this file to vcfa_test_config.json and change the values to suit your system",
   "//": "You can safely remove the comments or leave them. The parser will ignore them.",
   "provider": {
-    "//"  : "This section contains credentials related to the vCD connection of Sys or Org user",
+    "//"  : "This section contains credentials related to the VCFA connection of Sys or Org user",
     "user": "root",
     "password": "somePassword",
     "tmVersion": "10.7.0",
@@ -13,7 +13,7 @@
     "//": "If useSamlAdfs is true - client will try to authenticate against ADFS using SAML.",
     "useSamlAdfs": false,
     "//": "customAdfsRptId allows to specify custom Relaying Party Trust Identifier. By default",
-    "//": "client will use vCD SAML Entity ID",
+    "//": "client will use VCFA SAML Entity ID",
     "customAdfsRptId": "rpt-id",
     
     "//": "The 3 fields below allow to set SAML credentials for tests that specifically use it.",

@@ -78,7 +78,7 @@ type TestConfig struct {
 		TmVersion    string `json:"tmVersion,omitempty"`
 		TmApiVersion string `json:"tmApiVersion,omitempty"`
 
-		// UseSamlAdfs specifies if SAML auth is used for authenticating vCD instead of local login.
+		// UseSamlAdfs specifies if SAML auth is used for authenticating VCFA instead of local login.
 		// The above `User` and `Password` will be used to authenticate against ADFS IdP when true.
 		UseSamlAdfs bool `json:"useSamlAdfs"`
 
