@@ -64,21 +64,8 @@ func Provider() *schema.Provider {
 				Type:         schema.TypeString,
 				Optional:     true,
 				DefaultFunc:  schema.EnvDefaultFunc("VCFA_AUTH_TYPE", "integrated"),
-				Description:  "'integrated', 'saml_adfs', 'token', 'api_token', 'api_token_file' and 'service_account_token_file' are supported. 'integrated' is default.",
-				ValidateFunc: validation.StringInSlice([]string{"integrated", "saml_adfs", "token", "api_token", "api_token_file", "service_account_token_file"}, false),
-			},
-
-			"saml_adfs_rpt_id": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("VCFA_SAML_ADFS_RPT_ID", nil),
-				Description: "Allows to specify custom Relaying Party Trust Identifier for auth_type=saml_adfs",
-			},
-			"saml_adfs_cookie": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("VCFA_SAML_ADFS_COOKIE", nil),
-				Description: "Allows to specify custom cookie for ADFS server lookup. '{{.Org}}' is replaced by real Org -  e.g. 'sso-preferred=yes; sso_redirect_org={{.Org}}'",
+				Description:  "'integrated', 'token', 'api_token', 'api_token_file' and 'service_account_token_file' are supported. 'integrated' is default.",
+				ValidateFunc: validation.StringInSlice([]string{"integrated", "token", "api_token", "api_token_file", "service_account_token_file"}, false),
 			},
 
 			"token": {
@@ -216,10 +203,6 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 	// auth_type dependent configuration
 	authType := d.Get("auth_type").(string)
 	switch authType {
-	case "saml_adfs":
-		config.UseSamlAdfs = true
-		config.CustomAdfsRptId = d.Get("saml_adfs_rpt_id").(string)
-		config.CustomAdfsCookie = d.Get("saml_adfs_cookie").(string)
 	case "token":
 		if config.Token == "" {
 			return nil, diag.Errorf("empty token detected with 'auth_type' == 'token'")

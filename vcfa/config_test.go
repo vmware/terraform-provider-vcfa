@@ -239,7 +239,6 @@ provider "vcfa" {
   token                = "{{.Token}}"
   api_token            = "{{.ApiToken}}"
   auth_type            = "{{.AuthType}}"
-  saml_adfs_rpt_id     = "{{.SamlAdfsCustomRptId}}"
   url                  = "{{.PrUrl}}"
   sysorg               = "{{.PrSysOrg}}"
   org                  = "{{.PrOrg}}"
@@ -376,8 +375,6 @@ func templateFill(tmpl string, inputData StringMap) string {
 			data["AuthType"] = "token"
 		case testConfig.Provider.ApiToken != "":
 			data["AuthType"] = "api_token"
-		case testConfig.Provider.UseSamlAdfs:
-			data["AuthType"] = "saml_adfs"
 		default:
 			data["AuthType"] = "integrated" // default AuthType for local and LDAP users
 		}
@@ -550,11 +547,6 @@ func getConfigStruct(config string) TestConfig {
 		_ = os.Setenv("VCFA_TOKEN", configStruct.Provider.Token)
 	} else {
 		configStruct.Provider.Token = os.Getenv("VCFA_TOKEN")
-	}
-
-	if configStruct.Provider.UseSamlAdfs {
-		_ = os.Setenv("VCFA_AUTH_TYPE", "saml_adfs")
-		_ = os.Setenv("VCFA_SAML_ADFS_RPT_ID", configStruct.Provider.CustomAdfsRptId)
 	}
 
 	_ = os.Setenv("VCFA_URL", configStruct.Provider.Url)
