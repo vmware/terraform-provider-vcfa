@@ -67,12 +67,12 @@ output "tenant_manager_api_version" {
 
 The following arguments are supported:
 
-* `condition` - (Optional) A version constraint to check against the VCFA Tenant Manager version
-* `fail_if_not_match` - (Optional) Required if `condition` is set. Throws an error if the version constraint set in `condition` is not met.
+- `condition` - (Optional) A version constraint to check against the VCFA Tenant Manager version
+- `fail_if_not_match` - (Optional) Required if `condition` is set. Throws an error if the version constraint set in `condition` is not met.
   Defaults to `false`
 
 ## Attribute Reference
 
-* `matches_condition` - It is true if the VCFA Tenant Manager version matches the constraint set in `condition`
-* `tm_version` - The VCFA Tenant Manager version
-* `tm_api_version` - The maximum supported VCFA Tenant Manager API version
+- `matches_condition` - It is true if the VCFA Tenant Manager version matches the constraint set in `condition`
+- `tm_version` - The VCFA Tenant Manager version
+- `tm_api_version` - The maximum supported VCFA Tenant Manager API version

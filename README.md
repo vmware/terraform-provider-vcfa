@@ -12,8 +12,8 @@ The official Terraform provider for VMware Cloud Foundation Automation 9+ by Bro
 
 ## Requirements
 
--	[Terraform](https://www.terraform.io/downloads.html)
--	[Go](https://golang.org/doc/install) 1.22 (to build the provider plugin)
+- [Terraform](https://www.terraform.io/downloads.html)
+- [Go](https://golang.org/doc/install) 1.22 (to build the provider plugin)
 
 ## Building the Provider
 
