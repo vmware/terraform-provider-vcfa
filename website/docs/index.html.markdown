@@ -14,10 +14,6 @@ Use the navigation to the left to read about the available resources. Please ref
 [CHANGELOG.md](https://github.com/vmware/terraform-provider-vcfa/blob/main/CHANGELOG.md)
 to track feature additions.
 
-~> **NOTE:** The VMware Cloud Foundation Automation Provider documentation pages include *v1.x+* or *v2.x+* labels in resource and/or field
-descriptions. These labels are designed to show at which provider version a certain feature was introduced.
-When upgrading the provider please check for such labels for the resources you are using.
-
 ## Supported VCFA Versions
 
 The following Cloud Director versions are supported by this provider:
