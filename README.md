@@ -90,24 +90,25 @@ When developing `terraform-provider-vcfa` one often needs to modify the underlyi
 new methods and types. Go has a convenient [replace](https://github.com/golang/go/wiki/Modules#when-should-i-use-the-replace-directive)
 directive which can allow you to redirect the import path to your own version of `go-vcloud-director`:
 
- ```go
-    module github.com/vmware/terraform-provider-vcfa
-    require (
-    	...
-    	github.com/vmware/go-vcloud-director/v3 v3.1.0-alpha.3
-    	)
+```go
+module github.com/vmware/terraform-provider-vcfa
+require (
+	...
+    github.com/vmware/go-vcloud-director/v3 v3.1.0-alpha.3
+)
 
-    replace github.com/vmware/go-vcloud-director/v3 v3.1.0-alpha.3 => github.com/my-git-user/go-vcloud-director/v3 v3.1.0-alpha.3    
- ```
+replace github.com/vmware/go-vcloud-director/v3 v3.1.0-alpha.3 => github.com/my-git-user/go-vcloud-director/v3 v3.1.0-alpha.3    
+```
 
 You can also replace pointer to a branch with relative directory:
 
- ```go
-     module github.com/vmware/terraform-provider-vcfa
-     require (
-     	...
-     	github.com/vmware/go-vcloud-director/v3 v3.1.0-alpha.2
-     	)
-     replace github.com/vmware/go-vcloud-director/v3 v3.1.0-alpha.2 => ../go-vcloud-director
-  ```
+```go
+ module github.com/vmware/terraform-provider-vcfa
+ require (
+    ...
+    github.com/vmware/go-vcloud-director/v3 v3.1.0-alpha.2
+)
+
+replace github.com/vmware/go-vcloud-director/v3 v3.1.0-alpha.2 => ../go-vcloud-director
+```
 
