@@ -48,7 +48,7 @@ resource "vcfa_org" "org" {
 The following arguments are used to configure the VMware Cloud Foundation Automation Provider:
 
 * `user` - (Required) This is the username for VCFA API operations. Can also be specified
-  with the `VCFA_USER` environment variable. *v1.0+* `user` may be "serviceadministrator" (set `org` or
+  with the `VCFA_USER` environment variable. `user` may be "serviceadministrator" (set `org` or
   `sysorg` to "System" in this case).
   
 * `password` - (Required) This is the password for VCFA API operations. Can
@@ -90,7 +90,7 @@ The following arguments are used to configure the VMware Cloud Foundation Automa
 * `org` - (Required) This is the Cloud Director Org on which to run API
   operations. Can also be specified with the `VCFA_ORG` environment
   variable.  
-  *v2.0+* `org` may be set to "System" when connection as Sys Admin is desired
+  `org` may be set to "System" when connection as Sys Admin is desired
   (set `user` to "administrator" in this case).  
   Note: `org` value is case sensitive.
   
