@@ -1,0 +1,51 @@
+{
+  "//": "Sample test configuration file for VCFA",
+  "//": "Rename this file to vcfa_test_config.json and change the values to suit your system",
+  "//": "You can safely remove the comments or leave them. The parser will ignore them.",
+  "provider": {
+    "//"  : "This section contains credentials related to the VCFA connection of Sys or Org user",
+    "user": "serviceadministrator",
+    "password": "somePassword",
+    "tmVersion": "10.7.0",
+    "tmApiVersion": "40.0",
+    "//": "Access token to be used instead of username/password",
+    "token": "",
+
+    "url": "https://10.13.21.20/tm/api",
+    "sysOrg": "System",
+    "//": "allowInsecure will skip the check on self-signed certificates",
+    "allowInsecure": true,
+    "//": "tfAcceptanceTests is needed to allow the whole test suite to run",
+    "//": "Warning: it may cost time (up to a few hours) and possibly money",
+    "tfAcceptanceTests": true,
+    "//": "If enabled, the test suite will cache the provider connection for up to 20 minutes",
+    "//": "and then renew it automatically. This will save some heavy network traffic.",
+    "//": "Disabled by default if useConnectionCache is not set",
+    "useConnectionCache": true
+  },
+  "tm": {
+    "org": "tf-test",
+    "createRegion": true,
+    "region": "one-region",
+    "storageClass": "vSAN Default Storage Policy",
+    "vdc": "one-vdc",
+    "contentLibrary": "content-library-one",
+    "//": "Library is named 'terraform-provider-vcfa-publisher-cl' in below vCenter instance",
+    "subscriptionContentLibraryUrl": "https://10.43.41.22/cls/vcsp/lib/608ca073-7d94-4544-9d30-bbae455baa4d/lib.json",
+
+    "createVcenter": true,
+    "vcenterUsername": "user@vsphere.local",
+    "vcenterPassword": "",
+    "vcenterUrl": "https://vcenter.my-company.com",
+    "vcenterStorageProfile": "vSAN Default Storage Policy",
+    "vcenterSupervisor": "supervisor1",
+    "vcenterSupervisorZone": "zone1",
+
+    "createNsxtManager": true,
+    "nsxtManagerUsername": "admin",
+    "nsxtManagerPassword": "",
+    "nsxtManagerUrl": "https://nsxmanager.my-company.com",
+    "nsxtTier0Gateway": "existing-t0-gateway",
+    "nsxtEdgeCluster": "existing-edge-cluster"
+  }
+}
