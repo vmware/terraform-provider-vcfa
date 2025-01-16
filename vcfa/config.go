@@ -36,7 +36,6 @@ type Config struct {
 	Org                     string // Default Org used for API operations
 	Vdc                     string // Default (optional) VDC for API operations
 	Href                    string
-	MaxRetryTimeout         int
 	InsecureFlag            bool
 
 	// UseSamlAdfs specifies if SAML auth is used for authenticating VCFA instead of local login.
@@ -60,11 +59,10 @@ type Config struct {
 
 type VCDClient struct {
 	*govcd.VCDClient
-	SysOrg          string
-	Org             string // name of default Org
-	Vdc             string // name of default VDC
-	MaxRetryTimeout int
-	InsecureFlag    bool
+	SysOrg       string
+	Org          string // name of default Org
+	Vdc          string // name of default VDC
+	InsecureFlag bool
 }
 
 // StringMap type is used to simplify reading resource definitions
@@ -195,16 +193,14 @@ func (c *Config) Client() (*VCDClient, error) {
 
 	vcdClient := &VCDClient{
 		VCDClient: govcd.NewVCDClient(*authUrl, c.InsecureFlag,
-			govcd.WithMaxRetryTimeout(c.MaxRetryTimeout),
 			govcd.WithSamlAdfsAndCookie(c.UseSamlAdfs, c.CustomAdfsRptId, c.CustomAdfsCookie),
 			govcd.WithHttpUserAgent(userAgent),
 			govcd.WithIgnoredMetadata(c.IgnoredMetadata),
 		),
-		SysOrg:          c.SysOrg,
-		Org:             c.Org,
-		Vdc:             c.Vdc,
-		MaxRetryTimeout: c.MaxRetryTimeout,
-		InsecureFlag:    c.InsecureFlag}
+		SysOrg:       c.SysOrg,
+		Org:          c.Org,
+		Vdc:          c.Vdc,
+		InsecureFlag: c.InsecureFlag}
 
 	err = ProviderAuthenticate(vcdClient.VCDClient, c.User, c.Password, c.Token, c.SysOrg, c.ApiToken, c.ApiTokenFile, c.ServiceAccountTokenFile)
 	if err != nil {

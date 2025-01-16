@@ -77,7 +77,6 @@ func createSystemTemporaryVCFAConnection() *VCDClient {
 		Org:             configStruct.Provider.SysOrg,
 		Href:            configStruct.Provider.Url,
 		InsecureFlag:    configStruct.Provider.AllowInsecure,
-		MaxRetryTimeout: configStruct.Provider.MaxRetryTimeout,
 	}
 	conn, err := config.Client()
 	if err != nil {
@@ -97,14 +96,13 @@ func TestAccClientUserAgent(t *testing.T) {
 	}
 
 	clientConfig := Config{
-		User:            testConfig.Provider.User,
-		Password:        testConfig.Provider.Password,
-		Token:           testConfig.Provider.Token,
-		SysOrg:          testConfig.Provider.SysOrg,
-		Org:             testConfig.Provider.SysOrg,
-		Href:            testConfig.Provider.Url,
-		MaxRetryTimeout: testConfig.Provider.MaxRetryTimeout,
-		InsecureFlag:    testConfig.Provider.AllowInsecure,
+		User:         testConfig.Provider.User,
+		Password:     testConfig.Provider.Password,
+		Token:        testConfig.Provider.Token,
+		SysOrg:       testConfig.Provider.SysOrg,
+		Org:          testConfig.Provider.SysOrg,
+		Href:         testConfig.Provider.Url,
+		InsecureFlag: testConfig.Provider.AllowInsecure,
 	}
 
 	vcdClient, err := clientConfig.Client()

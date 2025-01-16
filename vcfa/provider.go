@@ -196,7 +196,6 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 		Org:                     d.Get("org").(string), // Default org for operations
 		Vdc:                     d.Get("vdc").(string), // Default vdc
 		Href:                    d.Get("url").(string),
-		MaxRetryTimeout:         maxRetryTimeout,
 		InsecureFlag:            d.Get("allow_unverified_ssl").(bool),
 	}
 

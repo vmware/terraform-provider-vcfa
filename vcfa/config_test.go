@@ -99,7 +99,6 @@ type TestConfig struct {
 		AllowInsecure            bool   `json:"allowInsecure"`
 		TerraformAcceptanceTests bool   `json:"tfAcceptanceTests"`
 		UseVcdConnectionCache    bool   `json:"useVcdConnectionCache"`
-		MaxRetryTimeout          int    `json:"maxRetryTimeout"`
 	} `json:"provider"`
 	Tm struct {
 		Org            string `json:"org"` // temporary field to make skipIfNotTm work
@@ -360,7 +359,6 @@ func templateFill(tmpl string, inputData StringMap) string {
 		data["PrSysOrg"] = testConfig.Provider.SysOrg
 		data["PrOrg"] = testConfig.Provider.SysOrg
 		data["AllowInsecure"] = testConfig.Provider.AllowInsecure
-		data["MaxRetryTimeout"] = testConfig.Provider.MaxRetryTimeout
 		data["VersionRequired"] = currentProviderVersion
 		data["Logging"] = testConfig.Logging.Enabled
 		if testConfig.Logging.LogFileName != "" {
