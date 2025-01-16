@@ -50,6 +50,17 @@ data "vcfa_tm_version" "not_1051" {
   condition         = "!= 10.5.1"
   fail_if_not_match = true
 }
+
+# Output the version and API version of Tenant Manager
+data "vcfa_tm_version" "version" {}
+
+output "tenant_manager_version" {
+  value = data.vcfa_tm_version.version.tm_version
+}
+
+output "tenant_manager_api_version" {
+  value = data.vcfa_tm_version.version.tm_api_version
+}
 ```
 
 ## Argument Reference
@@ -57,7 +68,8 @@ data "vcfa_tm_version" "not_1051" {
 The following arguments are supported:
 
 * `condition` - (Optional) A version constraint to check against the VCFA Tenant Manager version
-* `fail_if_not_match` - (Optional) Required if `condition` is set. Throws an error if the version constraint set in `condition` is not met
+* `fail_if_not_match` - (Optional) Required if `condition` is set. Throws an error if the version constraint set in `condition` is not met.
+  Defaults to `false`
 
 ## Attribute Reference
 
