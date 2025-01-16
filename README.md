@@ -44,7 +44,7 @@ $ make install
 ```
 
 This command will build the plugin and transfer it to
-`$HOME/.terraform.d/plugins/registry.terraform.io/vmware/vcfa/${VERSION}/${OS}_amd64/terraform-provider-vcfa_v${VERSION}`,
+`$HOME/.terraform.d/plugins/registry.terraform.io/vmware/vcfa/${VERSION}/${OS}_${ARCH}/terraform-provider-vcfa_v${VERSION}`,
 with a name that includes the version (as taken from the `./VERSION` file).
 
 For example, on **macOS**:

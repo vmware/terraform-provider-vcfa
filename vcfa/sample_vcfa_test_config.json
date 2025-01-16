@@ -4,13 +4,13 @@
   "//": "You can safely remove the comments or leave them. The parser will ignore them.",
   "provider": {
     "//"  : "This section contains credentials related to the VCFA connection of Sys or Org user",
-    "user": "root",
+    "user": "serviceadministrator",
     "password": "somePassword",
     "tmVersion": "10.7.0",
     "tmApiVersion": "40.0",
     "token": "Access token to be used instead of username/password",
 
-    "url": "https://10.13.21.20/api",
+    "url": "https://10.13.21.20/tm/api",
     "//": "allowInsecure will skip the check on self-signed certificates",
     "allowInsecure": true,
     "//": "tfAcceptanceTests is needed to allow the whole test suite to run",
