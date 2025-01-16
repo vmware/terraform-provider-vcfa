@@ -390,8 +390,8 @@ func templateFill(tmpl string, inputData StringMap) string {
 		data["CallerFileName"] = callerFileName
 	}
 	data["Timestamp"] = time.Now().Format("2006-01-02 15:04")
-	data["tmVersion"] = testConfig.Provider.TmVersion
-	data["tmApiVersion"] = testConfig.Provider.TmApiVersion
+	data["TmVersion"] = testConfig.Provider.TmVersion
+	data["TmApiVersion"] = testConfig.Provider.TmApiVersion
 
 	// Creates a template. The template gets the same name of the calling function, to generate a better
 	// error message in case of failure
