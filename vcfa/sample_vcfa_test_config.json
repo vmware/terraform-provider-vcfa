@@ -29,7 +29,7 @@
     "vdc": "one-vdc",
     "contentLibrary": "content-library-one",
     "// Library is named 'terraform-provider-vcfa-publisher-cl' in below vCenter instance": "",
-    "subscriptionContentLibraryUrl": "https://vcfcons-mgmt-vc03.acc.broadcom.net/cls/vcsp/lib/608ca073-7d94-4544-9d30-bbae455baa4d/lib.json",
+    "subscriptionContentLibraryUrl": "https://10.43.41.22/cls/vcsp/lib/608ca073-7d94-4544-9d30-bbae455baa4d/lib.json",
 
     "createVcenter": true,
     "vcenterUsername": "user@vsphere.local",
