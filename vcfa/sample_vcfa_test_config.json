@@ -32,7 +32,7 @@
     "//": "If enabled, the test suite will cache the provider connection for up to 20 minutes",
     "//": "and then renew it automatically. This will save some heavy network traffic.",
     "//": "Disabled by default if useVcdConnectionCache is not set",
-    "useVcdConnectionCache": true,
+    "useVcdConnectionCache": true
   },
   "tm": {
     "org": "tf-test",
