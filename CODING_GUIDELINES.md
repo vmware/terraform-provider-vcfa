@@ -112,7 +112,7 @@ Each entity, be it a resource or a data source, needs to have its documentation 
 * Resources should also include a section about **importing**, explaining how an existing resource could be imported into
   Terraform state
 
-Each page must then be linked appropriately in the file `./website/docs/vcd.erb`
+Each page must then be linked appropriately in the file `./website/docs/vcfa.erb`
 
 ### Documenting broad topics (guides)
 
@@ -121,7 +121,7 @@ is a free-form article that explains operations including several resources and 
 Such articles should include explanations and examples of workflows, relationship between resources, common cases, and
 troubleshooting methods, when applicable.
 
-Each guide page must also be linked in `./website/docs/vcd.erb`.
+Each guide page must also be linked in `./website/docs/vcfa.erb`.
 
 ### Documenting each Pull Request for the CHANGELOG
 
