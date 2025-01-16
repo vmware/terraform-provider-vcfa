@@ -123,9 +123,9 @@ The following arguments are used to configure the VMware Cloud Foundation Automa
 * `import_separator` - (Optional) The string to be used as separator with `terraform import`. By default
   it is a dot (`.`).
 
-## Connection Cache (*1.0+*)
+## Connection Cache
 
-Cloud Director connection calls can be expensive, and if a definition file contains several resources, it may trigger 
+VCFA connection calls can be expensive, and if a definition file contains several resources, it may trigger 
 multiple connections. There is a cache engine, disabled by default, which can be activated by the `VCFA_CACHE` 
 environment variable. When enabled, the provider will not reconnect, but reuse an active connection for up to 20 
 minutes, and then connect again.
