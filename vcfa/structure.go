@@ -1,16 +1,8 @@
 package vcfa
 
-import "os"
-
-// Checks if a file exists
-func fileExists(filename string) bool {
-	f, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		return false
-	}
-	fileMode := f.Mode()
-	return fileMode.IsRegular()
-}
+import (
+	"os"
+)
 
 // contains returns true if `sliceToSearch` contains `searched`. Returns false otherwise.
 func contains(sliceToSearch []string, searched string) bool {
@@ -22,4 +14,14 @@ func contains(sliceToSearch []string, searched string) bool {
 		}
 	}
 	return found
+}
+
+// Checks if a file exists
+func fileExists(filename string) bool {
+	f, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	fileMode := f.Mode()
+	return fileMode.IsRegular()
 }

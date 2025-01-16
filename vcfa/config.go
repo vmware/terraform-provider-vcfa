@@ -186,6 +186,12 @@ func (c *Config) Client() (*VCDClient, error) {
 	if err != nil {
 		return nil, fmt.Errorf("something went wrong during authentication: %s", err)
 	}
+
+	// Require API V40 to be present
+	if vcdClient.Client.APIVCDMaxVersionIs("< 40") {
+		return nil, fmt.Errorf("")
+	}
+
 	cachedVCDClients.Lock()
 	cachedVCDClients.conMap[checksum] = cachedConnection{initTime: time.Now(), connection: vcdClient}
 	cachedVCDClients.Unlock()

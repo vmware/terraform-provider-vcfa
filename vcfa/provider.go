@@ -33,10 +33,11 @@ func Resources(nameRegexp string, includeDeprecated bool) (map[string]*schema.Re
 
 var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_tm_version": datasourceVcfaTmVersion(), // 1.0
+	"vcfa_vcenter":    datasourceVcfaVcenter(),   // 1.0
 }
 
 var globalResourceMap = map[string]*schema.Resource{
-	"vcfa_deleteme": resourceVcfaDeleteme(), // TODO: VCFA: Delete this (and associated doc) once there's a resource ready
+	"vcfa_vcenter": resourceVcfaVcenter(), // 1.0
 }
 
 // Provider returns a terraform.ResourceProvider.
