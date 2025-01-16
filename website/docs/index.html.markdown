@@ -36,7 +36,6 @@ provider "vcfa" {
   auth_type            = "integrated"
   org                  = "System"
   url                  = var.vcfa_url
-  max_retry_timeout    = var.vcfa_max_retry_timeout
   allow_unverified_ssl = var.vcfa_allow_unverified_ssl
 }
 
@@ -123,15 +122,6 @@ replaced with actual Org during runtime.
   API operations against. If not set the plugin will select the first virtual
   datacenter available to your Org. Can also be specified with the `VCFA_VDC` environment
   variable.
-  
-* `max_retry_timeout` - (Optional) This provides you with the ability to specify the maximum
-  amount of time (in seconds) you are prepared to wait for interactions on resources managed
-  by Cloud Director to be successful. If a resource action fails, the action will be retried
-  (as long as it is still within the `max_retry_timeout` value) to try and ensure success.
-  Defaults to 60 seconds if not set.
-  Can also be specified with the `VCFA_MAX_RETRY_TIMEOUT` environment variable.
-  
-* `maxRetryTimeout` - (Deprecated) Use `max_retry_timeout` instead.
 
 * `allow_unverified_ssl` - (Optional) Boolean that can be set to true to
   disable SSL certificate verification. This should be used with care as it

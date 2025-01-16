@@ -151,13 +151,6 @@ func Provider() *schema.Provider {
 				Description: "The VCFA url for VCFA API operations.",
 			},
 
-			"max_retry_timeout": {
-				Type:        schema.TypeInt,
-				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("VCFA_MAX_RETRY_TIMEOUT", 60),
-				Description: "Max num seconds to wait for successful response when operating on resources within VCFA (defaults to 60)",
-			},
-
 			"allow_unverified_ssl": {
 				Type:        schema.TypeBool,
 				Optional:    true,
@@ -192,8 +185,6 @@ func Provider() *schema.Provider {
 }
 
 func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
-	maxRetryTimeout := d.Get("max_retry_timeout").(int)
-
 	if err := validateProviderSchema(d); err != nil {
 		return nil, diag.Errorf("[provider validation] :%s", err)
 	}

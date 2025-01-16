@@ -244,7 +244,6 @@ provider "vcfa" {
   sysorg               = "{{.PrSysOrg}}"
   org                  = "{{.PrOrg}}"
   allow_unverified_ssl = "{{.AllowInsecure}}"
-  max_retry_timeout    = {{.MaxRetryTimeout}}
   logging              = {{.Logging}}
   logging_file         = "{{.LoggingFile}}"
 }
@@ -540,17 +539,6 @@ func getConfigStruct(config string) TestConfig {
 	if configStruct.Provider.TerraformAcceptanceTests {
 		// defined in vendor/github.com/hashicorp/terraform/helper/resource/testing.go
 		_ = os.Setenv("TF_ACC", "1")
-	}
-	// The following variables are used in ./provider.go
-	if configStruct.Provider.MaxRetryTimeout == 0 {
-		// If there is no retry timeout in the configuration, and there is no env variable for it, we set a new one
-		if os.Getenv("VCFA_MAX_RETRY_TIMEOUT") == "" {
-			// Setting a default value that should be reasonable for these tests, as we run many heavy operations
-			_ = os.Setenv("VCFA_MAX_RETRY_TIMEOUT", "300")
-		}
-	} else {
-		newRetryTimeout := fmt.Sprintf("%d", configStruct.Provider.MaxRetryTimeout)
-		_ = os.Setenv("VCFA_MAX_RETRY_TIMEOUT", newRetryTimeout)
 	}
 	if configStruct.Provider.Token != "" && configStruct.Provider.Password == "" {
 		configStruct.Provider.Password = "TOKEN"
@@ -1030,7 +1018,6 @@ provider "vcfa" {
   sysorg               = "{{.Org}}"
   org                  = "{{.Org}}"
   allow_unverified_ssl = "true"
-  max_retry_timeout    = 600
   logging              = true
   logging_file         = "go-vcloud-director-{{.Org}}.log"
 }`
@@ -1063,7 +1050,6 @@ provider "vcfa" {
   sysorg               = "{{.Org}}"
   org                  = "{{.Org}}"
   allow_unverified_ssl = "true"
-  max_retry_timeout    = 600
   logging              = true
   logging_file         = "go-vcloud-director-{{.Org}}.log"
 }`

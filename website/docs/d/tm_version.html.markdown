@@ -12,7 +12,7 @@ description: |-
 Provides a data source to fetch the Tenant Manager version from VMware Cloud Foundation Automation, its maximum supported API version and
 perform some optional checks with version constraints.
 
-Supported in provider *v1.0+*. Requires System Administrator privileges.
+Requires System Administrator privileges.
 
 ## Example Usage
 
