@@ -25,20 +25,31 @@ The following VCFA versions are supported by this provider:
 When you want to manage resources across different organizations from a single configuration.
 
 ```hcl
+terraform {
+  required_providers {
+    vcfa = {
+      source  = "vmware/vcfa"
+      version = "= 0.1.0"
+    }
+  }
+}
+
 # Configure the VMware Cloud Foundation Automation Provider
 provider "vcfa" {
-  user                 = "administrator"
+  user                 = "serviceadministrator"
   password             = var.vcfa_pass
   auth_type            = "integrated"
   org                  = "System"
   url                  = var.vcfa_url
   allow_unverified_ssl = var.vcfa_allow_unverified_ssl
+  logging              = true # Enables logging
+  logging_file         = "vcfa.log"
 }
 
-# Create a new organization
-resource "vcfa_org" "org" {
-  name = "Org1"
-  # ...
+# Fetch the Tenant Manager version
+data "vcfa_tm_version" "version" {
+  condition         = ">= 10.7.0"
+  fail_if_not_match = false
 }
 
 ```
