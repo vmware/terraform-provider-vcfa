@@ -33,36 +33,36 @@ func TestAccVcfaTmVersion(t *testing.T) {
 	}
 	testParamsNotEmpty(t, params)
 
-	step1 := templateFill(testAccVcfTmVersion, params)
+	step1 := templateFill(testAccVcfaTmVersion, params)
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s", step1)
 
 	params["FuncName"] = t.Name() + "-step2"
 	params["FailIfNotMatch"] = "true"
 	params["SkipBinaryTest"] = "# skip-binary-test - This one triggers an error"
-	step2 := templateFill(testAccVcfTmVersion, params)
+	step2 := templateFill(testAccVcfaTmVersion, params)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s", step2)
 
 	params["FuncName"] = t.Name() + "-step3"
 	params["Condition"] = "= " + currentVersion
 	params["SkipBinaryTest"] = " "
-	step3 := templateFill(testAccVcfTmVersion, params)
+	step3 := templateFill(testAccVcfaTmVersion, params)
 	debugPrintf("#[DEBUG] CONFIGURATION step3: %s", step3)
 
 	params["FuncName"] = t.Name() + "-step4"
 	versionTokens := strings.Split(currentVersion, ".")
 	params["Condition"] = fmt.Sprintf("~> %s.%s", versionTokens[0], versionTokens[1])
-	step4 := templateFill(testAccVcfTmVersion, params)
+	step4 := templateFill(testAccVcfaTmVersion, params)
 	debugPrintf("#[DEBUG] CONFIGURATION step4: %s", step4)
 
 	params["FuncName"] = t.Name() + "-step5"
 	params["Condition"] = "!= 10.3.0"
-	step5 := templateFill(testAccVcfTmVersion, params)
+	step5 := templateFill(testAccVcfaTmVersion, params)
 	debugPrintf("#[DEBUG] CONFIGURATION step5: %s", step5)
 
 	params["FuncName"] = t.Name() + "-step6"
 	params["Condition"] = " " // Not used, but illustrates the point of this check
 	params["FailIfNotMatch"] = " "
-	step6 := templateFill(testAccVcfTmVersionWithoutArguments, params)
+	step6 := templateFill(testAccVcfaTmVersionWithoutArguments, params)
 	debugPrintf("#[DEBUG] CONFIGURATION step6: %s", step6)
 
 	if vcfaShortTest {
@@ -127,7 +127,7 @@ func TestAccVcfaTmVersion(t *testing.T) {
 	postTestChecks(t)
 }
 
-const testAccVcfTmVersion = `
+const testAccVcfaTmVersion = `
 {{.SkipBinaryTest}}
 data "vcfa_tm_version" "version" {
   condition         = "{{.Condition}}"
@@ -135,7 +135,7 @@ data "vcfa_tm_version" "version" {
 }
 `
 
-const testAccVcfTmVersionWithoutArguments = `
+const testAccVcfaTmVersionWithoutArguments = `
 data "vcfa_tm_version" "version" {
 }
 `
