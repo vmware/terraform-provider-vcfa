@@ -82,8 +82,7 @@ The following arguments are used to configure the VMware Cloud Foundation Automa
 - `api_token` - (Optional) This is the API token that a System or organization administrator can create and 
    distribute to users. It is used instead of username and password (in combination with `auth_type=api_token`). When
    this field is filled, username and password are ignored. An API token can also be specified with the `VCFA_API_TOKEN`
-   environment variable. This token requires at least VCFA 9.0. There are restrictions to its use, as defined in
-   [the documentation](https://docs.vmware.com/en/VMware-Cloud-Director/10.3/VMware-Cloud-Director-Service-Provider-Admin-Portal-Guide/GUID-A1B3B2FA-7B2C-4EE1-9D1B-188BE703EEDE.html)
+   environment variable. This token requires at least VCFA 9.0. There are restrictions to its use, as defined in the documentation
 
 - `api_token_file` - (Optional) Same as `api_token`, only provided 
    as a JSON file. Can also be specified with the `VCFA_API_TOKEN_FILE` environment variable.
@@ -92,7 +91,7 @@ The following arguments are used to configure the VMware Cloud Foundation Automa
    path to the file could be provided as absolute or relative to the working directory. It is used instead of username
    and password (in combination with `auth_type=service_account_token_file`. The file can also be specified with the 
    `VCFA_SA_TOKEN_FILE` environment variable. There are restrictions to its use, as defined in 
-   [the documentation](https://docs.vmware.com/en/VMware-Cloud-Director/10.4/VMware-Cloud-Director-Service-Provider-Admin-Portal-Guide/GUID-8CD3C8BE-3187-4769-B960-3E3315492C16.html)
+   the documentation
 
 - `allow_service_account_token_file` - (Optional) When using `auth_type=service_account_token_file`,
   if set to `true`, will suppress a warning to the user about the service account token file containing *sensitive information*.
