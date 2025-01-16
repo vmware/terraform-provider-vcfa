@@ -1,0 +1,1 @@
+- Add `vcfa_tm_version` data source to read version details from VCFA Tenant Manager [GH-1]
