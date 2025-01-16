@@ -112,3 +112,4 @@ You can also replace pointer to a branch with relative directory:
 replace github.com/vmware/go-vcloud-director/v3 v3.1.0-alpha.2 => ../go-vcloud-director
 ```
 
+See [CODING_GUIDELINES.md](./CODING_GUIDELINES.md) for more advice on how to write code for this project.
