@@ -82,7 +82,7 @@ type TestConfig struct {
 		SysOrg                   string `json:"sysOrg"`
 		AllowInsecure            bool   `json:"allowInsecure"`
 		TerraformAcceptanceTests bool   `json:"tfAcceptanceTests"`
-		UseVcdConnectionCache    bool   `json:"useVcdConnectionCache"`
+		UseConnectionCache       bool   `json:"useConnectionCache"`
 	} `json:"provider"`
 	Tm struct {
 		Org            string `json:"org"` // temporary field to make skipIfNotTm work
@@ -533,7 +533,7 @@ func getConfigStruct(config string) TestConfig {
 	_ = os.Setenv("VCFA_URL", configStruct.Provider.Url)
 	_ = os.Setenv("VCFA_SYS_ORG", configStruct.Provider.SysOrg)
 	_ = os.Setenv("VCFA_ORG", configStruct.Provider.SysOrg)
-	if configStruct.Provider.UseVcdConnectionCache {
+	if configStruct.Provider.UseConnectionCache {
 		enableConnectionCache = true
 	}
 	if configStruct.Provider.AllowInsecure {
