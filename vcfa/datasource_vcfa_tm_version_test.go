@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccVcfTmVersion(t *testing.T) {
+func TestAccVcfaTmVersion(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
