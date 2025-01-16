@@ -68,15 +68,13 @@ func createSystemTemporaryVCFAConnection() *VCDClient {
 	}
 
 	config := Config{
-		User:            configStruct.Provider.User,
-		Password:        configStruct.Provider.Password,
-		Token:           configStruct.Provider.Token,
-		UseSamlAdfs:     configStruct.Provider.UseSamlAdfs,
-		CustomAdfsRptId: configStruct.Provider.CustomAdfsRptId,
-		SysOrg:          configStruct.Provider.SysOrg,
-		Org:             configStruct.Provider.SysOrg,
-		Href:            configStruct.Provider.Url,
-		InsecureFlag:    configStruct.Provider.AllowInsecure,
+		User:         configStruct.Provider.User,
+		Password:     configStruct.Provider.Password,
+		Token:        configStruct.Provider.Token,
+		SysOrg:       configStruct.Provider.SysOrg,
+		Org:          configStruct.Provider.SysOrg,
+		Href:         configStruct.Provider.Url,
+		InsecureFlag: configStruct.Provider.AllowInsecure,
 	}
 	conn, err := config.Client()
 	if err != nil {

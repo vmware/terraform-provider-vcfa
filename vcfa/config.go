@@ -37,24 +37,6 @@ type Config struct {
 	Vdc                     string // Default (optional) VDC for API operations
 	Href                    string
 	InsecureFlag            bool
-
-	// UseSamlAdfs specifies if SAML auth is used for authenticating VCFA instead of local login.
-	// The following conditions must be met so that authentication SAML authentication works:
-	// * SAML IdP (Identity Provider) is Active Directory Federation Service (ADFS)
-	// * Authentication endpoint "/adfs/services/trust/13/usernamemixed" must be enabled on ADFS
-	// server
-	UseSamlAdfs bool
-	// CustomAdfsRptId allows to set custom Relaying Party Trust identifier. By default VCFA Entity
-	// ID is used as Relaying Party Trust identifier.
-	CustomAdfsRptId string
-	// CustomAdfsCookie
-	// Placeholder {{.Org}} (if specified) will be replaced with real org
-	// E.g "sso-preferred=yes; sso_redirect_org={{.Org}}"
-	CustomAdfsCookie string
-
-	// IgnoredMetadata allows to configure a set of metadata entries that should be ignored by all the
-	// API operations related to metadata.
-	IgnoredMetadata []govcd.IgnoredMetadata
 }
 
 type VCDClient struct {
@@ -193,9 +175,7 @@ func (c *Config) Client() (*VCDClient, error) {
 
 	vcdClient := &VCDClient{
 		VCDClient: govcd.NewVCDClient(*authUrl, c.InsecureFlag,
-			govcd.WithSamlAdfsAndCookie(c.UseSamlAdfs, c.CustomAdfsRptId, c.CustomAdfsCookie),
 			govcd.WithHttpUserAgent(userAgent),
-			govcd.WithIgnoredMetadata(c.IgnoredMetadata),
 		),
 		SysOrg:       c.SysOrg,
 		Org:          c.Org,

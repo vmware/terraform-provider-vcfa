@@ -73,26 +73,10 @@ type TestConfig struct {
 		ApiTokenFile            string `json:"api_token_file,omitempty"`
 		ServiceAccountTokenFile string `json:"service_account_token_file,omitempty"`
 
-		// Versions are filled by the VCFA provisioning task, and allow tests to
+		// Tenant Manager version and API version, they allow tests to
 		// check for compatibility without using an extra connection
 		TmVersion    string `json:"tmVersion,omitempty"`
 		TmApiVersion string `json:"tmApiVersion,omitempty"`
-
-		// UseSamlAdfs specifies if SAML auth is used for authenticating VCFA instead of local login.
-		// The above `User` and `Password` will be used to authenticate against ADFS IdP when true.
-		UseSamlAdfs bool `json:"useSamlAdfs"`
-
-		// CustomAdfsRptId allows to set custom Relaying Party Trust identifier if needed. Only has
-		// effect if `UseSamlAdfs` is true.
-		CustomAdfsRptId string `json:"customAdfsRptId,omitempty"`
-
-		// The variables `SamlUser`, `SamlPassword` and `SamlCustomRptId` are optional and are
-		// related to additional test run specifically with SAML user/password. It can be useful in
-		// case local user is used for test run (defined by above 'User', 'Password' variables).
-		// SamlUser takes ADFS friendly format ('contoso.com\username' or 'username@contoso.com')
-		SamlUser        string `json:"samlUser,omitempty"`
-		SamlPassword    string `json:"samlPassword,omitempty"`
-		SamlCustomRptId string `json:"samlCustomRptId,omitempty"`
 
 		Url                      string `json:"url"`
 		SysOrg                   string `json:"sysOrg"`
@@ -352,7 +336,6 @@ func templateFill(tmpl string, inputData StringMap) string {
 		// provider data
 		data["PrUser"] = testConfig.Provider.User
 		data["PrPassword"] = testConfig.Provider.Password
-		data["SamlAdfsCustomRptId"] = testConfig.Provider.CustomAdfsRptId
 		data["Token"] = testConfig.Provider.Token
 		data["ApiToken"] = testConfig.Provider.ApiToken
 		data["PrUrl"] = testConfig.Provider.Url
@@ -708,9 +691,6 @@ func TestMain(m *testing.M) {
 		fmt.Printf("Connecting to %s %s\n", testConfig.Provider.Url, versionInfo)
 
 		authentication := "password"
-		if testConfig.Provider.UseSamlAdfs {
-			authentication = "SAML password"
-		}
 		// Token based auth has priority over other types
 		if testConfig.Provider.Token != "" {
 			authentication = "token"
@@ -774,7 +754,6 @@ func getTestVCFAFromJson(testConfig TestConfig) (*govcd.VCDClient, error) {
 		return &govcd.VCDClient{}, fmt.Errorf("could not parse Url: %s", err)
 	}
 	vcdClient := govcd.NewVCDClient(*configUrl, true,
-		govcd.WithSamlAdfs(testConfig.Provider.UseSamlAdfs, testConfig.Provider.CustomAdfsRptId),
 		govcd.WithHttpUserAgent(buildUserAgent("test", testConfig.Provider.SysOrg)))
 	return vcdClient, nil
 }
