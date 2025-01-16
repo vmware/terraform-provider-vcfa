@@ -12,6 +12,7 @@
     "token": "",
 
     "url": "https://10.13.21.20/tm/api",
+    "sysOrg": "System",
     "//": "allowInsecure will skip the check on self-signed certificates",
     "allowInsecure": true,
     "//": "tfAcceptanceTests is needed to allow the whole test suite to run",
