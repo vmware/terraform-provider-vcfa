@@ -16,7 +16,7 @@ to track feature additions.
 
 ## Supported VCFA Versions
 
-The following Cloud Director versions are supported by this provider:
+The following VCFA versions are supported by this provider:
 
 * 9.0
 
@@ -87,7 +87,7 @@ The following arguments are used to configure the VMware Cloud Foundation Automa
   if set to `true`, will suppress a warning to the user about the service account token file containing *sensitive information*.
   Can also be set with `VCFA_ALLOW_SA_TOKEN_FILE`.
 
-* `org` - (Required) This is the Cloud Director Org on which to run API
+* `org` - (Required) This is the VCFA Org on which to run API
   operations. Can also be specified with the `VCFA_ORG` environment
   variable.  
   `org` may be set to "System" when connection as Sys Admin is desired
@@ -99,10 +99,10 @@ The following arguments are used to configure the VMware Cloud Foundation Automa
    `user` to "administrator" to free up `org` argument for setting a default organization
    for resources to use.
    
-* `url` - (Required) This is the URL for the Cloud Director API endpoint. e.g.
+* `url` - (Required) This is the URL for the VCFA API endpoint. e.g.
   https://server.domain.com/api. Can also be specified with the `VCFA_URL` environment variable.
   
-* `vdc` - (Optional) This is the virtual datacenter within Cloud Director to run
+* `vdc` - (Optional) This is the virtual datacenter within VCFA to run
   API operations against. If not set the plugin will select the first virtual
   datacenter available to your Org. Can also be specified with the `VCFA_VDC` environment
   variable.
