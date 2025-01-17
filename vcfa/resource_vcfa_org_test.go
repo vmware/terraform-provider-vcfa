@@ -9,22 +9,21 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccVcdTmOrg(t *testing.T) {
+func TestAccVcfaOrg(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	var params = StringMap{
 		"Testname": t.Name(),
-
-		"Tags": "tm",
+		"Tags":     "tm",
 	}
 	testParamsNotEmpty(t, params)
 
-	configText1 := templateFill(testAccVcdTmOrgStep1, params)
+	configText1 := templateFill(testAccVcfaOrgStep1, params)
 	params["FuncName"] = t.Name() + "-step2"
-	configText2 := templateFill(testAccVcdTmOrgStep2, params)
+	configText2 := templateFill(testAccVcfaOrgStep2, params)
 	params["FuncName"] = t.Name() + "-step3"
-	configText3 := templateFill(testAccVcdTmOrgStep3DS, params)
+	configText3 := templateFill(testAccVcfaOrgStep3DS, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
@@ -81,7 +80,7 @@ func TestAccVcdTmOrg(t *testing.T) {
 	postTestChecks(t)
 }
 
-const testAccVcdTmOrgStep1 = `
+const testAccVcfaOrgStep1 = `
 resource "vcfa_org" "test" {
   name         = "{{.Testname}}"
   display_name = "terraform-test"
@@ -90,7 +89,7 @@ resource "vcfa_org" "test" {
 }
 `
 
-const testAccVcdTmOrgStep2 = `
+const testAccVcfaOrgStep2 = `
 resource "vcfa_org" "test" {
   name         = "{{.Testname}}-updated"
   display_name = "terraform-test"
@@ -99,13 +98,13 @@ resource "vcfa_org" "test" {
 }
 `
 
-const testAccVcdTmOrgStep3DS = testAccVcdTmOrgStep1 + `
+const testAccVcfaOrgStep3DS = testAccVcfaOrgStep1 + `
 data "vcfa_org" "test" {
   name = vcfa_org.test.name
 }
 `
 
-func TestAccVcdTmOrgSubProvider(t *testing.T) {
+func TestAccVcfaOrgSubProvider(t *testing.T) {
 	preTestChecks(t)
 
 	skipIfNotSysAdmin(t)
@@ -117,9 +116,9 @@ func TestAccVcdTmOrgSubProvider(t *testing.T) {
 	}
 	testParamsNotEmpty(t, params)
 
-	configText1 := templateFill(testAccVcdTmOrgSubproviderStep1, params)
+	configText1 := templateFill(testAccVcfaOrgSubproviderStep1, params)
 	params["FuncName"] = t.Name() + "-step2"
-	configText2 := templateFill(testAccVcdTmOrgSubproviderStep2, params)
+	configText2 := templateFill(testAccVcfaOrgSubproviderStep2, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
@@ -162,7 +161,7 @@ func TestAccVcdTmOrgSubProvider(t *testing.T) {
 	postTestChecks(t)
 }
 
-const testAccVcdTmOrgSubproviderStep1 = `
+const testAccVcfaOrgSubproviderStep1 = `
 resource "vcfa_org" "test" {
   name           = "{{.Testname}}"
   display_name   = "terraform-test"
@@ -172,14 +171,14 @@ resource "vcfa_org" "test" {
 }
 `
 
-const testAccVcdTmOrgSubproviderStep2 = testAccVcdTmOrgSubproviderStep1 + `
+const testAccVcfaOrgSubproviderStep2 = testAccVcfaOrgSubproviderStep1 + `
 data "vcfa_org" "test" {
   name = vcfa_org.test.name
 }
 `
 
-// TestAccVcdTmOrgClassicTenant tests a Tenant Manager Organization configured as "Classic Tenant"
-func TestAccVcdTmOrgClassicTenant(t *testing.T) {
+// TestAccVcfaOrgClassicTenant tests a Tenant Manager Organization configured as "Classic Tenant"
+func TestAccVcfaOrgClassicTenant(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
@@ -189,9 +188,9 @@ func TestAccVcdTmOrgClassicTenant(t *testing.T) {
 	}
 	testParamsNotEmpty(t, params)
 
-	configText1 := templateFill(testAccVcdTmOrgClassicStep1, params)
+	configText1 := templateFill(testAccVcfaOrgClassicStep1, params)
 	params["FuncName"] = t.Name() + "-step2"
-	configText2 := templateFill(testAccVcdTmOrgClassicStep2, params)
+	configText2 := templateFill(testAccVcfaOrgClassicStep2, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
@@ -234,7 +233,7 @@ func TestAccVcdTmOrgClassicTenant(t *testing.T) {
 	postTestChecks(t)
 }
 
-const testAccVcdTmOrgClassicStep1 = `
+const testAccVcfaOrgClassicStep1 = `
 resource "vcfa_org" "test" {
   name              = "{{.Testname}}"
   display_name      = "terraform-test"
@@ -252,7 +251,7 @@ resource "vcfa_org" "test2" {
 }
 `
 
-const testAccVcdTmOrgClassicStep2 = testAccVcdTmOrgClassicStep1 + `
+const testAccVcfaOrgClassicStep2 = testAccVcfaOrgClassicStep1 + `
 data "vcfa_org" "test" {
   name = vcfa_org.test.name
 }
