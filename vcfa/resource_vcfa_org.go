@@ -44,12 +44,6 @@ func resourceVcfaOrg() *schema.Resource {
 				Default:     true,
 				Description: fmt.Sprintf("Defines if the %s enabled. Defaults to 'true'", labelVcfaOrg),
 			},
-			"is_subprovider": {
-				Type:        schema.TypeBool,
-				ForceNew:    true,
-				Optional:    true,
-				Description: fmt.Sprintf("Enables this organization to manage other %ss", labelVcfaOrg),
-			},
 			"is_classic_tenant": {
 				Type:        schema.TypeBool,
 				Optional:    true,
@@ -209,7 +203,6 @@ func getOrgType(_ *VCDClient, d *schema.ResourceData) (*types.TmOrg, error) {
 		DisplayName:     d.Get("display_name").(string),
 		Description:     d.Get("description").(string),
 		IsEnabled:       d.Get("is_enabled").(bool),
-		CanManageOrgs:   d.Get("is_subprovider").(bool),
 		IsClassicTenant: d.Get("is_classic_tenant").(bool),
 	}
 
@@ -226,7 +219,6 @@ func setOrgData(_ *VCDClient, d *schema.ResourceData, org *govcd.TmOrg) error {
 	dSet(d, "display_name", org.TmOrg.DisplayName)
 	dSet(d, "description", org.TmOrg.Description)
 	dSet(d, "is_enabled", org.TmOrg.IsEnabled)
-	dSet(d, "is_subprovider", org.TmOrg.CanManageOrgs)
 
 	// Computed in resource
 	var managedById string

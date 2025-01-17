@@ -22,7 +22,7 @@ data "vcfa_org" "existing" {
 
 The following arguments are supported:
 
-* `name` - (Required) The name of organization.
+- `name` - (Required) The name of organization.
 
 ## Attribute Reference
 

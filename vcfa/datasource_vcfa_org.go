@@ -34,11 +34,6 @@ func datasourceVcfaOrg() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("Defines if the %s enabled", labelVcfaOrg),
 			},
-			"is_subprovider": {
-				Type:        schema.TypeBool,
-				Computed:    true,
-				Description: fmt.Sprintf("Defines if this can manage other %ss", labelVcfaOrg),
-			},
 			"managed_by_id": {
 				Type:        schema.TypeString,
 				Computed:    true,

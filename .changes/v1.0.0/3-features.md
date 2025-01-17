@@ -1,2 +1,2 @@
-* **New Resource:** `vcfa_org` to manage Organizations [GH-3]
-* **New Data Source:** `vcfa_org` to read Organizations [GH-3]
+- **New Resource:*- `vcfa_org` to manage Organizations [GH-3]
+- **New Data Source:*- `vcfa_org` to read Organizations [GH-3]
