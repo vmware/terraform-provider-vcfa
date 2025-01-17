@@ -123,7 +123,7 @@ func resourceVcfaVcenter() *schema.Resource {
 	}
 }
 
-func getTmVcenterType(_ *VCDClient, d *schema.ResourceData) (*types.VSphereVirtualCenter, error) {
+func getVcenterType(_ *VCDClient, d *schema.ResourceData) (*types.VSphereVirtualCenter, error) {
 	t := &types.VSphereVirtualCenter{
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
@@ -136,7 +136,7 @@ func getTmVcenterType(_ *VCDClient, d *schema.ResourceData) (*types.VSphereVirtu
 	return t, nil
 }
 
-func setTmVcenterData(_ *VCDClient, d *schema.ResourceData, v *govcd.VCenter) error {
+func setVcenterData(_ *VCDClient, d *schema.ResourceData, v *govcd.VCenter) error {
 	if v == nil || v.VSphereVCenter == nil {
 		return fmt.Errorf("nil object for %s", labelVcfaVirtualCenter)
 	}
@@ -182,8 +182,8 @@ func resourceVcfaVcenterCreate(ctx context.Context, d *schema.ResourceData, meta
 
 	c := crudConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
 		entityLabel:      labelVcfaVirtualCenter,
-		getTypeFunc:      getTmVcenterType,
-		stateStoreFunc:   setTmVcenterData,
+		getTypeFunc:      getVcenterType,
+		stateStoreFunc:   setVcenterData,
 		createFunc:       vcdClient.CreateVcenter,
 		resourceReadFunc: resourceVcfaVcenterRead,
 		// certificate should be trusted for the vCenter to work
@@ -201,7 +201,7 @@ func resourceVcfaVcenterUpdate(ctx context.Context, d *schema.ResourceData, meta
 	vcdClient := meta.(*VCDClient)
 	c := crudConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
 		entityLabel:      labelVcfaVirtualCenter,
-		getTypeFunc:      getTmVcenterType,
+		getTypeFunc:      getVcenterType,
 		getEntityFunc:    vcdClient.GetVCenterById,
 		resourceReadFunc: resourceVcfaVcenterRead,
 	}
@@ -231,7 +231,7 @@ func resourceVcfaVcenterRead(ctx context.Context, d *schema.ResourceData, meta i
 		entityLabel: labelVcfaVirtualCenter,
 		// getEntityFunc:  vcdClient.GetVCenterById,// TODO: TM: use this function
 		getEntityFunc:  fakeGetById, // TODO: TM: remove this function
-		stateStoreFunc: setTmVcenterData,
+		stateStoreFunc: setVcenterData,
 		readHooks: []outerEntityHook[*govcd.VCenter]{
 			// TODO: TM ensure that the vCenter listener state is "CONNECTED"  before triggering
 			// refresh as it will fail otherwise. At the moment it has a delay before it becomes

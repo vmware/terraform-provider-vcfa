@@ -12,7 +12,7 @@ import (
 
 func datasourceVcfaVcenter() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: datasourceVcdVcenterRead,
+		ReadContext: datasourceVcfaVcenterRead,
 
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -89,13 +89,13 @@ func datasourceVcfaVcenter() *schema.Resource {
 	}
 }
 
-func datasourceVcdVcenterRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceVcfaVcenterRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 
 	c := dsReadConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
 		entityLabel:    labelVcfaVirtualCenter,
 		getEntityFunc:  vcdClient.GetVCenterByName,
-		stateStoreFunc: setTmVcenterData,
+		stateStoreFunc: setVcenterData,
 	}
 	return readDatasource(ctx, d, meta, c)
 }
