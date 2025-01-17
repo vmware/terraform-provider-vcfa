@@ -32,7 +32,7 @@ var doNotDelete = entityList{
 // found by name matching
 // Add to this list if you ever get an entity left behind by a test
 var alsoDelete = entityList{
-	{Type: "vcfa_xxx", Name: "custom-name", Comment: "manually created"},
+	// {Type: "vcfa_xxx", Name: "custom-name", Comment: "manually created"},
 }
 
 // isTest is a regular expression that tells if an entity needs to be deleted

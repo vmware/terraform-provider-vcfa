@@ -187,9 +187,9 @@ func (c *Config) Client() (*VCDClient, error) {
 		return nil, fmt.Errorf("something went wrong during authentication: %s", err)
 	}
 
-	// Require API V40 to be present
+	// Require API V40 (TM starting API version) to be present
 	if vcdClient.Client.APIVCDMaxVersionIs("< 40") {
-		return nil, fmt.Errorf("")
+		return nil, fmt.Errorf("unsupported API version, at least v40 required")
 	}
 
 	cachedVCDClients.Lock()
