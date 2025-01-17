@@ -13,7 +13,6 @@ import (
 func datasourceVcfaOrg() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: datasourceVcfaRead,
-
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
