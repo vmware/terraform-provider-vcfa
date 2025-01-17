@@ -10,7 +10,7 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
-const labelOrg = "Organization"
+const labelVcfaOrg = "Organization"
 
 func resourceVcfaOrg() *schema.Resource {
 	return &schema.Resource{
@@ -26,12 +26,12 @@ func resourceVcfaOrg() *schema.Resource {
 			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: fmt.Sprintf("The unique identifier in the full URL with which users log in to this %s", labelOrg),
+				Description: fmt.Sprintf("The unique identifier in the full URL with which users log in to this %s", labelVcfaOrg),
 			},
 			"display_name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: fmt.Sprintf("Appears in the Cloud application as a human-readable name of the %s", labelOrg),
+				Description: fmt.Sprintf("Appears in the Cloud application as a human-readable name of the %s", labelVcfaOrg),
 			},
 			"description": {
 				Type:        schema.TypeString,
@@ -42,69 +42,69 @@ func resourceVcfaOrg() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
-				Description: fmt.Sprintf("Defines if the %s enabled. Defaults to 'true'", labelOrg),
+				Description: fmt.Sprintf("Defines if the %s enabled. Defaults to 'true'", labelVcfaOrg),
 			},
 			"is_subprovider": {
 				Type:        schema.TypeBool,
 				ForceNew:    true,
 				Optional:    true,
-				Description: fmt.Sprintf("Enables this organization to manage other %ss", labelOrg),
+				Description: fmt.Sprintf("Enables this organization to manage other %ss", labelVcfaOrg),
 			},
 			"is_classic_tenant": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				ForceNew:    true, // Cannot be changed once created
-				Description: fmt.Sprintf("Defines whether the %s is a classic VRA-style tenant", labelOrg),
+				Description: fmt.Sprintf("Defines whether the %s is a classic VRA-style tenant", labelVcfaOrg),
 			},
 			"managed_by_id": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: fmt.Sprintf("%s owner ID", labelOrg),
+				Description: fmt.Sprintf("%s owner ID", labelVcfaOrg),
 			},
 			"managed_by_name": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: fmt.Sprintf("%s owner Name", labelOrg),
+				Description: fmt.Sprintf("%s owner Name", labelVcfaOrg),
 			},
 			"org_vdc_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: fmt.Sprintf("Number of VDCs belonging to the %s", labelOrg),
+				Description: fmt.Sprintf("Number of VDCs belonging to the %s", labelVcfaOrg),
 			},
 			"catalog_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: fmt.Sprintf("Number of catalog belonging to the %s", labelOrg),
+				Description: fmt.Sprintf("Number of catalog belonging to the %s", labelVcfaOrg),
 			},
 			"vapp_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: fmt.Sprintf("Number of vApps belonging to the %s", labelOrg),
+				Description: fmt.Sprintf("Number of vApps belonging to the %s", labelVcfaOrg),
 			},
 			"running_vm_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: fmt.Sprintf("Number of running VMs in the %s", labelOrg),
+				Description: fmt.Sprintf("Number of running VMs in the %s", labelVcfaOrg),
 			},
 			"user_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: fmt.Sprintf("Number of users in the %s", labelOrg),
+				Description: fmt.Sprintf("Number of users in the %s", labelVcfaOrg),
 			},
 			"disk_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: fmt.Sprintf("Number of disks in the %s", labelOrg),
+				Description: fmt.Sprintf("Number of disks in the %s", labelVcfaOrg),
 			},
 			"can_publish": {
 				Type:        schema.TypeBool,
 				Computed:    true,
-				Description: fmt.Sprintf("Defines whether the %s can publish catalogs externally", labelOrg),
+				Description: fmt.Sprintf("Defines whether the %s can publish catalogs externally", labelVcfaOrg),
 			},
 			"directly_managed_org_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: fmt.Sprintf("Number of directly managed %ss", labelOrg),
+				Description: fmt.Sprintf("Number of directly managed %ss", labelVcfaOrg),
 			},
 		},
 	}
@@ -113,7 +113,7 @@ func resourceVcfaOrg() *schema.Resource {
 func resourceVcfaOrgCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	c := crudConfig[*govcd.TmOrg, types.TmOrg]{
-		entityLabel:      labelOrg,
+		entityLabel:      labelVcfaOrg,
 		getTypeFunc:      getOrgType,
 		stateStoreFunc:   setOrgData,
 		createFunc:       vcdClient.CreateTmOrg,
@@ -125,7 +125,7 @@ func resourceVcfaOrgCreate(ctx context.Context, d *schema.ResourceData, meta int
 func resourceVcfaOrgUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	c := crudConfig[*govcd.TmOrg, types.TmOrg]{
-		entityLabel:      labelOrg,
+		entityLabel:      labelVcfaOrg,
 		getTypeFunc:      getOrgType,
 		getEntityFunc:    vcdClient.GetTmOrgById,
 		resourceReadFunc: resourceVcfaOrgRead,
@@ -142,7 +142,7 @@ func resourceVcfaOrgUpdate(ctx context.Context, d *schema.ResourceData, meta int
 func resourceVcfaOrgRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	c := crudConfig[*govcd.TmOrg, types.TmOrg]{
-		entityLabel:    labelOrg,
+		entityLabel:    labelVcfaOrg,
 		getEntityFunc:  vcdClient.GetTmOrgById,
 		stateStoreFunc: setOrgData,
 	}
@@ -153,7 +153,7 @@ func resourceVcfaOrgDelete(ctx context.Context, d *schema.ResourceData, meta int
 	vcdClient := meta.(*VCDClient)
 
 	c := crudConfig[*govcd.TmOrg, types.TmOrg]{
-		entityLabel:    labelOrg,
+		entityLabel:    labelVcfaOrg,
 		getEntityFunc:  vcdClient.GetTmOrgById,
 		preDeleteHooks: []outerEntityHook[*govcd.TmOrg]{disableTmOrg}, // Org must be disabled before deletion
 	}
@@ -185,7 +185,7 @@ func validateRenameOrgDisabled(d *schema.ResourceData, oldCfg *govcd.TmOrg, newC
 	if d.HasChange("name") &&
 		// this condition is a negative xor - it will be matched if Org is not transitioning from or to disabled state
 		((!newCfg.IsEnabled && !oldCfg.TmOrg.IsEnabled) || newCfg.IsEnabled && oldCfg.TmOrg.IsEnabled) {
-		return fmt.Errorf("%s must be disabled (is_enabled=false) to change name because it changes tenant login URL", labelOrg)
+		return fmt.Errorf("%s must be disabled (is_enabled=false) to change name because it changes tenant login URL", labelVcfaOrg)
 	}
 
 	return nil
