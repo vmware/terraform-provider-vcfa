@@ -3,12 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_vcenter"
 sidebar_current: "docs-vcfa-resource-vcenter"
 description: |-
-  Provides a resource to manage vCenters.
+  Provides a resource to manage vCenters in VMware Cloud Foundation Automation Tenant Manager.
 ---
 
 # vcfa\_vcenter
 
-Provides a resource to manage vCenters.
+Provides a resource to manage vCenters in VMware Cloud Foundation Automation Tenant Manager.
 
 ~> Only `System Administrator` can create this resource.
 
@@ -17,7 +17,7 @@ Provides a resource to manage vCenters.
 ```hcl
 resource "vcfa_vcenter" "test" {
   name                    = "my-vCenter"
-  url                     = "https://host:443"
+  url                     = "https://host"
   auto_trust_certificate  = true
   refresh_vcenter_on_read = true
   username                = "admin@vsphere.local"

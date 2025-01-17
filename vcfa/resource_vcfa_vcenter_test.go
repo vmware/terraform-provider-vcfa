@@ -58,7 +58,6 @@ func TestAccVcfaVcenter(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "description", ""),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "is_enabled", "true"),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "has_proxy", "false"),
-
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "cluster_health_status"),
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "is_connected"),
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "connection_status"),
@@ -75,7 +74,6 @@ func TestAccVcfaVcenter(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "is_enabled", "false"),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "description", "description from Terraform"),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "has_proxy", "false"),
-
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "cluster_health_status"),
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "is_connected"),
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "connection_status"),
@@ -93,7 +91,6 @@ func TestAccVcfaVcenter(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "description", ""),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "is_enabled", "true"),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "has_proxy", "false"),
-
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "cluster_health_status"),
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "is_connected"),
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "connection_status"),
