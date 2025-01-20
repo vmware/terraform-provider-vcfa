@@ -5,7 +5,7 @@ go 1.22.3
 require (
 	github.com/hashicorp/go-version v1.7.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.35.0
-	github.com/vmware/go-vcloud-director/v3 v3.0.0-alpha.14
+	github.com/vmware/go-vcloud-director/v3 v3.0.0-alpha.16
 )
 
 require (

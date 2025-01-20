@@ -131,8 +131,8 @@ func TestVcfaResources(t *testing.T) {
 		},
 		{
 			name:    "MatchExactResourceName",
-			args:    args{nameRegexp: "vcfa_deleteme", includeDeprecated: false}, // TODO: VCFA: Change this to correct resource once there's one
-			wantLen: 1,                                                           // should return only one because exact name was given
+			args:    args{nameRegexp: "vcfa_vcenter", includeDeprecated: false},
+			wantLen: 1, // should return only one because exact name was given
 			lenOnly: true,
 			wantErr: false,
 		},
