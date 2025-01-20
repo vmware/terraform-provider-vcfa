@@ -26,6 +26,12 @@ type crudConfig[O updateDeleter[O, I], I any] struct {
 	// (which is created by 'getTypeFunc')
 	createFunc func(config *I) (O, error)
 
+	// createAsyncFunc is the function that can create an outer entity based on inner entity config
+	// (which is created by 'getTypeFunc'). It differs from createFunc in a way that it can capture
+	// failing task and store resource ID so that the entity becomes tainted instead of losing a
+	// reference.
+	createAsyncFunc func(config *I) (*govcd.Task, error)
+
 	// resourceReadFunc that will be executed from Create and Update functions
 	resourceReadFunc func(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics
 
@@ -63,8 +69,12 @@ type schemaHook func(*VCDClient, *schema.ResourceData) error
 type outerEntityHookInnerEntityType[O, I any] func(*schema.ResourceData, O, I) error
 
 func createResource[O updateDeleter[O, I], I any](ctx context.Context, d *schema.ResourceData, meta interface{}, c crudConfig[O, I]) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	err := createResourceValidator(c)
+	if err != nil {
+		return diag.Errorf("validation failed: %s", err)
+	}
 
+	vcdClient := meta.(*VCDClient)
 	t, err := c.getTypeFunc(vcdClient, d)
 	if err != nil {
 		return diag.Errorf("error getting %s type on create: %s", c.entityLabel, err)
@@ -75,9 +85,44 @@ func createResource[O updateDeleter[O, I], I any](ctx context.Context, d *schema
 		return diag.Errorf("error executing pre-create %s hooks: %s", c.entityLabel, err)
 	}
 
-	createdEntity, err := c.createFunc(t)
-	if err != nil {
-		return diag.Errorf("error creating %s: %s", c.entityLabel, err)
+	var createdEntity O
+
+	// If Async creation function is specified - attempt to parse it this way
+	if c.createAsyncFunc != nil {
+		task, err := c.createAsyncFunc(t)
+		if err != nil {
+			return diag.Errorf("error creating async %s: %s", c.entityLabel, err)
+		}
+
+		err = task.WaitTaskCompletion()
+		if err != nil {
+			if task != nil && task.Task != nil {
+				util.Logger.Printf("[DEBUG] entity '%s' task with ID '%s' failed. Attempting to recover ID", c.entityLabel, task.Task.ID)
+				// Try to see if there is an owner
+				if task.Task.Owner != nil && task.Task.Owner.ID != "" {
+					util.Logger.Printf("[DEBUG] entity '%s' task with ID '%s' failed. Found owner ID %s", c.entityLabel, task.Task.ID, task.Task.Owner.ID)
+
+					// Storing entity ID
+					failedEntityId := task.Task.Owner.ID
+					d.SetId(failedEntityId)
+
+					return diag.Errorf("error creating entity %s. Storing tainted resources ID %s. Task error: %s", c.entityLabel, failedEntityId, err)
+				}
+			}
+
+			return diag.Errorf("task error while creating async %s. Owner ID not found: %s", c.entityLabel, err)
+		}
+		createdEntity, err = c.getEntityFunc(task.Task.Owner.ID)
+		if err != nil {
+			return diag.Errorf("error retrieving %s after successful task: %s", c.entityLabel, err)
+		}
+	}
+
+	if c.createAsyncFunc == nil {
+		createdEntity, err = c.createFunc(t)
+		if err != nil {
+			return diag.Errorf("error creating %s: %s", c.entityLabel, err)
+		}
 	}
 
 	err = c.stateStoreFunc(vcdClient, d, createdEntity)
@@ -86,6 +131,13 @@ func createResource[O updateDeleter[O, I], I any](ctx context.Context, d *schema
 	}
 
 	return c.resourceReadFunc(ctx, d, meta)
+}
+
+func createResourceValidator[O updateDeleter[O, I], I any](c crudConfig[O, I]) error {
+	if c.createFunc != nil && c.createAsyncFunc != nil {
+		return fmt.Errorf("only one of 'createFunc' and 'createAsyncFunc can be specified for %s creation", c.entityLabel)
+	}
+	return nil
 }
 
 func updateResource[O updateDeleter[O, I], I any](ctx context.Context, d *schema.ResourceData, meta interface{}, c crudConfig[O, I]) diag.Diagnostics {
