@@ -3,6 +3,7 @@
 package vcfa
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -159,3 +160,64 @@ data "vcfa_vcenter" "test" {
   name = vcfa_vcenter.test.name
 }
 `
+
+func TestAccVcfaVcenterInvalid(t *testing.T) {
+	preTestChecks(t)
+	skipIfNotSysAdmin(t)
+
+	// test fails on purpose
+	if vcfaShortTest {
+		t.Skip(acceptanceTestsSkipped)
+		return
+	}
+
+	var params = StringMap{
+		"Org":             testConfig.Tm.Org,
+		"VcenterUsername": testConfig.Tm.VcenterUsername,
+		"VcenterPassword": "invalid",
+		"VcenterUrl":      testConfig.Tm.VcenterUrl,
+
+		"Testname": t.Name(),
+
+		"Tags": "tm",
+	}
+	testParamsNotEmpty(t, params)
+
+	configText1 := templateFill(testAccVcfaVcenterStep1, params)
+	params["FuncName"] = t.Name() + "-step2"
+	params["VcenterPassword"] = testConfig.Tm.VcenterPassword
+	configText2 := templateFill(testAccVcfaVcenterStep1, params)
+
+	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
+	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
+
+	resource.Test(t, resource.TestCase{
+		ProviderFactories: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config:      configText1,
+				ExpectError: regexp.MustCompile(`Failed to connect to the vCenter`),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
+				),
+			},
+			{
+				Config: configText2,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
+					resource.TestCheckResourceAttr("vcfa_vcenter.test", "name", t.Name()),
+					resource.TestCheckResourceAttr("vcfa_vcenter.test", "is_enabled", "true"),
+					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "cluster_health_status"),
+					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "is_connected"),
+					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "connection_status"),
+					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "mode"),
+					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "uuid"),
+					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "vcenter_version"),
+					resource.TestCheckResourceAttr("vcfa_vcenter.test", "status", "READY"),
+				),
+			},
+		},
+	})
+
+	postTestChecks(t)
+}

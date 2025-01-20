@@ -184,7 +184,8 @@ func resourceVcfaVcenterCreate(ctx context.Context, d *schema.ResourceData, meta
 		entityLabel:      labelVcfaVirtualCenter,
 		getTypeFunc:      getVcenterType,
 		stateStoreFunc:   setVcenterData,
-		createFunc:       vcdClient.CreateVcenter,
+		createAsyncFunc:  vcdClient.CreateVcenterAsync,
+		getEntityFunc:    vcdClient.GetVCenterById,
 		resourceReadFunc: resourceVcfaVcenterRead,
 		// certificate should be trusted for the vCenter to work
 		preCreateHooks: []schemaHook{autoTrustHostCertificate("url", "auto_trust_certificate")},
@@ -212,21 +213,38 @@ func resourceVcfaVcenterUpdate(ctx context.Context, d *schema.ResourceData, meta
 func resourceVcfaVcenterRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 
+	// prefetch vCenter so that vc.VSphereVCenter.IsEnabled and vc.VSphereVCenter.IsConnected flags
+	// can be verified and avoid triggering refreshes if VC is disconnected
+	vc, err := vcdClient.GetVCenterById(d.Id())
+	if err != nil {
+		if govcd.ContainsNotFound(err) {
+			d.SetId("")
+		}
+		return diag.Errorf("error retrieving vCenter by Id: %s", err)
+	}
+
 	// TODO: TM: remove this block and use the commented one within crudConfig below.
 	// Retrieval endpoints by Name and by ID return differently formated url (the by Id one returns
 	// URL with port http://host:443, while the one by name - doesn't). Using the same getByName to
 	// match format everywhere
-	fakeGetById := func(id string) (*govcd.VCenter, error) {
-		vc, err := vcdClient.GetVCenterById(id)
-		if err != nil {
-			return nil, fmt.Errorf("error retrieving vCenter by Id: %s", err)
-		}
-
+	fakeGetById := func(_ string) (*govcd.VCenter, error) {
 		return vcdClient.GetVCenterByName(vc.VSphereVCenter.Name)
 	}
 
 	shouldRefresh := d.Get("refresh_vcenter_on_read").(bool)
 	shouldRefreshPolicies := d.Get("refresh_policies_on_read").(bool)
+	shouldWaitForListenerStatus := true
+
+	// There is no way to detect if a resource is 'tainted' ('d.State().Tainted' is not reliable),
+	// but if a resource is not connected and is not enabled - there is no point in refreshing
+	// anything
+	// It will help in the case when invalid configuration is supplied and a creation task fails as
+	// a tainted resource has to be read before releasing it
+	if !vc.VSphereVCenter.IsEnabled && !vc.VSphereVCenter.IsConnected {
+		shouldRefresh = false
+		shouldRefreshPolicies = false
+		shouldWaitForListenerStatus = false
+	}
 	c := crudConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
 		entityLabel: labelVcfaVirtualCenter,
 		// getEntityFunc:  vcdClient.GetVCenterById,// TODO: TM: use this function
@@ -237,7 +255,7 @@ func resourceVcfaVcenterRead(ctx context.Context, d *schema.ResourceData, meta i
 			// refresh as it will fail otherwise. At the moment it has a delay before it becomes
 			// CONNECTED after creation task succeeds. It should not be needed once vCenter creation
 			// task ensures that the listener is connected.
-			waitForListenerStatusConnected,
+			shouldWaitForListenerStatusConnected(shouldWaitForListenerStatus),
 
 			refreshVcenter(shouldRefresh),               // vCenter read can optionally trigger "refresh" operation
 			refreshVcenterPolicy(shouldRefreshPolicies), // vCenter read can optionally trigger "refresh policies" operation
@@ -308,21 +326,26 @@ func refreshVcenterPolicy(execute bool) outerEntityHook[*govcd.VCenter] {
 }
 
 // TODO: TM: should not be required because a successful vCenter creation task should work
-func waitForListenerStatusConnected(v *govcd.VCenter) error {
-	for c := 0; c < 20; c++ {
-		err := v.Refresh()
-		if err != nil {
-			return fmt.Errorf("error refreshing vCenter: %s", err)
-		}
-
-		if v.VSphereVCenter.ListenerState == "CONNECTED" {
+func shouldWaitForListenerStatusConnected(shouldWait bool) func(v *govcd.VCenter) error {
+	return func(v *govcd.VCenter) error {
+		if !shouldWait {
 			return nil
 		}
+		for c := 0; c < 20; c++ {
+			err := v.Refresh()
+			if err != nil {
+				return fmt.Errorf("error refreshing vCenter: %s", err)
+			}
 
-		time.Sleep(2 * time.Second)
+			if v.VSphereVCenter.ListenerState == "CONNECTED" {
+				return nil
+			}
+
+			time.Sleep(2 * time.Second)
+		}
+
+		return fmt.Errorf("failed waiting for listener state to become 'CONNECTED', got '%s'", v.VSphereVCenter.ListenerState)
 	}
-
-	return fmt.Errorf("failed waiting for listener state to become 'CONNECTED', got '%s'", v.VSphereVCenter.ListenerState)
 }
 
 // autoTrustHostCertificate can automatically add host certificate to trusted ones

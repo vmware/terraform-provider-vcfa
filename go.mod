@@ -66,3 +66,5 @@ require (
 	google.golang.org/protobuf v1.35.1 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
+
+replace github.com/vmware/go-vcloud-director/v3 => github.com/Didainius/go-vcloud-director/v3 v3.0.0-alpha.4.0.20250120115914-f75a37456862
