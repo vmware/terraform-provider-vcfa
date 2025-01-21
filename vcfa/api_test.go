@@ -34,11 +34,14 @@ At least one of the following tags should be defined:
    * ALL :         Runs all the tests
    * functional:   Runs all the acceptance tests
    * unit:         Runs unit tests that don't need a live VCFA
+   * org:          Runs org related tests
+   * region:       Runs region related tests
 
 Examples:
 
   go test -tags unit -v -timeout=45m .
   go test -tags functional -v -timeout=45m .
+  go test -tags "org region" -v -timeout=55m .
 
 Tagged tests can also run using make
   make testunit

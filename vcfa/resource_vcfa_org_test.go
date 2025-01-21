@@ -15,7 +15,7 @@ func TestAccVcfaOrg(t *testing.T) {
 
 	var params = StringMap{
 		"Testname": t.Name(),
-		"Tags":     "tm",
+		"Tags":     "tm org",
 	}
 	testParamsNotEmpty(t, params)
 

@@ -1,8 +1,34 @@
 package vcfa
 
 import (
+	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/vmware/go-vcloud-director/v3/types/v56"
 	"os"
 )
+
+// convertSchemaSetToSliceOfStrings accepts Terraform's *schema.Set object and converts it to slice
+// of strings.
+// This is useful for extracting values from a set of strings
+func convertSchemaSetToSliceOfStrings(param *schema.Set) []string {
+	paramList := param.List()
+	result := make([]string, len(paramList))
+	for index, value := range paramList {
+		result[index] = fmt.Sprint(value)
+	}
+
+	return result
+}
+
+// extractIdsFromOpenApiReferences extracts []string with IDs from []types.OpenApiReference which contains ID and Names
+func extractIdsFromOpenApiReferences(refs []types.OpenApiReference) []string {
+	resultStrings := make([]string, len(refs))
+	for index := range refs {
+		resultStrings[index] = refs[index].ID
+	}
+
+	return resultStrings
+}
 
 // contains returns true if `sliceToSearch` contains `searched`. Returns false otherwise.
 func contains(sliceToSearch []string, searched string) bool {
