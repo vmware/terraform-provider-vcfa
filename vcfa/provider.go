@@ -32,12 +32,14 @@ func Resources(nameRegexp string, includeDeprecated bool) (map[string]*schema.Re
 }
 
 var globalDataSourceMap = map[string]*schema.Resource{
-	"vcfa_tm_version": datasourceVcfaTmVersion(), // 1.0
-	"vcfa_vcenter":    datasourceVcfaVcenter(),   // 1.0
+	"vcfa_tm_version":   datasourceVcfaTmVersion(),   // 1.0
+	"vcfa_vcenter":      datasourceVcfaVcenter(),     // 1.0
+	"vcfa_nsxt_manager": datasourceVcfaNsxtManager(), // 1.0
 }
 
 var globalResourceMap = map[string]*schema.Resource{
-	"vcfa_vcenter": resourceVcfaVcenter(), // 1.0
+	"vcfa_vcenter":      resourceVcfaVcenter(),     // 1.0
+	"vcfa_nsxt_manager": resourceVcfaNsxtManager(), // 1.0
 }
 
 // Provider returns a terraform.ResourceProvider.
