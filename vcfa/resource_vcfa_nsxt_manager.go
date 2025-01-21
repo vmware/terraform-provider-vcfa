@@ -10,7 +10,7 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
-const labelNsxtManager = "NSX-T Manager"
+const labelVcfaNsxtManager = "NSX-T Manager"
 
 func resourceVcfaNsxtManager() *schema.Resource {
 	return &schema.Resource{
@@ -26,49 +26,49 @@ func resourceVcfaNsxtManager() *schema.Resource {
 			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: fmt.Sprintf("Name of %s", labelNsxtManager),
+				Description: fmt.Sprintf("Name of %s", labelVcfaNsxtManager),
 			},
 			"description": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: fmt.Sprintf("Description of %s", labelNsxtManager),
+				Description: fmt.Sprintf("Description of %s", labelVcfaNsxtManager),
 			},
 			"username": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: fmt.Sprintf("Username for authenticating to %s", labelNsxtManager),
+				Description: fmt.Sprintf("Username for authenticating to %s", labelVcfaNsxtManager),
 			},
 			"password": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Sensitive:   true,
-				Description: fmt.Sprintf("Password for authenticating to %s", labelNsxtManager),
+				Description: fmt.Sprintf("Password for authenticating to %s", labelVcfaNsxtManager),
 			},
 			"url": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: fmt.Sprintf("URL of %s", labelNsxtManager),
+				Description: fmt.Sprintf("URL of %s", labelVcfaNsxtManager),
 			},
 			"auto_trust_certificate": {
 				Type:        schema.TypeBool,
 				Required:    true,
 				ForceNew:    true,
-				Description: fmt.Sprintf("Defines if the %s certificate should automatically be trusted", labelNsxtManager),
+				Description: fmt.Sprintf("Defines if the %s certificate should automatically be trusted", labelVcfaNsxtManager),
 			},
 			"network_provider_scope": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: fmt.Sprintf("Network Provider Scope for %s", labelNsxtManager),
+				Description: fmt.Sprintf("Network Provider Scope for %s", labelVcfaNsxtManager),
 			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: fmt.Sprintf("Status of %s", labelNsxtManager),
+				Description: fmt.Sprintf("Status of %s", labelVcfaNsxtManager),
 			},
 			"href": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: fmt.Sprintf("HREF of %s", labelNsxtManager),
+				Description: fmt.Sprintf("HREF of %s", labelVcfaNsxtManager),
 			},
 		},
 	}
@@ -77,7 +77,7 @@ func resourceVcfaNsxtManager() *schema.Resource {
 func resourceVcfaNsxtManagerCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	c := crudConfig[*govcd.NsxtManagerOpenApi, types.NsxtManagerOpenApi]{
-		entityLabel:      labelNsxtManager,
+		entityLabel:      labelVcfaNsxtManager,
 		getTypeFunc:      getNsxtManagerType,
 		stateStoreFunc:   setNsxtManagerData,
 		createFunc:       vcdClient.CreateNsxtManagerOpenApi,
@@ -90,7 +90,7 @@ func resourceVcfaNsxtManagerCreate(ctx context.Context, d *schema.ResourceData, 
 func resourceVcfaNsxtManagerUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	c := crudConfig[*govcd.NsxtManagerOpenApi, types.NsxtManagerOpenApi]{
-		entityLabel:      labelNsxtManager,
+		entityLabel:      labelVcfaNsxtManager,
 		getTypeFunc:      getNsxtManagerType,
 		getEntityFunc:    vcdClient.GetNsxtManagerOpenApiById,
 		resourceReadFunc: resourceVcfaNsxtManagerRead,
@@ -102,7 +102,7 @@ func resourceVcfaNsxtManagerUpdate(ctx context.Context, d *schema.ResourceData, 
 func resourceVcfaNsxtManagerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	c := crudConfig[*govcd.NsxtManagerOpenApi, types.NsxtManagerOpenApi]{
-		entityLabel:    labelNsxtManager,
+		entityLabel:    labelVcfaNsxtManager,
 		getEntityFunc:  vcdClient.GetNsxtManagerOpenApiById,
 		stateStoreFunc: setNsxtManagerData,
 	}
@@ -113,7 +113,7 @@ func resourceVcfaNsxtManagerDelete(ctx context.Context, d *schema.ResourceData, 
 	vcdClient := meta.(*VCDClient)
 
 	c := crudConfig[*govcd.NsxtManagerOpenApi, types.NsxtManagerOpenApi]{
-		entityLabel:   labelNsxtManager,
+		entityLabel:   labelVcfaNsxtManager,
 		getEntityFunc: vcdClient.GetNsxtManagerOpenApiById,
 	}
 
@@ -125,7 +125,7 @@ func resourceVcfaNsxtManagerImport(ctx context.Context, d *schema.ResourceData, 
 
 	nsxtManager, err := vcdClient.GetNsxtManagerOpenApiByName(d.Id())
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving %s '%s': %s", labelNsxtManager, d.Id(), err)
+		return nil, fmt.Errorf("error retrieving %s '%s': %s", labelVcfaNsxtManager, d.Id(), err)
 	}
 	d.SetId(nsxtManager.NsxtManagerOpenApi.ID)
 	return []*schema.ResourceData{d}, nil
@@ -146,7 +146,7 @@ func getNsxtManagerType(_ *VCDClient, d *schema.ResourceData) (*types.NsxtManage
 
 func setNsxtManagerData(_ *VCDClient, d *schema.ResourceData, t *govcd.NsxtManagerOpenApi) error {
 	if t == nil || t.NsxtManagerOpenApi == nil {
-		return fmt.Errorf("nil object for %s", labelNsxtManager)
+		return fmt.Errorf("nil object for %s", labelVcfaNsxtManager)
 	}
 	n := t.NsxtManagerOpenApi
 

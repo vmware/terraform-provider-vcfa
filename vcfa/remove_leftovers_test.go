@@ -64,7 +64,7 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 				fmt.Printf("\t REMOVING NSX-T Manager %s\n", m.NsxtManagerOpenApi.Name)
 				err := m.Delete()
 				if err != nil {
-					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaVirtualCenter, m.NsxtManagerOpenApi.Name, err)
+					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaNsxtManager, m.NsxtManagerOpenApi.Name, err)
 				}
 			}
 		}
