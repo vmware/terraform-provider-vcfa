@@ -12,9 +12,7 @@ import (
 )
 
 // testCachedFieldValue structure with attached functions is useful for testing specific field value
-// across different `resource.TestStep` in Terraform acceptance tests. One particular use case is
-// to check whether MAC address does not change when a `vcd_vapp_vm` resource's network stack is
-// updated (between different TestSteps).
+// across different `resource.TestStep` in Terraform acceptance tests.
 type testCachedFieldValue struct {
 	fieldValue string
 }

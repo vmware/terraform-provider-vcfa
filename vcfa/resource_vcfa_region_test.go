@@ -11,7 +11,7 @@ import (
 
 // TODO: TM: the test has an update, but it just recreates the resource behind the scenes now
 // as the API does not support update yet
-func TestAccVcdTmRegion(t *testing.T) {
+func TestAccVcfaRegion(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
@@ -36,11 +36,11 @@ func TestAccVcdTmRegion(t *testing.T) {
 	}
 	testParamsNotEmpty(t, params)
 
-	configText1 := templateFill(testAccVcdRegionStep1, params)
+	configText1 := templateFill(testAccVcfaRegionStep1, params)
 	params["FuncName"] = t.Name() + "-step1"
-	configText2 := templateFill(testAccVcdRegionStep2, params)
+	configText2 := templateFill(testAccVcfaRegionStep2, params)
 	params["FuncName"] = t.Name() + "-step2"
-	configText3 := templateFill(testAccVcdRegionStep3DS, params)
+	configText3 := templateFill(testAccVcfaRegionStep3DS, params)
 	params["FuncName"] = t.Name() + "-step3"
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
@@ -61,17 +61,17 @@ func TestAccVcdTmRegion(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "id", regexp.MustCompile(`^urn:vcloud:nsxtmanager:`)),
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
-					resource.TestCheckResourceAttrSet("vcd_tm_region.test", "id"),
-					cachedRegionId.cacheTestResourceFieldValue("vcd_tm_region.test", "id"),
-					resource.TestCheckResourceAttr("vcd_tm_region.test", "is_enabled", "true"),
-					resource.TestCheckResourceAttr("vcd_tm_region.test", "description", "Terraform description"),
-					resource.TestCheckResourceAttrSet("vcd_tm_region.test", "cpu_capacity_mhz"),
-					resource.TestCheckResourceAttrSet("vcd_tm_region.test", "cpu_reservation_capacity_mhz"),
-					resource.TestCheckResourceAttrSet("vcd_tm_region.test", "memory_capacity_mib"),
-					resource.TestCheckResourceAttrSet("vcd_tm_region.test", "memory_reservation_capacity_mib"),
-					resource.TestCheckResourceAttr("vcd_tm_region.test", "status", "READY"),
-					resource.TestCheckResourceAttr("vcd_tm_region.test", "storage_policy_names.#", "1"),
-					resource.TestCheckTypeSetElemAttr("vcd_tm_region.test", "storage_policy_names.*", testConfig.Tm.VcenterStorageProfile),
+					resource.TestCheckResourceAttrSet("vcfa_region.test", "id"),
+					cachedRegionId.cacheTestResourceFieldValue("vcfa_region.test", "id"),
+					resource.TestCheckResourceAttr("vcfa_region.test", "is_enabled", "true"),
+					resource.TestCheckResourceAttr("vcfa_region.test", "description", "Terraform description"),
+					resource.TestCheckResourceAttrSet("vcfa_region.test", "cpu_capacity_mhz"),
+					resource.TestCheckResourceAttrSet("vcfa_region.test", "cpu_reservation_capacity_mhz"),
+					resource.TestCheckResourceAttrSet("vcfa_region.test", "memory_capacity_mib"),
+					resource.TestCheckResourceAttrSet("vcfa_region.test", "memory_reservation_capacity_mib"),
+					resource.TestCheckResourceAttr("vcfa_region.test", "status", "READY"),
+					resource.TestCheckResourceAttr("vcfa_region.test", "storage_policy_names.#", "1"),
+					resource.TestCheckTypeSetElemAttr("vcfa_region.test", "storage_policy_names.*", testConfig.Tm.VcenterStorageProfile),
 
 					resource.TestCheckResourceAttrSet("data.vcfa_supervisor.test", "id"),
 					resource.TestCheckResourceAttrPair("data.vcfa_supervisor.test", "vcenter_id", "vcfa_vcenter.test", "id"),
@@ -88,17 +88,17 @@ func TestAccVcdTmRegion(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "id", regexp.MustCompile(`^urn:vcloud:nsxtmanager:`)),
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
-					resource.TestCheckResourceAttrSet("vcd_tm_region.test", "id"),
-					cachedRegionId.testCheckCachedResourceFieldValueChanged("vcd_tm_region.test", "id"),
-					resource.TestCheckResourceAttr("vcd_tm_region.test", "is_enabled", "true"),
-					resource.TestCheckResourceAttr("vcd_tm_region.test", "description", "Terraform description updated"),
-					resource.TestCheckResourceAttrSet("vcd_tm_region.test", "cpu_capacity_mhz"),
-					resource.TestCheckResourceAttrSet("vcd_tm_region.test", "cpu_reservation_capacity_mhz"),
-					resource.TestCheckResourceAttrSet("vcd_tm_region.test", "memory_capacity_mib"),
-					resource.TestCheckResourceAttrSet("vcd_tm_region.test", "memory_reservation_capacity_mib"),
-					resource.TestCheckResourceAttr("vcd_tm_region.test", "status", "READY"),
-					resource.TestCheckResourceAttr("vcd_tm_region.test", "storage_policy_names.#", "1"),
-					resource.TestCheckTypeSetElemAttr("vcd_tm_region.test", "storage_policy_names.*", testConfig.Tm.VcenterStorageProfile),
+					resource.TestCheckResourceAttrSet("vcfa_region.test", "id"),
+					cachedRegionId.testCheckCachedResourceFieldValueChanged("vcfa_region.test", "id"),
+					resource.TestCheckResourceAttr("vcfa_region.test", "is_enabled", "true"),
+					resource.TestCheckResourceAttr("vcfa_region.test", "description", "Terraform description updated"),
+					resource.TestCheckResourceAttrSet("vcfa_region.test", "cpu_capacity_mhz"),
+					resource.TestCheckResourceAttrSet("vcfa_region.test", "cpu_reservation_capacity_mhz"),
+					resource.TestCheckResourceAttrSet("vcfa_region.test", "memory_capacity_mib"),
+					resource.TestCheckResourceAttrSet("vcfa_region.test", "memory_reservation_capacity_mib"),
+					resource.TestCheckResourceAttr("vcfa_region.test", "status", "READY"),
+					resource.TestCheckResourceAttr("vcfa_region.test", "storage_policy_names.#", "1"),
+					resource.TestCheckTypeSetElemAttr("vcfa_region.test", "storage_policy_names.*", testConfig.Tm.VcenterStorageProfile),
 
 					resource.TestCheckResourceAttrSet("data.vcfa_supervisor.test", "id"),
 					resource.TestCheckResourceAttrPair("data.vcfa_supervisor.test", "vcenter_id", "vcfa_vcenter.test", "id"),
@@ -114,13 +114,13 @@ func TestAccVcdTmRegion(t *testing.T) {
 			{
 				Config: configText3,
 				Check: resource.ComposeTestCheckFunc(
-					resourceFieldsEqual("vcd_tm_region.test", "data.vcd_tm_region.test", []string{
+					resourceFieldsEqual("vcfa_region.test", "data.vcfa_region.test", []string{
 						"is_enabled", // TODO: TM: field is not populated on read
 					}),
 				),
 			},
 			{
-				ResourceName:      "vcd_tm_region.test",
+				ResourceName:      "vcfa_region.test",
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateId:     params["Testname"].(string),
@@ -134,7 +134,7 @@ func TestAccVcdTmRegion(t *testing.T) {
 	postTestChecks(t)
 }
 
-const testAccVcdRegionPrerequisites = `
+const testAccVcfaRegionPrerequisites = `
 resource "vcfa_nsx_manager" "test" {
   name                   = "{{.Testname}}"
   description            = "terraform test"
@@ -169,8 +169,8 @@ data "vcfa_supervisor_zone" "test" {
 }
 `
 
-const testAccVcdRegionStep1 = testAccVcdRegionPrerequisites + `
-resource "vcd_tm_region" "test" {
+const testAccVcfaRegionStep1 = testAccVcfaRegionPrerequisites + `
+resource "vcfa_region" "test" {
   name                 = "{{.Testname}}"
   description          = "Terraform description"
   is_enabled           = true
@@ -180,9 +180,9 @@ resource "vcd_tm_region" "test" {
 }
 `
 
-const testAccVcdRegionStep2 = testAccVcdRegionPrerequisites + `
+const testAccVcfaRegionStep2 = testAccVcfaRegionPrerequisites + `
 # skip-binary-test: update test
-resource "vcd_tm_region" "test" {
+resource "vcfa_region" "test" {
   name                 = "{{.Testname}}"
   description          = "Terraform description updated"
   is_enabled           = true
@@ -192,8 +192,8 @@ resource "vcd_tm_region" "test" {
 }
 `
 
-const testAccVcdRegionStep3DS = testAccVcdRegionStep2 + `
-data "vcd_tm_region" "test" {
-  name = vcd_tm_region.test.name
+const testAccVcfaRegionStep3DS = testAccVcfaRegionStep2 + `
+data "vcfa_region" "test" {
+  name = vcfa_region.test.name
 }
 `

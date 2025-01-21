@@ -37,3 +37,8 @@ jobs:
 
       - name: tags
         run: make tagverify
+
+      - name: No VCD references
+        run: |
+          grep -ERin "Director|VCD|resources/tm" * | grep -Eiv "VCDClient|.log|govcdClient|vcdClient|GOVCD_|govcd.|/director/|directory|github|go-vcloud-director|Directories"
+          if [ "$?" == '0' ]; then echo "ERROR: Found some VCD references"; exit 1; fi 
