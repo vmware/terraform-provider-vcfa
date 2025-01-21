@@ -47,6 +47,29 @@ func testParamsNotEmpty(t *testing.T, params StringMap) {
 	}
 }
 
+// createTemporaryVCFAConnection is meant to create a VCDClient to check environment before executing specific acceptance
+// tests and before VCDClient is accessible.
+func createTemporaryVCFAConnection(acceptNil bool) *VCDClient {
+	config := Config{
+		User:         testConfig.Provider.User,
+		Password:     testConfig.Provider.Password,
+		Token:        testConfig.Provider.Token,
+		ApiToken:     testConfig.Provider.ApiToken,
+		SysOrg:       testConfig.Provider.SysOrg,
+		Org:          testConfig.Provider.SysOrg,
+		Href:         testConfig.Provider.Url,
+		InsecureFlag: testConfig.Provider.AllowInsecure,
+	}
+	conn, err := config.Client()
+	if err != nil {
+		if acceptNil {
+			return nil
+		}
+		panic("unable to initialize VCFA connection :" + err.Error())
+	}
+	return conn
+}
+
 // createSystemTemporaryVCFAConnection is like createTemporaryVCFAConnection, but it will ignore all conditional
 // configurations like `VCFA_TEST_ORG_USER=1` and will still return a System client instead of user one. This allows to
 // perform System actions (entities which require System rights - Org, Vdc, etc...)

@@ -98,6 +98,26 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 		}
 	}
 
+	// --------------------------------------------------------------
+	// Regions
+	// --------------------------------------------------------------
+	if govcdClient.Client.IsSysAdmin {
+		regions, err := govcdClient.GetAllRegions(nil)
+		if err != nil {
+			return fmt.Errorf("error retrieving Regions: %s", err)
+		}
+		for _, region := range regions {
+			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, region.Region.Name, "vcfa_region", 0, verbose)
+			if toBeDeleted {
+				fmt.Printf("\t REMOVING Region %s\n", region.Region.Name)
+				err := region.Delete()
+				if err != nil {
+					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaRegion, region.Region.Name, err)
+				}
+			}
+		}
+	}
+
 	return nil
 }
 
