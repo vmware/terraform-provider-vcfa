@@ -30,5 +30,5 @@ The following arguments are supported:
 * `href` - Full URL of the manager
 
 All attributes defined in
-[`vcfa_nsxt_manager`](/providers/vmware/vcfa/latest/docs/resources/tm_nsxt_manager#attribute-reference)
+[`vcfa_nsxt_manager`](/providers/vmware/vcfa/latest/docs/resources/nsxt_manager#attribute-reference)
 are supported.
