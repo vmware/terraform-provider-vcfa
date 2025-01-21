@@ -1,6 +1,6 @@
 ---
 layout: "vcfa"
-page_title: "VMware Cloud Director: vcfa_org"
+page_title: "VMware Cloud Foundation Automation: vcfa_org"
 sidebar_current: "docs-vcfa-resource-tm-org"
 description: |-
   Provides a resource to manage VMware Cloud Foundation Automation Organizations.
@@ -51,7 +51,6 @@ The following attributes are exported on this resource:
 - `user_count` - Number of users belonging to this Organization
 - `disk_count` - Number of disks belonging to this Organization
 - `can_publish` - Defines if this Organization can publish catalogs externally
-- `directly_managed_org_count` - Number of directly managed Organizations
 
 ## Importing
 

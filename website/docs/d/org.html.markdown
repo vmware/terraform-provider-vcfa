@@ -1,6 +1,6 @@
 ---
 layout: "vcfa"
-page_title: "VMware Cloud Director: vcfa_org"
+page_title: "VMware Cloud Foundation Automation: vcfa_org"
 sidebar_current: "docs-vcfa-data-source-org"
 description: |-
   Provides a data source to read VMware Cloud Foundation Automation Organizations.
