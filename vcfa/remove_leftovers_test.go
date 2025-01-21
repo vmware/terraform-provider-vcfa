@@ -25,7 +25,8 @@ type entityList []entityDef
 // doNotDelete contains a list of entities that should not be deleted,
 // despite having a name that starts with `Test` or `test`
 var doNotDelete = entityList{
-	// {Type: "vcfa_xxx", Name: "test_entity", Comment: "loaded with provisioning"},
+	{Type: "vcfa_org", Name: "tenant1", Comment: "tenant loaded with provisioning"},
+	{Type: "vcfa_org", Name: "tenant1classic", Comment: "classic tenant loaded with provisioning"},
 }
 
 // alsoDelete contains a list of entities that should be removed , in addition to the ones
@@ -41,6 +42,7 @@ var isTest = regexp.MustCompile(`^[Tt]est`)
 // alwaysShow lists the resources that will always be shown
 var alwaysShow = []string{
 	"vcfa_vcenter",
+	"vcfa_org",
 }
 
 func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
@@ -87,6 +89,30 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 				err := vc.Delete()
 				if err != nil {
 					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaVirtualCenter, vc.VSphereVCenter.Name, err)
+				}
+			}
+		}
+	}
+
+	// --------------------------------------------------------------
+	// Organizations
+	// --------------------------------------------------------------
+	if govcdClient.Client.IsSysAdmin {
+		orgs, err := govcdClient.GetAllTmOrgs(nil)
+		if err != nil {
+			return fmt.Errorf("error retrieving Organizations: %s", err)
+		}
+		for _, org := range orgs {
+			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, org.TmOrg.Name, "vcfa_org", 0, verbose)
+			if toBeDeleted {
+				fmt.Printf("\t REMOVING Organization %s\n", org.TmOrg.Name)
+				err = org.Disable()
+				if err != nil {
+					return fmt.Errorf("error disabling %s '%s': %s", labelVcfaOrg, org.TmOrg.Name, err)
+				}
+				err := org.Delete()
+				if err != nil {
+					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaOrg, org.TmOrg.Name, err)
 				}
 			}
 		}
