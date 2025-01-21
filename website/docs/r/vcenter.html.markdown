@@ -3,12 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_vcenter"
 sidebar_current: "docs-vcfa-resource-vcenter"
 description: |-
-  Provides a resource to manage vCenters in VMware Cloud Foundation Automation Tenant Manager.
+  Provides a resource to manage vCenters in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_vcenter
 
-Provides a resource to manage vCenters in VMware Cloud Foundation Automation Tenant Manager.
+Provides a resource to manage vCenters in VMware Cloud Foundation Automation.
 
 ~> Only `System Administrator` can create this resource.
 
@@ -56,8 +56,8 @@ The following arguments are supported:
 
 The following attributes are exported on this resource:
 
-* `has_proxy` - Indicates that a proxy exists within vCloud Director that proxies this vCenter
-  server for access by authorized end-users
+* `has_proxy` - Indicates that this vCenter has a proxy configuration for access by authorized
+  end-users
 * `is_connected` - Defines if the vCenter server is connected.
 * `mode` - One of `NONE`, `IAAS` (scoped to the provider), `SDDC` (scoped to tenants), `MIXED` (both
   uses are possible)

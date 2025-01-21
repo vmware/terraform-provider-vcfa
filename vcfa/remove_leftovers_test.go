@@ -51,6 +51,26 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 	}
 
 	// --------------------------------------------------------------
+	// NSX Managers
+	// --------------------------------------------------------------
+	if govcdClient.Client.IsSysAdmin {
+		allNsxManagers, err := govcdClient.GetAllNsxtManagersOpenApi(nil)
+		if err != nil {
+			return fmt.Errorf("error retrieving provider NSX Managers: %s", err)
+		}
+		for _, m := range allNsxManagers {
+			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, m.NsxtManagerOpenApi.Name, "vcfa_nsx_manager", 0, verbose)
+			if toBeDeleted {
+				fmt.Printf("\t REMOVING NSX Manager %s\n", m.NsxtManagerOpenApi.Name)
+				err := m.Delete()
+				if err != nil {
+					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaNsxManager, m.NsxtManagerOpenApi.Name, err)
+				}
+			}
+		}
+	}
+
+	// --------------------------------------------------------------
 	// vCenters
 	// --------------------------------------------------------------
 	if govcdClient.Client.IsSysAdmin {
