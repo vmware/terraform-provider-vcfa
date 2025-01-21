@@ -11,7 +11,6 @@ import (
 
 func TestAccVcfaNsxtManager(t *testing.T) {
 	preTestChecks(t)
-
 	skipIfNotSysAdmin(t)
 
 	if !testConfig.Tm.CreateNsxtManager {
