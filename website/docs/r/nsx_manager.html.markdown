@@ -1,12 +1,12 @@
 ---
 layout: "vcfa"
-page_title: "VMware Cloud Foundation Automation: vcfa_nsxt_manager"
-sidebar_current: "docs-vcfa-resource-nsxt-manager"
+page_title: "VMware Cloud Foundation Automation: vcfa_nsx_manager"
+sidebar_current: "docs-vcfa-resource-nsx-manager"
 description: |-
   Provides a data source to manage NSX-T Managers attached to VMware Cloud Foundation Automation Tenant Manager.
 ---
 
-# vcfa\_nsxt\_manager
+# vcfa\_nsx\_manager
 
 Provides a data source to manage NSX-T Managers attached to VMware Cloud Foundation Automation Tenant Manager.
 
@@ -15,7 +15,7 @@ Provides a data source to manage NSX-T Managers attached to VMware Cloud Foundat
 ## Example Usage
 
 ```hcl
-resource "vcfa_nsxt_manager" "test" {
+resource "vcfa_nsx_manager" "test" {
   name                   = "nsx-manager-one"
   description            = "terraform test"
   username               = "admin"
@@ -63,8 +63,8 @@ supplying path for it. An example is below:
 [docs-import]: https://www.terraform.io/docs/import/
 
 ```
-terraform import vcfa_nsxt_manager.imported my-nsxt-manager
+terraform import vcfa_nsx_manager.imported my-nsx-manager
 ```
 
-The above would import the `my-nsxt-manager` NSX-T Manager settings that are defined at provider
+The above would import the `my-nsx-manager` NSX-T Manager settings that are defined at provider
 level.

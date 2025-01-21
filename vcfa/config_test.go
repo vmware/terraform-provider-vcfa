@@ -92,12 +92,12 @@ type TestConfig struct {
 		Vdc            string `json:"vdc"`
 		ContentLibrary string `json:"contentLibrary"`
 
-		CreateNsxtManager   bool   `json:"createNsxtManager"`
-		NsxtManagerUsername string `json:"nsxtManagerUsername"`
-		NsxtManagerPassword string `json:"nsxtManagerPassword"`
-		NsxtManagerUrl      string `json:"nsxtManagerUrl"`
-		NsxtEdgeCluster     string `json:"nsxtEdgeCluster"`
-		NsxtTier0Gateway    string `json:"nsxtTier0Gateway"`
+		CreateNsxManager   bool   `json:"createNsxManager"`
+		NsxManagerUsername string `json:"nsxManagerUsername"`
+		NsxManagerPassword string `json:"nsxManagerPassword"`
+		NsxManagerUrl      string `json:"nsxManagerUrl"`
+		NsxEdgeCluster     string `json:"nsxEdgeCluster"`
+		NsxTier0Gateway    string `json:"nsxTier0Gateway"`
 
 		CreateVcenter         bool   `json:"createVcenter"`
 		VcenterUsername       string `json:"vcenterUsername"`
