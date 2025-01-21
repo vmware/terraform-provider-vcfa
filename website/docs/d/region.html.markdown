@@ -6,7 +6,7 @@ description: |-
   Provides a data source to read Regions in VMware Cloud Foundation Automation.
 ---
 
-# vcd\_region
+# vcfa\_region
 
 Provides a data source to read Regions in VMware Cloud Foundation Automation.
 
