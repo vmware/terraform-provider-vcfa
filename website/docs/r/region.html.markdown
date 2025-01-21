@@ -24,7 +24,7 @@ data "vcfa_supervisor" "one" {
 resource "vcfa_region" "one" {
   name                 = "region-one"
   is_enabled           = true
-  nsx_manager_id       = data.vcfa_nsxt_manager.test.id
+  nsx_manager_id       = data.vcfa_nsx_manager.test.id
   supervisor_ids       = [data.vcfa_supervisor.test.id]
   storage_policy_names = ["vSAN Default Storage Policy"]
 }

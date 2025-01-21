@@ -15,15 +15,15 @@ func TestAccVcfaRegion(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
-	if !testConfig.Tm.CreateNsxtManager || !testConfig.Tm.CreateVcenter {
+	if !testConfig.Tm.CreateNsxManager || !testConfig.Tm.CreateVcenter {
 		t.Skipf("Skipping Region creation")
 	}
 
 	var params = StringMap{
-		"Testname":            t.Name(),
-		"NsxtManagerUsername": testConfig.Tm.NsxtManagerUsername,
-		"NsxtManagerPassword": testConfig.Tm.NsxtManagerPassword,
-		"NsxtManagerUrl":      testConfig.Tm.NsxtManagerUrl,
+		"Testname":           t.Name(),
+		"NsxManagerUsername": testConfig.Tm.NsxManagerUsername,
+		"NsxManagerPassword": testConfig.Tm.NsxManagerPassword,
+		"NsxManagerUrl":      testConfig.Tm.NsxManagerUrl,
 
 		"VcenterUsername":       testConfig.Tm.VcenterUsername,
 		"VcenterPassword":       testConfig.Tm.VcenterPassword,
@@ -59,7 +59,7 @@ func TestAccVcfaRegion(t *testing.T) {
 			{
 				Config: configText1,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "id", regexp.MustCompile(`^urn:vcloud:nsxtmanager:`)),
+					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "id", regexp.MustCompile(`^urn:vcloud:Nsxmanager:`)),
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_region.test", "id"),
 					cachedRegionId.cacheTestResourceFieldValue("vcfa_region.test", "id"),
@@ -86,7 +86,7 @@ func TestAccVcfaRegion(t *testing.T) {
 			{
 				Config: configText2,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "id", regexp.MustCompile(`^urn:vcloud:nsxtmanager:`)),
+					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "id", regexp.MustCompile(`^urn:vcloud:Nsxmanager:`)),
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_region.test", "id"),
 					cachedRegionId.testCheckCachedResourceFieldValueChanged("vcfa_region.test", "id"),
@@ -138,9 +138,9 @@ const testAccVcfaRegionPrerequisites = `
 resource "vcfa_nsx_manager" "test" {
   name                   = "{{.Testname}}"
   description            = "terraform test"
-  username               = "{{.NsxtManagerUsername}}"
-  password               = "{{.NsxtManagerPassword}}"
-  url                    = "{{.NsxtManagerUrl}}"
+  username               = "{{.NsxManagerUsername}}"
+  password               = "{{.NsxManagerPassword}}"
+  url                    = "{{.NsxManagerUrl}}"
   network_provider_scope = ""
   auto_trust_certificate = true
 }
