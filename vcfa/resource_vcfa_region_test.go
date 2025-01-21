@@ -15,10 +15,6 @@ func TestAccVcfaRegion(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
-	if !testConfig.Tm.CreateNsxManager || !testConfig.Tm.CreateVcenter {
-		t.Skipf("Skipping Region creation")
-	}
-
 	var params = StringMap{
 		"Testname":           t.Name(),
 		"NsxManagerUsername": testConfig.Tm.NsxManagerUsername,
