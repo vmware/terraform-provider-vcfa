@@ -82,7 +82,7 @@ func TestAccVcfaRegion(t *testing.T) {
 			{
 				Config: configText2,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "id", regexp.MustCompile(`^urn:vcloud:Nsxmanager:`)),
+					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "id", regexp.MustCompile(`^urn:vcloud:nsxtmanager:`)),
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_region.test", "id"),
 					cachedRegionId.testCheckCachedResourceFieldValueChanged("vcfa_region.test", "id"),
