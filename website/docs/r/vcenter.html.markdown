@@ -56,8 +56,8 @@ The following arguments are supported:
 
 The following attributes are exported on this resource:
 
-* `has_proxy` - Indicates that a proxy exists within Tenant Manager that proxies this vCenter
-  server for access by authorized end-users
+* `has_proxy` - Indicates that this vCenter has a proxy configuration for access by authorized
+  end-users
 * `is_connected` - Defines if the vCenter server is connected.
 * `mode` - One of `NONE`, `IAAS` (scoped to the provider), `SDDC` (scoped to tenants), `MIXED` (both
   uses are possible)
