@@ -14,7 +14,7 @@ func TestAccVcfaNsxManager(t *testing.T) {
 	skipIfNotSysAdmin(t)
 
 	if !testConfig.Tm.CreateNsxManager {
-		t.Skipf("Skipping NSX-T Manager creation")
+		t.Skipf("Skipping NSX Manager creation")
 	}
 
 	var params = StringMap{
@@ -47,8 +47,8 @@ func TestAccVcfaNsxManager(t *testing.T) {
 			{
 				Config: configText1,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "id", regexp.MustCompile(`^urn:vcloud:nsxmanager:`)),
-					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "href", regexp.MustCompile(`api/admin/extension/nsxManagers/`)),
+					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "id", regexp.MustCompile(`^urn:vcloud:nsxtmanager:`)),
+					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "href", regexp.MustCompile(`api/admin/extension/nsxtManagers/`)),
 					resource.TestCheckResourceAttr("vcfa_nsx_manager.test", "name", params["Testname"].(string)),
 					resource.TestCheckResourceAttr("vcfa_nsx_manager.test", "description", "terraform test"),
 					resource.TestCheckResourceAttrSet("vcfa_nsx_manager.test", "status"),
@@ -58,8 +58,8 @@ func TestAccVcfaNsxManager(t *testing.T) {
 			{
 				Config: configText2,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "id", regexp.MustCompile(`^urn:vcloud:nsxmanager:`)),
-					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "href", regexp.MustCompile(`api/admin/extension/nsxManagers/`)),
+					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "id", regexp.MustCompile(`^urn:vcloud:nsxtmanager:`)),
+					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "href", regexp.MustCompile(`api/admin/extension/nsxtManagers/`)),
 					resource.TestCheckResourceAttr("vcfa_nsx_manager.test", "name", params["Testname"].(string)),
 					resource.TestCheckResourceAttr("vcfa_nsx_manager.test", "description", ""),
 				),

@@ -3,12 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_nsx_manager"
 sidebar_current: "docs-vcfa-data-source-nsx-manager"
 description: |-
-  Provides a data source for reading available NSX-T Managers attached to VMware Cloud Foundation Automation Tenant Manager.
+  Provides a data source for reading available NSX Managers attached to VMware Cloud Foundation Automation Tenant Manager.
 ---
 
 # vcfa\_nsx\_manager
 
-Provides a data source for reading available NSX-T Managers attached to VMware Cloud Foundation Automation Tenant Manager.
+Provides a data source for reading available NSX Managers attached to VMware Cloud Foundation Automation Tenant Manager.
 
 ## Example Usage 
 
@@ -22,7 +22,7 @@ data "vcfa_nsx_manager" "main" {
 
 The following arguments are supported:
 
-* `name` - (Required) NSX-T manager name
+* `name` - (Required) NSX manager name
 
 ## Attribute reference
 

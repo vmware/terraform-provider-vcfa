@@ -10,7 +10,7 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
-const labelVcfaNsxManager = "NSX-T Manager"
+const labelVcfaNsxManager = "NSX Manager"
 
 func resourceVcfaNsxManager() *schema.Resource {
 	return &schema.Resource{
