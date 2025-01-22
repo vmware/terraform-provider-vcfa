@@ -24,10 +24,14 @@ data "vcfa_supervisor" "one" {
   vcenter_id = data.vcfa_vcenter.one.id
 }
 
+data "vcfa_nsx_manager" "main" {
+  name = "nsx-manager-one"
+}
+
 resource "vcfa_region" "one" {
   name                 = "region-one"
-  nsx_manager_id       = data.vcfa_nsx_manager.test.id
-  supervisor_ids       = [data.vcfa_supervisor.test.id]
+  nsx_manager_id       = data.vcfa_nsx_manager.main.id
+  supervisor_ids       = [data.vcfa_supervisor.one.id]
   storage_policy_names = ["vSAN Default Storage Policy"]
 }
 ```
