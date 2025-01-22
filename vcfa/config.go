@@ -253,14 +253,14 @@ func isScalar(t interface{}) bool {
 }
 
 // This is a global mutexKV for all resources
-var vcdMutexKV = newMutexKV()
+var vcfa = newMutexKV()
 
 // lockById locks on supplied ID field
 // returns a function to to unlock
 func (cli *VCDClient) lockById(id string) func() {
-	vcdMutexKV.kvLock(id)
+	vcfa.kvLock(id)
 
 	return func() {
-		vcdMutexKV.kvUnlock(id)
+		vcfa.kvUnlock(id)
 	}
 }
