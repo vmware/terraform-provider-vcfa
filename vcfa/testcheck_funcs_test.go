@@ -11,6 +11,64 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
+// testCachedFieldValue structure with attached functions is useful for testing specific field value
+// across different `resource.TestStep` in Terraform acceptance tests.
+type testCachedFieldValue struct {
+	fieldValue string
+}
+
+// cacheTestResourceFieldValue has the same signature as builtin Terraform Test functions, however
+// it is attached to a struct which allows to store a field value and then check against this value
+// with 'testCheckCachedResourceFieldValue'
+func (c *testCachedFieldValue) cacheTestResourceFieldValue(resource, field string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		rs, ok := s.RootModule().Resources[resource]
+		if !ok {
+			return fmt.Errorf("resource not found: %s", resource)
+		}
+
+		value, exists := rs.Primary.Attributes[field]
+		if !exists {
+			return fmt.Errorf("field %s in resource %s does not exist", field, resource)
+		}
+		// Store the value in cache
+		c.fieldValue = value
+		if vcfaTestVerbose {
+			fmt.Printf("# stored field '%s' with value '%s'\n", field, c.fieldValue)
+		}
+		return nil
+	}
+}
+
+// testCheckCachedResourceFieldValue has the default signature of Terraform acceptance test
+// functions, but is able to verify if the value is equal to previously cached value using
+// 'cacheTestResourceFieldValue'. This allows to check if a particular field value changed across
+// multiple resource.TestSteps.
+func (c *testCachedFieldValue) testCheckCachedResourceFieldValue(resource, field string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		rs, ok := s.RootModule().Resources[resource]
+		if !ok {
+			return fmt.Errorf("resource not found: %s", resource)
+		}
+
+		value, exists := rs.Primary.Attributes[field]
+		if !exists {
+			return fmt.Errorf("field %s in resource %s does not exist", field, resource)
+		}
+
+		if vcfaTestVerbose {
+			fmt.Printf("# Comparing field '%s' '%s==%s' in resource '%s'\n", field, value, c.fieldValue, resource)
+		}
+
+		if value != c.fieldValue {
+			return fmt.Errorf("got '%s - %s' field value %s, expected: %s",
+				resource, field, value, c.fieldValue)
+		}
+
+		return nil
+	}
+}
+
 // resourceFieldsEqual checks if secondObject has all the fields and their values set as the
 // firstObject except `[]excludeFields`. This is very useful to check if data sources have all
 // the same values as resources
