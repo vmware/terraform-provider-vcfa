@@ -13,10 +13,13 @@ Provides a data source to read Supervisor Zones in VMware Cloud Foundation Autom
 ## Example Usage
 
 ```hcl
-data "vcfa_supervisor" "one" {
-  name = "my-supervisor-name"
+data "vcfa_vcenter" "one" {
+  name = "vcenter-one"
+}
 
-  depends_on = [vcfa_vcenter.one]
+data "vcfa_supervisor" "one" {
+  name       = "my-supervisor-name"
+  vcenter_id = data.vcfa_vcenter.one.id
 }
 
 data "vcfa_supervisor_zone" "one" {

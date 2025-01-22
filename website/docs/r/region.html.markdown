@@ -15,10 +15,13 @@ Provides a resource to manage Regions in VMware Cloud Foundation Automation.
 ## Example Usage
 
 ```hcl
-data "vcfa_supervisor" "one" {
-  name = "first-supervisor"
+data "vcfa_vcenter" "one" {
+  name = "vcenter-one"
+}
 
-  depends_on = [vcfa_vcenter.one]
+data "vcfa_supervisor" "one" {
+  name       = "my-supervisor-name"
+  vcenter_id = data.vcfa_vcenter.one.id
 }
 
 resource "vcfa_region" "one" {

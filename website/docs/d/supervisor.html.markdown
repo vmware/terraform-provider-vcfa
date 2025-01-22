@@ -20,8 +20,6 @@ data "vcfa_vcenter" "one" {
 data "vcfa_supervisor" "one" {
   name       = "my-supervisor-name"
   vcenter_id = data.vcfa_vcenter.one.id
-
-  depends_on = [vcfa_vcenter.one]
 }
 ```
 
