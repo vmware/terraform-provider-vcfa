@@ -23,6 +23,8 @@ func init() {
 	}
 }
 
+var minVcfaApiVersion = "40.0"
+
 type Config struct {
 	User                    string
 	Password                string
@@ -176,6 +178,7 @@ func (c *Config) Client() (*VCDClient, error) {
 	vcdClient := &VCDClient{
 		VCDClient: govcd.NewVCDClient(*authUrl, c.InsecureFlag,
 			govcd.WithHttpUserAgent(userAgent),
+			govcd.WithAPIVersion(minVcfaApiVersion),
 		),
 		SysOrg:       c.SysOrg,
 		Org:          c.Org,
@@ -185,11 +188,6 @@ func (c *Config) Client() (*VCDClient, error) {
 	err = ProviderAuthenticate(vcdClient.VCDClient, c.User, c.Password, c.Token, c.SysOrg, c.ApiToken, c.ApiTokenFile, c.ServiceAccountTokenFile)
 	if err != nil {
 		return nil, fmt.Errorf("something went wrong during authentication: %s", err)
-	}
-
-	// Require API V40 (TM starting API version) to be present
-	if vcdClient.Client.APIVCDMaxVersionIs("< 40") {
-		return nil, fmt.Errorf("unsupported API version, at least v40 required")
 	}
 
 	cachedVCDClients.Lock()

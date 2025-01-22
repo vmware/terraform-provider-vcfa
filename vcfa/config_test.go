@@ -754,7 +754,9 @@ func getTestVCFAFromJson(testConfig TestConfig) (*govcd.VCDClient, error) {
 		return &govcd.VCDClient{}, fmt.Errorf("could not parse Url: %s", err)
 	}
 	vcdClient := govcd.NewVCDClient(*configUrl, true,
-		govcd.WithHttpUserAgent(buildUserAgent("test", testConfig.Provider.SysOrg)))
+		govcd.WithHttpUserAgent(buildUserAgent("test", testConfig.Provider.SysOrg)),
+		govcd.WithAPIVersion(minVcfaApiVersion),
+	)
 	return vcdClient, nil
 }
 
