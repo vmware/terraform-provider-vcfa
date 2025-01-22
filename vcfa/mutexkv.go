@@ -3,6 +3,8 @@ package vcfa
 import (
 	"log"
 	"sync"
+
+	"github.com/vmware/go-vcloud-director/v3/util"
 )
 
 // Imported from Hashicorp (https://www.terraform.io/docs/extend/guides/v2-upgrade-guide.html)
@@ -23,10 +25,12 @@ type mutexKV struct {
 // for the same key
 func (m *mutexKV) kvLock(key string) {
 	if !m.silent {
+		util.Logger.Printf("[DEBUG] Locking %q", key)
 		log.Printf("[DEBUG] Locking %q", key)
 	}
 	m.get(key).Lock()
 	if !m.silent {
+		util.Logger.Printf("[DEBUG] Locked %q", key)
 		log.Printf("[DEBUG] Locked %q", key)
 	}
 }
@@ -34,10 +38,12 @@ func (m *mutexKV) kvLock(key string) {
 // kvUnlock the mutex for the given key. Caller must have called kvLock for the same key first
 func (m *mutexKV) kvUnlock(key string) {
 	if !m.silent {
+		util.Logger.Printf("[DEBUG] Unlocking %q", key)
 		log.Printf("[DEBUG] Unlocking %q", key)
 	}
 	m.get(key).Unlock()
 	if !m.silent {
+		util.Logger.Printf("[DEBUG] Unlocked %q", key)
 		log.Printf("[DEBUG] Unlocked %q", key)
 	}
 }
@@ -52,6 +58,13 @@ func (m *mutexKV) get(key string) *sync.Mutex {
 		m.store[key] = mutex
 	}
 	return mutex
+}
+
+// Returns a properly initalized mutexKV
+func newMutexKV() *mutexKV {
+	return &mutexKV{
+		store: make(map[string]*sync.Mutex),
+	}
 }
 
 // newMutexKVSilent returns a properly initalized mutexKV with the silent property set

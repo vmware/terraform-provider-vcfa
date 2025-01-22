@@ -103,6 +103,9 @@ func resourceVcfaIpSpace() *schema.Resource {
 
 func resourceVcfaIpSpaceCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
+	unlock := vcdClient.lockById(d.Get("region_id").(string))
+	defer unlock()
+
 	c := crudConfig[*govcd.TmIpSpace, types.TmIpSpace]{
 		entityLabel:      labelVcfaIpSpace,
 		getTypeFunc:      getIpSpaceType,
@@ -115,6 +118,9 @@ func resourceVcfaIpSpaceCreate(ctx context.Context, d *schema.ResourceData, meta
 
 func resourceVcfaIpSpaceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
+	unlock := vcdClient.lockById(d.Get("region_id").(string))
+	defer unlock()
+
 	c := crudConfig[*govcd.TmIpSpace, types.TmIpSpace]{
 		entityLabel:      labelVcfaIpSpace,
 		getTypeFunc:      getIpSpaceType,
@@ -137,6 +143,8 @@ func resourceVcfaIpSpaceRead(ctx context.Context, d *schema.ResourceData, meta i
 
 func resourceVcfaIpSpaceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
+	unlock := vcdClient.lockById(d.Get("region_id").(string))
+	defer unlock()
 
 	c := crudConfig[*govcd.TmIpSpace, types.TmIpSpace]{
 		entityLabel:   labelVcfaIpSpace,
