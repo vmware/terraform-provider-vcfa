@@ -51,6 +51,26 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 	}
 
 	// --------------------------------------------------------------
+	// IP Spaces
+	// --------------------------------------------------------------
+	if govcdClient.Client.IsSysAdmin {
+		ipSpaces, err := govcdClient.GetAllTmIpSpaces(nil)
+		if err != nil {
+			return fmt.Errorf("error retrieving IP Spaces: %s", err)
+		}
+		for _, ipSp := range ipSpaces {
+			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, ipSp.TmIpSpace.Name, "vcfa_ip_space", 2, verbose)
+			if toBeDeleted {
+				fmt.Printf("\t REMOVING IP Space %s\n", ipSp.TmIpSpace.Name)
+				err := ipSp.Delete()
+				if err != nil {
+					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaIpSpace, ipSp.TmIpSpace.Name, err)
+				}
+			}
+		}
+	}
+
+	// --------------------------------------------------------------
 	// Regions
 	// --------------------------------------------------------------
 	if govcdClient.Client.IsSysAdmin {
