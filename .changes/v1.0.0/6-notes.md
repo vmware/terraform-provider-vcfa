@@ -1,0 +1,1 @@
+- Use only API v40+ [GH-6]
