@@ -35,11 +35,6 @@ func datasourceVcfaOrgVdc() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("Name of the %s", labelVcfaOrgVdc),
 			},
-			"is_enabled": {
-				Type:        schema.TypeBool,
-				Computed:    true,
-				Description: fmt.Sprintf("Defines if the %s is enabled", labelVcfaOrgVdc),
-			},
 			"supervisor_ids": {
 				Type:        schema.TypeSet,
 				Computed:    true,

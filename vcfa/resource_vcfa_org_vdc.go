@@ -40,12 +40,6 @@ func resourceVcfaOrgVdc() *schema.Resource {
 				Optional:    true,
 				Description: fmt.Sprintf("Description of the %s", labelVcfaOrgVdc),
 			},
-			"is_enabled": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Default:     true,
-				Description: fmt.Sprintf("Defines if the %s is enabled", labelVcfaOrgVdc),
-			},
 			"supervisor_ids": {
 				Type:        schema.TypeSet,
 				Required:    true,
@@ -189,7 +183,6 @@ func getTmVdcType(vcdClient *VCDClient, d *schema.ResourceData) (*types.TmVdc, e
 	t := &types.TmVdc{
 		Name:        name,
 		Description: d.Get("description").(string),
-		IsEnabled:   addrOf(d.Get("is_enabled").(bool)),
 		Org:         &types.OpenApiReference{ID: d.Get("org_id").(string)},
 		Region:      &types.OpenApiReference{ID: d.Get("region_id").(string)},
 	}
@@ -227,7 +220,6 @@ func setTmVdcData(_ *VCDClient, d *schema.ResourceData, vdc *govcd.TmVdc) error 
 	d.SetId(vdc.TmVdc.ID)
 	dSet(d, "name", vdc.TmVdc.Name)
 	dSet(d, "description", vdc.TmVdc.Description)
-	dSet(d, "is_enabled", vdc.TmVdc.IsEnabled)
 	dSet(d, "status", vdc.TmVdc.Status)
 
 	orgId := ""

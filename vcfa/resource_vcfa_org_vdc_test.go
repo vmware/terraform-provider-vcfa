@@ -59,7 +59,6 @@ func TestAccVcfaOrgVdc(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("vcfa_org_vdc.test", "id"),
 					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "name", fmt.Sprintf("%s_%s", params["Testname"], testConfig.Tm.Region)), // Name is a combination of Org name + Region name
-					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "is_enabled", "true"),
 					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "status", "READY"),
 					resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "org_id", "vcfa_org.test", "id"),
 					resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "region_id", regionHclRef, "id"),
@@ -81,7 +80,6 @@ func TestAccVcfaOrgVdc(t *testing.T) {
 			//	Check: resource.ComposeTestCheckFunc(
 			//		resource.TestCheckResourceAttrSet("vcfa_org_vdc.test", "id"),
 			//		resource.TestCheckResourceAttr("vcfa_org_vdc.test", "name", fmt.Sprintf("%s_%s", params["Testname"], testConfig.Tm.Region)), // Name is a combination of Org name + Region name
-			//		resource.TestCheckResourceAttr("vcfa_org_vdc.test", "is_enabled", "true"),
 			//		resource.TestCheckResourceAttr("vcfa_org_vdc.test", "status", "READY"),
 			//		resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "org_id", "vcfa_org.test", "id"),
 			//		resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "region_id", "vcfa_region.region", "id"),
@@ -100,9 +98,7 @@ func TestAccVcfaOrgVdc(t *testing.T) {
 			{
 				Config: configText3,
 				Check: resource.ComposeTestCheckFunc(
-					resourceFieldsEqual("vcfa_org_vdc.test", "data.vcfa_org_vdc.test", []string{
-						"is_enabled", // TODO: TM: is_enabled is always returned as false
-					}),
+					resourceFieldsEqual("vcfa_org_vdc.test", "data.vcfa_org_vdc.test", nil),
 				),
 			},
 			{
@@ -110,9 +106,6 @@ func TestAccVcfaOrgVdc(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateId:     fmt.Sprintf("%s%s%s", params["Testname"], ImportSeparator, testConfig.Tm.Region), // Org name and Region name
-				ImportStateVerifyIgnore: []string{
-					"is_enabled", // TODO: TM: field is not populated on read
-				},
 			},
 		},
 	})
