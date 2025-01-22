@@ -112,7 +112,9 @@ func TestAccVcfaRegion(t *testing.T) {
 			{
 				Config: configText3,
 				Check: resource.ComposeTestCheckFunc(
-					resourceFieldsEqual("vcfa_region.test", "data.vcfa_region.test", nil),
+					resourceFieldsEqual("vcfa_region.test", "data.vcfa_region.test",
+						[]string{"memory_reservation_capacity_mib", "memory_capacity_mib"}, // these values fluctuate
+					),
 				),
 			},
 			{
