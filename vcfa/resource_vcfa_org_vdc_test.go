@@ -105,7 +105,6 @@ func TestAccVcfaOrgVdc(t *testing.T) {
 					resourceFieldsEqual("vcfa_org_vdc.test", "data.vcfa_org_vdc.test", []string{
 						"is_enabled", // TODO: TM: is_enabled is always returned as false
 					}),
-					resourceFieldsEqual("data.vcfa_org_vdc.test2", "data.vcfa_org_vdc.test", nil),
 				),
 			},
 			{
@@ -191,12 +190,7 @@ resource "vcfa_org_vdc" "test" {
 // TODO: TM: Change to testAccVcfaOrgVdcStep2 when Update is fixed
 const testAccVcfaOrgVdcStep3DS = testAccVcfaOrgVdcStep1 + `
 data "vcfa_org_vdc" "test" {
-  org_id = vcfa_org.test.id
-  name   = format("%s_%s", vcfa_org.test.name, {{.RegionName}})
-}
-
-data "vcfa_org_vdc" "test2" {
-  org_id = vcfa_org.test.id
-  name   = vcfa_org_vdc.test.name
+  org_id    = vcfa_org.test.id
+  region_id = {{.RegionId}}
 }
 `

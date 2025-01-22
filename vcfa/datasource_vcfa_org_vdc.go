@@ -15,30 +15,30 @@ func datasourceVcfaOrgVdc() *schema.Resource {
 		ReadContext: datasourceVcfaOrgVdcRead,
 
 		Schema: map[string]*schema.Schema{
-			"name": {
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: fmt.Sprintf("Name of the %s", labelVcfaOrgVdc),
-			},
 			"org_id": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "Parent Organization ID",
+			},
+			"region_id": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Parent Region ID",
 			},
 			"description": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Description: fmt.Sprintf("Description of the %s", labelVcfaOrgVdc),
 			},
+			"name": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("Name of the %s", labelVcfaOrgVdc),
+			},
 			"is_enabled": {
 				Type:        schema.TypeBool,
 				Computed:    true,
 				Description: fmt.Sprintf("Defines if the %s is enabled", labelVcfaOrgVdc),
-			},
-			"region_id": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Parent Region ID",
 			},
 			"supervisor_ids": {
 				Type:        schema.TypeSet,
@@ -99,7 +99,15 @@ var tmOrgVdcDsZoneResourceAllocation = &schema.Resource{
 func datasourceVcfaOrgVdcRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	getByNameAndOrgId := func(name string) (*govcd.TmVdc, error) {
-		return vcdClient.GetTmVdcByNameAndOrgId(name, d.Get("org_id").(string))
+		region, err := vcdClient.GetRegionByName(d.Get("region_id").(string))
+		if err != nil {
+			return nil, err
+		}
+		org, err := vcdClient.GetOrgByName(d.Get("org_id").(string))
+		if err != nil {
+			return nil, err
+		}
+		return vcdClient.GetTmVdcByName(fmt.Sprintf("%s_%s", org.Org.Name, region.Region.Name))
 	}
 
 	c := dsReadConfig[*govcd.TmVdc, types.TmVdc]{

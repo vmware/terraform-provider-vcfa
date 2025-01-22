@@ -8,13 +8,22 @@ description: |-
 
 # vcd\_tm\_org\_vdc
 
-Provides a data source to manage VMware Cloud Foundation Tenant Manager Organization VDC.
+Provides a data source to manage VMware Cloud Foundation Tenant Manager Organization VDC (Region Quota).
 
 ## Example Usage
 
 ```hcl
+data "vcfa_org" "org" {
+  name = "my-org"
+}
+
+data "vcfa_region" "region" {
+  name = "region-one"
+}
+
 data "vcfa_org_vdc" "test" {
-  name = "my-tm-org-vdc"
+  org_id    = data.vcfa_org.org.id
+  region_id = data.vcfa_region.region.id
 }
 ```
 
@@ -22,8 +31,8 @@ data "vcfa_org_vdc" "test" {
 
 The following arguments are supported:
 
-* `name` - (Required) A name for the existing Org VDC
-* `org_id` - (Required) An ID for the parent Org
+* `region_id` - (Required)  An ID for the parent Region
+* `org_id` - (Required) An ID for the parent Organization
 
 ## Attribute Reference
 
