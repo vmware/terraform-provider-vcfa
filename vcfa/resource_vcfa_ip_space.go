@@ -234,8 +234,6 @@ func setIpSpaceData(_ *VCDClient, d *schema.ResourceData, i *govcd.TmIpSpace) er
 	dSet(d, "external_scope", i.TmIpSpace.ExternalScopeCidr)
 	dSet(d, "status", i.TmIpSpace.Status)
 
-	// maxSubnetSizeInt, _ := strconv.Atoi(i.TmIpSpace.DefaultQuota.MaxSubnetSize) // error is ignored because validation is enforced in schema
-
 	dSet(d, "default_quota_max_subnet_size", strconv.Itoa(i.TmIpSpace.DefaultQuota.MaxSubnetSize))
 	dSet(d, "default_quota_max_cidr_count", strconv.Itoa(i.TmIpSpace.DefaultQuota.MaxCidrCount))
 	dSet(d, "default_quota_max_ip_count", strconv.Itoa(i.TmIpSpace.DefaultQuota.MaxIPCount))
