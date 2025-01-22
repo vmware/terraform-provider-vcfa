@@ -1,14 +1,14 @@
 ---
-layout: "vcd"
-page_title: "VMware Cloud Director: vcfa_org_vdc"
-sidebar_current: "docs-vcd-datasource-tm-org-vdc"
+layout: "vcfa"
+page_title: "VMware Cloud Foundation Automation: vcfa_org_vdc"
+sidebar_current: "docs-vcfa-data-source-org-vdc"
 description: |-
-  Provides a data source to manage VMware Cloud Foundation Tenant Manager Organization VDC.
+  Provides a data source to manage VMware Cloud Foundation Automation Organization VDC.
 ---
 
-# vcd\_tm\_org\_vdc
+# vcfa\_org\_vdc
 
-Provides a data source to manage VMware Cloud Foundation Tenant Manager Organization VDC (Region Quota).
+Provides a data source to manage VMware Cloud Foundation Automation Organization VDC (Region Quota).
 
 ## Example Usage
 
@@ -37,4 +37,4 @@ The following arguments are supported:
 ## Attribute Reference
 
 All the arguments and attributes defined in
-[`vcfa_org_vdc`](/providers/vmware/vcd/latest/docs/resources/tm_org_vdc) resource are available.
+[`vcfa_org_vdc`](/providers/vmware/vcfa/latest/docs/resources/org_vdc) resource are available.

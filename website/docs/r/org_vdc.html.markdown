@@ -1,28 +1,25 @@
 ---
-layout: "vcd"
-page_title: "VMware Cloud Director: vcfa_org_vdc"
-sidebar_current: "docs-vcd-resource-tm-org-vdc"
+layout: "vcfa"
+page_title: "VMware Cloud Foundation Automation: vcfa_org_vdc"
+sidebar_current: "docs-vcfa-resource-tm-org-vdc"
 description: |-
-  Provides a resource to manage VMware Cloud Foundation Tenant Manager Organization VDC (Region Quota).
+  Provides a resource to manage VMware Cloud Foundation Automation Organization VDC (Region Quota).
 ---
 
-# vcd\_tm\_org\_vdc
+# vcfa\_org\_vdc
 
-Provides a resource to manage VMware Cloud Foundation Tenant Manager Organization VDC (Region Quota).
-
-This resource is exclusive to **VMware Cloud Foundation Tenant Manager**. Supported in provider
-*v4.0+*
+Provides a resource to manage VMware Cloud Foundation Automation Organization VDC (Region Quota).
 
 ## Example Usage
 
 ```hcl
-data "vcd_vcenter" "vc" {
+data "vcfa_vcenter" "vc" {
   name = "my-vcenter"
 }
 
 data "vcfa_supervisor" "supervisor" {
   name       = "my-supervisor"
-  vcenter_id = vcd_vcenter.vc.id
+  vcenter_id = vcfa_vcenter.vc.id
 }
 
 data "vcfa_region" "one" {
@@ -55,14 +52,14 @@ The following arguments are supported:
 * `org_id` - (Required) An Org ID for this Organization VDC (Region Quota) to be assigned to
 * `region_id` - (Required) A Region ID that this Organization VDC (Region Quota) should be backed by
 * `supervisor_ids` - (Required) A set of Supervisor IDs that back this Organization VDC (Region Quota). Can be looked up
-  using [`vcfa_supervisor`](/providers/vmware/vcd/latest/docs/data-sources/tm_supervisor) data source
+  using [`vcfa_supervisor`](/providers/vmware/vcfa/latest/docs/data-sources/supervisor) data source
 * `zone_resource_allocations` - (Required) A set of Zone Resource Allocation definitions. See [Zone Resource Allocations](#zone-resource-allocations-block)
 
 <a id="zone-resource-allocations-block"></a>
 ## Zone Resource Allocations
 
 * `region_zone_id` - (Required) Can be looked up using
-  [`vcfa_region_zone`](/providers/vmware/vcd/latest/docs/data-sources/tm_region_zone) data source
+  [`vcfa_region_zone`](/providers/vmware/vcfa/latest/docs/data-sources/region_zone) data source
 * `cpu_limit_mhz` - (Required) Maximum CPU consumption limit in MHz
 * `cpu_reservation_mhz` - (Required) Defines reserved CPU capacity in MHz
 * `memory_limit_mib` - (Required) Maximum memory consumption limit in MiB
