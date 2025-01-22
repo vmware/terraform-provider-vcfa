@@ -4,6 +4,7 @@ package vcfa
 
 import (
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -17,6 +18,7 @@ func TestAccVcfaRegion(t *testing.T) {
 
 	var params = StringMap{
 		"Testname":           t.Name(),
+		"RegionName":         strings.ToLower(t.Name()), // to match 'rfc1123LabelNameRegex'
 		"NsxManagerUsername": testConfig.Tm.NsxManagerUsername,
 		"NsxManagerPassword": testConfig.Tm.NsxManagerPassword,
 		"NsxManagerUrl":      testConfig.Tm.NsxManagerUrl,
@@ -59,7 +61,7 @@ func TestAccVcfaRegion(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_region.test", "id"),
 					cachedRegionId.cacheTestResourceFieldValue("vcfa_region.test", "id"),
-					resource.TestCheckResourceAttr("vcfa_region.test", "is_enabled", "true"),
+					resource.TestCheckResourceAttr("vcfa_region.test", "name", params["RegionName"].(string)),
 					resource.TestCheckResourceAttr("vcfa_region.test", "description", "Terraform description"),
 					resource.TestCheckResourceAttrSet("vcfa_region.test", "cpu_capacity_mhz"),
 					resource.TestCheckResourceAttrSet("vcfa_region.test", "cpu_reservation_capacity_mhz"),
@@ -85,8 +87,8 @@ func TestAccVcfaRegion(t *testing.T) {
 					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "id", regexp.MustCompile(`^urn:vcloud:nsxtmanager:`)),
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_region.test", "id"),
-					cachedRegionId.testCheckCachedResourceFieldValueChanged("vcfa_region.test", "id"),
-					resource.TestCheckResourceAttr("vcfa_region.test", "is_enabled", "true"),
+					cachedRegionId.testCheckCachedResourceFieldValue("vcfa_region.test", "id"),
+					resource.TestCheckResourceAttr("vcfa_region.test", "name", params["RegionName"].(string)),
 					resource.TestCheckResourceAttr("vcfa_region.test", "description", "Terraform description updated"),
 					resource.TestCheckResourceAttrSet("vcfa_region.test", "cpu_capacity_mhz"),
 					resource.TestCheckResourceAttrSet("vcfa_region.test", "cpu_reservation_capacity_mhz"),
@@ -110,18 +112,17 @@ func TestAccVcfaRegion(t *testing.T) {
 			{
 				Config: configText3,
 				Check: resource.ComposeTestCheckFunc(
-					resourceFieldsEqual("vcfa_region.test", "data.vcfa_region.test", []string{
-						"is_enabled", // TODO: TM: field is not populated on read
-					}),
+					resourceFieldsEqual("vcfa_region.test", "data.vcfa_region.test", nil),
 				),
 			},
 			{
 				ResourceName:      "vcfa_region.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateId:     params["Testname"].(string),
+				ImportStateId:     params["RegionName"].(string),
 				ImportStateVerifyIgnore: []string{
-					"is_enabled", // TODO: TM: field is not populated on read
+					"memory_capacity_mib",             // Field value slightly fluctuates over test duration
+					"memory_reservation_capacity_mib", // Field value slightly fluctuates over test duration
 				},
 			},
 		},
@@ -167,9 +168,8 @@ data "vcfa_supervisor_zone" "test" {
 
 const testAccVcfaRegionStep1 = testAccVcfaRegionPrerequisites + `
 resource "vcfa_region" "test" {
-  name                 = "{{.Testname}}"
+  name                 = "{{.RegionName}}"
   description          = "Terraform description"
-  is_enabled           = true
   nsx_manager_id       = vcfa_nsx_manager.test.id
   supervisor_ids       = [data.vcfa_supervisor.test.id]
   storage_policy_names = ["{{.VcenterStorageProfile}}"]
@@ -179,9 +179,8 @@ resource "vcfa_region" "test" {
 const testAccVcfaRegionStep2 = testAccVcfaRegionPrerequisites + `
 # skip-binary-test: update test
 resource "vcfa_region" "test" {
-  name                 = "{{.Testname}}"
+  name                 = "{{.RegionName}}"
   description          = "Terraform description updated"
-  is_enabled           = true
   nsx_manager_id       = vcfa_nsx_manager.test.id
   supervisor_ids       = [data.vcfa_supervisor.test.id]
   storage_policy_names = ["{{.VcenterStorageProfile}}"]

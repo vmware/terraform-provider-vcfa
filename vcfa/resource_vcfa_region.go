@@ -3,20 +3,27 @@ package vcfa
 import (
 	"context"
 	"fmt"
+	"regexp"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
 const labelVcfaRegion = "Region"
 
+// rfc1123LabelNameRegex matches strings with at most 31 characters, composed only by lowercase
+// alphanumeric characters or '-', that must start with an alphabetic character, and end with an
+// alphanumeric.
+var rfc1123LabelNameRegex = regexp.MustCompile(`^[a-z](?:[a-z0-9-]{0,29}[a-z0-9])?$`)
+
 func resourceVcfaRegion() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVcfaRegionCreate,
 		ReadContext:   resourceVcfaRegionRead,
-		// UpdateContext: resourceVcfaRegionUpdate, // TODO: TM: Update is not yet supported
+		UpdateContext: resourceVcfaRegionUpdate,
 		DeleteContext: resourceVcfaRegionDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: resourceVcfaRegionImport,
@@ -26,21 +33,15 @@ func resourceVcfaRegion() *schema.Resource {
 			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				ForceNew:    true, // TODO: TM: remove once update works
 				Description: fmt.Sprintf("%s name", labelVcfaRegion),
+				ValidateDiagFunc: validation.ToDiagFunc(
+					validation.StringMatch(rfc1123LabelNameRegex, "Name must match RFC 1123 Label name (lower case alphabet, 0-9 and hyphen -)"),
+				),
 			},
 			"description": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				ForceNew:    true, // TODO: TM: remove once update works
 				Description: fmt.Sprintf("%s description", labelVcfaRegion),
-			},
-			"is_enabled": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				ForceNew:    true, // TODO: TM: remove once update works
-				Default:     true,
-				Description: fmt.Sprintf("Defines whether the %s is enabled or not", labelVcfaRegion),
 			},
 			"nsx_manager_id": {
 				Type:        schema.TypeString,
@@ -51,7 +52,6 @@ func resourceVcfaRegion() *schema.Resource {
 			"supervisor_ids": {
 				Type:        schema.TypeSet,
 				Required:    true,
-				ForceNew:    true, // TODO: TM: remove once update works
 				Description: fmt.Sprintf("A set of supervisor IDs used in this %s", labelVcfaRegion),
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -60,7 +60,6 @@ func resourceVcfaRegion() *schema.Resource {
 			"storage_policy_names": { // TODO: TM: check if the API accepts IDs and if it should use
 				Type:        schema.TypeSet,
 				Required:    true,
-				ForceNew:    true, // TODO: TM: remove once update works
 				Description: "A set of storage policy names",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -107,17 +106,16 @@ func resourceVcfaRegionCreate(ctx context.Context, d *schema.ResourceData, meta 
 	return createResource(ctx, d, meta, c)
 }
 
-// TODO: TM: Update is not yet supported
-// func resourceVcfaRegionUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-// 	vcdClient := meta.(*VCDClient)
-// 	c := crudConfig[*govcd.Region, types.Region]{
-// 		entityLabel:      labelVcfaRegion,
-// 		getTypeFunc:      getRegionType,
-// 		getEntityFunc:    vcdClient.GetRegionById,
-// 		resourceReadFunc: resourceVcfaRegionRead,
-// 	}
-// 	return updateResource(ctx, d, meta, c)
-// }
+func resourceVcfaRegionUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	vcdClient := meta.(*VCDClient)
+	c := crudConfig[*govcd.Region, types.Region]{
+		entityLabel:      labelVcfaRegion,
+		getTypeFunc:      getRegionType,
+		getEntityFunc:    vcdClient.GetRegionById,
+		resourceReadFunc: resourceVcfaRegionRead,
+	}
+	return updateResource(ctx, d, meta, c)
+}
 
 func resourceVcfaRegionRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
@@ -142,7 +140,6 @@ func resourceVcfaRegionDelete(ctx context.Context, d *schema.ResourceData, meta 
 
 func resourceVcfaRegionImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	vcdClient := meta.(*VCDClient)
-
 	region, err := vcdClient.GetRegionByName(d.Id())
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving Region: %s", err)
@@ -158,7 +155,6 @@ func getRegionType(vcdClient *VCDClient, d *schema.ResourceData) (*types.Region,
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
 		NsxManager:  &types.OpenApiReference{ID: d.Get("nsx_manager_id").(string)},
-		IsEnabled:   d.Get("is_enabled").(bool),
 	}
 
 	// API requires Names to be sent with IDs, but Terraform native approach is to use IDs only
@@ -192,7 +188,6 @@ func setRegionData(_ *VCDClient, d *schema.ResourceData, r *govcd.Region) error 
 	d.SetId(r.Region.ID)
 	dSet(d, "name", r.Region.Name)
 	dSet(d, "description", r.Region.Description)
-	// dSet(d, "is_enabled", r.Region.IsEnabled) // TODO: TM: region is reported as false even when sending true
 	dSet(d, "nsx_manager_id", r.Region.NsxManager.ID)
 
 	dSet(d, "cpu_capacity_mhz", r.Region.CPUCapacityMHz)

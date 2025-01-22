@@ -25,11 +25,6 @@ func datasourceVcfaRegion() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("%s description", labelVcfaRegion),
 			},
-			"is_enabled": {
-				Type:        schema.TypeBool,
-				Computed:    true,
-				Description: fmt.Sprintf("Defines whether the %s is enabled or not", labelVcfaRegion),
-			},
 			"nsx_manager_id": {
 				Type:        schema.TypeString,
 				Computed:    true,

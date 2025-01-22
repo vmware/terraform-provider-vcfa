@@ -23,7 +23,6 @@ data "vcfa_supervisor" "one" {
 
 resource "vcfa_region" "one" {
   name                 = "region-one"
-  is_enabled           = true
   nsx_manager_id       = data.vcfa_nsx_manager.test.id
   supervisor_ids       = [data.vcfa_supervisor.test.id]
   storage_policy_names = ["vSAN Default Storage Policy"]
@@ -34,9 +33,9 @@ resource "vcfa_region" "one" {
 
 The following arguments are supported:
 
-* `name` - (Required) A name for Region
+* `name` - (Required) A name for Region. It must match RFC 1123 Label name (lower-case alphabet,
+  numbers between 0 and 9 and hyphen `-`)
 * `description` - (Optional) An optional description for Region
-* `is_enabled` - (Optional) Defines if the Region is enabled. Default is `true`
 * `nsx_manager_id` - (Required) NSX-T Manager assigned to this region. Can be looked up using
   [`vcfa_nsx_manager`](/providers/vmware/vcfa/latest/docs/data-sources/nsx_manager)
 * `supervisor_ids` - (Required) A set of Supervisor IDs. At least one is required. Can be looked up

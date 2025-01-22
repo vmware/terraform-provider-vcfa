@@ -40,10 +40,11 @@ func (c *testCachedFieldValue) cacheTestResourceFieldValue(resource, field strin
 	}
 }
 
-// testCheckCachedResourceFieldValueChanged is the reverse of testCheckCachedResourceFieldValue and
-// it will fail if the values remain the same
-// It is useful for checking if the resource was recreated (id field values should differ)
-func (c *testCachedFieldValue) testCheckCachedResourceFieldValueChanged(resource, field string) resource.TestCheckFunc {
+// testCheckCachedResourceFieldValue has the default signature of Terraform acceptance test
+// functions, but is able to verify if the value is equal to previously cached value using
+// 'cacheTestResourceFieldValue'. This allows to check if a particular field value changed across
+// multiple resource.TestSteps.
+func (c *testCachedFieldValue) testCheckCachedResourceFieldValue(resource, field string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[resource]
 		if !ok {
@@ -56,12 +57,12 @@ func (c *testCachedFieldValue) testCheckCachedResourceFieldValueChanged(resource
 		}
 
 		if vcfaTestVerbose {
-			fmt.Printf("# Comparing field '%s' '%s!=%s' in resource '%s'\n", field, value, c.fieldValue, resource)
+			fmt.Printf("# Comparing field '%s' '%s==%s' in resource '%s'\n", field, value, c.fieldValue, resource)
 		}
 
-		if value == c.fieldValue {
-			return fmt.Errorf("got '%s - %s' field value %s, expected a different one",
-				resource, field, value)
+		if value != c.fieldValue {
+			return fmt.Errorf("got '%s - %s' field value %s, expected: %s",
+				resource, field, value, c.fieldValue)
 		}
 
 		return nil
