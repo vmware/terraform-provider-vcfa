@@ -3,7 +3,7 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_region_zone"
 sidebar_current: "docs-vcfa-data-source-region-zone"
 description: |-
-  Provides a data source to read VMware Cloud Foundation Automation Region Zone that can be used when creating a VDC.
+  Provides a data source to read VMware Cloud Foundation Automation Region Zone that can be used when creating a VDC (Region Quota).
 ---
 
 # vcfa\_region\_zone
