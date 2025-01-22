@@ -2,10 +2,19 @@ package vcfa
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
-	"os"
 )
+
+func convertToStringMap(param map[string]interface{}) map[string]string {
+	temp := make(map[string]string)
+	for k, v := range param {
+		temp[k] = v.(string)
+	}
+	return temp
+}
 
 // convertSchemaSetToSliceOfStrings accepts Terraform's *schema.Set object and converts it to slice
 // of strings.

@@ -39,6 +39,7 @@ var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_supervisor":      datasourceVcfaSupervisor(),     // 1.0
 	"vcfa_supervisor_zone": datasourceVcfaSupervisorZone(), // 1.0
 	"vcfa_region":          datasourceVcfaRegion(),         // 1.0
+	"vcfa_ip_space":        datasourceVcfaIpSpace(),        // 1.0
 }
 
 var globalResourceMap = map[string]*schema.Resource{
@@ -46,6 +47,7 @@ var globalResourceMap = map[string]*schema.Resource{
 	"vcfa_org":         resourceVcfaOrg(),        // 1.0
 	"vcfa_nsx_manager": resourceVcfaNsxManager(), // 1.0
 	"vcfa_region":      resourceVcfaRegion(),     // 1.0
+	"vcfa_ip_space":    resourceVcfaIpSpace(),    // 1.0
 }
 
 // Provider returns a terraform.ResourceProvider.
