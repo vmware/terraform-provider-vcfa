@@ -51,6 +51,26 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 	}
 
 	// --------------------------------------------------------------
+	// VDCs
+	// --------------------------------------------------------------
+	if govcdClient.Client.IsSysAdmin {
+		vdcs, err := govcdClient.GetAllTmVdcs(nil)
+		if err != nil {
+			return fmt.Errorf("error retrieving VDCs: %s", err)
+		}
+		for _, vdc := range vdcs {
+			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, vdc.TmVdc.Name, "vcfa_org_vdc", 2, verbose)
+			if toBeDeleted {
+				fmt.Printf("\t REMOVING VDC %s\n", vdc.TmVdc.Name)
+				err := vdc.Delete()
+				if err != nil {
+					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaOrgVdc, vdc.TmVdc.Name, err)
+				}
+			}
+		}
+	}
+
+	// --------------------------------------------------------------
 	// Regions
 	// --------------------------------------------------------------
 	if govcdClient.Client.IsSysAdmin {
@@ -109,30 +129,6 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 				err := vc.Delete()
 				if err != nil {
 					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaVirtualCenter, vc.VSphereVCenter.Name, err)
-				}
-			}
-		}
-	}
-
-	// --------------------------------------------------------------
-	// Organizations
-	// --------------------------------------------------------------
-	if govcdClient.Client.IsSysAdmin {
-		orgs, err := govcdClient.GetAllTmOrgs(nil)
-		if err != nil {
-			return fmt.Errorf("error retrieving Organizations: %s", err)
-		}
-		for _, org := range orgs {
-			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, org.TmOrg.Name, "vcfa_org", 0, verbose)
-			if toBeDeleted {
-				fmt.Printf("\t REMOVING Organization %s\n", org.TmOrg.Name)
-				err = org.Disable()
-				if err != nil {
-					return fmt.Errorf("error disabling %s '%s': %s", labelVcfaOrg, org.TmOrg.Name, err)
-				}
-				err := org.Delete()
-				if err != nil {
-					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaOrg, org.TmOrg.Name, err)
 				}
 			}
 		}

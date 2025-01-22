@@ -20,6 +20,14 @@ func convertSchemaSetToSliceOfStrings(param *schema.Set) []string {
 	return result
 }
 
+// addrOf is a generic function to return the address of a variable
+// Note. It is mainly meant for converting literal values to pointers (e.g. `addrOf(true)`) or cases
+// for converting variables coming out straight from Terraform schema (e.g.
+// `addrOf(d.Get("name").(string))`).
+func addrOf[T any](variable T) *T {
+	return &variable
+}
+
 // extractIdsFromOpenApiReferences extracts []string with IDs from []types.OpenApiReference which contains ID and Names
 func extractIdsFromOpenApiReferences(refs []types.OpenApiReference) []string {
 	resultStrings := make([]string, len(refs))
@@ -28,6 +36,17 @@ func extractIdsFromOpenApiReferences(refs []types.OpenApiReference) []string {
 	}
 
 	return resultStrings
+}
+
+// convertSliceOfStringsToOpenApiReferenceIds converts []string to []types.OpenApiReference by filling
+// types.OpenApiReference.ID fields
+func convertSliceOfStringsToOpenApiReferenceIds(ids []string) []types.OpenApiReference {
+	resultReferences := make([]types.OpenApiReference, len(ids))
+	for i, v := range ids {
+		resultReferences[i].ID = v
+	}
+
+	return resultReferences
 }
 
 // contains returns true if `sliceToSearch` contains `searched`. Returns false otherwise.
