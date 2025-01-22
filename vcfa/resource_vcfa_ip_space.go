@@ -13,9 +13,9 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/util"
 )
 
-const labelVcfaIpSpace = "TM IP Space"
+const labelVcfaIpSpace = "IP Space"
 
-var tmIpSpaceInternalScopeSchema = &schema.Resource{
+var ipSpaceInternalScopeSchema = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"id": {
 			Type:        schema.TypeString,
@@ -90,7 +90,7 @@ func resourceVcfaIpSpace() *schema.Resource {
 				Type:        schema.TypeSet,
 				Required:    true,
 				Description: fmt.Sprintf("Internal scope of %s", labelVcfaIpSpace),
-				Elem:        tmIpSpaceInternalScopeSchema,
+				Elem:        ipSpaceInternalScopeSchema,
 			},
 			"status": {
 				Type:        schema.TypeString,
@@ -105,8 +105,8 @@ func resourceVcfaIpSpaceCreate(ctx context.Context, d *schema.ResourceData, meta
 	vcdClient := meta.(*VCDClient)
 	c := crudConfig[*govcd.TmIpSpace, types.TmIpSpace]{
 		entityLabel:      labelVcfaIpSpace,
-		getTypeFunc:      getTmIpSpaceType,
-		stateStoreFunc:   setTmIpSpaceData,
+		getTypeFunc:      getIpSpaceType,
+		stateStoreFunc:   setIpSpaceData,
 		createFunc:       vcdClient.CreateTmIpSpace,
 		resourceReadFunc: resourceVcfaIpSpaceRead,
 	}
@@ -117,7 +117,7 @@ func resourceVcfaIpSpaceUpdate(ctx context.Context, d *schema.ResourceData, meta
 	vcdClient := meta.(*VCDClient)
 	c := crudConfig[*govcd.TmIpSpace, types.TmIpSpace]{
 		entityLabel:      labelVcfaIpSpace,
-		getTypeFunc:      getTmIpSpaceType,
+		getTypeFunc:      getIpSpaceType,
 		getEntityFunc:    vcdClient.GetTmIpSpaceById,
 		resourceReadFunc: resourceVcfaIpSpaceRead,
 	}
@@ -130,7 +130,7 @@ func resourceVcfaIpSpaceRead(ctx context.Context, d *schema.ResourceData, meta i
 	c := crudConfig[*govcd.TmIpSpace, types.TmIpSpace]{
 		entityLabel:    labelVcfaIpSpace,
 		getEntityFunc:  vcdClient.GetTmIpSpaceById,
-		stateStoreFunc: setTmIpSpaceData,
+		stateStoreFunc: setIpSpaceData,
 	}
 	return readResource(ctx, d, meta, c)
 }
@@ -169,7 +169,7 @@ func resourceVcfaIpSpaceImport(ctx context.Context, d *schema.ResourceData, meta
 	return []*schema.ResourceData{d}, nil
 }
 
-func getTmIpSpaceType(vcdClient *VCDClient, d *schema.ResourceData) (*types.TmIpSpace, error) {
+func getIpSpaceType(vcdClient *VCDClient, d *schema.ResourceData) (*types.TmIpSpace, error) {
 	t := &types.TmIpSpace{
 		Name:              d.Get("name").(string),
 		Description:       d.Get("description").(string),
@@ -214,7 +214,7 @@ func getTmIpSpaceType(vcdClient *VCDClient, d *schema.ResourceData) (*types.TmIp
 	return t, nil
 }
 
-func setTmIpSpaceData(_ *VCDClient, d *schema.ResourceData, i *govcd.TmIpSpace) error {
+func setIpSpaceData(_ *VCDClient, d *schema.ResourceData, i *govcd.TmIpSpace) error {
 	if i == nil || i.TmIpSpace == nil {
 		return fmt.Errorf("nil %s received", labelVcfaIpSpace)
 	}

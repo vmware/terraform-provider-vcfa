@@ -10,7 +10,7 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
-var dsTmIpSpaceInternalScopeSchema = &schema.Resource{
+var dsIpSpaceInternalScopeSchema = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"id": {
 			Type:        schema.TypeString,
@@ -74,7 +74,7 @@ func datasourceVcfaIpSpace() *schema.Resource {
 				Type:        schema.TypeSet,
 				Computed:    true,
 				Description: fmt.Sprintf("Internal scope of %s", labelVcfaIpSpace),
-				Elem:        dsTmIpSpaceInternalScopeSchema,
+				Elem:        dsIpSpaceInternalScopeSchema,
 			},
 			"status": {
 				Type:        schema.TypeString,
@@ -88,14 +88,14 @@ func datasourceVcfaIpSpace() *schema.Resource {
 func datasourceVcfaIpSpaceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 
-	getTmIpSpaceByName := func(name string) (*govcd.TmIpSpace, error) {
+	getIpSpaceByName := func(name string) (*govcd.TmIpSpace, error) {
 		return vcdClient.GetTmIpSpaceByNameAndRegionId(name, d.Get("region_id").(string))
 	}
 
 	c := dsReadConfig[*govcd.TmIpSpace, types.TmIpSpace]{
 		entityLabel:    labelVcfaIpSpace,
-		getEntityFunc:  getTmIpSpaceByName,
-		stateStoreFunc: setTmIpSpaceData,
+		getEntityFunc:  getIpSpaceByName,
+		stateStoreFunc: setIpSpaceData,
 	}
 	return readDatasource(ctx, d, meta, c)
 }

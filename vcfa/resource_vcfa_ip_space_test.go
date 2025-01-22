@@ -155,8 +155,8 @@ resource "vcfa_ip_space" "test" {
   default_quota_max_ip_count    = -1
 
   internal_scope {
-     name = "scope3"
-	 cidr = "12.0.0.0/27"
+    name = "scope3"
+    cidr = "12.0.0.0/27"
   }
 }
 `
