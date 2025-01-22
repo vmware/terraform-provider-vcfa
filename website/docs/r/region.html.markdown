@@ -40,25 +40,25 @@ resource "vcfa_region" "one" {
 
 The following arguments are supported:
 
-* `name` - (Required) A name for Region. It must match RFC 1123 Label name (lower-case alphabet,
+- `name` - (Required) A name for Region. It must match RFC 1123 Label name (lower-case alphabet,
   numbers between 0 and 9 and hyphen `-`)
-* `description` - (Optional) An optional description for Region
-* `nsx_manager_id` - (Required) NSX-T Manager assigned to this region. Can be looked up using
+- `description` - (Optional) An optional description for Region
+- `nsx_manager_id` - (Required) NSX-T Manager assigned to this region. Can be looked up using
   [`vcfa_nsx_manager`](/providers/vmware/vcfa/latest/docs/data-sources/nsx_manager)
-* `supervisor_ids` - (Required) A set of Supervisor IDs. At least one is required. Can be looked up
+- `supervisor_ids` - (Required) A set of Supervisor IDs. At least one is required. Can be looked up
   using [`vcfa_supervisor`](/providers/vmware/vcfa/latest/docs/data-sources/supervisor)
-* `storage_policy_names` - (Required) A set of Storage Policy names to be used for this region. At
+- `storage_policy_names` - (Required) A set of Storage Policy names to be used for this region. At
   least one is required.
 
 ## Attribute Reference
 
 The following attributes are exported on this resource:
 
-* `cpu_capacity_mhz` - Total CPU resources in MHz available to this Region
-* `cpu_reservation_capacity_mhz` - Total CPU reservation resources in MHz available to this Region
-* `memory_capacity_mib` - Total memory resources (in mebibytes) available to this Region
-* `memory_reservation_capacity_mib` - Total memory reservation resources (in mebibytes) available to this Region
-* `status` - The creation status of the Region. Possible values are `READY`, `NOT_READY`, `ERROR`,
+- `cpu_capacity_mhz` - Total CPU resources in MHz available to this Region
+- `cpu_reservation_capacity_mhz` - Total CPU reservation resources in MHz available to this Region
+- `memory_capacity_mib` - Total memory resources (in mebibytes) available to this Region
+- `memory_reservation_capacity_mib` - Total memory reservation resources (in mebibytes) available to this Region
+- `status` - The creation status of the Region. Possible values are `READY`, `NOT_READY`, `ERROR`,
   `FAILED`. A Region needs to be ready and enabled to be usable
 
 ## Importing

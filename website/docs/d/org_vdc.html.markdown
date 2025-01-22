@@ -31,8 +31,8 @@ data "vcfa_org_vdc" "test" {
 
 The following arguments are supported:
 
-* `region_id` - (Required)  An ID for the parent Region
-* `org_id` - (Required) An ID for the parent Organization
+- `region_id` - (Required)  An ID for the parent Region
+- `org_id` - (Required) An ID for the parent Organization
 
 ## Attribute Reference
 

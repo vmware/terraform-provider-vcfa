@@ -27,9 +27,9 @@ data "vcfa_supervisor" "one" {
 
 The following arguments are supported:
 
-* `name` - (Required) The name of Supervisor
-* `vcenter_id` - (Required) vCenter server ID that contains this Supervisor
+- `name` - (Required) The name of Supervisor
+- `vcenter_id` - (Required) vCenter server ID that contains this Supervisor
 
 ## Attribute Reference
 
-* `region_id` - Region ID that consumes this Supervisor
+- `region_id` - Region ID that consumes this Supervisor

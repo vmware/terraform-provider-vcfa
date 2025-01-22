@@ -32,16 +32,16 @@ data "vcfa_supervisor_zone" "one" {
 
 The following arguments are supported:
 
-* `supervisor_id` - (Required) ID of parent Supervisor
-* `name` - (Required) The name of Supervisor Zone
+- `supervisor_id` - (Required) ID of parent Supervisor
+- `name` - (Required) The name of Supervisor Zone
 
 ## Attribute Reference
 
-* `vcenter_id` - vCenter server ID that contains this Supervisor
-* `region_id` - Region ID that consumes this Supervisor
-* `cpu_capacity_mhz` - The CPU capacity (in MHz) in this zone. Total CPU consumption in this zone
+- `vcenter_id` - vCenter server ID that contains this Supervisor
+- `region_id` - Region ID that consumes this Supervisor
+- `cpu_capacity_mhz` - The CPU capacity (in MHz) in this zone. Total CPU consumption in this zone
   cannot cross this limit.
-* `cpu_used_mhz` - Total CPU used (in MHz) in this zone.
-* `memory_capacity_mib` - The memory capacity (in mebibytes) in this zone. Total memory consumption
+- `cpu_used_mhz` - Total CPU used (in MHz) in this zone.
+- `memory_capacity_mib` - The memory capacity (in mebibytes) in this zone. Total memory consumption
   in this zone cannot cross this limit.
-* `memory_used_mib` - Total memory used (in mebibytes) in this zone.
+- `memory_used_mib` - Total memory used (in mebibytes) in this zone.

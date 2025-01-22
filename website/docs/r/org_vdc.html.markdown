@@ -49,21 +49,21 @@ resource "vcfa_org_vdc" "first" {
 
 The following arguments are supported:
 
-* `org_id` - (Required) An Org ID for this Organization VDC (Region Quota) to be assigned to
-* `region_id` - (Required) A Region ID that this Organization VDC (Region Quota) should be backed by
-* `supervisor_ids` - (Required) A set of Supervisor IDs that back this Organization VDC (Region Quota). Can be looked up
+- `org_id` - (Required) An Org ID for this Organization VDC (Region Quota) to be assigned to
+- `region_id` - (Required) A Region ID that this Organization VDC (Region Quota) should be backed by
+- `supervisor_ids` - (Required) A set of Supervisor IDs that back this Organization VDC (Region Quota). Can be looked up
   using [`vcfa_supervisor`](/providers/vmware/vcfa/latest/docs/data-sources/supervisor) data source
-* `zone_resource_allocations` - (Required) A set of Zone Resource Allocation definitions. See [Zone Resource Allocations](#zone-resource-allocations-block)
+- `zone_resource_allocations` - (Required) A set of Zone Resource Allocation definitions. See [Zone Resource Allocations](#zone-resource-allocations-block)
 
 <a id="zone-resource-allocations-block"></a>
 ## Zone Resource Allocations
 
-* `region_zone_id` - (Required) Can be looked up using
+- `region_zone_id` - (Required) Can be looked up using
   [`vcfa_region_zone`](/providers/vmware/vcfa/latest/docs/data-sources/region_zone) data source
-* `cpu_limit_mhz` - (Required) Maximum CPU consumption limit in MHz
-* `cpu_reservation_mhz` - (Required) Defines reserved CPU capacity in MHz
-* `memory_limit_mib` - (Required) Maximum memory consumption limit in MiB
-* `memory_reservation_mib` - (Required) Defines reserved memory capacity in MiB
+- `cpu_limit_mhz` - (Required) Maximum CPU consumption limit in MHz
+- `cpu_reservation_mhz` - (Required) Defines reserved CPU capacity in MHz
+- `memory_limit_mib` - (Required) Maximum memory consumption limit in MiB
+- `memory_reservation_mib` - (Required) Defines reserved memory capacity in MiB
 
 A computed attribute `region_zone_name` will be set in each `zone_resource_allocations` block.
 
@@ -72,8 +72,8 @@ A computed attribute `region_zone_name` will be set in each `zone_resource_alloc
 
 The following attributes are exported on this resource:
 
-* `name` - The name of the Organization VDC (Region Quota), it's assigned on creation and can't be changed
-* `status` - The creation status of the Organization VDC (Region Quota). Possible values are `READY`, `NOT_READY`, `ERROR`,
+- `name` - The name of the Organization VDC (Region Quota), it's assigned on creation and can't be changed
+- `status` - The creation status of the Organization VDC (Region Quota). Possible values are `READY`, `NOT_READY`, `ERROR`,
   `FAILED`
 
 ## Importing
