@@ -1,7 +1,7 @@
 ---
 layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org"
-sidebar_current: "docs-vcfa-resource-tm-org"
+sidebar_current: "docs-vcfa-resource-org"
 description: |-
   Provides a resource to manage VMware Cloud Foundation Automation Organizations.
 ---
