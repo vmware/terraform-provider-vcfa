@@ -22,9 +22,7 @@ func TestAccVcfaOrgVdc(t *testing.T) {
 		"SupervisorZoneName": testConfig.Tm.VcenterSupervisorZone,
 		"VcenterRef":         vCenterHclRef,
 		"RegionId":           fmt.Sprintf("%s.id", regionHclRef),
-		"RegionName":         fmt.Sprintf("%s.name", regionHclRef),
-
-		"Tags": "tm org vdc",
+		"Tags":               "tm org vdc",
 	}
 	testParamsNotEmpty(t, params)
 
