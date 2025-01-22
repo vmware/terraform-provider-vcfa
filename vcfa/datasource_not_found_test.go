@@ -77,6 +77,7 @@ func testSpecificDataSourceNotFound(dataSourceName string, vcdClient *VCDClient)
 			"vcfa_supervisor",
 			"vcfa_supervisor_zone",
 			"vcfa_vcenter",
+			"vcfa_ip_space",
 		}
 
 		if contains(dataSourcesRequiringSysAdmin, dataSourceName) && !usingSysAdmin() {
@@ -139,6 +140,8 @@ func addMandatoryParams(dataSourceName string, mandatoryFields []string, t *test
 			templateFields = templateFields + `supervisor_id = "urn:vcloud:supervisor:12345678-1234-1234-1234-123456789012"` + "\n"
 		case "vcenter_id":
 			templateFields = templateFields + `vcenter_id = "urn:vcloud:vimserver:12345678-1234-1234-1234-123456789012"` + "\n"
+		case "region_id":
+			templateFields = templateFields + `region_id = "urn:vcloud:region:12345678-1234-1234-1234-123456789012"` + "\n"
 		}
 	}
 
