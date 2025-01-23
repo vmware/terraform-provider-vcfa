@@ -10,8 +10,6 @@ description: |-
 
 Provides a VMware Cloud Foundation Automation Content Library resource. This can be used to manage Content Libraries.
 
-This resource is exclusive to **VMware Cloud Foundation Automation**. Supported in provider *v4.0+*
-
 ## Example Usage for a Provider Content Library
 
 ```hcl

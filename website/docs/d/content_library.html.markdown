@@ -10,8 +10,6 @@ description: |-
 
 Provides a VMware Cloud Foundation Automation Content Library data source. This can be used to read Content Libraries.
 
-This data source is exclusive to **VMware Cloud Foundation Automation**. Supported in provider *v4.0+*
-
 ## Example Usage
 
 ```hcl
