@@ -35,7 +35,7 @@ func datasourceVcfaTier0Gateway() *schema.Resource {
 			"parent_tier_0_id": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: fmt.Sprintf("Parent Tier 0 Gateway of %s", labelVcfaTier0Gateway),
+				Description: fmt.Sprintf("Parent %s of %s", labelVcfaTier0Gateway, labelVcfaTier0Gateway),
 			},
 			"already_imported": {
 				Type:        schema.TypeBool,

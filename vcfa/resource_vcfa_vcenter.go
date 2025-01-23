@@ -13,7 +13,9 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/util"
 )
 
-const labelVcfaVirtualCenter = "Tenant Manager vCenter Server"
+const labelVcfaVirtualCenter = "vCenter Server"
+
+const extraSleepAfterOperations = 3 * time.Second
 
 const extraSleepAfterOperations = 3 * time.Second
 
