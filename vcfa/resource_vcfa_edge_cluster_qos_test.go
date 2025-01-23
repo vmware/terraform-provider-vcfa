@@ -22,6 +22,7 @@ func TestAccVcfaEdgeCluster(t *testing.T) {
 		"RegionId":        fmt.Sprintf("%s.id", regionHclRef),
 		"RegionName":      t.Name(),
 		"EdgeClusterName": testConfig.Tm.NsxEdgeCluster,
+		"SyncBeforeRead":  "true",
 
 		"Tags": "tm",
 	}
@@ -37,6 +38,7 @@ func TestAccVcfaEdgeCluster(t *testing.T) {
 	preRequisites := vCenterHcl + nsxManagerHcl + regionHcl
 	configText1 := templateFill(preRequisites+testAccVcfaEdgeClusterQosStep1, params)
 	params["FuncName"] = t.Name() + "-step2"
+	params["SyncBeforeRead"] = "false" // TODO TM - Sync'ing resets QoS policy to unlimited (-1)
 	configText2 := templateFill(preRequisites+testAccVcfaEdgeClusterQosStep2, params)
 	params["FuncName"] = t.Name() + "-step3"
 	configText3 := templateFill(preRequisites+testAccVcfaEdgeClusterQosStep3, params)
@@ -124,10 +126,10 @@ func TestAccVcfaEdgeCluster(t *testing.T) {
 				// The refresh is required
 				RefreshState: true, // ensuring that data source is reloaded with latest data that is configured in the resource
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcfa_edge_cluster_qos.demo2", "egress_committed_bandwidth_mbps", ""),
-					resource.TestCheckResourceAttr("data.vcfa_edge_cluster_qos.demo2", "egress_burst_size_bytes", ""),
-					resource.TestCheckResourceAttr("data.vcfa_edge_cluster_qos.demo2", "ingress_committed_bandwidth_mbps", ""),
-					resource.TestCheckResourceAttr("data.vcfa_edge_cluster_qos.demo2", "ingress_burst_size_bytes", ""),
+					resource.TestCheckResourceAttr("data.vcfa_edge_cluster_qos.demo2", "egress_committed_bandwidth_mbps", "-1"),
+					resource.TestCheckResourceAttr("data.vcfa_edge_cluster_qos.demo2", "egress_burst_size_bytes", "-1"),
+					resource.TestCheckResourceAttr("data.vcfa_edge_cluster_qos.demo2", "ingress_committed_bandwidth_mbps", "-1"),
+					resource.TestCheckResourceAttr("data.vcfa_edge_cluster_qos.demo2", "ingress_burst_size_bytes", "-1"),
 				),
 			},
 			{
@@ -136,16 +138,16 @@ func TestAccVcfaEdgeCluster(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "egress_committed_bandwidth_mbps", "7"),
 					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "egress_burst_size_bytes", "8"),
-					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "ingress_committed_bandwidth_mbps", ""),
-					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "ingress_burst_size_bytes", ""),
+					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "ingress_committed_bandwidth_mbps", "-1"),
+					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "ingress_burst_size_bytes", "-1"),
 				),
 			},
 			{
 				// Ensuring that the resource is removed (therefore QoS settings must be unset)
 				Config: configText5,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "egress_committed_bandwidth_mbps", ""),
-					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "egress_burst_size_bytes", ""),
+					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "egress_committed_bandwidth_mbps", "-1"),
+					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "egress_burst_size_bytes", "-1"),
 					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "ingress_committed_bandwidth_mbps", "5"),
 					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "ingress_burst_size_bytes", "6"),
 				),
@@ -160,7 +162,7 @@ const testAccVcfaEdgeClusterQosStep1 = `
 data "vcfa_edge_cluster" "demo" {
   name             = "{{.EdgeClusterName}}"
   region_id        = {{.RegionId}}
-  sync_before_read = true
+  sync_before_read = {{.SyncBeforeRead}}
 }
 
 data "vcfa_edge_cluster_qos" "demo" {
@@ -183,7 +185,7 @@ const testAccVcfaEdgeClusterQosStep3 = `
 data "vcfa_edge_cluster" "demo" {
   name             = "{{.EdgeClusterName}}"
   region_id        = {{.RegionId}}
-  sync_before_read = true
+  sync_before_read = {{.SyncBeforeRead}}
 }
 
 data "vcfa_edge_cluster_qos" "demo2" {

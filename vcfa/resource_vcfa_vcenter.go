@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -299,18 +300,18 @@ func disableVcenter(v *govcd.VCenter) error {
 	return nil
 }
 
+const retryVcenterRefreshWhenErrorContains = "is currently busy"
+
 // refreshVcenter triggers refresh on vCenter which is useful for reloading some of the vCenter
 // components like Supervisors
 func refreshVcenter(execute bool) outerEntityHook[*govcd.VCenter] {
 	return func(v *govcd.VCenter) error {
 		if execute {
-			err := v.RefreshVcenter()
+			err := runWithRetry(v.RefreshVcenter, retryVcenterRefreshWhenErrorContains, 120*time.Second)
 			if err != nil {
 				return fmt.Errorf("error refreshing vCenter: %s", err)
 			}
 		}
-		// TODO: TM: put an extra sleep to be sure the entity is released
-		time.Sleep(extraSleepAfterOperations)
 		return nil
 	}
 }
@@ -320,13 +321,11 @@ func refreshVcenter(execute bool) outerEntityHook[*govcd.VCenter] {
 func refreshVcenterPolicy(execute bool) outerEntityHook[*govcd.VCenter] {
 	return func(v *govcd.VCenter) error {
 		if execute {
-			err := v.RefreshStorageProfiles()
+			err := runWithRetry(v.RefreshStorageProfiles, retryVcenterRefreshWhenErrorContains, 120*time.Second)
 			if err != nil {
-				return fmt.Errorf("error refreshing Storage Policies: %s", err)
+				return fmt.Errorf("error refreshing vCenter Storage Policies: %s", err)
 			}
 		}
-		// TODO: TM: put an extra sleep to be sure the entity is released
-		time.Sleep(extraSleepAfterOperations)
 		return nil
 	}
 }
@@ -380,5 +379,33 @@ func autoTrustHostCertificate(urlSchemaFieldName, trustSchemaFieldName string) s
 		}
 
 		return nil
+	}
+}
+
+func runWithRetry(runOperation func() error, retryIfErrContains string, duration time.Duration) error {
+	startTime := time.Now()
+	endTime := startTime.Add(duration)
+	util.Logger.Printf("[DEBUG] running with retry for %f seconds if error contains '%s' ", duration.Seconds(), retryIfErrContains)
+	count := 1
+	for {
+
+		err := runOperation()
+		util.Logger.Printf("[DEBUG] ran attempt %d, got error: %s ", count, err)
+		// Operation had no error - it succeeded
+		if err == nil {
+			return nil
+		}
+		// If there is an error, but it doesn't contain the retryIfErrContains value - exit it
+		if !strings.Contains(err.Error(), retryIfErrContains) {
+			return err
+		}
+
+		// If time limit is exceeded - return error containing statistics and original error
+		if time.Now().After(endTime) {
+			return fmt.Errorf("error attempting to wait until error does not contain '%s' after %f seconds: %s", retryIfErrContains, duration.Seconds(), err)
+		}
+		// Sleep 2 seconds and attempt once more if the timeout is not excdeeded
+		time.Sleep(2 * time.Second)
+		count++
 	}
 }
