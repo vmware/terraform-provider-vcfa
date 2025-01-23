@@ -6,7 +6,7 @@ description: |-
   Provides a VMware Cloud Foundation Automation data source to read Region Storage Policies.
 ---
 
-# vcfa\_\_region\_storage\_policy
+# vcfa\_region\_storage\_policy
 
 Provides a VMware Cloud Foundation Automation data source to read Region Storage Policies.
 
