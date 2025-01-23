@@ -152,6 +152,8 @@ resource "vcfa_content_library" "content_library" {
   name                 = "` + testConfig.Tm.ContentLibrary + `"
   description          = "` + testConfig.Tm.ContentLibrary + `"
   storage_class_ids    = [data.vcfa_storage_class.storage_class.id]
+  delete_force         = true
+  delete_recursive     = true
 }
 `, "vcfa_content_library.content_library"
 }
