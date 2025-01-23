@@ -32,25 +32,29 @@ func Resources(nameRegexp string, includeDeprecated bool) (map[string]*schema.Re
 }
 
 var globalDataSourceMap = map[string]*schema.Resource{
-	"vcfa_tm_version":      datasourceVcfaTmVersion(),      // 1.0
-	"vcfa_vcenter":         datasourceVcfaVcenter(),        // 1.0
-	"vcfa_org":             datasourceVcfaOrg(),            // 1.0
-	"vcfa_nsx_manager":     datasourceVcfaNsxManager(),     // 1.0
-	"vcfa_supervisor":      datasourceVcfaSupervisor(),     // 1.0
-	"vcfa_supervisor_zone": datasourceVcfaSupervisorZone(), // 1.0
-	"vcfa_region":          datasourceVcfaRegion(),         // 1.0
-	"vcfa_ip_space":        datasourceVcfaIpSpace(),        // 1.0
-	"vcfa_region_zone":     datasourceVcfaRegionZone(),     // 1.0
-	"vcfa_org_vdc":         datasourceVcfaOrgVdc(),         // 1.0
+	"vcfa_tm_version":           datasourceVcfaTmVersion(),          // 1.0
+	"vcfa_vcenter":              datasourceVcfaVcenter(),            // 1.0
+	"vcfa_org":                  datasourceVcfaOrg(),                // 1.0
+	"vcfa_nsx_manager":          datasourceVcfaNsxManager(),         // 1.0
+	"vcfa_supervisor":           datasourceVcfaSupervisor(),         // 1.0
+	"vcfa_supervisor_zone":      datasourceVcfaSupervisorZone(),     // 1.0
+	"vcfa_region":               datasourceVcfaRegion(),             // 1.0
+	"vcfa_ip_space":             datasourceVcfaIpSpace(),            // 1.0
+	"vcfa_region_zone":          datasourceVcfaRegionZone(),         // 1.0
+	"vcfa_org_vdc":              datasourceVcfaOrgVdc(),             // 1.0
+	"vcfa_content_library":      datasourceVcfaContentLibrary(),     // 1.0
+	"vcfa_content_library_item": datasourceVcfaContentLibraryItem(), // 1.0
 }
 
 var globalResourceMap = map[string]*schema.Resource{
-	"vcfa_vcenter":     resourceVcfaVcenter(),    // 1.0
-	"vcfa_org":         resourceVcfaOrg(),        // 1.0
-	"vcfa_nsx_manager": resourceVcfaNsxManager(), // 1.0
-	"vcfa_region":      resourceVcfaRegion(),     // 1.0
-	"vcfa_ip_space":    resourceVcfaIpSpace(),    // 1.0
-	"vcfa_org_vdc":     resourceVcfaOrgVdc(),     // 1.0
+	"vcfa_vcenter":              resourceVcfaVcenter(),            // 1.0
+	"vcfa_org":                  resourceVcfaOrg(),                // 1.0
+	"vcfa_nsx_manager":          resourceVcfaNsxManager(),         // 1.0
+	"vcfa_region":               resourceVcfaRegion(),             // 1.0
+	"vcfa_ip_space":             resourceVcfaIpSpace(),            // 1.0
+	"vcfa_org_vdc":              resourceVcfaOrgVdc(),             // 1.0
+	"vcfa_content_library":      resourceVcfaContentLibrary(),     // 1.0
+	"vcfa_content_library_item": resourceVcfaContentLibraryItem(), // 1.0
 }
 
 // Provider returns a terraform.ResourceProvider.
