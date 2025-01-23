@@ -44,7 +44,7 @@ func datasourceVcfaOrgVdc() *schema.Resource {
 			"zone_resource_allocations": {
 				Type:        schema.TypeSet,
 				Computed:    true,
-				Elem:        tmOrgVdcDsZoneResourceAllocation,
+				Elem:        orgVdcDsZoneResourceAllocation,
 				Description: "A set of Region Zones and their resource allocations",
 			},
 			"status": {
@@ -56,7 +56,7 @@ func datasourceVcfaOrgVdc() *schema.Resource {
 	}
 }
 
-var tmOrgVdcDsZoneResourceAllocation = &schema.Resource{
+var orgVdcDsZoneResourceAllocation = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"region_zone_name": {
 			Type:        schema.TypeString,

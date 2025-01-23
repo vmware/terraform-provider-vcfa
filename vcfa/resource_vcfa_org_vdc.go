@@ -49,7 +49,7 @@ func resourceVcfaOrgVdc() *schema.Resource {
 			"zone_resource_allocations": {
 				Type:        schema.TypeSet,
 				Required:    true,
-				Elem:        tmOrgVdcZoneResourceAllocation,
+				Elem:        orgVdcZoneResourceAllocation,
 				Description: "A set of Region Zones and their resource allocations",
 			},
 			"status": {
@@ -66,7 +66,7 @@ func resourceVcfaOrgVdc() *schema.Resource {
 	}
 }
 
-var tmOrgVdcZoneResourceAllocation = &schema.Resource{
+var orgVdcZoneResourceAllocation = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"region_zone_name": {
 			Type:        schema.TypeString,
@@ -253,7 +253,7 @@ func setTmVdcData(_ *VCDClient, d *schema.ResourceData, vdc *govcd.TmVdc) error 
 		zoneCompute[zoneIndex] = oneZone
 	}
 
-	autoAllocatedSubnetSet := schema.NewSet(schema.HashResource(tmOrgVdcZoneResourceAllocation), zoneCompute)
+	autoAllocatedSubnetSet := schema.NewSet(schema.HashResource(orgVdcZoneResourceAllocation), zoneCompute)
 	err = d.Set("zone_resource_allocations", autoAllocatedSubnetSet)
 	if err != nil {
 		return fmt.Errorf("error setting 'zone_resource_allocations' after read: %s", err)
