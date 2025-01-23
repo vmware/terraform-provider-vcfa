@@ -33,6 +33,7 @@ func resourceVcfaRegion() *schema.Resource {
 			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
+				ForceNew:    true,
 				Description: fmt.Sprintf("%s name", labelVcfaRegion),
 				ValidateDiagFunc: validation.ToDiagFunc(
 					validation.StringMatch(rfc1123LabelNameRegex, "Name must match RFC 1123 Label name (lower case alphabet, 0-9 and hyphen -)"),
