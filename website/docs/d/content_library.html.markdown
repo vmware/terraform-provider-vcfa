@@ -23,7 +23,7 @@ output "is_shared" {
   value = data.vcfa_content_library.cl.is_shared
 }
 output "owner_org" {
-  value = data.vcfa_content_library.cl.owner_org_id
+  value = data.vcfa_content_library.cl.org_id
 }
 ```
 
