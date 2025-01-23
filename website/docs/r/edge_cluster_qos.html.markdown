@@ -45,14 +45,16 @@ The following arguments are supported:
   [vcfa_edge_cluster](/providers/vmware/vcfa/latest/docs/data-sources/edge_cluster) data source
 * `egress_committed_bandwidth_mbps` - (Optional) Committed egress bandwidth specified in Mbps.
   Bandwidth is limited to line rate. Traffic exceeding bandwidth will be dropped. Required with
-  `egress_burst_size_bytes`. `-1` is unlimited
+  `egress_burst_size_bytes`. Default is `-1` - unlimited
 * `egress_burst_size_bytes` - (Optional) Egress burst size in bytes. Required with
-  `egress_committed_bandwidth_mbps` `-1` is unlimited
+  `egress_committed_bandwidth_mbps`. Default is `-1` - unlimited
 * `ingress_committed_bandwidth_mbps` - (Optional) Committed ingress bandwidth specified in Mbps.
   Bandwidth is limited to line rate. Traffic exceeding bandwidth will be dropped. Required with
-  `ingress_burst_size_bytes` `-1` is unlimited
+  `ingress_burst_size_bytes`. Default is `-1` - unlimited
 * `ingress_burst_size_bytes` - (Optional) Ingress burst size in bytes. Required with
-  `ingress_committed_bandwidth_mbps` `-1` is unlimited
+  `ingress_committed_bandwidth_mbps`. Default is `-1` - unlimited
+
+  -> Deleting this resource will reset all values to unlimited
 
 ## Importing
 
