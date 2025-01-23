@@ -10,6 +10,8 @@ description: |-
 
 Provides a VMware Cloud Foundation Automation Provider Gateway resource.
 
+~> Only `System Administrator` can create this resource.
+
 ## Example Usage
 
 ```hcl
