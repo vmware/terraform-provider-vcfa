@@ -44,9 +44,9 @@ var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_org_vdc":               datasourceVcfaOrgVdc(),              // 1.0
 	"vcfa_region_storage_policy": datasourceVcfaRegionStoragePolicy(), // 1.0
 	"vcfa_storage_class":         datasourceVcfaStorageClass(),        // 1.0
-	"vcfa_content_library":       datasourceVcfaContentLibrary(),
-	"vcfa_tier0_gateway":         datasourceVcfaTier0Gateway(),    // 1.0
-	"vcfa_provider_gateway":      datasourceVcfaProviderGateway(), // 1.0
+	"vcfa_content_library":       datasourceVcfaContentLibrary(),      // 1.0
+	"vcfa_tier0_gateway":         datasourceVcfaTier0Gateway(),        // 1.0
+	"vcfa_provider_gateway":      datasourceVcfaProviderGateway(),     // 1.0
 }
 
 var globalResourceMap = map[string]*schema.Resource{

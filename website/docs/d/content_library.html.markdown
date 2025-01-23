@@ -1,7 +1,7 @@
 ---
 layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_content_library"
-sidebar_current: "docs-vcfa-data-source-tm-content-library"
+sidebar_current: "docs-vcfa-data-source-content-library"
 description: |-
   Provides a VMware Cloud Foundation Automation Content Library data source. This can be used to read Content Libraries.
 ---
