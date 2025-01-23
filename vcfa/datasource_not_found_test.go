@@ -45,9 +45,9 @@ func testSpecificDataSourceNotFound(dataSourceName string, vcdClient *VCDClient)
 				reason:         "Data source vcfa_tm_version always returns data, it is not possible to get ENF",
 			},
 			{
-				// TODO: TM: Retrieving non-existent Supervisor by ID returns 404 and not ENF
+				// TODO: TM: Retrieving non-existent Supervisor by ID returns 400 and not ENF
 				dataSourceName: "vcfa_supervisor_zone",
-				reason:         "TODO: TM: Retrieving non-existent Supervisor by ID returns 404 and not ENF",
+				reason:         "TODO: TM: Retrieving non-existent Supervisor by ID returns 400 and not ENF",
 			},
 		}
 		for _, skip := range skipAlwaysSlice {
