@@ -147,6 +147,8 @@ func addMandatoryParams(dataSourceName string, mandatoryFields []string, t *test
 			templateFields = templateFields + `region_id = "urn:vcloud:region:12345678-1234-1234-1234-123456789012"` + "\n"
 		case "org_id":
 			templateFields = templateFields + `org_id = "urn:vcloud:org:12345678-1234-1234-1234-123456789012"` + "\n"
+		case "content_library_id":
+			templateFields = templateFields + `content_library_id = "urn:vcloud:contentlibrary:12345678-1234-1234-1234-123456789012"` + "\n"
 		}
 	}
 
