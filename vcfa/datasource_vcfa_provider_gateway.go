@@ -60,7 +60,7 @@ func datasourceVcfaProviderGatewayRead(ctx context.Context, d *schema.ResourceDa
 	c := dsReadConfig[*govcd.TmProviderGateway, types.TmProviderGateway]{
 		entityLabel:    labelVcfaProviderGateway,
 		getEntityFunc:  getProviderGateway,
-		stateStoreFunc: setTmProviderGatewayData,
+		stateStoreFunc: setProviderGatewayData,
 	}
 	return readDatasource(ctx, d, meta, c)
 }

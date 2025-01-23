@@ -55,12 +55,12 @@ func datasourceVcfaTier0GatewayRead(ctx context.Context, d *schema.ResourceData,
 	c := dsReadConfig[*govcd.TmTier0Gateway, types.TmTier0Gateway]{
 		entityLabel:    labelVcfaTier0Gateway,
 		getEntityFunc:  getT0ByName,
-		stateStoreFunc: setTmTier0GatewayData,
+		stateStoreFunc: setTier0GatewayData,
 	}
 	return readDatasource(ctx, d, meta, c)
 }
 
-func setTmTier0GatewayData(_ *VCDClient, d *schema.ResourceData, t *govcd.TmTier0Gateway) error {
+func setTier0GatewayData(_ *VCDClient, d *schema.ResourceData, t *govcd.TmTier0Gateway) error {
 	d.SetId(t.TmTier0Gateway.ID) // So far the API returns plain UUID (not URN)
 	dSet(d, "name", t.TmTier0Gateway.DisplayName)
 	dSet(d, "description", t.TmTier0Gateway.Description)
