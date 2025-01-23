@@ -39,6 +39,17 @@ func extractIdsFromOpenApiReferences(refs []types.OpenApiReference) []string {
 	return resultStrings
 }
 
+// convertSliceOfStringsToOpenApiReferenceIds converts []string to []types.OpenApiReference by filling
+// types.OpenApiReference.ID fields
+func convertSliceOfStringsToOpenApiReferenceIds(ids []string) []types.OpenApiReference {
+	resultReferences := make([]types.OpenApiReference, len(ids))
+	for i, v := range ids {
+		resultReferences[i].ID = v
+	}
+
+	return resultReferences
+}
+
 // contains returns true if `sliceToSearch` contains `searched`. Returns false otherwise.
 func contains(sliceToSearch []string, searched string) bool {
 	found := false
