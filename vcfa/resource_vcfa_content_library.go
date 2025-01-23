@@ -9,6 +9,8 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
+const labelVcfaContentLibrary = "Content Library"
+
 func resourceVcfaContentLibrary() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVcfaContentLibraryCreate,
@@ -22,12 +24,12 @@ func resourceVcfaContentLibrary() *schema.Resource {
 			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "The name of the Content Library",
+				Description: fmt.Sprintf("The name of the %s", labelVcfaContentLibrary),
 			},
 			"storage_class_ids": {
 				Type:        schema.TypeSet,
 				Required:    true,
-				Description: "A set of storage class IDs used by this Content Library",
+				Description: fmt.Sprintf("A set of storage class IDs used by this %s", labelVcfaContentLibrary),
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -37,57 +39,57 @@ func resourceVcfaContentLibrary() *schema.Resource {
 				Optional: true,
 				Default:  true,
 				ForceNew: true, // Cannot be updated
-				Description: "For Tenant Content Libraries this field represents whether this Content Library should be " +
-					"automatically attached to all current and future namespaces in the tenant organization. If no value is " +
-					"supplied during creation then this field will default to true. If a value of false is supplied, " +
-					"then this Tenant Content Library will only be attached to namespaces that explicitly request it. " +
-					"For Provider Content Libraries this field is not needed for creation and will always be returned as true. " +
-					"This field cannot be updated after Content Library creation",
+				Description: fmt.Sprintf("For Tenant Content Libraries this field represents whether this %s should be "+
+					"automatically attached to all current and future namespaces in the tenant organization. If no value is "+
+					"supplied during creation then this field will default to true. If a value of false is supplied, "+
+					"then this Tenant %s will only be attached to namespaces that explicitly request it. "+
+					"For Provider Content Libraries this field is not needed for creation and will always be returned as true. "+
+					"This field cannot be updated after %s creation", labelVcfaContentLibrary, labelVcfaContentLibrary, labelVcfaContentLibrary),
 			},
 			"creation_date": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The ISO-8601 timestamp representing when this Content Library was created",
+				Description: fmt.Sprintf("The ISO-8601 timestamp representing when this %s was created", labelVcfaContentLibrary),
 			},
 			"description": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "The description of the Content Library",
+				Description: fmt.Sprintf("The description of the %s", labelVcfaContentLibrary),
 			},
 			"is_shared": {
 				Type:        schema.TypeBool,
 				Computed:    true,
-				Description: "Whether this Content Library is shared with other Organziations",
+				Description: fmt.Sprintf("Whether this %s is shared with other %ss", labelVcfaContentLibrary, labelVcfaOrg),
 			},
 			"is_subscribed": {
 				Type:        schema.TypeBool,
 				Computed:    true,
-				Description: "Whether this Content Library is subscribed from an external published library",
+				Description: fmt.Sprintf("Whether this %s is subscribed from an external published library", labelVcfaContentLibrary),
 			},
 			"library_type": {
 				Type:     schema.TypeString,
 				Computed: true,
-				Description: "The type of content library, can be either PROVIDER (Content Library that is scoped to a " +
-					"provider) or TENANT (Content Library that is scoped to a tenant organization)",
+				Description: fmt.Sprintf("The type of content library, can be either PROVIDER (%s that is scoped to a "+
+					"provider) or TENANT (%s that is scoped to a tenant organization)", labelVcfaContentLibrary, labelVcfaContentLibrary),
 			},
 			"owner_org_id": {
 				Type: schema.TypeString,
 				// TODO: TM: This should be optional: Either Provider or Tenant can create CLs
 				Computed:    true,
-				Description: "The reference to the Organization that the Content Library belongs to",
+				Description: fmt.Sprintf("The reference to the %s that the %s belongs to", labelVcfaOrg, labelVcfaContentLibrary),
 			},
 			"subscription_config": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Optional:    true,
 				ForceNew:    true, // Can't change subscription settings
-				Description: "A block representing subscription settings of a Content Library",
+				Description: fmt.Sprintf("A block representing subscription settings of a %s", labelVcfaContentLibrary),
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"subscription_url": {
 							Type:        schema.TypeString,
 							Required:    true,
-							Description: "Subscription url of this Content Library",
+							Description: fmt.Sprintf("Subscription url of this %s", labelVcfaContentLibrary),
 						},
 						"password": {
 							Type:        schema.TypeString,
@@ -106,7 +108,7 @@ func resourceVcfaContentLibrary() *schema.Resource {
 			"version_number": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "Version number of this Content library",
+				Description: fmt.Sprintf("Version number of this %s", labelVcfaContentLibrary),
 			},
 		},
 	}
@@ -117,13 +119,13 @@ func resourceVcfaContentLibraryCreate(ctx context.Context, d *schema.ResourceDat
 
 	t, err := getContentLibraryType(d)
 	if err != nil {
-		return diag.Errorf("error getting Content Library type: %s", err)
+		return diag.Errorf("error getting %s type: %s", labelVcfaContentLibrary, err)
 	}
 
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
 	cl, err := vcdClient.CreateContentLibrary(t, nil)
 	if err != nil {
-		return diag.Errorf("error creating Content Library: %s", err)
+		return diag.Errorf("error creating %s: %s", labelVcfaContentLibrary, err)
 	}
 
 	d.SetId(cl.ContentLibrary.ID)
@@ -136,17 +138,17 @@ func resourceVcfaContentLibraryUpdate(ctx context.Context, d *schema.ResourceDat
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
 	rsp, err := vcdClient.GetContentLibraryById(d.Id(), nil)
 	if err != nil {
-		return diag.Errorf("error retrieving Content Library: %s", err)
+		return diag.Errorf("error retrieving %s: %s", labelVcfaContentLibrary, err)
 	}
 
 	t, err := getContentLibraryType(d)
 	if err != nil {
-		return diag.Errorf("error getting Content Library type: %s", err)
+		return diag.Errorf("error getting %s type: %s", labelVcfaContentLibrary, err)
 	}
 
 	_, err = rsp.Update(t)
 	if err != nil {
-		return diag.Errorf("error updating Content Library Type: %s", err)
+		return diag.Errorf("error updating %s Type: %s", labelVcfaContentLibrary, err)
 	}
 
 	return resourceVcfaContentLibraryRead(ctx, d, meta)
@@ -171,12 +173,12 @@ func genericVcfaContentLibraryRead(_ context.Context, d *schema.ResourceData, me
 			d.SetId("")
 			return nil
 		}
-		return diag.Errorf("error retrieving Content Library: %s", err)
+		return diag.Errorf("error retrieving %s: %s", labelVcfaContentLibrary, err)
 	}
 
 	err = setVcfaContentLibraryData(d, cl.ContentLibrary)
 	if err != nil {
-		return diag.Errorf("error saving Content Library data into state: %s", err)
+		return diag.Errorf("error saving %s data into state: %s", labelVcfaContentLibrary, err)
 	}
 
 	d.SetId(cl.ContentLibrary.ID)
@@ -188,13 +190,13 @@ func resourceVcfaContentLibraryDelete(_ context.Context, d *schema.ResourceData,
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
 	cl, err := vcdClient.GetContentLibraryById(d.Id(), nil)
 	if err != nil {
-		return diag.Errorf("error retrieving Content Library: %s", err)
+		return diag.Errorf("error retrieving %s: %s", labelVcfaContentLibrary, err)
 	}
 
 	// TODO: TM: Add two new arguments "force_delete" and "delete_recursive"
 	err = cl.Delete(true, true)
 	if err != nil {
-		return diag.Errorf("error deleting Content Library: %s", err)
+		return diag.Errorf("error deleting %s: %s", labelVcfaContentLibrary, err)
 	}
 
 	return nil
@@ -205,7 +207,7 @@ func resourceVcfaContentLibraryImport(_ context.Context, d *schema.ResourceData,
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
 	rsp, err := vcdClient.GetContentLibraryByName(d.Id(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving Content Library with name '%s': %s", d.Id(), err)
+		return nil, fmt.Errorf("error retrieving %s with name '%s': %s", labelVcfaContentLibrary, d.Id(), err)
 	}
 
 	d.SetId(rsp.ContentLibrary.ID)

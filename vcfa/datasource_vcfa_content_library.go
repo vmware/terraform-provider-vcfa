@@ -2,6 +2,7 @@ package vcfa
 
 import (
 	"context"
+	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -13,12 +14,12 @@ func datasourceVcfaContentLibrary() *schema.Resource {
 			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "The name of the Content Library",
+				Description: fmt.Sprintf("The name of the %s", labelVcfaContentLibrary),
 			},
 			"storage_class_ids": {
 				Type:        schema.TypeSet,
 				Computed:    true,
-				Description: "A set of storage class IDs used by this Content Library",
+				Description: fmt.Sprintf("A set of storage class IDs used by this %s", labelVcfaContentLibrary),
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -26,50 +27,50 @@ func datasourceVcfaContentLibrary() *schema.Resource {
 			"auto_attach": {
 				Type:     schema.TypeBool,
 				Computed: true,
-				Description: "For Tenant Content Libraries this field represents whether this Content Library should be " +
-					"automatically attached to all current and future namespaces in the tenant organization",
+				Description: fmt.Sprintf("For Tenant Content Libraries this field represents whether this %s should be "+
+					"automatically attached to all current and future namespaces in the tenant organization", labelVcfaContentLibrary),
 			},
 			"creation_date": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The ISO-8601 timestamp representing when this Content Library was created",
+				Description: fmt.Sprintf("The ISO-8601 timestamp representing when this %s was created", labelVcfaContentLibrary),
 			},
 			"description": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The description of the Content Library",
+				Description: fmt.Sprintf("The description of the %s", labelVcfaContentLibrary),
 			},
 			"is_shared": {
 				Type:        schema.TypeBool,
 				Computed:    true,
-				Description: "Whether this Content Library is shared with other Organziations",
+				Description: fmt.Sprintf("Whether this %s is shared with other %ss", labelVcfaContentLibrary, labelVcfaOrg),
 			},
 			"is_subscribed": {
 				Type:        schema.TypeBool,
 				Computed:    true,
-				Description: "Whether this Content Library is subscribed from an external published library",
+				Description: fmt.Sprintf("Whether this %s is subscribed from an external published library", labelVcfaContentLibrary),
 			},
 			"library_type": {
 				Type:     schema.TypeString,
 				Computed: true,
-				Description: "The type of content library, can be either PROVIDER (Content Library that is scoped to a " +
-					"provider) or TENANT (Content Library that is scoped to a tenant organization)",
+				Description: fmt.Sprintf("The type of content library, can be either PROVIDER (%s that is scoped to a "+
+					"provider) or TENANT (%s that is scoped to a tenant organization)", labelVcfaContentLibrary, labelVcfaContentLibrary),
 			},
 			"owner_org_id": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The reference to the Organization that the Content Library belongs to",
+				Description: fmt.Sprintf("The reference to the %s that the %s belongs to", labelVcfaOrg, labelVcfaContentLibrary),
 			},
 			"subscription_config": {
 				Type:        schema.TypeList,
 				Computed:    true,
-				Description: "A block representing subscription settings of a Content Library",
+				Description: fmt.Sprintf("A block representing subscription settings of a %s", labelVcfaContentLibrary),
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"subscription_url": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "Subscription url of this Content Library",
+							Description: fmt.Sprintf("Subscription url of this %s", labelVcfaContentLibrary),
 						},
 						"password": {
 							Type:        schema.TypeString,
@@ -87,7 +88,7 @@ func datasourceVcfaContentLibrary() *schema.Resource {
 			"version_number": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "Version number of this Content library",
+				Description: fmt.Sprintf("Version number of this %s", labelVcfaContentLibrary),
 			},
 		},
 	}
