@@ -51,7 +51,7 @@ func resourceVcfaContentLibrary() *schema.Resource {
 			"storage_class_ids": {
 				Type:        schema.TypeSet,
 				Required:    true,
-				Description: fmt.Sprintf("A set of storage class IDs used by this %s", labelVcfaContentLibrary),
+				Description: fmt.Sprintf("A set of %s IDs used by this %s", labelVcfaStorageClass, labelVcfaContentLibrary),
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
