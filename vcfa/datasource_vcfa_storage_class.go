@@ -84,5 +84,7 @@ func setStorageClassData(_ *VCDClient, d *schema.ResourceData, sc *govcd.Storage
 		return err
 	}
 
+	d.SetId(sc.StorageClass.ID)
+
 	return nil
 }

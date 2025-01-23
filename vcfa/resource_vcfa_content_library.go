@@ -34,6 +34,7 @@ func resourceVcfaContentLibrary() *schema.Resource {
 			"org_id": {
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true, // If not configured, Organization ID is retrieved and saved
 				ForceNew:    true, // Can't be changed after created
 				Description: fmt.Sprintf("The reference to the %s that the %s belongs to", labelVcfaOrg, labelVcfaContentLibrary),
 			},
@@ -303,5 +304,7 @@ func setContentLibraryData(_ *VCDClient, d *schema.ResourceData, cl *govcd.Conte
 	if err != nil {
 		return err
 	}
+
+	d.SetId(cl.ContentLibrary.ID)
 	return nil
 }

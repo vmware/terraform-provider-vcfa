@@ -78,5 +78,7 @@ func setRegionStoragePolicyData(_ *VCDClient, d *schema.ResourceData, rsp *govcd
 	dSet(d, "storage_consumed_mb", rsp.RegionStoragePolicy.StorageConsumedMB)
 	dSet(d, "status", rsp.RegionStoragePolicy.Status)
 
+	d.SetId(rsp.RegionStoragePolicy.ID)
+
 	return nil
 }

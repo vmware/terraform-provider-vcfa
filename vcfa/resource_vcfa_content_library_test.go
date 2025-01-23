@@ -110,7 +110,11 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 			{
 				Config: configText3,
 				Check: resource.ComposeTestCheckFunc(
-					resourceFieldsEqual(resourceName, "data.vcfa_content_library.cl_ds", nil),
+					resourceFieldsEqual(resourceName, "data.vcfa_content_library.cl_ds", []string{
+						"%", // Does not have delete_recursive, delete_force
+						"delete_recursive",
+						"delete_force",
+					}),
 				),
 			},
 			{
@@ -118,6 +122,10 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateId:     params["Name"].(string),
+				ImportStateVerifyIgnore: []string{
+					"delete_recursive",
+					"delete_force",
+				},
 			},
 		},
 	})
