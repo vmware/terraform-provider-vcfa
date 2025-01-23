@@ -22,7 +22,7 @@ data "vcfa_vcenter" "vc" {
 
 The following arguments are supported:
 
-- `name` - (Required) vCenter name
+* `name` - (Required) vCenter name
 
 ## Attribute reference
 

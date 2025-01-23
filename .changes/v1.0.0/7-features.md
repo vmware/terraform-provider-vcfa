@@ -1,3 +1,0 @@
-- **New Resource:** `vcfa_org_vdc` to manage Organization VDCs (Region Quotas) [GH-7]
-- **New Data Source:** `vcfa_org_vdc` to read Organization VDCs (Region Quotas) [GH-7]
-- **New Data Source:** `vcfa_region_zone` to read Region Zones [GH-7]

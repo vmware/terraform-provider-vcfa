@@ -22,7 +22,7 @@ data "vcfa_region" "one" {
 
 The following arguments are supported:
 
-- `name` - (Required) A name of existing Region
+* `name` - (Required) A name of existing Region
 
 ## Attribute Reference
 

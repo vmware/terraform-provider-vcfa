@@ -22,12 +22,12 @@ data "vcfa_nsx_manager" "main" {
 
 The following arguments are supported:
 
-- `name` - (Required) NSX manager name
+* `name` - (Required) NSX manager name
 
 ## Attribute reference
 
-- `id` - ID of the manager
-- `href` - Full URL of the manager
+* `id` - ID of the manager
+* `href` - Full URL of the manager
 
 All attributes defined in
 [`vcfa_nsx_manager`](/providers/vmware/vcfa/latest/docs/resources/nsx_manager#attribute-reference)
