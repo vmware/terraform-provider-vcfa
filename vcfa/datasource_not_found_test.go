@@ -45,9 +45,9 @@ func testSpecificDataSourceNotFound(dataSourceName string, vcdClient *VCDClient)
 				reason:         "Data source vcfa_tm_version always returns data, it is not possible to get ENF",
 			},
 			{
-				// TODO: TM: Retrieving non-existent Supervisor by ID returns 404 and not ENF
+				// TODO: TM: Retrieving non-existent Supervisor by ID returns 400 and not ENF
 				dataSourceName: "vcfa_supervisor_zone",
-				reason:         "TODO: TM: Retrieving non-existent Supervisor by ID returns 404 and not ENF",
+				reason:         "TODO: TM: Retrieving non-existent Supervisor by ID returns 400 and not ENF",
 			},
 		}
 		for _, skip := range skipAlwaysSlice {
@@ -77,6 +77,9 @@ func testSpecificDataSourceNotFound(dataSourceName string, vcdClient *VCDClient)
 			"vcfa_supervisor",
 			"vcfa_supervisor_zone",
 			"vcfa_vcenter",
+			"vcfa_ip_space",
+			"vcfa_region_zone",
+			"vcfa_org_vdc",
 		}
 
 		if contains(dataSourcesRequiringSysAdmin, dataSourceName) && !usingSysAdmin() {
@@ -139,6 +142,10 @@ func addMandatoryParams(dataSourceName string, mandatoryFields []string, t *test
 			templateFields = templateFields + `supervisor_id = "urn:vcloud:supervisor:12345678-1234-1234-1234-123456789012"` + "\n"
 		case "vcenter_id":
 			templateFields = templateFields + `vcenter_id = "urn:vcloud:vimserver:12345678-1234-1234-1234-123456789012"` + "\n"
+		case "region_id":
+			templateFields = templateFields + `region_id = "urn:vcloud:region:12345678-1234-1234-1234-123456789012"` + "\n"
+		case "org_id":
+			templateFields = templateFields + `org_id = "urn:vcloud:org:12345678-1234-1234-1234-123456789012"` + "\n"
 		}
 	}
 

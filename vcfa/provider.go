@@ -45,12 +45,17 @@ var globalDataSourceMap = map[string]*schema.Resource{
 }
 
 var globalResourceMap = map[string]*schema.Resource{
-	"vcfa_vcenter":          resourceVcfaVcenter(),         // 1.0
-	"vcfa_org":              resourceVcfaOrg(),             // 1.0
-	"vcfa_nsx_manager":      resourceVcfaNsxManager(),      // 1.0
-	"vcfa_region":           resourceVcfaRegion(),          // 1.0
-	"vcfa_ip_space":         resourceVcfaIpSpace(),         // 1.0
-	"vcfa_provider_gateway": resourceVcfaProviderGateway(), // 1.0
+	"vcfa_vcenter":          resourceVcfaVcenter(),          // 1.0
+	"vcfa_org":              resourceVcfaOrg(),              // 1.0
+	"vcfa_nsx_manager":      resourceVcfaNsxManager(),       // 1.0
+	"vcfa_region":           resourceVcfaRegion(),           // 1.0
+	"vcfa_ip_space":         resourceVcfaIpSpace(),          // 1.0
+	"vcfa_tm_version":       datasourceVcfaTmVersion(),      // 1.0
+	"vcfa_supervisor":       datasourceVcfaSupervisor(),     // 1.0
+	"vcfa_supervisor_zone":  datasourceVcfaSupervisorZone(), // 1.0
+	"vcfa_region_zone":      datasourceVcfaRegionZone(),     // 1.0
+	"vcfa_org_vdc":          datasourceVcfaOrgVdc(),         // 1.0
+	"vcfa_provider_gateway": resourceVcfaProviderGateway(),  // 1.0
 }
 
 // Provider returns a terraform.ResourceProvider.
