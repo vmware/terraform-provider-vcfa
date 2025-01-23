@@ -1,7 +1,7 @@
 ---
 layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_tm_version"
-sidebar_current: "docs-data-source-vcfa-tm-version"
+sidebar_current: "docs-data-source-vcfa-version"
 description: |-
   Provides a data source to fetch the Tenant Manager version from VMware Cloud Foundation Automation,
   its maximum supported API version and perform some optional checks with version constraints.
