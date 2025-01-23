@@ -111,15 +111,18 @@ function multi_newline_check {
 function terraform_validation_check {
     init_error_text=''
     provider_version="$(cat VERSION)"
-    git tag "${provider_version:1}"
-    make install
+    git tag "$provider_version" > /dev/null 2>&1
+    if [ "$?" -eq 0 ]; then
+      clean_tag=1
+    fi
+    make install > /dev/null 2>&1
     curdir="$PWD"
 
     # Create a temporary folder where we put the file to test and the provider definition file.
     [ -d "$tmp_dir/validate" ] && rm -r "$tmp_dir/validate"
     mkdir "$tmp_dir/validate"
 
-    echo "  (Using $provider_version VCFA provider version)"
+    echo "  (Using just installed $provider_version VCFA provider version)"
     for hcl_file in "$tmp_dir"/*.tf
     do
         command_start_time=$(date +%s)
@@ -142,19 +145,21 @@ terraform {
   required_version = \">= 0.13\"
 }" > provider_setup.tf
 
-        terraform_result="$(terraform init -no-color 2>&1 > /dev/null)"
+        terraform_result="$(terraform init -no-color > /dev/null 2>&1)"
         if [ -n "$terraform_result" ]; then
             ((init_errors++))
             init_error_text="${init_error_text}${terraform_result}"
         fi
 
-        rm -f current.tf # We don't remove the provider so we don't download it everytime
+        rm -f ./*.tf
         cd "$curdir" || exit 1
         command_end_time=$(date +%s)
         print_times "terraform init $hcl_file" "$command_start_time" "$command_end_time"
     done
 
-    git tag -d "$provider_version"
+    if [ "$clean_tag" -eq 1 ]; then
+      git tag -d "$provider_version" > /dev/null 2>&1
+    fi
 
     echo ""
 }
