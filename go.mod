@@ -5,7 +5,7 @@ go 1.22.3
 require (
 	github.com/hashicorp/go-version v1.7.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.35.0
-	github.com/vmware/go-vcloud-director/v3 v3.0.0-alpha.17
+	github.com/vmware/go-vcloud-director/v3 v3.0.0-alpha.18
 )
 
 require (
@@ -66,5 +66,3 @@ require (
 	google.golang.org/protobuf v1.35.1 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
-
-replace github.com/vmware/go-vcloud-director/v3 => github.com/adambarreiro/go-vcloud-director/v3 v3.0.0-20250122151058-e6520ed68fad
