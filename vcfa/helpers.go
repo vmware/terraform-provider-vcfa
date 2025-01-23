@@ -1,9 +1,26 @@
 package vcfa
 
 import (
+	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"github.com/vmware/go-vcloud-director/v3/util"
 	"os"
 )
+
+// Returns a valid Tenant Context if the Organization identified by the given ID is valid and exists.
+// Otherwise, it returns either an empty tenant context, or an error if the Organization does not exist or is invalid.
+func getTenantContextFromOrgId(vcdClient *VCDClient, orgId string) (*govcd.TenantContext, error) {
+	if orgId == "" {
+		return &govcd.TenantContext{}, nil
+	}
+	org, err := vcdClient.GetTmOrgById(orgId)
+	if err != nil {
+		return nil, err
+	}
+	return &govcd.TenantContext{
+		OrgId:   org.TmOrg.ID,
+		OrgName: org.TmOrg.Name,
+	}, nil
+}
 
 // safeClose closes a file and logs the error, if any. This can be used instead of file.Close()
 func safeClose(file *os.File) {

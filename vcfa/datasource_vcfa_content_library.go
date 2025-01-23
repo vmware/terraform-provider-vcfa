@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/vmware/go-vcloud-director/v3/govcd"
+	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
 func datasourceVcfaContentLibrary() *schema.Resource {
@@ -15,6 +17,11 @@ func datasourceVcfaContentLibrary() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: fmt.Sprintf("The name of the %s", labelVcfaContentLibrary),
+			},
+			"org_id": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: fmt.Sprintf("The reference to the %s that the %s belongs to", labelVcfaOrg, labelVcfaContentLibrary),
 			},
 			"storage_class_ids": {
 				Type:        schema.TypeSet,
@@ -56,11 +63,6 @@ func datasourceVcfaContentLibrary() *schema.Resource {
 				Description: fmt.Sprintf("The type of content library, can be either PROVIDER (%s that is scoped to a "+
 					"provider) or TENANT (%s that is scoped to a tenant organization)", labelVcfaContentLibrary, labelVcfaContentLibrary),
 			},
-			"owner_org_id": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: fmt.Sprintf("The reference to the %s that the %s belongs to", labelVcfaOrg, labelVcfaContentLibrary),
-			},
 			"subscription_config": {
 				Type:        schema.TypeList,
 				Computed:    true,
@@ -95,5 +97,17 @@ func datasourceVcfaContentLibrary() *schema.Resource {
 }
 
 func datasourceVcfaContentLibraryRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return genericVcfaContentLibraryRead(ctx, d, meta, "datasource")
+	vcdClient := meta.(*VCDClient)
+	c := dsReadConfig[*govcd.ContentLibrary, types.ContentLibrary]{
+		entityLabel: labelVcfaContentLibrary,
+		getEntityFunc: func(name string) (*govcd.ContentLibrary, error) {
+			tenantContext, err := getTenantContextFromOrgId(vcdClient, d.Get("org_id").(string))
+			if err != nil {
+				return nil, err
+			}
+			return vcdClient.GetContentLibraryByName(name, tenantContext)
+		},
+		stateStoreFunc: setContentLibraryData,
+	}
+	return readDatasource(ctx, d, meta, c)
 }

@@ -7,9 +7,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
+	"log"
+	"strings"
 )
 
 const labelVcfaContentLibrary = "Content Library"
+
+// TODO: TM: Move to Content Library Item
+const labelVcfaContentLibraryItem = "Content Library Item"
 
 func resourceVcfaContentLibrary() *schema.Resource {
 	return &schema.Resource{
@@ -25,6 +30,21 @@ func resourceVcfaContentLibrary() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: fmt.Sprintf("The name of the %s", labelVcfaContentLibrary),
+			},
+			"org_id": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: fmt.Sprintf("The reference to the %s that the %s belongs to", labelVcfaOrg, labelVcfaContentLibrary),
+			},
+			"delete_force": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: fmt.Sprintf("On deletion, forcefully deletes the %s and its %ss", labelVcfaContentLibrary, labelVcfaContentLibraryItem),
+			},
+			"delete_recursive": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: fmt.Sprintf("On deletion, deletes the %s, including its %ss, in a single operation", labelVcfaContentLibrary, labelVcfaContentLibraryItem),
 			},
 			"storage_class_ids": {
 				Type:        schema.TypeSet,
@@ -72,12 +92,6 @@ func resourceVcfaContentLibrary() *schema.Resource {
 				Description: fmt.Sprintf("The type of content library, can be either PROVIDER (%s that is scoped to a "+
 					"provider) or TENANT (%s that is scoped to a tenant organization)", labelVcfaContentLibrary, labelVcfaContentLibrary),
 			},
-			"owner_org_id": {
-				Type: schema.TypeString,
-				// TODO: TM: This should be optional: Either Provider or Tenant can create CLs
-				Computed:    true,
-				Description: fmt.Sprintf("The reference to the %s that the %s belongs to", labelVcfaOrg, labelVcfaContentLibrary),
-			},
 			"subscription_config": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -116,106 +130,121 @@ func resourceVcfaContentLibrary() *schema.Resource {
 
 func resourceVcfaContentLibraryCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
-
-	t, err := getContentLibraryType(d)
+	tenantContext, err := getTenantContextFromOrgId(vcdClient, d.Get("org_id").(string))
 	if err != nil {
-		return diag.Errorf("error getting %s type: %s", labelVcfaContentLibrary, err)
+		return diag.FromErr(err)
 	}
-
-	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
-	cl, err := vcdClient.CreateContentLibrary(t, nil)
+	cl, err := vcdClient.CreateContentLibrary(getContentLibraryType(d), tenantContext)
 	if err != nil {
-		return diag.Errorf("error creating %s: %s", labelVcfaContentLibrary, err)
+		return diag.FromErr(err)
 	}
-
-	d.SetId(cl.ContentLibrary.ID)
-
+	err = setContentLibraryData(vcdClient, d, cl)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return resourceVcfaContentLibraryRead(ctx, d, meta)
+}
+
+func resourceVcfaContentLibraryRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	vcdClient := meta.(*VCDClient)
+	tenantContext, err := getTenantContextFromOrgId(vcdClient, d.Get("org_id").(string))
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	var cl *govcd.ContentLibrary
+	idOrName := d.Id()
+	if idOrName != "" {
+		cl, err = vcdClient.GetContentLibraryById(idOrName, tenantContext)
+	} else {
+		idOrName = d.Get("name").(string)
+		cl, err = vcdClient.GetContentLibraryByName(idOrName, tenantContext)
+	}
+	if govcd.ContainsNotFound(err) {
+		d.SetId("")
+		log.Printf("[DEBUG] Content Library no longer exists. Removing from tfstate")
+	}
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	err = setContentLibraryData(vcdClient, d, cl)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	return nil
 }
 
 func resourceVcfaContentLibraryUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
-	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
-	rsp, err := vcdClient.GetContentLibraryById(d.Id(), nil)
+	tenantContext, err := getTenantContextFromOrgId(vcdClient, d.Get("org_id").(string))
 	if err != nil {
-		return diag.Errorf("error retrieving %s: %s", labelVcfaContentLibrary, err)
+		return diag.FromErr(err)
 	}
-
-	t, err := getContentLibraryType(d)
+	cl, err := vcdClient.GetContentLibraryById(d.Id(), tenantContext)
 	if err != nil {
-		return diag.Errorf("error getting %s type: %s", labelVcfaContentLibrary, err)
+		return diag.FromErr(err)
 	}
-
-	_, err = rsp.Update(t)
+	_, err = cl.Update(getContentLibraryType(d))
 	if err != nil {
-		return diag.Errorf("error updating %s Type: %s", labelVcfaContentLibrary, err)
+		return diag.FromErr(err)
 	}
-
 	return resourceVcfaContentLibraryRead(ctx, d, meta)
 }
 
-func resourceVcfaContentLibraryRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return genericVcfaContentLibraryRead(ctx, d, meta, "resource")
-}
-func genericVcfaContentLibraryRead(_ context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
+func resourceVcfaContentLibraryDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
-
-	var cl *govcd.ContentLibrary
-	var err error
-	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
-	if d.Id() != "" {
-		cl, err = vcdClient.GetContentLibraryById(d.Id(), nil)
-	} else {
-		cl, err = vcdClient.GetContentLibraryByName(d.Get("name").(string), nil)
-	}
+	tenantContext, err := getTenantContextFromOrgId(vcdClient, d.Get("org_id").(string))
 	if err != nil {
-		if origin == "resource" && govcd.ContainsNotFound(err) {
-			d.SetId("")
-			return nil
-		}
-		return diag.Errorf("error retrieving %s: %s", labelVcfaContentLibrary, err)
+		return diag.FromErr(err)
 	}
-
-	err = setVcfaContentLibraryData(d, cl.ContentLibrary)
+	cl, err := vcdClient.GetContentLibraryById(d.Id(), tenantContext)
 	if err != nil {
-		return diag.Errorf("error saving %s data into state: %s", labelVcfaContentLibrary, err)
+		return diag.FromErr(err)
 	}
-
-	d.SetId(cl.ContentLibrary.ID)
-	return nil
-}
-
-func resourceVcfaContentLibraryDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
-	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
-	cl, err := vcdClient.GetContentLibraryById(d.Id(), nil)
+	cl.Delete(d.Get("delete_force").(bool), d.Get("delete_recursive").(bool))
 	if err != nil {
-		return diag.Errorf("error retrieving %s: %s", labelVcfaContentLibrary, err)
+		return diag.FromErr(err)
 	}
-
-	// TODO: TM: Add two new arguments "force_delete" and "delete_recursive"
-	err = cl.Delete(true, true)
-	if err != nil {
-		return diag.Errorf("error deleting %s: %s", labelVcfaContentLibrary, err)
-	}
-
 	return nil
 }
 
 func resourceVcfaContentLibraryImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	vcdClient := meta.(*VCDClient)
-	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
-	rsp, err := vcdClient.GetContentLibraryByName(d.Id(), nil)
+
+	idSplit := strings.Split(d.Id(), ImportSeparator)
+	if len(idSplit) > 2 {
+		return nil, fmt.Errorf("invalid import identifier '%s', should be either <Content Library name>, or <Organization name>%s<Content Library name>", d.Id(), ImportSeparator)
+	}
+	var cl *govcd.ContentLibrary
+	var org *govcd.TmOrg
+	var err error
+	if len(idSplit) == 1 {
+		// Nor Organization specified, meaning that is a PROVIDER Content Library
+		cl, err = vcdClient.GetContentLibraryByName(idSplit[0], nil)
+	} else {
+		org, err = vcdClient.GetTmOrgByName(idSplit[0])
+		if err != nil {
+			return nil, err
+		}
+		cl, err = vcdClient.GetContentLibraryByName(idSplit[0], &govcd.TenantContext{
+			OrgId:   org.TmOrg.ID,
+			OrgName: org.TmOrg.Name,
+		})
+	}
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving %s with name '%s': %s", labelVcfaContentLibrary, d.Id(), err)
+		return nil, fmt.Errorf("error retrieving %s with identifier '%s': %s", labelVcfaContentLibrary, d.Id(), err)
 	}
 
-	d.SetId(rsp.ContentLibrary.ID)
-	dSet(d, "name", rsp.ContentLibrary.Name)
+	d.SetId(cl.ContentLibrary.ID)
+	dSet(d, "name", cl.ContentLibrary.Name)
+	if cl.ContentLibrary.Org != nil {
+		dSet(d, "org_id", cl.ContentLibrary.Org.ID)
+	}
 	return []*schema.ResourceData{d}, nil
 }
 
-func getContentLibraryType(d *schema.ResourceData) (*types.ContentLibrary, error) {
+func getContentLibraryType(d *schema.ResourceData) *types.ContentLibrary {
 	t := &types.ContentLibrary{
 		Name:           d.Get("name").(string),
 		Description:    d.Get("description").(string),
@@ -230,24 +259,28 @@ func getContentLibraryType(d *schema.ResourceData) (*types.ContentLibrary, error
 			Password:        subsConfig["password"].(string),
 		}
 	}
-	return t, nil
+	return t
 }
 
-func setVcfaContentLibraryData(d *schema.ResourceData, cl *types.ContentLibrary) error {
-	dSet(d, "name", cl.Name)
-	dSet(d, "auto_attach", cl.AutoAttach)
-	dSet(d, "creation_date", cl.CreationDate)
-	dSet(d, "description", cl.Description)
-	dSet(d, "is_shared", cl.IsShared)
-	dSet(d, "is_subscribed", cl.IsSubscribed)
-	dSet(d, "library_type", cl.LibraryType)
-	dSet(d, "version_number", cl.VersionNumber)
-	if cl.Org != nil {
-		dSet(d, "owner_org_id", cl.Org.ID)
+func setContentLibraryData(_ *VCDClient, d *schema.ResourceData, cl *govcd.ContentLibrary) error {
+	if cl == nil || cl.ContentLibrary == nil {
+		return fmt.Errorf("provided %s is nil", labelVcfaContentLibrary)
 	}
 
-	scs := make([]string, len(cl.StorageClasses))
-	for i, sc := range cl.StorageClasses {
+	dSet(d, "name", cl.ContentLibrary.Name)
+	dSet(d, "auto_attach", cl.ContentLibrary.AutoAttach)
+	dSet(d, "creation_date", cl.ContentLibrary.CreationDate)
+	dSet(d, "description", cl.ContentLibrary.Description)
+	dSet(d, "is_shared", cl.ContentLibrary.IsShared)
+	dSet(d, "is_subscribed", cl.ContentLibrary.IsSubscribed)
+	dSet(d, "library_type", cl.ContentLibrary.LibraryType)
+	dSet(d, "version_number", cl.ContentLibrary.VersionNumber)
+	if cl.ContentLibrary.Org != nil {
+		dSet(d, "org_id", cl.ContentLibrary.Org.ID)
+	}
+
+	scs := make([]string, len(cl.ContentLibrary.StorageClasses))
+	for i, sc := range cl.ContentLibrary.StorageClasses {
 		scs[i] = sc.ID
 	}
 	err := d.Set("storage_class_ids", scs)
@@ -256,12 +289,12 @@ func setVcfaContentLibraryData(d *schema.ResourceData, cl *types.ContentLibrary)
 	}
 
 	subscriptionConfig := make([]interface{}, 0)
-	if cl.SubscriptionConfig != nil {
+	if cl.ContentLibrary.SubscriptionConfig != nil {
 		subscriptionConfig = []interface{}{
 			map[string]interface{}{
-				"subscription_url": cl.SubscriptionConfig.SubscriptionUrl,
-				"password":         cl.SubscriptionConfig.Password,
-				"need_local_copy":  cl.SubscriptionConfig.NeedLocalCopy,
+				"subscription_url": cl.ContentLibrary.SubscriptionConfig.SubscriptionUrl,
+				"password":         cl.ContentLibrary.SubscriptionConfig.Password,
+				"need_local_copy":  cl.ContentLibrary.SubscriptionConfig.NeedLocalCopy,
 			},
 		}
 	}

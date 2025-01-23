@@ -3,6 +3,7 @@ package vcfa
 import (
 	"context"
 	"fmt"
+	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -49,40 +50,33 @@ func datasourceVcfaRegionStoragePolicy() *schema.Resource {
 	}
 }
 
-func datasourceVcfaRegionStoragePolicyRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceVcfaRegionStoragePolicyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
-	regionId := d.Get("region_id").(string)
-	region, err := vcdClient.GetRegionById(regionId)
-	if err != nil {
-		return diag.Errorf("error retrieving Region with ID '%s': %s", regionId, err)
+	c := dsReadConfig[*govcd.RegionStoragePolicy, types.RegionStoragePolicy]{
+		entityLabel: labelVcfaRegionStoragePolicy,
+		getEntityFunc: func(name string) (*govcd.RegionStoragePolicy, error) {
+			return vcdClient.GetRegionStoragePolicyByName(name)
+		},
+		stateStoreFunc: setRegionStoragePolicyData,
 	}
-
-	rspName := d.Get("name").(string)
-	rsp, err := region.GetStoragePolicyByName(rspName)
-	if err != nil {
-		return diag.Errorf("error retrieving Region Storage Policy '%s': %s", rspName, err)
-	}
-
-	err = setRegionStoragePolicyData(d, rsp.RegionStoragePolicy)
-	if err != nil {
-		return diag.Errorf("error saving Region Storage Policy data into state: %s", err)
-	}
-
-	d.SetId(rsp.RegionStoragePolicy.ID)
-	return nil
+	return readDatasource(ctx, d, meta, c)
 }
 
-func setRegionStoragePolicyData(d *schema.ResourceData, rsp *types.RegionStoragePolicy) error {
-	dSet(d, "name", rsp.Name)
-	dSet(d, "description", rsp.Description)
+func setRegionStoragePolicyData(_ *VCDClient, d *schema.ResourceData, rsp *govcd.RegionStoragePolicy) error {
+	if rsp == nil || rsp.RegionStoragePolicy == nil {
+		return fmt.Errorf("provided %s is nil", labelVcfaRegionStoragePolicy)
+	}
+
+	dSet(d, "name", rsp.RegionStoragePolicy.Name)
+	dSet(d, "description", rsp.RegionStoragePolicy.Description)
 	regionId := ""
-	if rsp.Region != nil {
-		regionId = rsp.Region.ID
+	if rsp.RegionStoragePolicy.Region != nil {
+		regionId = rsp.RegionStoragePolicy.Region.ID
 	}
 	dSet(d, "region_id", regionId)
-	dSet(d, "storage_capacity_mb", rsp.StorageCapacityMB)
-	dSet(d, "storage_consumed_mb", rsp.StorageConsumedMB)
-	dSet(d, "status", rsp.Status)
+	dSet(d, "storage_capacity_mb", rsp.RegionStoragePolicy.StorageCapacityMB)
+	dSet(d, "storage_consumed_mb", rsp.RegionStoragePolicy.StorageConsumedMB)
+	dSet(d, "status", rsp.RegionStoragePolicy.Status)
 
 	return nil
 }

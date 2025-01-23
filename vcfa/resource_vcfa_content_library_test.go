@@ -137,6 +137,8 @@ resource "vcfa_content_library" "cl" {
   storage_class_ids = [
     data.vcfa_storage_class.sc.id
   ]
+  delete_force = true
+  delete_recursive = true
 }
 `
 

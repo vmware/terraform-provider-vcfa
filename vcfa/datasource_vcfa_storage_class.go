@@ -3,6 +3,7 @@ package vcfa
 import (
 	"context"
 	"fmt"
+	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -48,42 +49,35 @@ func datasourceVcfaStorageClass() *schema.Resource {
 	}
 }
 
-func datasourceVcfaStorageClassRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceVcfaStorageClassRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
-	regionId := d.Get("region_id").(string)
-	region, err := vcdClient.GetRegionById(regionId)
-	if err != nil {
-		return diag.Errorf("error retrieving Region with ID '%s': %s", regionId, err)
+	c := dsReadConfig[*govcd.StorageClass, types.StorageClass]{
+		entityLabel: labelVcfaStorageClass,
+		getEntityFunc: func(name string) (*govcd.StorageClass, error) {
+			return vcdClient.GetStorageClassByName(name)
+		},
+		stateStoreFunc: setStorageClassData,
 	}
-
-	scName := d.Get("name").(string)
-	sc, err := region.GetStorageClassByName(scName)
-	if err != nil {
-		return diag.Errorf("error retrieving Storage Class '%s': %s", scName, err)
-	}
-
-	err = setStorageClassData(d, sc.StorageClass)
-	if err != nil {
-		return diag.Errorf("error saving Storage Class data into state: %s", err)
-	}
-
-	d.SetId(sc.StorageClass.ID)
-	return nil
+	return readDatasource(ctx, d, meta, c)
 }
 
-func setStorageClassData(d *schema.ResourceData, sc *types.StorageClass) error {
-	dSet(d, "name", sc.Name)
-	dSet(d, "storage_capacity_mib", sc.StorageCapacityMiB)
-	dSet(d, "storage_consumed_mib", sc.StorageConsumedMiB)
+func setStorageClassData(_ *VCDClient, d *schema.ResourceData, sc *govcd.StorageClass) error {
+	if sc == nil || sc.StorageClass == nil {
+		return fmt.Errorf("provided %s is nil", labelVcfaStorageClass)
+	}
+
+	dSet(d, "name", sc.StorageClass.Name)
+	dSet(d, "storage_capacity_mib", sc.StorageClass.StorageCapacityMiB)
+	dSet(d, "storage_consumed_mib", sc.StorageClass.StorageConsumedMiB)
 	regionId := ""
-	if sc.Region != nil {
-		regionId = sc.Region.ID
+	if sc.StorageClass.Region != nil {
+		regionId = sc.StorageClass.Region.ID
 	}
 	dSet(d, "region_id", regionId)
 
 	var zoneIds []string
-	if len(sc.Zones) > 0 {
-		zoneIds = extractIdsFromOpenApiReferences(sc.Zones)
+	if len(sc.StorageClass.Zones) > 0 {
+		zoneIds = extractIdsFromOpenApiReferences(sc.StorageClass.Zones)
 	}
 	err := d.Set("zone_ids", zoneIds)
 	if err != nil {

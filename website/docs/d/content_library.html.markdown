@@ -32,6 +32,8 @@ output "owner_org" {
 The following arguments are supported:
 
 * `name` - (Required) The name of the Content Library to read
+* `org_id` - (Optional) The reference to the Organization that the Content Library belongs to. If it is not set, assumes the
+  Content Library is of type `PROVIDER`
 
 ## Attribute reference
 
