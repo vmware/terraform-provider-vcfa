@@ -13,9 +13,6 @@ import (
 
 const labelVcfaContentLibrary = "Content Library"
 
-// TODO: TM: Move to Content Library Item
-const labelVcfaContentLibraryItem = "Content Library Item"
-
 func resourceVcfaContentLibrary() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVcfaContentLibraryCreate,

@@ -119,6 +119,43 @@ resource "vcfa_region" "region" {
 `, "vcfa_region.region"
 }
 
+// getContentLibraryHcl gets a Content Library data source as first returned parameter and its HCL reference as second one,
+// only if a Content Library is already configured in TM. Otherwise, it returns a Content Library resource HCL as first returned parameter
+// and its HCL reference as second one
+func getContentLibraryHcl(t *testing.T, regionHclRef string) (string, string) {
+	if testConfig.Tm.ContentLibrary == "" {
+		t.Fatalf("the property tm.contentLibrary is required but it is not present in testing JSON")
+	}
+	if testConfig.Tm.StorageClass == "" {
+		t.Fatalf("the property tm.storageClass is required but it is not present in testing JSON")
+	}
+	vcdClient := createTemporaryVCFAConnection(false)
+	cl, err := vcdClient.GetContentLibraryByName(testConfig.Tm.ContentLibrary, nil)
+	if err == nil {
+		return `
+data "vcfa_content_library" "content_library" {
+  name = "` + cl.ContentLibrary.Name + `"
+}
+`, "data.vcfa_content_library.content_library"
+	}
+	if !govcd.ContainsNotFound(err) {
+		t.Fatal(err)
+		return "", ""
+	}
+	return `
+data "vcfa_storage_class" "storage_class" {
+  region_id = ` + regionHclRef + `.id 
+  name      = "` + testConfig.Tm.StorageClass + `"
+}
+
+resource "vcfa_content_library" "content_library" {
+  name                 = "` + testConfig.Tm.ContentLibrary + `"
+  description          = "` + testConfig.Tm.ContentLibrary + `"
+  storage_class_ids    = [data.vcfa_storage_class.storage_class.id]
+}
+`, "vcfa_content_library.content_library"
+}
+
 func getIpSpaceHcl(t *testing.T, regionHclRef, nameSuffix, octet3 string) (string, string) {
 	return `
 resource "vcfa_ip_space" "test-` + nameSuffix + `" {
