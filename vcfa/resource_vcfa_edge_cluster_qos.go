@@ -43,7 +43,8 @@ func resourceVcfaEdgeClusterQos() *schema.Resource {
 				Description: fmt.Sprintf("Ingress committed bandwidth in Mbps for %s", labelVcfaEdgeCluster),
 				ValidateDiagFunc: validation.AnyDiag(
 					validation.ToDiagFunc(validation.StringIsEmpty),
-					validation.ToDiagFunc(IsIntAndAtLeast(1))),
+					IsIntAndAtLeast(1),
+				),
 				RequiredWith: []string{"ingress_burst_size_bytes"},
 			},
 			"ingress_burst_size_bytes": {
@@ -52,7 +53,8 @@ func resourceVcfaEdgeClusterQos() *schema.Resource {
 				Description: fmt.Sprintf("Ingress burst size bytes for %s", labelVcfaEdgeCluster),
 				ValidateDiagFunc: validation.AnyDiag(
 					validation.ToDiagFunc(validation.StringIsEmpty),
-					validation.ToDiagFunc(IsIntAndAtLeast(1))),
+					IsIntAndAtLeast(1),
+				),
 				RequiredWith: []string{"ingress_committed_bandwidth_mbps"},
 			},
 			"egress_committed_bandwidth_mbps": {
@@ -61,7 +63,8 @@ func resourceVcfaEdgeClusterQos() *schema.Resource {
 				Description: fmt.Sprintf("Egress committed bandwidth in Mbps for %s", labelVcfaEdgeCluster),
 				ValidateDiagFunc: validation.AnyDiag(
 					validation.ToDiagFunc(validation.StringIsEmpty),
-					validation.ToDiagFunc(IsIntAndAtLeast(1))),
+					IsIntAndAtLeast(1),
+				),
 				RequiredWith: []string{"egress_burst_size_bytes"},
 			},
 			"egress_burst_size_bytes": {
@@ -70,7 +73,8 @@ func resourceVcfaEdgeClusterQos() *schema.Resource {
 				Description: fmt.Sprintf("Ingress burst size bytes for %s", labelVcfaEdgeCluster),
 				ValidateDiagFunc: validation.AnyDiag(
 					validation.ToDiagFunc(validation.StringIsEmpty),
-					validation.ToDiagFunc(IsIntAndAtLeast(1))),
+					IsIntAndAtLeast(1),
+				),
 				RequiredWith: []string{"egress_committed_bandwidth_mbps"},
 			},
 		},
