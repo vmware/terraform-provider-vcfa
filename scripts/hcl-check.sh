@@ -110,14 +110,16 @@ function multi_newline_check {
 # If the init command fails, gives an error message and the script will fail.
 function terraform_validation_check {
     init_error_text=''
-    provider_version="$(git describe --abbrev=0 --tags | cut -d'v' -f 2)"
+    provider_version="$(cat VERSION)"
+    git tag "${provider_version:1}"
+    make install
     curdir="$PWD"
 
     # Create a temporary folder where we put the file to test and the provider definition file.
     [ -d "$tmp_dir/validate" ] && rm -r "$tmp_dir/validate"
     mkdir "$tmp_dir/validate"
 
-    echo "  (Using v$provider_version VCFA provider version)"
+    echo "  (Using $provider_version VCFA provider version)"
     for hcl_file in "$tmp_dir"/*.tf
     do
         command_start_time=$(date +%s)
@@ -131,7 +133,7 @@ terraform {
   required_providers {
     vcfa = {
       source  = \"vmware/vcfa\"
-      version = \"= $provider_version\"
+      version = \"= ${provider_version:1}\"
     }
     nsxt = {
       source = \"vmware/nsxt\"
@@ -151,6 +153,8 @@ terraform {
         command_end_time=$(date +%s)
         print_times "terraform init $hcl_file" "$command_start_time" "$command_end_time"
     done
+
+    git tag -d "$provider_version"
 
     echo ""
 }
