@@ -1,4 +1,4 @@
-//go:build tm || ALL || functional
+//go:build tm || contentlibrary || ALL || functional
 
 package vcfa
 
@@ -10,7 +10,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccVcfaContentLibrary(t *testing.T) {
+// TODO: TM: Test tenant Content Libraries. For that goal, we need to modify vcfa_org_vdc to support
+//       VM classes and storage classes
+
+// TestAccVcfaContentLibraryProvider tests CRUD of a Content Library of type PROVIDER.
+// It also tests vcfa_storage_class and vcfa_region_storage_policy data sources
+func TestAccVcfaContentLibraryProvider(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
@@ -22,7 +27,7 @@ func TestAccVcfaContentLibrary(t *testing.T) {
 		"Name":                t.Name(),
 		"RegionId":            fmt.Sprintf("%s.id", regionHclRef),
 		"RegionStoragePolicy": testConfig.Tm.StorageClass,
-		"Tags":                "tm",
+		"Tags":                "tm contentlibrary",
 	}
 	testParamsNotEmpty(t, params)
 
@@ -35,12 +40,12 @@ func TestAccVcfaContentLibrary(t *testing.T) {
 	configText0 := templateFill(vCenterHcl+nsxManagerHcl+skipBinaryTest, params)
 	params["FuncName"] = t.Name() + "-step0"
 
-	configText1 := templateFill(preRequisites+testAccVcfaContentLibraryStep1, params)
+	configText1 := templateFill(preRequisites+testAccVcfaContentLibraryProviderStep1, params)
 	params["FuncName"] = t.Name() + "-step2"
 	params["Name"] = t.Name() + "Updated"
-	configText2 := templateFill(preRequisites+testAccVcfaContentLibraryStep1, params)
+	configText2 := templateFill(preRequisites+testAccVcfaContentLibraryProviderStep1, params)
 	params["FuncName"] = t.Name() + "-step3"
-	configText3 := templateFill(preRequisites+testAccVcfaContentLibraryStep3, params)
+	configText3 := templateFill(preRequisites+testAccVcfaContentLibraryProviderStep3, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
@@ -83,6 +88,7 @@ func TestAccVcfaContentLibrary(t *testing.T) {
 					// Content Library
 					cachedId.cacheTestResourceFieldValue(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "name", t.Name()),
+					resource.TestMatchResourceAttr(resourceName, "org_id", regexp.MustCompile("urn:vcloud:org:")),
 					resource.TestCheckResourceAttr(resourceName, "description", t.Name()),
 					resource.TestCheckResourceAttr(resourceName, "storage_class_ids.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "auto_attach", "true"), // TODO: TM: Test with false
@@ -90,7 +96,6 @@ func TestAccVcfaContentLibrary(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "is_shared", "true"),        // TODO: TM: Test with false
 					resource.TestCheckResourceAttr(resourceName, "is_subscribed", "false"),   // TODO: TM: Test with true
 					resource.TestCheckResourceAttr(resourceName, "library_type", "PROVIDER"), // TODO: TM: Test with tenant catalog
-					resource.TestMatchResourceAttr(resourceName, "owner_org_id", regexp.MustCompile("urn:vcloud:org:")),
 					resource.TestCheckResourceAttr(resourceName, "subscription_config.#", "0"),
 					resource.TestCheckResourceAttr(resourceName, "version_number", "1"),
 				),
@@ -120,7 +125,7 @@ func TestAccVcfaContentLibrary(t *testing.T) {
 	postTestChecks(t)
 }
 
-const testAccVcfaContentLibraryStep1 = `
+const testAccVcfaContentLibraryProviderStep1 = `
 data "vcfa_region_storage_policy" "sp" {
   region_id = {{.RegionId}}
   name      = "{{.RegionStoragePolicy}}"
@@ -142,7 +147,7 @@ resource "vcfa_content_library" "cl" {
 }
 `
 
-const testAccVcfaContentLibraryStep3 = testAccVcfaContentLibraryStep1 + `
+const testAccVcfaContentLibraryProviderStep3 = testAccVcfaContentLibraryProviderStep1 + `
 data "vcfa_content_library" "cl_ds" {
   name = vcfa_content_library.cl.name
 }
