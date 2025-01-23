@@ -73,9 +73,10 @@ func resourceVcfaProviderGatewayCreate(ctx context.Context, d *schema.ResourceDa
 	vcdClient := meta.(*VCDClient)
 	c := crudConfig[*govcd.TmProviderGateway, types.TmProviderGateway]{
 		entityLabel:      labelVcfaProviderGateway,
-		getTypeFunc:      getTmProviderGatewayType,
-		stateStoreFunc:   setTmProviderGatewayData,
-		createFunc:       vcdClient.CreateTmProviderGateway,
+		getTypeFunc:      getProviderGatewayType,
+		stateStoreFunc:   setProviderGatewayData,
+		createAsyncFunc:  vcdClient.CreateTmProviderGatewayAsync,
+		getEntityFunc:    vcdClient.GetTmProviderGatewayById,
 		resourceReadFunc: resourceVcfaProviderGatewayRead,
 	}
 	return createResource(ctx, d, meta, c)
@@ -112,7 +113,7 @@ func resourceVcfaProviderGatewayUpdate(ctx context.Context, d *schema.ResourceDa
 	if d.HasChangeExcept("ip_space_ids") {
 		c := crudConfig[*govcd.TmProviderGateway, types.TmProviderGateway]{
 			entityLabel:      labelVcfaProviderGateway,
-			getTypeFunc:      getTmProviderGatewayType,
+			getTypeFunc:      getProviderGatewayType,
 			getEntityFunc:    vcdClient.GetTmProviderGatewayById,
 			resourceReadFunc: resourceVcfaProviderGatewayRead,
 		}
@@ -129,7 +130,7 @@ func resourceVcfaProviderGatewayRead(ctx context.Context, d *schema.ResourceData
 	c := crudConfig[*govcd.TmProviderGateway, types.TmProviderGateway]{
 		entityLabel:    labelVcfaProviderGateway,
 		getEntityFunc:  vcdClient.GetTmProviderGatewayById,
-		stateStoreFunc: setTmProviderGatewayData,
+		stateStoreFunc: setProviderGatewayData,
 	}
 	return readResource(ctx, d, meta, c)
 }
@@ -167,7 +168,7 @@ func resourceVcfaProviderGatewayImport(ctx context.Context, d *schema.ResourceDa
 	return []*schema.ResourceData{d}, nil
 }
 
-func getTmProviderGatewayType(vcdClient *VCDClient, d *schema.ResourceData) (*types.TmProviderGateway, error) {
+func getProviderGatewayType(vcdClient *VCDClient, d *schema.ResourceData) (*types.TmProviderGateway, error) {
 	t := &types.TmProviderGateway{
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
@@ -192,7 +193,7 @@ func getTmProviderGatewayType(vcdClient *VCDClient, d *schema.ResourceData) (*ty
 	return t, nil
 }
 
-func setTmProviderGatewayData(vcdClient *VCDClient, d *schema.ResourceData, p *govcd.TmProviderGateway) error {
+func setProviderGatewayData(vcdClient *VCDClient, d *schema.ResourceData, p *govcd.TmProviderGateway) error {
 	if p == nil || p.TmProviderGateway == nil {
 		return fmt.Errorf("nil entity received")
 	}

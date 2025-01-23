@@ -48,19 +48,26 @@ func datasourceVcfaTier0Gateway() *schema.Resource {
 
 func datasourceVcfaTier0GatewayRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
+	// Fetching the region to conform to standard of returning 'ErrorEntityNotFound', because the API behind
+	// GetTmTier0GatewayWithContextByName does not handle it well
+	region, err := vcdClient.GetRegionById(d.Get("region_id").(string))
+	if err != nil {
+		return diag.Errorf("no region with ID '%s' found: %s", d.Get("region_id").(string), err)
+	}
+
 	getT0ByName := func(name string) (*govcd.TmTier0Gateway, error) {
-		return vcdClient.GetTmTier0GatewayWithContextByName(name, d.Get("region_id").(string), true)
+		return vcdClient.GetTmTier0GatewayWithContextByName(name, region.Region.ID, true)
 	}
 
 	c := dsReadConfig[*govcd.TmTier0Gateway, types.TmTier0Gateway]{
 		entityLabel:    labelVcfaTier0Gateway,
 		getEntityFunc:  getT0ByName,
-		stateStoreFunc: setTmTier0GatewayData,
+		stateStoreFunc: setTier0GatewayData,
 	}
 	return readDatasource(ctx, d, meta, c)
 }
 
-func setTmTier0GatewayData(_ *VCDClient, d *schema.ResourceData, t *govcd.TmTier0Gateway) error {
+func setTier0GatewayData(_ *VCDClient, d *schema.ResourceData, t *govcd.TmTier0Gateway) error {
 	d.SetId(t.TmTier0Gateway.ID) // So far the API returns plain UUID (not URN)
 	dSet(d, "name", t.TmTier0Gateway.DisplayName)
 	dSet(d, "description", t.TmTier0Gateway.Description)

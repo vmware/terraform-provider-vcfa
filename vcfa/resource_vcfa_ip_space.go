@@ -69,22 +69,22 @@ func resourceVcfaIpSpace() *schema.Resource {
 				Description: "External scope in CIDR format",
 			},
 			"default_quota_max_subnet_size": {
-				Type:         schema.TypeString, // Values are 'ints', TypeString + validation is used to handle 0
-				Required:     true,
-				Description:  fmt.Sprintf("Maximum subnet size represented as a prefix length (e.g. 24, 28) in %s", labelVcfaIpSpace),
-				ValidateFunc: IsIntAndAtLeast(-1),
+				Type:             schema.TypeString, // Values are 'ints', TypeString + validation is used to handle 0
+				Required:         true,
+				Description:      fmt.Sprintf("Maximum subnet size represented as a prefix length (e.g. 24, 28) in %s", labelVcfaIpSpace),
+				ValidateDiagFunc: IsIntAndAtLeast(-1),
 			},
 			"default_quota_max_cidr_count": {
-				Type:         schema.TypeString, // Values are 'ints', TypeString + validation is used to handle 0
-				Required:     true,
-				Description:  fmt.Sprintf("Maximum number of subnets that can be allocated from internal scope in this %s. ('-1' for unlimited)", labelVcfaIpSpace),
-				ValidateFunc: IsIntAndAtLeast(-1),
+				Type:             schema.TypeString, // Values are 'ints', TypeString + validation is used to handle 0
+				Required:         true,
+				Description:      fmt.Sprintf("Maximum number of subnets that can be allocated from internal scope in this %s. ('-1' for unlimited)", labelVcfaIpSpace),
+				ValidateDiagFunc: IsIntAndAtLeast(-1),
 			},
 			"default_quota_max_ip_count": {
-				Type:         schema.TypeString, // Values are 'ints', TypeString + validation is used to handle 0
-				Required:     true,
-				Description:  fmt.Sprintf("Maximum number of single floating IP addresses that can be allocated from internal scope in this %s. ('-1' for unlimited)", labelVcfaIpSpace),
-				ValidateFunc: IsIntAndAtLeast(-1),
+				Type:             schema.TypeString, // Values are 'ints', TypeString + validation is used to handle 0
+				Required:         true,
+				Description:      fmt.Sprintf("Maximum number of single floating IP addresses that can be allocated from internal scope in this %s. ('-1' for unlimited)", labelVcfaIpSpace),
+				ValidateDiagFunc: IsIntAndAtLeast(-1),
 			},
 			"internal_scope": {
 				Type:        schema.TypeSet,

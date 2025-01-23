@@ -15,6 +15,8 @@ import (
 
 const labelVcfaVirtualCenter = "Tenant Manager vCenter Server"
 
+const extraSleepAfterOperations = 3 * time.Second
+
 func resourceVcfaVcenter() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVcfaVcenterCreate,
@@ -307,6 +309,8 @@ func refreshVcenter(execute bool) outerEntityHook[*govcd.VCenter] {
 				return fmt.Errorf("error refreshing vCenter: %s", err)
 			}
 		}
+		// TODO: TM: put an extra sleep to be sure the entity is released
+		time.Sleep(extraSleepAfterOperations)
 		return nil
 	}
 }
@@ -321,6 +325,8 @@ func refreshVcenterPolicy(execute bool) outerEntityHook[*govcd.VCenter] {
 				return fmt.Errorf("error refreshing Storage Policies: %s", err)
 			}
 		}
+		// TODO: TM: put an extra sleep to be sure the entity is released
+		time.Sleep(extraSleepAfterOperations)
 		return nil
 	}
 }
@@ -338,6 +344,9 @@ func shouldWaitForListenerStatusConnected(shouldWait bool) func(v *govcd.VCenter
 			}
 
 			if v.VSphereVCenter.ListenerState == "CONNECTED" {
+				// TODO: TM: put an extra sleep to be sure the entity is released
+				time.Sleep(extraSleepAfterOperations)
+
 				return nil
 			}
 
