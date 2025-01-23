@@ -75,7 +75,8 @@ func resourceVcfaProviderGatewayCreate(ctx context.Context, d *schema.ResourceDa
 		entityLabel:      labelVcfaProviderGateway,
 		getTypeFunc:      getProviderGatewayType,
 		stateStoreFunc:   setProviderGatewayData,
-		createFunc:       vcdClient.CreateTmProviderGateway,
+		createAsyncFunc:  vcdClient.CreateTmProviderGatewayAsync,
+		getEntityFunc:    vcdClient.GetTmProviderGatewayById,
 		resourceReadFunc: resourceVcfaProviderGatewayRead,
 	}
 	return createResource(ctx, d, meta, c)
