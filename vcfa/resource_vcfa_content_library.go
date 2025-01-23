@@ -229,7 +229,7 @@ func resourceVcfaContentLibraryImport(_ context.Context, d *schema.ResourceData,
 		if err != nil {
 			return nil, err
 		}
-		cl, err = vcdClient.GetContentLibraryByName(idSplit[0], &govcd.TenantContext{
+		cl, err = vcdClient.GetContentLibraryByName(idSplit[1], &govcd.TenantContext{
 			OrgId:   org.TmOrg.ID,
 			OrgName: org.TmOrg.Name,
 		})
