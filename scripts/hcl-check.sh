@@ -117,7 +117,7 @@ function terraform_validation_check {
     [ -d "$tmp_dir/validate" ] && rm -r "$tmp_dir/validate"
     mkdir "$tmp_dir/validate"
 
-    echo "  (Using v$provider_version VCD provider version)"
+    echo "  (Using v$provider_version VCFA provider version)"
     for hcl_file in "$tmp_dir"/*.tf
     do
         command_start_time=$(date +%s)
@@ -129,8 +129,8 @@ function terraform_validation_check {
         echo "
 terraform {
   required_providers {
-    vcd = {
-      source  = \"vmware/vcd\"
+    vcfa = {
+      source  = \"vmware/vcfa\"
       version = \"= $provider_version\"
     }
     nsxt = {
