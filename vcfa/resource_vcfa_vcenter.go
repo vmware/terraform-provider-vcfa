@@ -17,8 +17,6 @@ const labelVcfaVirtualCenter = "vCenter Server"
 
 const extraSleepAfterOperations = 3 * time.Second
 
-const extraSleepAfterOperations = 3 * time.Second
-
 func resourceVcfaVcenter() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVcfaVcenterCreate,
