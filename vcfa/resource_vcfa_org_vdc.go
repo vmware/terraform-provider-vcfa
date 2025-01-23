@@ -16,12 +16,12 @@ const labelVcfaOrgVdc = "Org VDC"
 
 func resourceVcfaOrgVdc() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceTmOrgVdcCreate,
-		ReadContext:   resourceTmOrgVdcRead,
-		UpdateContext: resourceTmOrgVdcUpdate,
-		DeleteContext: resourceTmOrgVdcDelete,
+		CreateContext: resourceOrgVdcCreate,
+		ReadContext:   resourceOrgVdcRead,
+		UpdateContext: resourceOrgVdcUpdate,
+		DeleteContext: resourceOrgVdcDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: resourceTmOrgVdcImport,
+			StateContext: resourceOrgVdcImport,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -105,31 +105,31 @@ var orgVdcZoneResourceAllocation = &schema.Resource{
 	},
 }
 
-func resourceTmOrgVdcCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceOrgVdcCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
 		entityLabel:      labelVcfaOrgVdc,
 		getTypeFunc:      getTmVdcType,
 		stateStoreFunc:   setTmVdcData,
 		createFunc:       vcdClient.CreateTmVdc,
-		resourceReadFunc: resourceTmOrgVdcRead,
+		resourceReadFunc: resourceOrgVdcRead,
 	}
 	return createResource(ctx, d, meta, c)
 }
 
-func resourceTmOrgVdcUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceOrgVdcUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
 		entityLabel:      labelVcfaOrgVdc,
 		getTypeFunc:      getTmVdcType,
 		getEntityFunc:    vcdClient.GetTmVdcById,
-		resourceReadFunc: resourceTmOrgVdcRead,
+		resourceReadFunc: resourceOrgVdcRead,
 	}
 
 	return updateResource(ctx, d, meta, c)
 }
 
-func resourceTmOrgVdcRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceOrgVdcRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
 		entityLabel:    labelVcfaOrgVdc,
@@ -139,7 +139,7 @@ func resourceTmOrgVdcRead(ctx context.Context, d *schema.ResourceData, meta inte
 	return readResource(ctx, d, meta, c)
 }
 
-func resourceTmOrgVdcDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceOrgVdcDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 
 	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
@@ -150,7 +150,7 @@ func resourceTmOrgVdcDelete(ctx context.Context, d *schema.ResourceData, meta in
 	return deleteResource(ctx, d, meta, c)
 }
 
-func resourceTmOrgVdcImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceOrgVdcImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	vcdClient := meta.(*VCDClient)
 
 	idSlice := strings.Split(d.Id(), ImportSeparator)
@@ -170,7 +170,7 @@ func resourceTmOrgVdcImport(ctx context.Context, d *schema.ResourceData, meta in
 func getTmVdcType(vcdClient *VCDClient, d *schema.ResourceData) (*types.TmVdc, error) {
 	name := d.Get("name").(string)
 	if name == "" {
-		org, err := vcdClient.GetTmOrgById(d.Get("org_id").(string))
+		org, err := vcdClient.GetOrgById(d.Get("org_id").(string))
 		if err != nil {
 			return nil, err
 		}
@@ -178,7 +178,7 @@ func getTmVdcType(vcdClient *VCDClient, d *schema.ResourceData) (*types.TmVdc, e
 		if err != nil {
 			return nil, err
 		}
-		name = fmt.Sprintf("%s_%s", org.TmOrg.Name, region.Region.Name)
+		name = fmt.Sprintf("%s_%s", org.Org.Name, region.Region.Name)
 	}
 	t := &types.TmVdc{
 		Name:        name,
