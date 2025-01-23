@@ -3,12 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org_vdc"
 sidebar_current: "docs-vcfa-data-source-org-vdc"
 description: |-
-  Provides a data source to manage VMware Cloud Foundation Automation Organization VDC.
+  Provides a data source to read VMware Cloud Foundation Automation Organization VDCs.
 ---
 
 # vcfa\_org\_vdc
 
-Provides a data source to manage VMware Cloud Foundation Automation Organization VDC (Region Quota).
+Provides a data source to read VMware Cloud Foundation Automation Organization VDCs (Region Quotas).
 
 ## Example Usage
 

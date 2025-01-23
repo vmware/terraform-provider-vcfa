@@ -1,14 +1,14 @@
 ---
 layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org_vdc"
-sidebar_current: "docs-vcfa-resource-tm-org-vdc"
+sidebar_current: "docs-vcfa-resource-org-vdc"
 description: |-
-  Provides a resource to manage VMware Cloud Foundation Automation Organization VDC (Region Quota).
+  Provides a resource to manage VMware Cloud Foundation Automation Organization VDCs (Region Quotas).
 ---
 
 # vcfa\_org\_vdc
 
-Provides a resource to manage VMware Cloud Foundation Automation Organization VDC (Region Quota).
+Provides a resource to manage VMware Cloud Foundation Automation Organization VDCs (Region Quotas).
 
 ## Example Usage
 
