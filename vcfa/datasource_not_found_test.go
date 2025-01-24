@@ -81,6 +81,7 @@ func testSpecificDataSourceNotFound(dataSourceName string, vcdClient *VCDClient)
 			"vcfa_region_zone",
 			"vcfa_org_vdc",
 			"vcfa_tier0_gateway",
+			"vcfa_content_library",
 		}
 
 		if contains(dataSourcesRequiringSysAdmin, dataSourceName) && !usingSysAdmin() {

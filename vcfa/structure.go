@@ -29,6 +29,16 @@ func convertSchemaSetToSliceOfStrings(param *schema.Set) []string {
 	return result
 }
 
+// convertTypeListToSliceOfStrings accepts Terraform's TypeList structure `[]interface{}` and
+// converts it to slice of strings.
+func convertTypeListToSliceOfStrings(param []interface{}) []string {
+	result := make([]string, len(param))
+	for i, v := range param {
+		result[i] = v.(string)
+	}
+	return result
+}
+
 // extractIdsFromOpenApiReferences extracts []string with IDs from []types.OpenApiReference which contains ID and Names
 func extractIdsFromOpenApiReferences(refs []types.OpenApiReference) []string {
 	resultStrings := make([]string, len(refs))
