@@ -20,7 +20,7 @@ func datasourceVcfaContentLibraryItem() *schema.Resource {
 			"content_library_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: fmt.Sprintf("ID of the Content Library that this %s belongs to", labelVcfaContentLibraryItem),
+				Description: fmt.Sprintf("ID of the %s that this %s belongs to", labelVcfaContentLibrary, labelVcfaContentLibraryItem),
 			},
 			"creation_date": {
 				Type:        schema.TypeString,
@@ -35,7 +35,7 @@ func datasourceVcfaContentLibraryItem() *schema.Resource {
 			"image_identifier": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: fmt.Sprintf("Virtual Machine Identifier (VMI) of the %s. This is a ReadOnly field", labelVcfaContentLibraryItem),
+				Description: fmt.Sprintf("Virtual Machine Identifier (VMI) of the %s. This is a read only field", labelVcfaContentLibraryItem),
 			},
 			"is_published": {
 				Type:        schema.TypeBool,
@@ -56,7 +56,7 @@ func datasourceVcfaContentLibraryItem() *schema.Resource {
 				Type: schema.TypeString,
 				// TODO: TM: This should be optional: Either Provider or Tenant can create CLs
 				Computed:    true,
-				Description: fmt.Sprintf("The reference to the organization that the %s belongs to", labelVcfaContentLibraryItem),
+				Description: fmt.Sprintf("The reference to the %s that the %s belongs to", labelVcfaOrg, labelVcfaContentLibraryItem),
 			},
 			"status": {
 				Type:        schema.TypeString,
@@ -78,12 +78,12 @@ func datasourceVcfaContentLibraryItemRead(_ context.Context, d *schema.ResourceD
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
 	cl, err := vcdClient.GetContentLibraryById(d.Get("content_library_id").(string), nil)
 	if err != nil {
-		return diag.Errorf("error retrieving Content Library: %s", err)
+		return diag.Errorf("error retrieving %s: %s", labelVcfaContentLibrary, err)
 	}
 
 	cli, err := cl.GetContentLibraryItemByName(d.Get("name").(string))
 	if err != nil {
-		return diag.Errorf("error retrieving Content Library Item: %s", err)
+		return diag.Errorf("error retrieving %s: %s", labelVcfaContentLibraryItem, err)
 	}
 
 	err = setContentLibraryItemData(vcdClient, d, cli)
