@@ -47,6 +47,8 @@ var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_content_library":       datasourceVcfaContentLibrary(),      // 1.0
 	"vcfa_tier0_gateway":         datasourceVcfaTier0Gateway(),        // 1.0
 	"vcfa_provider_gateway":      datasourceVcfaProviderGateway(),     // 1.0
+	"vcfa_edge_cluster":          datasourceVcfaEdgeCluster(),         // 1.0
+	"vcfa_edge_cluster_qos":      datasourceVcfaEdgeClusterQos(),      // 1.0
 }
 
 var globalResourceMap = map[string]*schema.Resource{
@@ -58,6 +60,7 @@ var globalResourceMap = map[string]*schema.Resource{
 	"vcfa_org_vdc":          resourceVcfaOrgVdc(),          // 1.0
 	"vcfa_content_library":  resourceVcfaContentLibrary(),  // 1.0
 	"vcfa_provider_gateway": resourceVcfaProviderGateway(), // 1.0
+	"vcfa_edge_cluster_qos": resourceVcfaEdgeClusterQos(),  // 1.0
 }
 
 // Provider returns a terraform.ResourceProvider.

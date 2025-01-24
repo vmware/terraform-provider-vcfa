@@ -51,6 +51,26 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 	}
 
 	// --------------------------------------------------------------
+	// Edge Cluster QoS (Edge Clusters themselves are read-only)
+	// --------------------------------------------------------------
+	if govcdClient.Client.IsSysAdmin {
+		allEcs, err := govcdClient.GetAllTmEdgeClusters(nil)
+		if err != nil {
+			return fmt.Errorf("error retrieving Edge Clusters: %s", err)
+		}
+		for _, ec := range allEcs {
+			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, ec.TmEdgeCluster.Name, "vcfa_edge_cluster_qos", 2, verbose)
+			if toBeDeleted {
+				fmt.Printf("\t REMOVING Edge Cluster QoS Settings %s\n", ec.TmEdgeCluster.Name)
+				err := ec.Delete()
+				if err != nil {
+					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaEdgeClusterQos, ec.TmEdgeCluster.Name, err)
+				}
+			}
+		}
+	}
+
+	// --------------------------------------------------------------
 	// Content Libraries
 	// --------------------------------------------------------------
 	if govcdClient.Client.IsSysAdmin {
@@ -196,6 +216,10 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 				}
 			}
 		}
+	}
+
+	if verbose {
+		fmt.Printf("End leftovers removal\n")
 	}
 
 	return nil
