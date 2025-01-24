@@ -408,6 +408,8 @@ func runWithRetry(runOperation func() error, errRegexp *regexp.Regexp, duration 
 			util.Logger.Printf("[DEBUG] runWithRetry - exceeded time after attempt %d, got error: %s ", count, err)
 			return fmt.Errorf("error attempting to wait until error does not contain '%s' after %f seconds: %s", errRegexp, duration.Seconds(), err)
 		}
+
+		// Sleep and continue
 		util.Logger.Printf("[DEBUG] runWithRetry - sleeping after attempt %d, will retry", count)
 		// Sleep 2 seconds and attempt once more if the timeout is not excdeeded
 		time.Sleep(2 * time.Second)
