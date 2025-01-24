@@ -71,6 +71,26 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 	}
 
 	// --------------------------------------------------------------
+	// Content Libraries
+	// --------------------------------------------------------------
+	if govcdClient.Client.IsSysAdmin {
+		cls, err := govcdClient.GetAllContentLibraries(nil, nil)
+		if err != nil {
+			return fmt.Errorf("error retrieving Content Libraries: %s", err)
+		}
+		for _, cl := range cls {
+			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, cl.ContentLibrary.Name, "vcfa_content_library", 0, verbose)
+			if toBeDeleted {
+				fmt.Printf("\t REMOVING %s %s\n", labelVcfaContentLibrary, cl.ContentLibrary.Name)
+				err := cl.Delete(true, true)
+				if err != nil {
+					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaContentLibrary, cl.ContentLibrary.Name, err)
+				}
+			}
+		}
+	}
+
+	// --------------------------------------------------------------
 	// IP Spaces
 	// --------------------------------------------------------------
 	if govcdClient.Client.IsSysAdmin {
@@ -81,7 +101,7 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 		for _, ipSp := range ipSpaces {
 			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, ipSp.TmIpSpace.Name, "vcfa_ip_space", 2, verbose)
 			if toBeDeleted {
-				fmt.Printf("\t REMOVING IP Space %s\n", ipSp.TmIpSpace.Name)
+				fmt.Printf("\t REMOVING %s %s\n", labelVcfaIpSpace, ipSp.TmIpSpace.Name)
 				err := ipSp.Delete()
 				if err != nil {
 					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaIpSpace, ipSp.TmIpSpace.Name, err)
@@ -101,7 +121,7 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 		for _, vdc := range vdcs {
 			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, vdc.TmVdc.Name, "vcfa_org_vdc", 2, verbose)
 			if toBeDeleted {
-				fmt.Printf("\t REMOVING VDC %s\n", vdc.TmVdc.Name)
+				fmt.Printf("\t REMOVING %s %s\n", labelVcfaOrgVdc, vdc.TmVdc.Name)
 				err := vdc.Delete()
 				if err != nil {
 					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaOrgVdc, vdc.TmVdc.Name, err)
@@ -121,7 +141,7 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 		for _, region := range regions {
 			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, region.Region.Name, "vcfa_region", 1, verbose)
 			if toBeDeleted {
-				fmt.Printf("\t REMOVING Region %s\n", region.Region.Name)
+				fmt.Printf("\t REMOVING %s %s\n", labelVcfaRegion, region.Region.Name)
 				err := region.Delete()
 				if err != nil {
 					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaRegion, region.Region.Name, err)
@@ -141,7 +161,7 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 		for _, m := range allNsxManagers {
 			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, m.NsxtManagerOpenApi.Name, "vcfa_nsx_manager", 0, verbose)
 			if toBeDeleted {
-				fmt.Printf("\t REMOVING NSX Manager %s\n", m.NsxtManagerOpenApi.Name)
+				fmt.Printf("\t REMOVING %s %s\n", labelVcfaNsxManager, m.NsxtManagerOpenApi.Name)
 				err := m.Delete()
 				if err != nil {
 					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaNsxManager, m.NsxtManagerOpenApi.Name, err)
@@ -161,7 +181,7 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 		for _, vc := range allVcs {
 			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, vc.VSphereVCenter.Name, "vcfa_vcenter", 0, verbose)
 			if toBeDeleted {
-				fmt.Printf("\t REMOVING vCenter %s\n", vc.VSphereVCenter.Name)
+				fmt.Printf("\t REMOVING %s %s\n", labelVcfaVirtualCenter, vc.VSphereVCenter.Name)
 				err = vc.Disable()
 				if err != nil {
 					return fmt.Errorf("error disabling %s '%s': %s", labelVcfaVirtualCenter, vc.VSphereVCenter.Name, err)
