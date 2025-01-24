@@ -391,7 +391,7 @@ func runWithRetry(runOperation func() error, errRegexp *regexp.Regexp, duration 
 	count := 1
 	for {
 		err := runOperation()
-		util.Logger.Printf("[DEBUG] ran attempt %d, got error: %s ", count, err)
+		util.Logger.Printf("[DEBUG] runWithRetry - ran attempt %d, got error: %s ", count, err)
 		// Operation had no error - it succeeded
 		if err == nil {
 			util.Logger.Printf("[DEBUG] runWithRetry - no error occurred after attempt %d, got error: %s ", count, err)
