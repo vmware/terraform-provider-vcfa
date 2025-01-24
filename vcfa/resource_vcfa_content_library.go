@@ -13,9 +13,6 @@ import (
 
 const labelVcfaContentLibrary = "Content Library"
 
-// TODO: TM: Move to Content Library Item
-const labelVcfaContentLibraryItem = "Content Library Item"
-
 func resourceVcfaContentLibrary() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVcfaContentLibraryCreate,
@@ -91,8 +88,8 @@ func resourceVcfaContentLibrary() *schema.Resource {
 			"library_type": {
 				Type:     schema.TypeString,
 				Computed: true,
-				Description: fmt.Sprintf("The type of content library, can be either PROVIDER (%s that is scoped to a "+
-					"provider) or TENANT (%s that is scoped to a tenant organization)", labelVcfaContentLibrary, labelVcfaContentLibrary),
+				Description: fmt.Sprintf("The type of %s, can be either PROVIDER (%s that is scoped to a "+
+					"provider) or TENANT (%s that is scoped to a tenant organization)", labelVcfaContentLibrary, labelVcfaContentLibrary, labelVcfaContentLibrary),
 			},
 			"subscription_config": {
 				Type:        schema.TypeList,
@@ -164,7 +161,7 @@ func resourceVcfaContentLibraryRead(_ context.Context, d *schema.ResourceData, m
 	}
 	if govcd.ContainsNotFound(err) {
 		d.SetId("")
-		log.Printf("[DEBUG] Content Library no longer exists. Removing from tfstate")
+		log.Printf("[DEBUG] %s no longer exists. Removing from tfstate", labelVcfaContentLibrary)
 	}
 	if err != nil {
 		return diag.FromErr(err)
@@ -216,7 +213,7 @@ func resourceVcfaContentLibraryImport(_ context.Context, d *schema.ResourceData,
 
 	idSplit := strings.Split(d.Id(), ImportSeparator)
 	if len(idSplit) > 2 {
-		return nil, fmt.Errorf("invalid import identifier '%s', should be either <Content Library name>, or <Organization name>%s<Content Library name>", d.Id(), ImportSeparator)
+		return nil, fmt.Errorf("invalid import identifier '%s', should be either <%s name>, or <%s name>%s<%s name>", labelVcfaContentLibrary, labelVcfaOrg, labelVcfaContentLibrary, d.Id(), ImportSeparator)
 	}
 	var cl *govcd.ContentLibrary
 	var org *govcd.TmOrg

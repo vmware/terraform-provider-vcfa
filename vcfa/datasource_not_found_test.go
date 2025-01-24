@@ -82,6 +82,7 @@ func testSpecificDataSourceNotFound(dataSourceName string, vcdClient *VCDClient)
 			"vcfa_org_vdc",
 			"vcfa_tier0_gateway",
 			"vcfa_content_library",
+			"vcfa_content_library_item",
 		}
 
 		if contains(dataSourcesRequiringSysAdmin, dataSourceName) && !usingSysAdmin() {
@@ -150,6 +151,8 @@ func addMandatoryParams(dataSourceName string, mandatoryFields []string, t *test
 			templateFields = templateFields + `org_id = "urn:vcloud:org:12345678-1234-1234-1234-123456789012"` + "\n"
 		case "edge_cluster_id":
 			templateFields = templateFields + `edge_cluster_id = "urn:vcloud:edgeCluster:12345678-1234-1234-1234-123456789012"` + "\n"
+		case "content_library_id":
+			templateFields = templateFields + `content_library_id = "urn:vcloud:contentLibrary:12345678-1234-1234-1234-123456789012"` + "\n"
 		}
 	}
 

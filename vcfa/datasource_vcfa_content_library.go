@@ -60,8 +60,8 @@ func datasourceVcfaContentLibrary() *schema.Resource {
 			"library_type": {
 				Type:     schema.TypeString,
 				Computed: true,
-				Description: fmt.Sprintf("The type of content library, can be either PROVIDER (%s that is scoped to a "+
-					"provider) or TENANT (%s that is scoped to a tenant organization)", labelVcfaContentLibrary, labelVcfaContentLibrary),
+				Description: fmt.Sprintf("The type of %s, can be either PROVIDER (%s that is scoped to a "+
+					"provider) or TENANT (%s that is scoped to a tenant organization)", labelVcfaContentLibrary, labelVcfaContentLibrary, labelVcfaContentLibrary),
 			},
 			"subscription_config": {
 				Type:        schema.TypeList,
