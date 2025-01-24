@@ -31,10 +31,6 @@ resource "vcfa_content_library" "cl" {
 }
 ```
 
-## Example Usage for a Tenant Content Library
-
-// TODO: TM (Tenant support is not implemented yet)
-
 ## Argument Reference
 
 The following arguments are supported:
