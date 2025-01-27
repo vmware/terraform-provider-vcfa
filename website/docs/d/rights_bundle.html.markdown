@@ -1,6 +1,6 @@
 ---
 layout: "vcfa"
-page_title: "VMware Cloud Foundation Automation: vcd_rights_bundle"
+page_title: "VMware Cloud Foundation Automation: vcfa_rights_bundle"
 sidebar_current: "docs-vcfa-data-source-rights-bundle"
 description: |-
  Provides a VMware Cloud Foundation Automation rights bundle data source. This can be used to read rights bundles.
@@ -13,7 +13,7 @@ Provides a VMware Cloud Foundation Automation rights bundle data source. This ca
 ## Example Usage
 
 ```hcl
-data "vcd_rights_bundle" "default-set" {
+data "vcfa_rights_bundle" "default-set" {
   name = "Default Rights Bundle"
 }
 ```
