@@ -34,7 +34,7 @@ func resourceVcfaOrgNetworking() *schema.Resource {
 				Type:             schema.TypeString,
 				Required:         true,
 				Description:      fmt.Sprintf("A globally unique identifier (max 8 char) for this %s in the logs of the backing network provider", labelVcfaOrg),
-				ValidateDiagFunc: validation.ToDiagFunc(validation.StringLenBetween(1, 8)),
+				ValidateDiagFunc: validation.ToDiagFunc(validation.StringLenBetween(0, 8)),
 			},
 			"networking_tenancy_enabled": {
 				Type:        schema.TypeBool,

@@ -19,7 +19,6 @@ data "vcfa_org" "demo" {
 
 resource "vcfa_org_networking" "demo" {
   org_id = data.vcfa_org.demo.id
-
 }
 ```
 
