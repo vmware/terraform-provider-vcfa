@@ -3,14 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_rights_bundle"
 sidebar_current: "docs-vcfa-resource-rights-bundle"
 description: |-
- Provides a VMware Cloud Foundation Automation rights bundle. This can be used to create, modify, and delete rights bundles.
+ Provides a VMware Cloud Foundation Automation Rights Bundle resource. This can be used to create, modify, and delete Rights Bundles.
 ---
 
 # vcfa\_rights\_bundle
 
-Provides a VMware Cloud Foundation Automation rights bundle. This can be used to create, modify, and delete rights bundles.
-
-Supported in provider *v3.3+*
+Provides a VMware Cloud Foundation Automation Rights Bundle resource. This can be used to create, modify, and delete Rights Bundles.
 
 ## Example Usage
 
