@@ -47,7 +47,7 @@ func resourceVcfaOrgOidc() *schema.Resource {
 			"enabled": {
 				Type:        schema.TypeBool,
 				Required:    true,
-				Description: fmt.Sprintf("Enables or disables %s authentication for the specified Organization", labelVcfaOidc),
+				Description: fmt.Sprintf("Enables or disables %s authentication for the specified %s", labelVcfaOidc, labelVcfaOrg),
 			},
 			"wellknown_endpoint": {
 				Type:        schema.TypeString,

@@ -31,7 +31,7 @@ func datasourceVcfaOrgOidc() *schema.Resource {
 			"enabled": {
 				Type:        schema.TypeBool,
 				Computed:    true,
-				Description: fmt.Sprintf("Whether %s authentication for the specified Organization is enabled or disabled", labelVcfaOidc),
+				Description: fmt.Sprintf("Whether %s authentication for the specified %s is enabled or disabled", labelVcfaOrg, labelVcfaOidc),
 			},
 			"wellknown_endpoint": {
 				Type:        schema.TypeString,
