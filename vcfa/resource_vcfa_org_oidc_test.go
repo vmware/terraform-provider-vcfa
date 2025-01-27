@@ -91,10 +91,9 @@ func TestAccVcfaOrgOidc(t *testing.T) {
 					resource.TestMatchResourceAttr(oidcResource1, "prefer_id_token", regexp.MustCompile("^true$")),
 					resource.TestCheckResourceAttr(oidcResource1, "max_clock_skew_seconds", "60"),
 					resource.TestMatchResourceAttr(oidcResource1, "scopes.#", regexp.MustCompile(`[1-9][0-9]*`)),
-					resource.TestCheckResourceAttrSet(oidcResource1, "claims_mapping.0.email"),
-					resource.TestCheckResourceAttrSet(oidcResource1, "claims_mapping.0.subject"),
-					resource.TestCheckResourceAttrSet(oidcResource1, "claims_mapping.0.last_name"),
-					resource.TestCheckResourceAttrSet(oidcResource1, "claims_mapping.0.first_name"),
+					resource.TestCheckResourceAttr(oidcResource1, "claims_mapping.0.email", "a"),
+					resource.TestCheckResourceAttr(oidcResource1, "claims_mapping.0.subject", "b"),
+					resource.TestCheckResourceAttr(oidcResource1, "claims_mapping.0.full_name", "c"),
 					resource.TestMatchResourceAttr(oidcResource1, "key.#", regexp.MustCompile(`[1-9][0-9]*`)),
 					resource.TestMatchResourceAttr(oidcResource1, "ui_button_label", regexp.MustCompile("^this is a test$")),
 				),
@@ -105,10 +104,11 @@ func TestAccVcfaOrgOidc(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resourceFieldsEqual(oidcResource1, oidcResource2, []string{
 						"id", "org_id", "redirect_uri", "wellknown_endpoint", "key_refresh_endpoint",
-						"issuer_id", "claims_mapping.0.subject", "ui_button_label", "prefer_id_token",
+						"issuer_id", "claims_mapping.0.subject", "claims_mapping.0.groups", "ui_button_label", "prefer_id_token",
 					}),
 					resource.TestCheckResourceAttr(oidcResource2, "issuer_id", "https://doesnotexist.broadcom.com"),
 					resource.TestCheckResourceAttr(oidcResource2, "claims_mapping.0.subject", "foo"),
+					resource.TestCheckResourceAttr(oidcResource2, "claims_mapping.0.groups", "d"),
 					resourceFieldsEqual(oidcResource1, oidcResource3, []string{
 						"id", "org_id", "redirect_uri", "wellknown_endpoint", "key_refresh_endpoint", "key.0.expiration_date",
 					}),
@@ -137,41 +137,42 @@ func TestAccVcfaOrgOidc(t *testing.T) {
 	postTestChecks(t)
 }
 
+// TODO: TM: vcfa_org_oidc oidc1 should not override claims_mapping so it tests that the resource is able to set them
+// from the wellknown endpoint. As for now we lack of a OIDC server that provides these claims
 const testAccCheckVcfaOrgOidc = `
 {{.SkipBinary}}
 resource "vcfa_org" "org1" {
   name              = "{{.OrgName1}}"
-  full_name         = "{{.OrgName1}}"
+  display_name      = "{{.OrgName1}}"
   description       = "{{.OrgName1}}"
-  delete_force      = true
-  delete_recursive  = true
 }
 
 resource "vcfa_org" "org2" {
   name              = "{{.OrgName2}}"
-  full_name         = "{{.OrgName2}}"
+  display_name      = "{{.OrgName2}}"
   description       = "{{.OrgName2}}"
-  delete_force      = true
-  delete_recursive  = true
 }
 
 resource "vcfa_org" "org3" {
   name              = "{{.OrgName3}}"
-  full_name         = "{{.OrgName3}}"
+  display_name      = "{{.OrgName3}}"
   description       = "{{.OrgName3}}"
-  delete_force      = true
-  delete_recursive  = true
 }
 
 resource "vcfa_org_oidc" "oidc1" {
-  org_id                      = vcfa_org.org1.id
-  enabled                     = true
-  {{.PreferIdToken}}
-  client_id                   = "clientId"
-  client_secret               = "clientSecret"
-  max_clock_skew_seconds      = 60
-  wellknown_endpoint          = "{{.WellKnownEndpoint}}"
-  {{.UIButtonLabel}}
+  org_id                 = vcfa_org.org1.id
+  enabled                = true
+  prefer_id_token        = true
+  client_id              = "clientId"
+  client_secret          = "clientSecret"
+  max_clock_skew_seconds = 60
+  wellknown_endpoint     = "{{.WellKnownEndpoint}}"
+  ui_button_label        = "{{.UIButtonLabel}}"
+  claims_mapping {
+    email      = "a"
+    subject    = "b"
+    full_name  = "c"
+  }
 }
 `
 
@@ -185,14 +186,17 @@ resource "vcfa_org_oidc" "oidc2" {
   wellknown_endpoint     = "{{.WellKnownEndpoint}}"
   issuer_id              = "https://doesnotexist.broadcom.com"
   claims_mapping {
-	subject = "foo"
+    email      = "a"
+    subject    = "foo"
+    full_name  = "c"
+    groups     = "d"
   }
 }
 
 resource "vcfa_org_oidc" "oidc3" {
   org_id                      = vcfa_org.org3.id
   enabled                     = vcfa_org_oidc.oidc1.enabled
-  {{.PreferIdToken}}
+  prefer_id_token             = vcfa_org_oidc.oidc1.prefer_id_token
   client_id                   = vcfa_org_oidc.oidc1.client_id
   client_secret               = vcfa_org_oidc.oidc1.client_secret
   max_clock_skew_seconds      = vcfa_org_oidc.oidc1.max_clock_skew_seconds
@@ -201,6 +205,7 @@ resource "vcfa_org_oidc" "oidc3" {
   access_token_endpoint       = vcfa_org_oidc.oidc1.access_token_endpoint
   userinfo_endpoint           = vcfa_org_oidc.oidc1.userinfo_endpoint
   scopes                      = vcfa_org_oidc.oidc1.scopes
+  ui_button_label             = vcfa_org_oidc.oidc1.ui_button_label
   claims_mapping {
     email      = vcfa_org_oidc.oidc1.claims_mapping[0].email
     subject    = vcfa_org_oidc.oidc1.claims_mapping[0].subject
@@ -216,7 +221,6 @@ resource "vcfa_org_oidc" "oidc3" {
     certificate     = tolist(vcfa_org_oidc.oidc1.key)[0].certificate
 	expiration_date = "2077-05-13"
   }
-  {{.UIButtonLabel}}
 }
 `
 

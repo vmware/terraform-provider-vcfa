@@ -185,8 +185,8 @@ func testAccCheckOrgDestroy(orgName string) resource.TestCheckFunc {
 		if org != nil {
 			return fmt.Errorf("%s %s was found", labelVcfaOrg, orgName)
 		}
-		if !govcd.IsNotFound(err) {
-			return fmt.Errorf("%s %s was not destroyed", labelVcfaOrg, orgName)
+		if !govcd.ContainsNotFound(err) {
+			return fmt.Errorf("%s %s was not destroyed: %s", labelVcfaOrg, orgName, err)
 		}
 		return nil
 	}

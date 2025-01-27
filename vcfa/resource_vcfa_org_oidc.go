@@ -293,7 +293,6 @@ func resourceVcfaOrgOidcCreateOrUpdate(ctx context.Context, d *schema.ResourceDa
 		WellKnownEndpoint:          d.Get("wellknown_endpoint").(string),
 		Scope:                      convertTypeListToSliceOfStrings(scopes),
 		EnableIdTokenClaims:        addrOf(d.Get("prefer_id_token").(bool)),
-		CustomUiButtonLabel:        addrOf(d.Get("ui_button_label").(string)),
 	}
 
 	// Key configurations: OAuthKeyConfigurations
@@ -339,6 +338,11 @@ func resourceVcfaOrgOidcCreateOrUpdate(ctx context.Context, d *schema.ResourceDa
 		oidcAttributeMapping.GroupsAttributeName = mappingEntry["groups"].(string)
 		oidcAttributeMapping.RolesAttributeName = mappingEntry["roles"].(string)
 		settings.OIDCAttributeMapping = &oidcAttributeMapping
+	}
+
+	// Optionals
+	if v, ok := d.GetOk("ui_button_label"); ok {
+		settings.CustomUiButtonLabel = addrOf(v.(string))
 	}
 
 	_, err = setOIDCSettings(org, settings)
