@@ -3,9 +3,11 @@
 package vcfa
 
 import (
-	"testing"
-
+	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
+	"testing"
 )
 
 // getVCenterHcl gets a vCenter data source as first returned parameter and its HCL reference as second one,
@@ -174,4 +176,41 @@ resource "vcfa_ip_space" "test-` + nameSuffix + `" {
   }
 }
 	`, `vcfa_ip_space.test-` + nameSuffix
+}
+
+func testAccCheckOrgDestroy(orgName string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		vcdClient := testAccProvider.Meta().(*VCDClient)
+		org, err := vcdClient.GetTmOrgByName(orgName)
+		if org != nil {
+			return fmt.Errorf("%s %s was found", labelVcfaOrg, orgName)
+		}
+		if !govcd.IsNotFound(err) {
+			return fmt.Errorf("%s %s was not destroyed", labelVcfaOrg, orgName)
+		}
+		return nil
+	}
+}
+
+func testAccCheckVcfaOrgExists(orgResource string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+
+		rs, ok := s.RootModule().Resources[orgResource]
+		if !ok {
+			return fmt.Errorf("not found: %s", orgResource)
+		}
+
+		if rs.Primary.ID == "" {
+			return fmt.Errorf("no %s ID is set", labelVcfaOrg)
+		}
+
+		conn := testAccProvider.Meta().(*VCDClient)
+		orgName := rs.Primary.Attributes["name"]
+		_, err := conn.VCDClient.GetTmOrgByName(orgName)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
 }

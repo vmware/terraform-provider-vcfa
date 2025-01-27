@@ -106,6 +106,11 @@ type TestConfig struct {
 		VcenterStorageProfile string `json:"vcenterStorageProfile"`
 		VcenterSupervisor     string `json:"vcenterSupervisor"`
 		VcenterSupervisorZone string `json:"vcenterSupervisorZone"`
+
+		OidcServer struct {
+			Url               string `json:"url,omitempty"`
+			WellKnownEndpoint string `json:"wellKnownEndpoint,omitempty"`
+		} `json:"oidcServer"`
 	} `json:"tm,omitempty"`
 	Logging struct {
 		Enabled         bool   `json:"enabled,omitempty"`
