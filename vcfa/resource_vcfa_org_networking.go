@@ -39,7 +39,7 @@ func resourceVcfaOrgNetworking() *schema.Resource {
 			"networking_tenancy_enabled": {
 				Type:        schema.TypeBool,
 				Computed:    true,
-				Description: "Whether this Organization has tenancy for the network domain in the backing network provider",
+				Description: fmt.Sprintf("Whether this %s has tenancy for the network domain in the backing network provider", labelVcfaOrg),
 			},
 		},
 	}
@@ -56,7 +56,7 @@ func resourceVcfaOrgNetworkingCreateUpdate(ctx context.Context, d *schema.Resour
 	d.SetId(org.TmOrg.ID)
 	dSet(d, "org_id", org.TmOrg.ID)
 
-	orgNetworkingSettings, err := getTmOrgNetworkingSettingsType(vcfaClient, d)
+	orgNetworkingSettings, err := getOrgNetworkingSettingsType(vcfaClient, d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -88,7 +88,7 @@ func resourceVcfaOrgNetworkingRead(ctx context.Context, d *schema.ResourceData, 
 		return diag.Errorf("error retrieving %s for %s:%s", labelVcfaOrgNetworking, labelVcfaOrg, err)
 	}
 
-	err = setTmOrgNetworkingSettingsData(vcfaClient, d, orgNetworkingSettings)
+	err = setOrgNetworkingSettingsData(vcfaClient, d, orgNetworkingSettings)
 	if err != nil {
 		return diag.Errorf("error storing read %s: %s", labelVcfaOrgNetworking, err)
 	}
@@ -129,7 +129,7 @@ func resourceVcfaOrgNetworkingImport(ctx context.Context, d *schema.ResourceData
 	return []*schema.ResourceData{d}, nil
 }
 
-func getTmOrgNetworkingSettingsType(_ *VCDClient, d *schema.ResourceData) (*types.TmOrgNetworkingSettings, error) {
+func getOrgNetworkingSettingsType(_ *VCDClient, d *schema.ResourceData) (*types.TmOrgNetworkingSettings, error) {
 	t := &types.TmOrgNetworkingSettings{
 		OrgNameForLogs: d.Get("log_name").(string),
 		// No setting for it in UI
@@ -139,7 +139,7 @@ func getTmOrgNetworkingSettingsType(_ *VCDClient, d *schema.ResourceData) (*type
 	return t, nil
 }
 
-func setTmOrgNetworkingSettingsData(_ *VCDClient, d *schema.ResourceData, orgNetConfig *types.TmOrgNetworkingSettings) error {
+func setOrgNetworkingSettingsData(_ *VCDClient, d *schema.ResourceData, orgNetConfig *types.TmOrgNetworkingSettings) error {
 	dSet(d, "log_name", orgNetConfig.OrgNameForLogs)
 	if orgNetConfig.NetworkingTenancyEnabled != nil {
 		dSet(d, "networking_tenancy_enabled", *orgNetConfig.NetworkingTenancyEnabled)

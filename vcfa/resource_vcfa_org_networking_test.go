@@ -27,8 +27,9 @@ func TestAccVcfaOrgNetworking(t *testing.T) {
 	configText4 := templateFill(testAccVcfaOrgNetworkingStep4DS, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
-	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText3)
-	debugPrintf("#[DEBUG] CONFIGURATION step3: %s\n", configText4)
+	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
+	debugPrintf("#[DEBUG] CONFIGURATION step3: %s\n", configText3)
+	debugPrintf("#[DEBUG] CONFIGURATION step4: %s\n", configText4)
 	if vcfaShortTest {
 		t.Skip(acceptanceTestsSkipped)
 		return
