@@ -52,16 +52,16 @@ func TestAccVcfaOrgNetworking(t *testing.T) {
 				),
 			},
 			{
-				Config: configText3,
-				Check: resource.ComposeTestCheckFunc(
-					resourceFieldsEqual("vcfa_org_networking.test", "data.vcfa_org_networking.test", nil),
-				),
-			},
-			{
 				ResourceName:      "vcfa_org_networking.test",
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateId:     params["Testname"].(string), // Org name
+			},
+			{
+				Config: configText3,
+				Check: resource.ComposeTestCheckFunc(
+					resourceFieldsEqual("vcfa_org_networking.test", "data.vcfa_org_networking.test", nil),
+				),
 			},
 		},
 	})
