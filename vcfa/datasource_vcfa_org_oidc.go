@@ -172,7 +172,7 @@ func datasourceVcfaOrgOidc() *schema.Resource {
 			"ui_button_label": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The label of the UI button of the login screen. Only available since VCD 10.5.1",
+				Description: "The label of the UI button of the login screen",
 			},
 			"redirect_uri": {
 				Type:        schema.TypeString,
