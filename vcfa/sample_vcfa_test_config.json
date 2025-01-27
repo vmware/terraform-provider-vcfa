@@ -46,6 +46,11 @@
     "nsxManagerPassword": "",
     "nsxManagerUrl": "https://nsxmanager.my-company.com",
     "nsxTier0Gateway": "existing-t0-gateway",
-    "nsxEdgeCluster": "existing-edge-cluster"
+    "nsxEdgeCluster": "existing-edge-cluster",
+
+    "oidcServer": {
+      "url": "URL-of-test-OIDC-server",
+      "wellKnownEndpoint": "/.well-known/openid-configuration"
+    }
   }
 }
