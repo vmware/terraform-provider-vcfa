@@ -169,7 +169,7 @@ The following arguments are supported:
 * `key_refresh_period_hours` - (Optional) Required if `key_refresh_endpoint` is set. Defines the frequency of key refresh. Maximum value is `720` (30 days)
 * `key_refresh_strategy` - (Optional) Required if `key_refresh_endpoint` is set. Defines the strategy of key refresh. One of `ADD`, `REPLACE`, `EXPIRE_AFTER`
 * `key_expire_duration_hours` - (Optional) Required if `key_refresh_endpoint` is set and `key_refresh_strategy=EXPIRE_AFTER`. Defines the expiration period of the key. Maximum value is `24`
-* `ui_button_label` - (Optional; VCD `10.5.1+`) Customizes the label of the UI button of the login screen
+* `ui_button_label` - (Optional) Customizes the label of the UI button of the login screen
 
 ## Attribute Reference
 
