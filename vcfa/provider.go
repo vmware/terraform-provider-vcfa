@@ -52,6 +52,7 @@ var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_edge_cluster_qos":        datasourceVcfaEdgeClusterQos(),        // 1.0
 	"vcfa_org_networking":          datasourceVcfaOrgNetworking(),         // 1.0
 	"vcfa_org_regional_networking": datasourceVcfaOrgRegionalNetworking(), // 1.0
+	"vcfa_org_oidc":                datasourceVcfaOrgOidc(),               // 1.0
 }
 
 var globalResourceMap = map[string]*schema.Resource{
@@ -67,6 +68,7 @@ var globalResourceMap = map[string]*schema.Resource{
 	"vcfa_edge_cluster_qos":        resourceVcfaEdgeClusterQos(),        // 1.0
 	"vcfa_org_networking":          resourceVcfaOrgNetworking(),         // 1.0
 	"vcfa_org_regional_networking": resourceVcfaOrgRegionalNetworking(), // 1.0
+	"vcfa_org_oidc":                resourceVcfaOrgOidc(),               // 1.0
 }
 
 // Provider returns a terraform.ResourceProvider.

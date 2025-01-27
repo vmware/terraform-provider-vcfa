@@ -48,7 +48,7 @@ func datasourceVcfaOrgNetworkingRead(ctx context.Context, d *schema.ResourceData
 		return diag.Errorf("error retrieving %s for %s:%s", labelVcfaOrgNetworking, labelVcfaOrg, err)
 	}
 
-	err = setTmOrgNetworkingSettingsData(vcfaClient, d, orgNetworkingSettings)
+	err = setOrgNetworkingSettingsData(vcfaClient, d, orgNetworkingSettings)
 	if err != nil {
 		return diag.Errorf("error storing read %s: %s", labelVcfaOrgNetworking, err)
 	}
