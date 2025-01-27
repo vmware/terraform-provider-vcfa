@@ -1,4 +1,4 @@
-//go:build org || ALL || functional
+//go:build tm || org || ALL || functional
 
 package vcfa
 
@@ -34,6 +34,7 @@ func TestAccVcfaOrgOidc(t *testing.T) {
 		"PreferIdToken":     "true",
 		"UIButtonLabel":     "this is a test",
 		"SkipBinary":        "# skip-binary-test: redundant test",
+		"Tags":              "tm org",
 	}
 	testParamsNotEmpty(t, params)
 	skipIfNotSysAdmin(t)
