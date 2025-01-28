@@ -12,7 +12,7 @@ import (
 
 // TODO: TM: Review whether this test should be skipped when an API Token or service account
 // is provided instead of user + password, in test configuration
-func TestAccVcdRightsBundle(t *testing.T) {
+func TestAccVcfaRightsBundle(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
