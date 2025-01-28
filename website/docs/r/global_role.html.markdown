@@ -44,7 +44,7 @@ The following arguments are supported:
 
 * `name` - (Required) The name of the Global Role.
 * `description` - (Required) A description of the Global Role
-* `rights` - (Optional) List of rights assigned to this role
+* `rights` - (Optional) List of rights assigned to this Global Role
 * `publish_to_all_orgs` - (Required) When true, publishes the Global Role to all Organizations
 * `org_ids` - (Optional) List of IDs of the Organizations to which this Global Role gets published. Ignored if `publish_to_all_orgs` is `true`
 

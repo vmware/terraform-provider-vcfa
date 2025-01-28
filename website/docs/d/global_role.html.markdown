@@ -34,7 +34,7 @@ The following arguments are supported:
 
 * `description` - A description of the Global Role
 * `bundle_key` - Key used for internationalization
-* `rights` - List of rights assigned to this role
+* `rights` - List of rights assigned to this Global Role
 * `publish_to_all_orgs` - When true, publishes the Global Role to all Organizations
 * `org_ids` - List of IDs of Organizations to which this Global Role gets published. Ignored if `publish_to_all_orgs` is true
 * `read_only` - Whether this Global Role is read-only
