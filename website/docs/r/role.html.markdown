@@ -56,10 +56,9 @@ An existing Role can be [imported][docs-import] into this resource via supplying
 For example, using this structure, representing an existing Role that was **not** created using Terraform:
 
 ```hcl
-
 resource "vcfa_role" "catalog-author" {
-  org  = "my-org"
-  name = "Catalog Author"
+  org_id = "urn:vcloud:org:a93c9db9-7471-3192-8d09-a8f7eeda85f9"
+  name   = "Catalog Author"
 }
 ```
 

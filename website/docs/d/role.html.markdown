@@ -13,57 +13,58 @@ Provides a VMware Cloud Foundation Automation Role data source. This can be used
 ## Example Usage
 
 ```hcl
+data "vcfa_org" "system" {
+  name = "System"
+}
+
 data "vcfa_role" "sysadmin" {
-  org  = "my-org"
-  name = "System Administrator"
+  org_id = data.vcfa_org.system.id
+  name   = "System Administrator"
 }
 ```
 
 Sample output:
 ```
-sysadmin = {
-  "bundle_key" = "ROLE_VAPP_AUTHOR"
-  "description" = "Rights given to a user who uses catalogs and creates vApps"
-  "id" = "urn:vcloud:role:53256466-221f-3f1f-8cea-2fcfc7ab9ef7"
-  "name" = "vApp Author"
-  "org" = "datacloud"
+sysadmin-out = {
+  "bundle_key" = "ROLE_SYSTEM_ADMINISTRATOR"
+  "description" = "Built-in rights for administering this installation"
+  "id" = "urn:vcloud:role:67e119b7-083b-349e-8dfd-6cf0c19b83cf"
+  "name" = "System Administrator"
+  "org_id" = "urn:vcloud:org:a93c9db9-7471-3192-8d09-a8f7eeda85f9"
   "read_only" = true
   "rights" = toset([
-    "Catalog: Add vApp from My Cloud",
-    "Catalog: View Private and Shared Catalogs",
-    "Organization vDC Compute Policy: View",
-    "Organization vDC Named Disk: Create",
-    "Organization vDC Named Disk: Delete",
-    "Organization vDC Named Disk: Edit Properties",
-    "Organization vDC Named Disk: View Properties",
-    "Organization vDC Network: View Properties",
-    "Organization vDC: VM-VM Affinity Edit",
-    "Organization: View",
-    "UI Plugins: View",
-    "VAPP_VM_METADATA_TO_VCENTER",
-    "vApp Template / Media: Copy",
-    "vApp Template / Media: Edit",
-    "vApp Template / Media: View",
-    "vApp Template: Checkout",
-    "vApp: Copy",
-    "vApp: Create / Reconfigure",
-    "vApp: Delete",
-    "vApp: Download",
-    "vApp: Edit Properties",
-    "vApp: Edit VM CPU",
-    "vApp: Edit VM Hard Disk",
-    "vApp: Edit VM Memory",
-    "vApp: Edit VM Network",
-    "vApp: Edit VM Properties",
-    "vApp: Manage VM Password Settings",
-    "vApp: Power Operations",
-    "vApp: Sharing",
-    "vApp: Snapshot Operations",
-    "vApp: Upload",
-    "vApp: Use Console",
-    "vApp: VM Boot Options",
-    "vApp: View ACL",
-    "vApp: View VM metrics",
+    "AMQP Settings: Manage",
+    "AMQP Settings: View",
+    "API Explorer: View",
+    "API Tokens: Manage",
+    "API Tokens: Manage All",
+    "Access Any Namespace with Elevated Privileges",
+    "Access Any Namespace: Edit",
+    "Access Any Namespace: View",
+    "Access Control List: Manage",
+    "Access Control List: View",
+    "Access Metrics Endpoint",
+    "Advisory Definitions: Create and Delete",
+    "Advisory Definitions: Read",
+    "Allowed Origins: Manage",
+    "Allowed Origins: View",
+    "Alternate Admin Entity: View",
+    "Approvals: Manage",
+    "Approvals: View",
+    "Assembler Administrator",
+    "Assembler User",
+    "Assembler Viewer",
+    "Audit: Manage",
+    "Billing: View",
+    "Blueprint Request: Manage",
+    "Blueprint Request: View",
+    "Blueprint: Edit",
+    "Blueprint: Manage",
+    "Blueprint: Publish",
+    "Blueprint: View",
+    "Catalog Instance: Manage",
+    "Catalog: Manage",
+    ...
   ])
 }
 ```
