@@ -20,7 +20,7 @@ data "vcfa_org" "org1" {
 resource "vcfa_role" "new-role" {
   org_id      = data.vcfa_org.org1.id
   name        = "new-role"
-  description = "new role from Terraform"
+  description = "New role from Terraform"
   rights = [
     "Catalog: Add vApp from My Cloud",
     "Catalog: Edit Properties",
