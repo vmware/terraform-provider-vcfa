@@ -18,7 +18,7 @@ data "vcfa_org" "demo" {
 }
 
 data "vcfa_org_regional_networking" "demo" {
-  name   = "
+  name   = "my-name"
   org_id = vcfa_org.demo.id
 }
 ```
