@@ -75,7 +75,7 @@ You can import such Global Role into terraform state using this command
 terraform import vcfa_global_role.my-global-role "My Existing Role"
 ```
 
-NOTE: the default separator (.) can be changed using Provider.import_separator or variable VCD_IMPORT_SEPARATOR
+NOTE: the default separator (.) can be changed using Provider.import_separator or variable VCFA_IMPORT_SEPARATOR
 
 [docs-import]:https://www.terraform.io/docs/import/
 
