@@ -22,12 +22,10 @@ resource "vcfa_role" "new-role" {
   name        = "new-role"
   description = "New role from Terraform"
   rights = [
-    "Catalog: Add vApp from My Cloud",
-    "Catalog: Edit Properties",
-    "Catalog: View Private and Shared Catalogs",
-    "Organization vDC Compute Policy: View",
-    "vApp Template / Media: Edit",
-    "vApp Template / Media: View",
+    "Content Library Item: Manage",
+    "Content Library Item: View",
+    "Content Library: Manage",
+    "Content Library: View",
   ]
 }
 ```
