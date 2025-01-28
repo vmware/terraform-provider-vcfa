@@ -55,6 +55,7 @@ var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_right":                 datasourceVcfaRight(),               // 1.0
 	"vcfa_rights_bundle":         datasourceVcfaRightsBundle(),        // 1.0
 	"vcfa_role":                  datasourceVcfaRole(),                // 1.0
+	"vcfa_global_role":           datasourceVcfaGlobalRole(),          // 1.0
 }
 
 var globalResourceMap = map[string]*schema.Resource{
@@ -72,6 +73,7 @@ var globalResourceMap = map[string]*schema.Resource{
 	"vcfa_org_networking":       resourceVcfaOrgNetworking(),      // 1.0
 	"vcfa_rights_bundle":        resourceVcfaRightsBundle(),       // 1.0
 	"vcfa_role":                 resourceVcfaRole(),               // 1.0
+	"vcfa_global_role":          resourceVcfaGlobalRole(),         // 1.0
 }
 
 // Provider returns a terraform.ResourceProvider.
