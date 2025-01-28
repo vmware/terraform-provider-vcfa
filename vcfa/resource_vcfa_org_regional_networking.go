@@ -68,7 +68,8 @@ func resourceVcfaOrgRegionalNetworkingCreate(ctx context.Context, d *schema.Reso
 		entityLabel:      labelVcfaRegionalNetworkingSetting,
 		getTypeFunc:      getTmRegionalNetworkingSettingType,
 		stateStoreFunc:   setTmRegionalNetworkingSettingData,
-		createFunc:       vcfaClient.CreateTmRegionalNetworkingSetting,
+		createAsyncFunc:  vcfaClient.CreateTmRegionalNetworkingSettingAsync,
+		getEntityFunc:    vcfaClient.GetTmRegionalNetworkingSettingById,
 		resourceReadFunc: resourceVcfaOrgRegionalNetworkingRead,
 	}
 	return createResource(ctx, d, meta, c)
