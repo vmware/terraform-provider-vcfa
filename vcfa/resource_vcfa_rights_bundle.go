@@ -361,7 +361,7 @@ func getRights(client *VCDClient, org *govcd.AdminOrg, label string, d *schema.R
 	}
 
 	if len(missingImpliedRights) > 0 {
-		message := "The rights set requires the following implied rights to be added:"
+		message := fmt.Sprintf("The %ss set requires the following implied %ss to be added:", labelVcfaRight, labelVcfaRight)
 		rightsList := ""
 		for _, right := range missingImpliedRights {
 			rightsList += fmt.Sprintf("\"%s\",\n", right.Name)
