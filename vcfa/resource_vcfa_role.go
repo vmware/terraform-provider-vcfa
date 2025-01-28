@@ -251,7 +251,7 @@ func resourceVcfaRoleImport(_ context.Context, d *schema.ResourceData, meta inte
 	if err != nil {
 		return nil, fmt.Errorf("[%s import] error retrieving %s '%s': %s", labelVcfaRole, labelVcfaRole, roleName, err)
 	}
-	dSet(d, "org", orgName)
+	dSet(d, "org_id", org.AdminOrg.ID)
 	dSet(d, "name", roleName)
 	dSet(d, "description", role.Role.Description)
 	dSet(d, "bundle_key", role.Role.BundleKey)

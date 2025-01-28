@@ -4,6 +4,7 @@ package vcfa
 
 import (
 	"fmt"
+	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -137,6 +138,12 @@ func testAccCheckRoleDestroy(orgId, roleId string) resource.TestCheckFunc {
 		// TODO: TM: Change to vcdClient.GetTmOrgById(orgId), requires implementing Role support for that type
 		org, err := conn.GetAdminOrgById(rsOrg.Primary.ID)
 		if err != nil {
+			// TODO: TM: Would be nice to have a method to retrieve the role without an Org. This way we can check
+			// the role is correctly destroyed. Otherwise, the Org gets deleted and we cannot check further with the
+			// existing methods.
+			if govcd.ContainsNotFound(err) {
+				return nil
+			}
 			return err
 		}
 		_, err = org.GetRoleById(rsRole.Primary.ID)
