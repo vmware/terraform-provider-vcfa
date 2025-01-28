@@ -54,8 +54,12 @@ An existing Role can be [imported][docs-import] into this resource via supplying
 For example, using this structure, representing an existing Role that was **not** created using Terraform:
 
 ```hcl
+data "vcfa_org" "org1" {
+  name = "my-org"
+}
+
 resource "vcfa_role" "catalog-author" {
-  org_id = "urn:vcloud:org:a93c9db9-7471-3192-8d09-a8f7eeda85f9"
+  org_id = data.vcfa_org.org1.id
   name   = "Blueprint Publisher"
 }
 ```
@@ -63,7 +67,7 @@ resource "vcfa_role" "catalog-author" {
 You can import such Role into terraform state using this command
 
 ```
-terraform import vcfa_role.catalog-author "my-org.Catalog Author"
+terraform import vcfa_role.catalog-author "my-org.Blueprint Publisher"
 ```
 
 NOTE: the default separator (.) can be changed using Provider.import_separator or variable VCFA_IMPORT_SEPARATOR
