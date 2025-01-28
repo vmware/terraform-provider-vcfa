@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -21,7 +22,7 @@ func resourceVcfaOrgRegionalNetworkingVpcQos() *schema.Resource {
 		UpdateContext: resourceVcfaOrgRegionalNetworkingVpcQosCreateUpdate,
 		DeleteContext: resourceVcfaOrgRegionalNetworkingVpcQosDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: resourceVcfaOrgRegionalNetworkingImport, // Org Regional Network Settings, because VPC QoS is a property of it
+			StateContext: resourceVcfaOrgRegionalNetworkingVpcQosImport,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -109,7 +110,7 @@ func resourceVcfaOrgRegionalNetworkingVpcQosCreateUpdate(ctx context.Context, d 
 
 func resourceVcfaOrgRegionalNetworkingVpcQosRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcfaClient := meta.(*VCDClient)
-	rns, err := vcfaClient.GetTmRegionalNetworkingSettingById(d.Get("org_regional_networking_id").(string))
+	rns, err := vcfaClient.GetTmRegionalNetworkingSettingById(d.Id())
 	if err != nil {
 		if govcd.ContainsNotFound(err) {
 			d.SetId("")
@@ -160,6 +161,31 @@ func resourceVcfaOrgRegionalNetworkingVpcQosDelete(ctx context.Context, d *schem
 	return nil
 }
 
+func resourceVcfaOrgRegionalNetworkingVpcQosImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	vcfaClient := meta.(*VCDClient)
+
+	id := strings.Split(d.Id(), ImportSeparator)
+	if len(id) != 2 {
+		return nil, fmt.Errorf("ID syntax should be <%s name>%s<%s name>", labelVcfaOrg, ImportSeparator, labelVcfaRegionalNetworkingSetting)
+	}
+
+	org, err := vcfaClient.GetTmOrgByName(id[0])
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving %s '%s': %s", labelVcfaOrg, id[0], err)
+	}
+
+	rns, err := vcfaClient.GetTmRegionalNetworkingSettingByNameAndOrgId(id[1], org.TmOrg.ID)
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving %s '%s' within %s '%s': %s",
+			labelVcfaRegionalNetworkingSetting, id[1], labelVcfaOrg, id[0], err)
+	}
+
+	d.SetId(rns.TmRegionalNetworkingSetting.ID)
+	dSet(d, "org_regional_networking_id", rns.TmRegionalNetworkingSetting.ID)
+	return []*schema.ResourceData{d}, nil
+}
+
+// flag `isCreatedUpdate` is used to separate Create/Update and Delete operations
 func getTmOrgRegionalNetworkingVpcQosType(vcfaClient *VCDClient, rns *govcd.TmRegionalNetworkingSetting, d *schema.ResourceData, isCreatedUpdate bool) (*types.TmRegionalNetworkingVpcConnectivityProfile, error) {
 	// The QoS config of Edge Cluster that is used for Region is used as main configuration. One
 	// can override it per Org Regional Networking configuration
