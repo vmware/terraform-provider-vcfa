@@ -44,7 +44,7 @@ func resourceVcfaGlobalRole() *schema.Resource {
 			"rights": {
 				Type:        schema.TypeSet,
 				Optional:    true,
-				Description: fmt.Sprintf("List of %ss assigned to this %s", labelVcfaRole, labelVcfaGlobalRole),
+				Description: fmt.Sprintf("List of %ss assigned to this %s", labelVcfaRight, labelVcfaGlobalRole),
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"publish_to_all_orgs": {
