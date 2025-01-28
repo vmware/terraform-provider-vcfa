@@ -73,7 +73,7 @@ sysadmin-out = {
 
 The following arguments are supported:
 
-* `org` - (Optional) The name of organization to use, optional if defined at provider level. Useful when connected as sysadmin working across different organisations
+* `org_id` - (Required) The ID of Organization of the Role. Can be fetched with [`vcfa_org` data source](/providers/vmware/vcfa/latest/docs/data-sources/org)
 * `name` - (Required) The name of the Role
 
 ## Attribute Reference

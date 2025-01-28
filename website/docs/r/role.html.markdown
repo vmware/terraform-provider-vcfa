@@ -34,7 +34,7 @@ resource "vcfa_role" "new-role" {
 
 The following arguments are supported:
 
-* `org_id` - (Required) The ID of organization to use
+* `org_id` - (Required) The ID of organization of the Role. Can be fetched with [`vcfa_org` data source](/providers/vmware/vcfa/latest/docs/data-sources/org)
 * `name` - (Required) The name of the Role
 * `description` - (Required) A description of the Role
 * `rights` - (Optional) Set of rights assigned to this Role
