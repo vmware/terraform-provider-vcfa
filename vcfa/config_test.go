@@ -98,7 +98,7 @@ type TestConfig struct {
 		NsxManagerUrl      string `json:"nsxManagerUrl"`
 		NsxEdgeCluster     string `json:"nsxEdgeCluster"`
 		NsxTier0Gateway    string `json:"nsxTier0Gateway"`
-		ProviderGateway    string `json:"providerGateway"` // inner name
+		ProviderGateway    string `json:"providerGateway"`
 
 		CreateVcenter         bool   `json:"createVcenter"`
 		VcenterUsername       string `json:"vcenterUsername"`
