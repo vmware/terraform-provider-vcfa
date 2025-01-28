@@ -69,10 +69,10 @@ func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 		for _, one := range all {
 			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, one.TmRegionalNetworkingSetting.Name, "vcfa_org_regional_networking", 3, verbose)
 			if toBeDeleted {
-				fmt.Printf("\t REMOVING All Regional Networking Settings %s\n", one.TmRegionalNetworkingSetting.Name)
+				fmt.Printf("\t REMOVING All %s Settings %s\n", labelVcfaRegionalNetworkingSetting, one.TmRegionalNetworkingSetting.Name)
 				err := one.Delete()
 				if err != nil {
-					return fmt.Errorf("error deleting %s '%s': %s", "Regional Networking Settings", one.TmRegionalNetworkingSetting.Name, err)
+					return fmt.Errorf("error deleting %s Settings '%s': %s", labelVcfaRegionalNetworkingSetting, one.TmRegionalNetworkingSetting.Name, err)
 				}
 			}
 		}

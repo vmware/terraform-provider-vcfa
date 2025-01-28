@@ -18,7 +18,7 @@ func datasourceVcfaOrgRegionalNetworking() *schema.Resource {
 			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: fmt.Sprintf(" %s", labelVcfaRegionalNetworkingSetting),
+				Description: fmt.Sprintf("Name of %s", labelVcfaRegionalNetworkingSetting),
 			},
 			"org_id": {
 				Type:        schema.TypeString,
