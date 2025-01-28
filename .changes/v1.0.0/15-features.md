@@ -1,0 +1,2 @@
+- **New Resource:** `vcfa_org_networking` to manage Org Networking Settings [GH-15]
+- **New Data Source:** `vcfa_org_networking` to read Org Networking Settings [GH-15]
