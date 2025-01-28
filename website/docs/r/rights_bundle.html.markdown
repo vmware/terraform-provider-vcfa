@@ -13,19 +13,27 @@ Provides a VMware Cloud Foundation Automation Rights Bundle resource. This can b
 ## Example Usage
 
 ```hcl
+data "vcfa_org" "org1" {
+  name = "org1"
+}
+
+data "vcfa_org" "org2" {
+  name = "org2"
+}
+
 resource "vcfa_rights_bundle" "new-rights-bundle" {
   name        = "new-rights-bundle"
-  description = "new rights bundle from CLI"
+  description = "new rights bundle from Terraform"
   rights = [
     "Content Library: View",
     "Content Library Item: View",
     "Group / User: View",
     "IP Blocks: View",
   ]
-  publish_to_all_tenants = false
-  tenants = [
-    "org1",
-    "org2",
+  publish_to_all_orgs = false
+  org_ids = [
+    data.vcfa_org.org1.id,
+    data.vcfa_org.org2.id,
   ]
 }
 ```
