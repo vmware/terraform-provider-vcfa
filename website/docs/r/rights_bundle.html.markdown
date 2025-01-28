@@ -68,7 +68,7 @@ You can import such rights bundle into terraform state using this command
 terraform import vcfa_rights_bundle.default-set "Default Rights Bundle"
 ```
 
-NOTE: the default separator (.) can be changed using Provider.import_separator or variable VCD_IMPORT_SEPARATOR
+NOTE: the default separator (.) can be changed using Provider.import_separator or variable VCFA_IMPORT_SEPARATOR
 
 [docs-import]:https://www.terraform.io/docs/import/
 
