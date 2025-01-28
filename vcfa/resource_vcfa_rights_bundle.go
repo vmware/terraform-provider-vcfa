@@ -49,15 +49,15 @@ func resourceVcfaRightsBundle() *schema.Resource {
 				Description: fmt.Sprintf("Set of %ss assigned to this %s", labelVcfaRight, labelVcfaRightsBundle),
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
-			"publish_to_all_tenants": {
+			"publish_to_all_orgs": {
 				Type:        schema.TypeBool,
 				Required:    true,
-				Description: fmt.Sprintf("When true, publishes the %s to all tenants", labelVcfaRightsBundle),
+				Description: fmt.Sprintf("When true, publishes the %s to all %ss", labelVcfaRightsBundle, labelVcfaOrg),
 			},
-			"tenants": {
+			"org_ids": {
 				Type:        schema.TypeSet,
 				Optional:    true,
-				Description: fmt.Sprintf("Set of tenants to which this %s is published", labelVcfaRightsBundle),
+				Description: fmt.Sprintf("Set of %ss IDs to which this %s is published", labelVcfaOrg, labelVcfaRightsBundle),
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 		},
@@ -67,7 +67,7 @@ func resourceVcfaRightsBundleCreate(ctx context.Context, d *schema.ResourceData,
 	vcdClient := meta.(*VCDClient)
 
 	rightsBundleName := d.Get("name").(string)
-	publishToAllTenants := d.Get("publish_to_all_tenants").(bool)
+	publishToAllTenants := d.Get("publish_to_all_orgs").(bool)
 
 	inputRights, err := getRights(vcdClient, nil, fmt.Sprintf("%s create", labelVcfaRightsBundle), d)
 	if err != nil {
@@ -89,20 +89,20 @@ func resourceVcfaRightsBundleCreate(ctx context.Context, d *schema.ResourceData,
 		}
 	}
 
-	inputTenants, err := getTenants(vcdClient, fmt.Sprintf("%s create", labelVcfaRightsBundle), d)
+	inputTenants, err := getOrganizations(vcdClient, fmt.Sprintf("%s create", labelVcfaRightsBundle), d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	if publishToAllTenants {
 		err = rightsBundle.PublishAllTenants()
 		if err != nil {
-			return diag.Errorf("[%s create] error publishing to all tenants - %s %s: %s", labelVcfaRightsBundle, labelVcfaRightsBundle, rightsBundleName, err)
+			return diag.Errorf("[%s create] error publishing to all %ss - %s %s: %s", labelVcfaRightsBundle, labelVcfaOrg, labelVcfaRightsBundle, rightsBundleName, err)
 		}
 	}
 	if len(inputTenants) > 0 {
 		err = rightsBundle.PublishTenants(inputTenants)
 		if err != nil {
-			return diag.Errorf("[%s create] error publishing to tenants - %s %s: %s", labelVcfaRightsBundle, labelVcfaRightsBundle, rightsBundleName, err)
+			return diag.Errorf("[%s create] error publishing to %s - %s %s: %s", labelVcfaRightsBundle, labelVcfaOrg, labelVcfaRightsBundle, rightsBundleName, err)
 		}
 	}
 	d.SetId(rightsBundle.RightsBundle.Id)
@@ -131,7 +131,7 @@ func genericVcfaRightsBundleRead(_ context.Context, d *schema.ResourceData, meta
 			d.SetId("")
 			return nil
 		}
-		return diag.Errorf("[%s read-%s] error retrieving %s %s: %s", labelVcfaRightsBundle, labelVcfaRightsBundle, operation, rightsBundleName, err)
+		return diag.Errorf("[%s read-%s] error retrieving %s %s: %s", labelVcfaRightsBundle, operation, labelVcfaRightsBundle, rightsBundleName, err)
 	}
 
 	d.SetId(rightsBundle.RightsBundle.Id)
@@ -141,7 +141,7 @@ func genericVcfaRightsBundleRead(_ context.Context, d *schema.ResourceData, meta
 
 	rights, err := rightsBundle.GetRights(nil)
 	if err != nil {
-		return diag.Errorf("[%s read-%s] error while querying %s rights: %s", labelVcfaRightsBundle, labelVcfaRightsBundle, operation, err)
+		return diag.Errorf("[%s read-%s] error while querying %s rights: %s", labelVcfaRightsBundle, operation, labelVcfaRightsBundle, err)
 	}
 	var assignedRights []interface{}
 
@@ -151,13 +151,13 @@ func genericVcfaRightsBundleRead(_ context.Context, d *schema.ResourceData, meta
 	if len(assignedRights) > 0 {
 		err = d.Set("rights", assignedRights)
 		if err != nil {
-			return diag.Errorf("[%s read-%s] error setting rights for %s %s: %s", labelVcfaRightsBundle, labelVcfaRightsBundle, operation, rightsBundleName, err)
+			return diag.Errorf("[%s read-%s] error setting rights for %s %s: %s", labelVcfaRightsBundle, operation, labelVcfaRightsBundle, rightsBundleName, err)
 		}
 	}
 
-	tenants, err := rightsBundle.GetTenants(nil)
+	orgs, err := rightsBundle.GetTenants(nil)
 	if err != nil {
-		return diag.Errorf("[%s read-%s] error while querying %s tenants: %s", labelVcfaRightsBundle, labelVcfaRightsBundle, operation, err)
+		return diag.Errorf("[%s read-%s] error while querying %s %ss: %s", labelVcfaRightsBundle, operation, labelVcfaRightsBundle, labelVcfaOrg, err)
 	}
 	var registeredTenants []interface{}
 
@@ -165,15 +165,15 @@ func genericVcfaRightsBundleRead(_ context.Context, d *schema.ResourceData, meta
 	if rightsBundle.RightsBundle.PublishAll != nil {
 		publishAll = *rightsBundle.RightsBundle.PublishAll
 	}
-	dSet(d, "publish_to_all_tenants", publishAll)
-	for _, tenant := range tenants {
-		registeredTenants = append(registeredTenants, tenant.Name)
+	dSet(d, "publish_to_all_orgs", publishAll)
+	for _, org := range orgs {
+		registeredTenants = append(registeredTenants, org.ID)
 	}
 	if !publishAll {
 		if len(registeredTenants) > 0 {
-			err = d.Set("tenants", registeredTenants)
+			err = d.Set("org_ids", registeredTenants)
 			if err != nil {
-				return diag.Errorf("[%s read-%s] error setting tenants for %s %s: %s", labelVcfaRightsBundle, labelVcfaRightsBundle, operation, rightsBundleName, err)
+				return diag.Errorf("[%s read-%s] error setting %s for %s %s: %s", labelVcfaRightsBundle, operation, labelVcfaOrg, labelVcfaRightsBundle, rightsBundleName, err)
 			}
 		}
 	}
@@ -183,10 +183,8 @@ func genericVcfaRightsBundleRead(_ context.Context, d *schema.ResourceData, meta
 
 func resourceVcfaRightsBundleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
-
 	rightsBundleName := d.Get("name").(string)
-
-	publishToAllTenants := d.Get("publish_to_all_tenants").(bool)
+	publishToAllTenants := d.Get("publish_to_all_orgs").(bool)
 
 	rightsBundle, err := vcdClient.Client.GetRightsBundleById(d.Id())
 	if err != nil {
@@ -196,15 +194,15 @@ func resourceVcfaRightsBundleUpdate(ctx context.Context, d *schema.ResourceData,
 	var inputRights []types.OpenApiReference
 	var inputTenants []types.OpenApiReference
 	var changedRights = d.HasChange("rights")
-	var changedTenants = d.HasChange("tenants") || d.HasChange("publish_to_all_tenants")
+	var changedTenants = d.HasChange("org_ids") || d.HasChange("publish_to_all_orgs")
 	if changedRights {
-		inputRights, err = getRights(vcdClient, nil, "%s update", d)
+		inputRights, err = getRights(vcdClient, nil, fmt.Sprintf("%s update", labelVcfaRightsBundle), d)
 		if err != nil {
 			return diag.FromErr(err)
 		}
 	}
 
-	if d.HasChange("name") || d.HasChange("description") || d.HasChange("publish_to_all_tenants") {
+	if d.HasChange("name") || d.HasChange("description") || d.HasChange("publish_to_all_orgs") {
 		rightsBundle.RightsBundle.Name = rightsBundleName
 		rightsBundle.RightsBundle.Description = d.Get("description").(string)
 		rightsBundle.RightsBundle.PublishAll = &publishToAllTenants
@@ -234,25 +232,25 @@ func resourceVcfaRightsBundleUpdate(ctx context.Context, d *schema.ResourceData,
 		}
 	}
 	if changedTenants {
-		inputTenants, err = getTenants(vcdClient, "%s create", d)
+		inputTenants, err = getOrganizations(vcdClient, fmt.Sprintf("%s create", labelVcfaRightsBundle), d)
 		if err != nil {
 			return diag.FromErr(err)
 		}
 		if publishToAllTenants {
 			err = rightsBundle.PublishAllTenants()
 			if err != nil {
-				return diag.Errorf("[%s update] error publishing to all tenants - %s %s: %s", labelVcfaRightsBundle, labelVcfaRightsBundle, rightsBundleName, err)
+				return diag.Errorf("[%s update] error publishing to all %ss - %s %s: %s", labelVcfaRightsBundle, labelVcfaOrg, labelVcfaRightsBundle, rightsBundleName, err)
 			}
 		} else {
 			if len(inputTenants) > 0 {
 				err = rightsBundle.ReplacePublishedTenants(inputTenants)
 				if err != nil {
-					return diag.Errorf("[%s update] error publishing to tenants - %s %s: %s", labelVcfaRightsBundle, labelVcfaRightsBundle, rightsBundleName, err)
+					return diag.Errorf("[%s update] error publishing to %ss - %s %s: %s", labelVcfaRightsBundle, labelVcfaOrg, labelVcfaRightsBundle, rightsBundleName, err)
 				}
 			} else {
 				err = rightsBundle.UnpublishAllTenants()
 				if err != nil {
-					return diag.Errorf("[%s update] error unpublishing from all tenants - %s %s: %s", labelVcfaRightsBundle, labelVcfaRightsBundle, rightsBundleName, err)
+					return diag.Errorf("[%s update] error unpublishing from all %ss - %s %s: %s", labelVcfaRightsBundle, labelVcfaOrg, labelVcfaRightsBundle, rightsBundleName, err)
 				}
 			}
 		}
@@ -307,24 +305,24 @@ func resourceVcfaVcfaRightsBundleImport(_ context.Context, d *schema.ResourceDat
 	if rightsBundle.RightsBundle.PublishAll != nil {
 		publishAll = *rightsBundle.RightsBundle.PublishAll
 	}
-	dSet(d, "publish_to_all_tenants", publishAll)
+	dSet(d, "publish_to_all_orgs", publishAll)
 	d.SetId(rightsBundle.RightsBundle.Id)
 	return []*schema.ResourceData{d}, nil
 }
 
-// getTenants returns a list of tenants for provider level rights containers (global role, rights bundle)
-func getTenants(client *VCDClient, label string, d *schema.ResourceData) ([]types.OpenApiReference, error) {
+// getOrganizations returns a list of Organizations for provider level rights containers (global role, rights bundle)
+func getOrganizations(client *VCDClient, label string, d *schema.ResourceData) ([]types.OpenApiReference, error) {
 	var inputTenants []types.OpenApiReference
 
-	tenants := d.Get("tenants").(*schema.Set).List()
+	orgIds := d.Get("org_ids").(*schema.Set).List()
 
-	for _, r := range tenants {
-		tenantName := r.(string)
-		org, err := client.GetAdminOrgByName(tenantName)
+	for _, oi := range orgIds {
+		tenantId := oi.(string)
+		org, err := client.GetTmOrgById(tenantId)
 		if err != nil {
-			return nil, fmt.Errorf("[%s] error retrieving tenant %s: %s", label, tenantName, err)
+			return nil, fmt.Errorf("[%s] error retrieving tenant %s: %s", label, oi, err)
 		}
-		inputTenants = append(inputTenants, types.OpenApiReference{Name: tenantName, ID: org.AdminOrg.ID})
+		inputTenants = append(inputTenants, types.OpenApiReference{Name: org.TmOrg.Name, ID: tenantId})
 	}
 	return inputTenants, nil
 }
@@ -363,7 +361,7 @@ func getRights(client *VCDClient, org *govcd.AdminOrg, label string, d *schema.R
 	}
 
 	if len(missingImpliedRights) > 0 {
-		message := fmt.Sprintf("The %ss set requires the following implied %s to be added:", labelVcfaRightsBundle, labelVcfaRightsBundle)
+		message := "The rights set requires the following implied rights to be added:"
 		rightsList := ""
 		for _, right := range missingImpliedRights {
 			rightsList += fmt.Sprintf("\"%s\",\n", right.Name)

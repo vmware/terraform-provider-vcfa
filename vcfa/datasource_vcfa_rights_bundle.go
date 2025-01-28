@@ -38,15 +38,15 @@ func datasourceVcfaRightsBundle() *schema.Resource {
 				Description: fmt.Sprintf("Set of %ss assigned to this %s", labelVcfaRight, labelVcfaRightsBundle),
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
-			"publish_to_all_tenants": {
+			"publish_to_all_orgs": {
 				Type:        schema.TypeBool,
 				Computed:    true,
-				Description: fmt.Sprintf("When true, publishes the %s to all tenants", labelVcfaRightsBundle),
+				Description: fmt.Sprintf("When true, publishes the %s to all %ss", labelVcfaRightsBundle, labelVcfaOrg),
 			},
-			"tenants": {
+			"org_ids": {
 				Type:        schema.TypeSet,
 				Computed:    true,
-				Description: fmt.Sprintf("Set of tenants to which this %s is published", labelVcfaRightsBundle),
+				Description: fmt.Sprintf("Set of %ss to which this %s is published", labelVcfaOrg, labelVcfaRightsBundle),
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 		},

@@ -17,12 +17,10 @@ resource "vcfa_rights_bundle" "new-rights-bundle" {
   name        = "new-rights-bundle"
   description = "new rights bundle from CLI"
   rights = [
-    "Catalog: Add vApp from My Cloud",
-    "Catalog: Edit Properties",
-    "Catalog: View Private and Shared Catalogs",
-    "Organization vDC Compute Policy: View",
-    "vApp Template / Media: Edit",
-    "vApp Template / Media: View",
+    "Content Library: View",
+    "Content Library Item: View",
+    "Group / User: View",
+    "IP Blocks: View",
   ]
   publish_to_all_tenants = false
   tenants = [
@@ -36,25 +34,26 @@ resource "vcfa_rights_bundle" "new-rights-bundle" {
 
 The following arguments are supported:
 
-* `name` - (Required) The name of the rights bundle.
-* `description` - (Required) A description of the rights bundle
-* `rights` - (Optional) Set of rights assigned to this role
-* `publish_to_all_tenants` - (Required) When true, publishes the rights bundle to all tenants
-* `tenants` - (Optional) Set of tenants to which this rights bundle gets published. Ignored if `publish_to_all_tenants` is true.
+* `name` - (Required) The name of the Rights Bundle.
+* `description` - (Required) A description of the Rights Bundle
+* `rights` - (Optional) Set of Rights assigned to this Rights Bundle
+* `publish_to_all_orgs` - (Required) When true, publishes the Rights Bundle to all Organizations
+* `org_ids` - (Optional) Set of Organization IDs to which this Rights Bundle gets published. Ignored if `publish_to_all_tenants` is true.
 
 ## Attribute Reference
 
-* `read_only` - Whether this rights bundle is read-only
+* `read_only` - Whether this Rights Bundle is read-only
 * `bundle_key` - Key used for internationalization
 
 ## Importing
 
-~> **Note:** The current implementation of Terraform import can only import resources into the state. It does not generate
-configuration. [More information.][docs-import]
+~> **Note:** The current implementation of Terraform import can only import resources into the
+state. It does not generate configuration. However, an experimental feature in Terraform 1.5+ allows
+also code generation. See [Importing resources][importing-resources] for more information.
 
-An existing rights bundle can be [imported][docs-import] into this resource via supplying the rights bundle name (the rights
+An existing Rights Bundle can be [imported][docs-import] into this resource via supplying the Rights Bundle name (the rights
 bundle is at the top of the entity hierarchy).
-For example, using this structure, representing an existing rights bundle that was **not** created using Terraform:
+For example, using this structure, representing an existing Rights Bundle that was **not** created using Terraform:
 
 ```hcl
 resource "vcfa_rights_bundle" "default-set" {
@@ -62,7 +61,7 @@ resource "vcfa_rights_bundle" "default-set" {
 }
 ```
 
-You can import such rights bundle into terraform state using this command
+You can import such Rights Bundle into terraform state using this command
 
 ```
 terraform import vcfa_rights_bundle.default-set "Default Rights Bundle"
@@ -72,5 +71,5 @@ NOTE: the default separator (.) can be changed using Provider.import_separator o
 
 [docs-import]:https://www.terraform.io/docs/import/
 
-After that, you can expand the configuration file and either update or delete the rights bundle as needed. Running `terraform plan`
-at this stage will show the difference between the minimal configuration file and the rights bundle's stored properties.
+After that, you can expand the configuration file and either update or delete the Rights Bundle as needed. Running `terraform plan`
+at this stage will show the difference between the minimal configuration file and the Rights Bundle's stored properties.
