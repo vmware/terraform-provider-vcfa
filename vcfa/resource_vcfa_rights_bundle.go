@@ -20,7 +20,7 @@ func resourceVcfaRightsBundle() *schema.Resource {
 		UpdateContext: resourceVcfaRightsBundleUpdate,
 		DeleteContext: resourceVcfaRightsBundleDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: resourceVcfaVcfaRightsBundleImport,
+			StateContext: resourceVcfaRightsBundleImport,
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -69,7 +69,7 @@ func resourceVcfaRightsBundleCreate(ctx context.Context, d *schema.ResourceData,
 	rightsBundleName := d.Get("name").(string)
 	publishToAllTenants := d.Get("publish_to_all_orgs").(bool)
 
-	inputRights, err := getRights(vcdClient, nil, fmt.Sprintf("%s create", labelVcfaRightsBundle), d)
+	inputRights, err := getRights(vcdClient, fmt.Sprintf("%s create", labelVcfaRightsBundle), d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -196,7 +196,7 @@ func resourceVcfaRightsBundleUpdate(ctx context.Context, d *schema.ResourceData,
 	var changedRights = d.HasChange("rights")
 	var changedTenants = d.HasChange("org_ids") || d.HasChange("publish_to_all_orgs")
 	if changedRights {
-		inputRights, err = getRights(vcdClient, nil, fmt.Sprintf("%s update", labelVcfaRightsBundle), d)
+		inputRights, err = getRights(vcdClient, fmt.Sprintf("%s update", labelVcfaRightsBundle), d)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -284,7 +284,7 @@ func resourceVcfaRightsBundleDelete(_ context.Context, d *schema.ResourceData, m
 	return nil
 }
 
-func resourceVcfaVcfaRightsBundleImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceVcfaRightsBundleImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	resourceVcfaURI := strings.Split(d.Id(), ImportSeparator)
 	if len(resourceVcfaURI) != 1 {
 		return nil, fmt.Errorf("resource name must be specified as rightsBundle-name")
@@ -329,9 +329,8 @@ func getOrganizations(client *VCDClient, label string, d *schema.ResourceData) (
 
 // getRights will collect the list of rights of a rights collection (role, global role, rights bundle)
 // and check whether the necessary implied rights are included.
-// Calling resources should provide a client and optionally an Org (role)
 // The "label" identifies the calling resource and operation and it is used to form error messages
-func getRights(client *VCDClient, org *govcd.AdminOrg, label string, d *schema.ResourceData) ([]types.OpenApiReference, error) {
+func getRights(client *VCDClient, label string, d *schema.ResourceData) ([]types.OpenApiReference, error) {
 	var inputRights []types.OpenApiReference
 
 	if client == nil {
@@ -339,16 +338,9 @@ func getRights(client *VCDClient, org *govcd.AdminOrg, label string, d *schema.R
 	}
 	rights := d.Get("rights").(*schema.Set).List()
 
-	var right *types.Right
-	var err error
-
 	for _, r := range rights {
 		rn := r.(string)
-		if org != nil {
-			right, err = org.GetRightByName(rn)
-		} else {
-			right, err = client.Client.GetRightByName(rn)
-		}
+		right, err := client.Client.GetRightByName(rn)
 		if err != nil {
 			return nil, fmt.Errorf("[%s] error retrieving %s %s: %s", label, labelVcfaRight, rn, err)
 		}
