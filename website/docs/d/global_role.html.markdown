@@ -13,14 +13,34 @@ Provides a VMware Cloud Foundation Automation Global Role data source. This can 
 ## Example Usage
 
 ```hcl
-data "vcfa_global_role" "vapp-author" {
-  name = "vApp Author"
+data "vcfa_global_role" "org_user" {
+  name   = "Organization User"
+}
+
+output "org_user_out" {
+  value = data.vcfa_global_role.org_user
 }
 ```
 
 Sample output:
 ```
-
+org_user_out = {
+  "bundle_key" = "ROLE_ORGANIZATION_USER"
+  "description" = "Rights given to an organization user"
+  "id" = "urn:vcloud:globalRole:b49c5a15-73fd-4390-9e87-1e1d47e69c39"
+  "name" = "Organization User"
+  "org_ids" = toset([
+    "urn:vcloud:org:9361eddf-cfe2-410f-8400-4b1b25b26cea",
+  ])
+  "publish_to_all_orgs" = true
+  "read_only" = true
+  "rights" = toset([
+    "API Tokens: Manage",
+    "Metrics: View",
+    "Namespace Usage: Manage",
+    "Namespace Usage: View",
+  ])
+}
 ```
 
 

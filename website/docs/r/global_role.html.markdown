@@ -23,7 +23,7 @@ data "vcfa_org" "org2" {
 
 resource "vcfa_global_role" "new-global-role" {
   name        = "new-global-role"
-  description = "new Global Role from CLI"
+  description = "New Global Role from Terraform"
   rights = [
     "Content Library: View",
     "Content Library Item: View",
