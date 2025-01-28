@@ -56,7 +56,7 @@ For example, using this structure, representing an existing Role that was **not*
 ```hcl
 resource "vcfa_role" "catalog-author" {
   org_id = "urn:vcloud:org:a93c9db9-7471-3192-8d09-a8f7eeda85f9"
-  name   = "Catalog Author"
+  name   = "Blueprint Publisher"
 }
 ```
 
