@@ -1,97 +1,83 @@
 ---
 layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_global_role"
-sidebar_current: "docs-vcfa-data-source-global-role"
+sidebar_current: "docs-vcfa-resource-global-role"
 description: |-
- Provides a VMware Cloud Foundation Automation global role data source . This can be used to read global roles.
+ Provides a VMware Cloud Foundation Automation Global Role. This can be used to create, modify, and delete Global Roles.
 ---
 
 # vcfa\_global\_role
 
-Provides a VMware Cloud Foundation Automation global role data source. This can be used to read global roles.
+Provides a VMware Cloud Foundation Automation Global Role. This can be used to create, modify, and delete Global Roles.
 
 ## Example Usage
 
 ```hcl
-data "vcfa_global_role" "vapp-author" {
-  name = "vApp Author"
+data "vcfa_org" "org1" {
+  name = "org1"
+}
+
+data "vcfa_org" "org2" {
+  name = "org2"
+}
+
+resource "vcfa_global_role" "new-global-role" {
+  name        = "new-global-role"
+  description = "new Global Role from CLI"
+  rights = [
+    "Content Library: View",
+    "Content Library Item: View",
+    "Group / User: View",
+    "IP Blocks: View",
+  ]
+  publish_to_all_orgs = false
+  org_ids = [
+    data.vcfa_org,org1.id,
+    data.vcfa_org,org2.id,
+  ]
 }
 ```
-
-```
-Sample output:
-
-global-role-vapp = {
-  "bundle_key" = "ROLE_VAPP_AUTHOR"
-  "description" = "Rights given to a user who uses catalogs and creates vApps"
-  "id" = "urn:vcloud:globalRole:1bf4457f-a253-3cf1-b163-f319f1a31802"
-  "name" = "vApp Author"
-  "publish_to_all_tenants" = true
-  "read_only" = false
-  "rights" = toset([
-    "Catalog: Add vApp from My Cloud",
-    "Catalog: View Private and Shared Catalogs",
-    "Organization vDC Compute Policy: View",
-    "Organization vDC Named Disk: Create",
-    "Organization vDC Named Disk: Delete",
-    "Organization vDC Named Disk: Edit Properties",
-    "Organization vDC Named Disk: View Encryption Status",
-    "Organization vDC Named Disk: View Properties",
-    "Organization vDC Network: View Properties",
-    "Organization vDC: VM-VM Affinity Edit",
-    "Organization: View",
-    "UI Plugins: View",
-    "VAPP_VM_METADATA_TO_VCENTER",
-    "vApp Template / Media: Copy",
-    "vApp Template / Media: Edit",
-    "vApp Template / Media: View",
-    "vApp Template: Checkout",
-    "vApp: Copy",
-    "vApp: Create / Reconfigure",
-    "vApp: Delete",
-    "vApp: Download",
-    "vApp: Edit Properties",
-    "vApp: Edit VM CPU",
-    "vApp: Edit VM Compute Policy",
-    "vApp: Edit VM Hard Disk",
-    "vApp: Edit VM Memory",
-    "vApp: Edit VM Network",
-    "vApp: Edit VM Properties",
-    "vApp: Manage VM Password Settings",
-    "vApp: Power Operations",
-    "vApp: Sharing",
-    "vApp: Snapshot Operations",
-    "vApp: Upload",
-    "vApp: Use Console",
-    "vApp: VM Boot Options",
-    "vApp: View ACL",
-    "vApp: View VM and VM's Disks Encryption Status",
-    "vApp: View VM metrics",
-  ])
-  "tenants" = toset([
-    "org1",
-    "org2",
-  ])
-}
-```
-
 
 ## Argument Reference
 
 The following arguments are supported:
 
-* `name` - (Required) The name of the global role.
+* `name` - (Required) The name of the Global Role.
+* `description` - (Required) A description of the Global Role
+* `rights` - (Optional) List of rights assigned to this role
+* `publish_to_all_orgs` - (Required) When true, publishes the Global Role to all Organizations
+* `org_ids` - (Optional) List of IDs of the Organizations to which this Global Role gets published. Ignored if `publish_to_all_orgs` is `true`
 
 ## Attribute Reference
 
-* `description` - A description of the global role
-* `bundle_key` - Key used for internationalization.
-* `rights` - List of rights assigned to this role
-* `publish_to_all_tenants` - When true, publishes the global role to all tenants
-* `tenants` - List of tenants to which this global role gets published. Ignored if `publish_to_all_tenants` is true.
-* `read_only` - Whether this global role is read-only
+* `read_only` - Whether this Global Role is read-only
+* `bundle_key` - Key used for internationalization
 
-## More information
+## Importing
 
-See [Roles management](/providers/vmware/vcfa/latest/docs/guides/roles_management) for a broader description of how global roles and
-rights work together.
+~> **Note:** The current implementation of Terraform import can only import resources into the
+state. It does not generate configuration. However, an experimental feature in Terraform 1.5+ allows
+also code generation. See [Importing resources][importing-resources] for more information.
+
+An existing Global Role can be [imported][docs-import] into this resource via supplying the Global Role name (the global
+role is at the top of the entity hierarchy).
+For example, using this structure, representing an existing Global Role that was **not** created using Terraform:
+
+```hcl
+resource "vcfa_global_role" "my-global-role" {
+  name   = "My Existing Role"
+}
+```
+
+You can import such Global Role into terraform state using this command
+
+```
+terraform import vcfa_global_role.my-global-role "My Existing Role"
+```
+
+NOTE: the default separator (.) can be changed using Provider.import_separator or variable VCD_IMPORT_SEPARATOR
+
+[docs-import]:https://www.terraform.io/docs/import/
+
+After that, you can expand the configuration file and either update or delete the Global Role as needed. Running `terraform plan`
+at this stage will show the difference between the minimal configuration file and the Global Role's stored properties.
