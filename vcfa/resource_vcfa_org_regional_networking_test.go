@@ -131,6 +131,10 @@ func TestAccVcfaOrgRegionalNetworking(t *testing.T) {
 				ImportStateId:     fmt.Sprintf("%s%s%s", params["Testname"].(string), ImportSeparator, params["Testname"].(string)+"-upd"),
 			},
 			{ // Testing vcfa_org_regional_networking_vpc_qos - check that after removing the custom VPC QoS
+				// Apply the config once only so that the data sources are reloaded after removal of resource
+				Config: configText4,
+			},
+			{ // Testing vcfa_org_regional_networking_vpc_qos - check that after removing the custom VPC QoS
 				Config: configText4,
 				Check: resource.ComposeTestCheckFunc(
 					// Ensure that the same Edge Cluster is backing Org Regional Networking and that Egress and Ingress configurations are the same
