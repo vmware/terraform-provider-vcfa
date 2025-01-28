@@ -1,4 +1,4 @@
-//go:build tm || org || vdc || ALL || functional
+//go:build tm || org || ALL || functional
 
 package vcfa
 
@@ -16,13 +16,15 @@ func TestAccVcfaOrgRegionalNetworking(t *testing.T) {
 	vCenterHcl, vCenterHclRef := getVCenterHcl(t)
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
 	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
+	ipSpaceHcl, ipSpaceHclRef := getIpSpaceHcl(t, regionHclRef, "1", "1")
+	providerGatewayHcl, providerGatewayHclRef := getProviderGatewayHcl(t, regionHclRef, ipSpaceHclRef)
+
 	var params = StringMap{
-		"Testname":           t.Name(),
-		"SupervisorName":     testConfig.Tm.VcenterSupervisor,
-		"SupervisorZoneName": testConfig.Tm.VcenterSupervisorZone,
-		"VcenterRef":         vCenterHclRef,
-		"RegionId":           fmt.Sprintf("%s.id", regionHclRef),
-		"Tags":               "tm org vdc",
+		"Testname":          t.Name(),
+		"RegionId":          fmt.Sprintf("%s.id", regionHclRef),
+		"ProviderGatewayId": fmt.Sprintf("%s.id", providerGatewayHclRef),
+		"EdgeClusterName":   testConfig.Tm.NsxEdgeCluster,
+		"Tags":              "tm org",
 	}
 	testParamsNotEmpty(t, params)
 
@@ -33,7 +35,7 @@ func TestAccVcfaOrgRegionalNetworking(t *testing.T) {
 	configText0 := templateFill(vCenterHcl+nsxManagerHcl+skipBinaryTest, params)
 	params["FuncName"] = t.Name() + "-step0"
 
-	preRequisites := vCenterHcl + nsxManagerHcl + regionHcl
+	preRequisites := vCenterHcl + nsxManagerHcl + regionHcl + ipSpaceHcl + providerGatewayHcl
 	configText1 := templateFill(preRequisites+testAccVcfaOrgRegionalNetworkingStep1, params)
 	params["FuncName"] = t.Name() + "-step2"
 	configText2 := templateFill(preRequisites+testAccVcfaOrgRegionalNetworkingStep2, params)
@@ -57,55 +59,41 @@ func TestAccVcfaOrgRegionalNetworking(t *testing.T) {
 			{
 				Config: configText1,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttrSet("vcfa_org_vdc.test", "id"),
-					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "name", fmt.Sprintf("%s_%s", params["Testname"], testConfig.Tm.Region)), // Name is a combination of Org name + Region name
-					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "status", "READY"),
-					resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "org_id", "vcfa_org.test", "id"),
-					resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "region_id", regionHclRef, "id"),
-					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "supervisor_ids.#", "1"),
-					resource.TestCheckTypeSetElemAttrPair("vcfa_org_vdc.test", "supervisor_ids.*", "data.vcfa_supervisor.test", "id"),
-					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "zone_resource_allocations.#", "1"),
-					resource.TestCheckTypeSetElemNestedAttrs("vcfa_org_vdc.test", "zone_resource_allocations.*", map[string]string{
-						"region_zone_name":       testConfig.Tm.VcenterSupervisorZone,
-						"cpu_limit_mhz":          "2000",
-						"cpu_reservation_mhz":    "100",
-						"memory_limit_mib":       "1024",
-						"memory_reservation_mib": "512",
-					}),
+					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "id"),
+					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "status"),
+					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "org_id"),
+					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "provider_gateway_id"),
+					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "region_id"),
+					resource.TestCheckResourceAttr("vcfa_org_regional_networking.test", "name", t.Name()),
+					// Edge Cluster ID was not specified, but it is automatically picked
+					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "edge_cluster_id"),
 				),
 			},
-			// TODO: TM: Update throws a NullPointerException when trying to modify Region Zone allocations
-			//{
-			//	Config: configText2,
-			//	Check: resource.ComposeTestCheckFunc(
-			//		resource.TestCheckResourceAttrSet("vcfa_org_vdc.test", "id"),
-			//		resource.TestCheckResourceAttr("vcfa_org_vdc.test", "name", fmt.Sprintf("%s_%s", params["Testname"], testConfig.Tm.Region)), // Name is a combination of Org name + Region name
-			//		resource.TestCheckResourceAttr("vcfa_org_vdc.test", "status", "READY"),
-			//		resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "org_id", "vcfa_org.test", "id"),
-			//		resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "region_id", "vcfa_region.region", "id"),
-			//		resource.TestCheckResourceAttr("vcfa_org_vdc.test", "supervisor_ids.#", "1"),
-			//		resource.TestCheckTypeSetElemAttrPair("vcfa_org_vdc.test", "supervisor_ids.*", "data.vcfa_supervisor.test", "id"),
-			//		resource.TestCheckResourceAttr("vcfa_org_vdc.test", "zone_resource_allocations.#", "1"),
-			//		resource.TestCheckTypeSetElemNestedAttrs("vcfa_org_vdc.test", "zone_resource_allocations.*", map[string]string{
-			//			"region_zone_name":       testConfig.Tm.VcenterSupervisorZone,
-			//			"cpu_limit_mhz":          "1900",
-			//			"cpu_reservation_mhz":    "90",
-			//			"memory_limit_mib":       "500",
-			//			"memory_reservation_mib": "200",
-			//		}),
-			//	),
-			//},
+			{ // Update - only name and edge_cluster_id can be updated
+				Config: configText2,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "id"),
+					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "status"),
+					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "org_id"),
+					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "provider_gateway_id"),
+					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "region_id"),
+
+					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "edge_cluster_id"),
+					resource.TestCheckResourceAttrPair("vcfa_org_regional_networking.test", "edge_cluster_id", "data.vcfa_edge_cluster.test", "id"),
+					resource.TestCheckResourceAttr("vcfa_org_regional_networking.test", "name", t.Name()+"-upd"),
+				),
+			},
 			{
 				Config: configText3,
 				Check: resource.ComposeTestCheckFunc(
-					resourceFieldsEqual("vcfa_org_vdc.test", "data.vcfa_org_vdc.test", nil),
+					resourceFieldsEqual("vcfa_org_regional_networking.test", "data.vcfa_org_regional_networking.test", nil),
 				),
 			},
 			{
-				ResourceName:      "vcfa_org_vdc.test",
+				ResourceName:      "vcfa_org_regional_networking.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateId:     fmt.Sprintf("%s%s%s", params["Testname"], ImportSeparator, testConfig.Tm.Region), // Org name and Region name
+				ImportStateId:     fmt.Sprintf("%s%s%s", params["Testname"].(string), ImportSeparator, params["Testname"].(string)+"-upd"), // Org name and Region name
 			},
 		},
 	})
@@ -113,50 +101,7 @@ func TestAccVcfaOrgRegionalNetworking(t *testing.T) {
 	postTestChecks(t)
 }
 
-const testAccVcfaOrgRegionalNetworkingStep1 = `
-data "vcfa_supervisor" "test" {
-  name       = "{{.SupervisorName}}"
-  vcenter_id = {{.VcenterRef}}.id
-}
-
-data "vcfa_region_zone" "test" {
-  region_id = {{.RegionId}}
-  name      = "{{.SupervisorZoneName}}"
-}
-
-resource "vcfa_org_vdc" "test" {
-  org_id         = vcfa_org.test.id
-  region_id      = {{.RegionId}}
-  supervisor_ids = [data.vcfa_supervisor.test.id]
-  zone_resource_allocations {
-    region_zone_id         = data.vcfa_region_zone.test.id
-    cpu_limit_mhz          = 2000
-    cpu_reservation_mhz    = 100
-    memory_limit_mib       = 1024
-    memory_reservation_mib = 512
-  }
-}
-
-resource "vcfa_org" "test" {
-  name         = "{{.Testname}}"
-  display_name = "terraform-test"
-  description  = "terraform test"
-  is_enabled   = true
-}
-`
-
-const testAccVcfaOrgRegionalNetworkingStep2 = `
-data "vcfa_supervisor" "test" {
-  name       = "{{.SupervisorName}}"
-  vcenter_id = {{.VcenterRef}}.id
-  depends_on = [{{.VcenterRef}}]
-}
-
-data "vcfa_region_zone" "test" {
-  region_id = {{.RegionId}}
-  name      = "{{.SupervisorZoneName}}"
-}
-
+const testAccVcfaOrgRegionalNetworkingPrerequisites = `
 resource "vcfa_org" "test" {
   name         = "{{.Testname}}"
   display_name = "terraform-test"
@@ -164,24 +109,43 @@ resource "vcfa_org" "test" {
   is_enabled   = true
 }
 
-resource "vcfa_org_vdc" "test" {
-  org_id         = vcfa_org.test.id
-  region_id      = {{.RegionId}}
-  supervisor_ids = [data.vcfa_supervisor.test.id]
-  zone_resource_allocations {
-    region_zone_id         = data.vcfa_region_zone.test.id
-    cpu_limit_mhz          = 1900
-    cpu_reservation_mhz    = 90
-    memory_limit_mib       = 500
-    memory_reservation_mib = 200
-  }
+resource "vcfa_org_networking" "test" {
+  org_id   = vcfa_org.test.id
+  log_name = "tftest"
 }
 `
 
-// TODO: TM: Change to testAccVcfaOrgRegionalNetworkingStep2 when Update is fixed
-const testAccVcfaOrgRegionalNetworkingStep3DS = testAccVcfaOrgRegionalNetworkingStep1 + `
-data "vcfa_org_vdc" "test" {
-  org_id    = vcfa_org.test.id
+const testAccVcfaOrgRegionalNetworkingStep1 = testAccVcfaOrgRegionalNetworkingPrerequisites + `
+resource "vcfa_org_regional_networking" "test" {
+  name                = "{{.Testname}}"
+  org_id              = vcfa_org.test.id
+  provider_gateway_id = {{.ProviderGatewayId}}
+  region_id           = {{.RegionId}}
+
+  depends_on = [vcfa_org_networking.test]
+}
+`
+
+const testAccVcfaOrgRegionalNetworkingStep2 = testAccVcfaOrgRegionalNetworkingPrerequisites + `
+data "vcfa_edge_cluster" "test" {
+  name      = "{{.EdgeClusterName}}"
   region_id = {{.RegionId}}
+}
+
+resource "vcfa_org_regional_networking" "test" {
+  name                = "{{.Testname}}-upd"
+  org_id              = vcfa_org.test.id
+  provider_gateway_id = {{.ProviderGatewayId}}
+  region_id           = {{.RegionId}}
+  edge_cluster_id     = data.vcfa_edge_cluster.test.id
+
+  depends_on = [vcfa_org_networking.test]
+}
+`
+
+const testAccVcfaOrgRegionalNetworkingStep3DS = testAccVcfaOrgRegionalNetworkingStep2 + `
+data "vcfa_org_regional_networking" "test" {
+  name   = vcfa_org_regional_networking.test.name
+  org_id = vcfa_org.test.id
 }
 `

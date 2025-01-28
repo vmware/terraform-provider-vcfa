@@ -3,6 +3,7 @@ package vcfa
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -107,9 +108,25 @@ func resourceVcfaOrgRegionalNetworkingDelete(ctx context.Context, d *schema.Reso
 }
 
 func resourceVcfaOrgRegionalNetworkingImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	_ = meta.(*VCDClient)
+	vcfaClient := meta.(*VCDClient)
 
-	d.SetId("???")
+	id := strings.Split(d.Id(), ImportSeparator)
+	if len(id) != 2 {
+		return nil, fmt.Errorf("ID syntax should be <%s name>%s<%s name>", labelVcfaOrg, ImportSeparator, labelVcfaRegionalNetworkingSetting)
+	}
+
+	org, err := vcfaClient.GetTmOrgByName(id[0])
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving %s '%s': %s", labelVcfaOrg, id[0], err)
+	}
+
+	rns, err := vcfaClient.GetTmRegionalNetworkingSettingByNameAndOrgId(id[1], org.TmOrg.ID)
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving %s '%s' within %s '%s': %s",
+			labelVcfaRegionalNetworkingSetting, id[1], labelVcfaOrg, id[0], err)
+	}
+
+	d.SetId(rns.TmRegionalNetworkingSetting.ID)
 	return []*schema.ResourceData{d}, nil
 }
 

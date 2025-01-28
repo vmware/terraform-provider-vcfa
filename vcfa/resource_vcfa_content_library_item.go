@@ -190,7 +190,7 @@ func resourceVcfaContentLibraryItemImport(_ context.Context, d *schema.ResourceD
 
 	id := strings.Split(d.Id(), ImportSeparator)
 	if len(id) != 2 {
-		return nil, fmt.Errorf("ID syntax should be <%s name>%s<%s name>", labelVcfaContentLibrary, labelVcfaContentLibraryItem, ImportSeparator)
+		return nil, fmt.Errorf("ID syntax should be <%s name>%s<%s name>", labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibraryItem)
 	}
 
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id

@@ -260,8 +260,7 @@ func shouldDeleteEntity(alsoDelete, doNotDelete entityList, name, entityType str
 	exclusion := ""
 	// 1. First requirement to be deleted: the entity name starts with 'Test' or 'test'
 	toBeDeleted := isTest.MatchString(name)
-	if true {
-		// if inList(alsoDelete, name, entityType) {
+	if inList(alsoDelete, name, entityType) {
 		toBeDeleted = true
 		// 2. If the entity was in the additional deletion list, regardless of the name,
 		// it is marked for deletion, with a "+", indicating that it was selected for deletion because of the
