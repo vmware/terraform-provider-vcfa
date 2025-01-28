@@ -58,7 +58,7 @@ data "vcfa_org" "org1" {
   name = "my-org"
 }
 
-resource "vcfa_role" "catalog-author" {
+resource "vcfa_role" "my-existing-role" {
   org_id = data.vcfa_org.org1.id
   name   = "Blueprint Publisher"
 }
@@ -67,7 +67,7 @@ resource "vcfa_role" "catalog-author" {
 You can import such Role into terraform state using this command
 
 ```
-terraform import vcfa_role.catalog-author "my-org.Blueprint Publisher"
+terraform import vcfa_role.my-existing-role "my-org.Blueprint Publisher"
 ```
 
 NOTE: the default separator (.) can be changed using Provider.import_separator or variable VCFA_IMPORT_SEPARATOR
