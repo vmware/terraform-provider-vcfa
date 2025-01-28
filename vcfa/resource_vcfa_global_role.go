@@ -163,14 +163,14 @@ func genericGlobalRoleRead(_ context.Context, d *schema.ResourceData, meta inter
 		}
 	}
 
-	tenants, err := globalRole.GetTenants(nil)
+	orgs, err := globalRole.GetTenants(nil)
 	if err != nil {
 		return diag.Errorf("[%s read-%s] error while querying %s %ss: %s", labelVcfaGlobalRole, operation, labelVcfaGlobalRole, labelVcfaOrg, err)
 	}
 	var registeredTenants []interface{}
 
-	for _, tenant := range tenants {
-		registeredTenants = append(registeredTenants, tenant.Name)
+	for _, org := range orgs {
+		registeredTenants = append(registeredTenants, org.ID)
 	}
 	if len(registeredTenants) > 0 {
 		err = d.Set("org_ids", registeredTenants)

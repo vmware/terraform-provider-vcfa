@@ -1,4 +1,4 @@
-//go:build tm || rights || ALL || functional
+//go:build tm || role || ALL || functional
 
 package vcfa
 
@@ -15,7 +15,7 @@ func TestAccVcfaRight(t *testing.T) {
 
 	var params = StringMap{
 		"Name": "Organization: Edit Limits",
-		"Tags": "tm rights",
+		"Tags": "tm role",
 	}
 	testParamsNotEmpty(t, params)
 

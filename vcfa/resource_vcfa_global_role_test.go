@@ -1,4 +1,4 @@
-//go:build tm || role || ALL || functional
+//go:build role || ALL || functional
 
 package vcfa
 
@@ -12,31 +12,31 @@ import (
 
 // TODO: TM: Review whether this test should be skipped when an API Token or service account
 // is provided instead of user + password, in test configuration
-func TestAccVcfaRightsBundle(t *testing.T) {
+func TestAccVcdGlobalRole(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
-	var rightsBundleName = t.Name()
-	var rightsBundleUpdateName = t.Name() + "-update"
-	var rightsBundleDescription = "A long description containing some text."
-	var rightsBundleUpdateDescription = "A shorter description."
+	var globalRoleName = t.Name()
+	var globalRoleUpdateName = t.Name() + "-update"
+	var globalRoleDescription = "A long description containing some text."
+	var globalRoleUpdateDescription = "A shorter description."
 
 	var params = StringMap{
-		"Org":                           testConfig.Tm.Org,
-		"RightsBundleName":              rightsBundleName,
-		"RightsBundleUpdateName":        rightsBundleUpdateName,
-		"RightsBundleDescription":       rightsBundleDescription,
-		"RightsBundleUpdateDescription": rightsBundleUpdateDescription,
-		"FuncName":                      rightsBundleName,
-		"Tags":                          "tm role",
+		"Org":                         testConfig.Tm.Org,
+		"GlobalRoleName":              globalRoleName,
+		"GlobalRoleUpdateName":        globalRoleUpdateName,
+		"GlobalRoleDescription":       globalRoleDescription,
+		"GlobalRoleUpdateDescription": globalRoleUpdateDescription,
+		"FuncName":                    globalRoleName,
+		"Tags":                        "tm role",
 	}
 	testParamsNotEmpty(t, params)
 
-	configText := templateFill(testAccRightsBundle, params)
+	configText := templateFill(testAccGlobalRole, params)
 
-	params["FuncName"] = rightsBundleUpdateName
-	params["RightsBundleDescription"] = rightsBundleUpdateDescription
-	configTextUpdate := templateFill(testAccRightsBundleUpdate, params)
+	params["FuncName"] = globalRoleUpdateName
+	params["GlobalRoleDescription"] = globalRoleUpdateDescription
+	configTextUpdate := templateFill(testAccGlobalRoleUpdate, params)
 	if vcfaShortTest {
 		t.Skip(acceptanceTestsSkipped)
 		return
@@ -44,17 +44,17 @@ func TestAccVcfaRightsBundle(t *testing.T) {
 	debugPrintf("#[DEBUG] CONFIGURATION basic: %s\n", configText)
 	debugPrintf("#[DEBUG] CONFIGURATION update: %s\n", configTextUpdate)
 
-	resourceDef := "vcfa_rights_bundle." + rightsBundleName
+	resourceDef := "vcfa_global_role." + globalRoleName
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
-		CheckDestroy:      testAccCheckRightsBundleDestroy(resourceDef),
+		CheckDestroy:      testAccCheckGlobalRoleDestroy(resourceDef),
 		Steps: []resource.TestStep{
 			{
 				Config: configText,
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckRightsBundleExists(resourceDef),
-					resource.TestCheckResourceAttr(resourceDef, "name", rightsBundleName),
-					resource.TestCheckResourceAttr(resourceDef, "description", rightsBundleDescription),
+					testAccCheckGlobalRoleExists(resourceDef),
+					resource.TestCheckResourceAttr(resourceDef, "name", globalRoleName),
+					resource.TestCheckResourceAttr(resourceDef, "description", globalRoleDescription),
 					resource.TestCheckResourceAttr(resourceDef, "publish_to_all_orgs", "false"),
 					resource.TestCheckResourceAttr(resourceDef, "rights.#", "4"),
 					resource.TestCheckResourceAttr(resourceDef, "org_ids.#", "1"),
@@ -63,9 +63,9 @@ func TestAccVcfaRightsBundle(t *testing.T) {
 			{
 				Config: configTextUpdate,
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckRightsBundleExists(resourceDef),
-					resource.TestCheckResourceAttr(resourceDef, "name", rightsBundleUpdateName),
-					resource.TestCheckResourceAttr(resourceDef, "description", rightsBundleUpdateDescription),
+					testAccCheckGlobalRoleExists(resourceDef),
+					resource.TestCheckResourceAttr(resourceDef, "name", globalRoleUpdateName),
+					resource.TestCheckResourceAttr(resourceDef, "description", globalRoleUpdateDescription),
 					resource.TestCheckResourceAttr(resourceDef, "publish_to_all_orgs", "true"),
 					resource.TestCheckResourceAttr(resourceDef, "rights.#", "2"),
 				),
@@ -74,14 +74,14 @@ func TestAccVcfaRightsBundle(t *testing.T) {
 				ResourceName:      resourceDef,
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: func(state *terraform.State) (string, error) { return rightsBundleUpdateName, nil },
+				ImportStateIdFunc: func(state *terraform.State) (string, error) { return globalRoleUpdateName, nil },
 			},
 		},
 	})
 	postTestChecks(t)
 }
 
-func testAccCheckRightsBundleExists(identifier string) resource.TestCheckFunc {
+func testAccCheckGlobalRoleExists(identifier string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[identifier]
 		if !ok {
@@ -89,17 +89,17 @@ func testAccCheckRightsBundleExists(identifier string) resource.TestCheckFunc {
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("no %s ID is set", labelVcfaRightsBundle)
+			return fmt.Errorf("no %s ID is set", labelVcfaGlobalRole)
 		}
 
 		conn := testAccProvider.Meta().(*VCDClient)
 
-		_, err := conn.Client.GetRightsBundleById(rs.Primary.ID)
+		_, err := conn.Client.GetGlobalRoleById(rs.Primary.ID)
 		return err
 	}
 }
 
-func testAccCheckRightsBundleDestroy(identifier string) resource.TestCheckFunc {
+func testAccCheckGlobalRoleDestroy(identifier string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[identifier]
 		if !ok {
@@ -107,12 +107,12 @@ func testAccCheckRightsBundleDestroy(identifier string) resource.TestCheckFunc {
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("no %s ID is set", labelVcfaRightsBundle)
+			return fmt.Errorf("no %s ID is set", labelVcfaGlobalRole)
 		}
 
 		conn := testAccProvider.Meta().(*VCDClient)
 
-		_, err := conn.Client.GetRightsBundleById(rs.Primary.ID)
+		_, err := conn.Client.GetGlobalRoleById(rs.Primary.ID)
 
 		if err == nil {
 			return fmt.Errorf("%s not deleted yet", identifier)
@@ -122,16 +122,16 @@ func testAccCheckRightsBundleDestroy(identifier string) resource.TestCheckFunc {
 	}
 }
 
-const testAccRightsBundle = `
+const testAccGlobalRole = `
 resource "vcfa_org" "org1" {
   name         = "{{.Org}}"
   display_name = "{{.Org}}"
   description  = "{{.Org}}"
 }
 
-resource "vcfa_rights_bundle" "{{.RightsBundleName}}" {
-  name        = "{{.RightsBundleName}}"
-  description = "{{.RightsBundleDescription}}"
+resource "vcfa_global_role" "{{.GlobalRoleName}}" {
+  name        = "{{.GlobalRoleName}}"
+  description = "{{.GlobalRoleDescription}}"
   rights = [
     "Content Library: View",
     "Content Library Item: View",
@@ -139,20 +139,20 @@ resource "vcfa_rights_bundle" "{{.RightsBundleName}}" {
     "IP Blocks: View",
   ]
   publish_to_all_orgs = false
-  org_ids                = [ vcfa_org.org1.id ]
+  org_ids             = [ vcfa_org.org1.id ]
 }
 `
 
-const testAccRightsBundleUpdate = `
+const testAccGlobalRoleUpdate = `
 resource "vcfa_org" "org1" {
   name         = "{{.Org}}"
   display_name = "{{.Org}}"
   description  = "{{.Org}}"
 }
 
-resource "vcfa_rights_bundle" "{{.RightsBundleName}}" {
-  name        = "{{.RightsBundleUpdateName}}"
-  description = "{{.RightsBundleUpdateDescription}}"
+resource "vcfa_global_role" "{{.GlobalRoleName}}" {
+  name        = "{{.GlobalRoleUpdateName}}"
+  description = "{{.GlobalRoleUpdateDescription}}"
   rights = [
     # "Content Library: View",
     # "Content Library Item: View",
