@@ -52,6 +52,7 @@ var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_edge_cluster_qos":      datasourceVcfaEdgeClusterQos(),      // 1.0
 	"vcfa_org_oidc":              datasourceVcfaOrgOidc(),             // 1.0
 	"vcfa_org_networking":        datasourceVcfaOrgNetworking(),       // 1.0
+	"vcfa_right":                 datasourceVcfaRight(),               // 1.0
 }
 
 var globalResourceMap = map[string]*schema.Resource{
