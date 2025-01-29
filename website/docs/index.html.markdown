@@ -93,10 +93,8 @@ data "vcfa_tm_version" "version" {
 }
 ```
 
-The file containing the API token needs to be readable and writable, in `json` format with the API key. e.g:
-```json
-{"refresh_token":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
-```
+The file containing the API token needs to be readable and writable, you can check the file syntax in the
+[`api_token`](/providers/vmware/vcfa/latest/docs/resources/api_token) resource.
 
 ## Argument Reference
 
