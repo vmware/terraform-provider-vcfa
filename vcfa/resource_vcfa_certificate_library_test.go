@@ -10,8 +10,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-// TestAccVcdLibraryCertificateResource tests that certificate can add to library
-func TestAccVcdLibraryCertificateResource(t *testing.T) {
+// TestAccVcfaCertificateLibraryResource tests certificate libraries. At least two certificates must be provided in the
+// testing configuration
+func TestAccVcfaCertificateLibraryResource(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
@@ -104,10 +105,10 @@ func TestAccVcdLibraryCertificateResource(t *testing.T) {
 			{
 				Config: configText3,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resourceFieldsEqual(resourceAddressOrgCert, "data.vcfa_certificate_library.existing", nil),
-					resourceFieldsEqual(resourceAddressOrgCert, "data.vcfa_certificate_library.existingById", nil),
-					resourceFieldsEqual(resourceAddressSysPrivateCert, "data.vcfa_certificate_library.existingSystem", nil),
-					resourceFieldsEqual(resourceAddressSysPrivateCert, "data.vcfa_certificate_library.existingSystemById", nil),
+					resourceFieldsEqual(resourceAddressOrgCert, "data.vcfa_certificate_library.existing", []string{"%", "private_key", "private_key_passphrase"}),
+					resourceFieldsEqual(resourceAddressOrgCert, "data.vcfa_certificate_library.existingById", []string{"%", "private_key", "private_key_passphrase"}),
+					resourceFieldsEqual(resourceAddressSysPrivateCert, "data.vcfa_certificate_library.existingSystem", []string{"%", "private_key", "private_key_passphrase"}),
+					resourceFieldsEqual(resourceAddressSysPrivateCert, "data.vcfa_certificate_library.existingSystemById", []string{"%", "private_key", "private_key_passphrase"}),
 				),
 			},
 			{
