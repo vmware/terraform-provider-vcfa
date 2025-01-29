@@ -70,6 +70,7 @@ var globalResourceMap = map[string]*schema.Resource{
 	"vcfa_org_oidc":             resourceVcfaOrgOidc(),            // 1.0
 	"vcfa_org_networking":       resourceVcfaOrgNetworking(),      // 1.0
 	"vcfa_rights_bundle":        resourceVcfaRightsBundle(),       // 1.0
+	"vcfa_api_token":            resourceVcfaApiToken(),           // 1.0
 }
 
 // Provider returns a terraform.ResourceProvider.
