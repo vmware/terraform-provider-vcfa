@@ -27,7 +27,16 @@ resource "vcfa_api_token" "example_token" {
 The following arguments are supported:
 
 * `name` - (Required) The unique name of the API Token for a specific user.
-* `file_name` - (Required) The name of the file which will be created containing the API Token
+* `file_name` - (Required) The name of the file which will be created containing the API Token. The file has the following
+JSON contents:
+```json
+{
+  "token_type": "API Token",
+  "refresh_token": "24JVMAQvaayIDuA7wayPPfa376mrfraB",
+  "updated_by": "terraform-provider-vcfa/ (darwin/amd64; isProvider:true)",
+  "updated_on": "2025-01-29T10:00:43+01:00"
+ }
+```
 * `allow_token_file` - (Required) An additional check that the user is aware that the file contains
   SENSITIVE information. Must be set to `true` or it will return a validation error.
 
