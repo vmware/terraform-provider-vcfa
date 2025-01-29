@@ -1,6 +1,6 @@
 ---
 layout: "vcfa"
-page_title: "VMware Cloud Foundation Automation: vcfa_library_certificate"
+page_title: "VMware Cloud Foundation Automation: vcfa_certificate_library"
 sidebar_current: "docs-vcfa-data-source-certificate-library"
 description: |-
   Provides a data source to read certificates in System or Org library.
@@ -15,7 +15,7 @@ Provides a data source to read certificate in System or Org library and referenc
 ## Example Usage
 
 ```hcl
-data "vcfa_library_certificate" "certificate1" {
+data "vcfa_certificate_library" "certificate1" {
   org   = "myOrg"
   alias = "SAML Encryption"
 }
@@ -33,4 +33,4 @@ The following arguments are supported:
 ## Attribute Reference
 
 All the arguments and attributes defined in
-[`vcfa_library_certificate`](/providers/vmware/vcfa/latest/docs/resources/certificate_library) resource are available.
+[`vcfa_certificate_library`](/providers/vmware/vcfa/latest/docs/resources/certificate_library) resource are available.

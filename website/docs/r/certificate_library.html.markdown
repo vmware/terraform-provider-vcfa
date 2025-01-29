@@ -1,6 +1,6 @@
 ---
 layout: "vcfa"
-page_title: "VMware Cloud Foundation Automation: vcfa_library_certificate"
+page_title: "VMware Cloud Foundation Automation: vcfa_certificate_library"
 sidebar_current: "docs-vcfa-resource-certificate-library"
 description: |-
   Provides a certificate in System or Org library resource.
@@ -15,7 +15,7 @@ Provides a resource to manage certificate in System or Org library.
 ## Example Usage
 
 ```hcl
-resource "vcfa_library_certificate" "new-certificate" {
+resource "vcfa_certificate_library" "new-certificate" {
   org                    = "myOrg"
   alias                  = "SAML certificate"
   description            = "my description"
@@ -28,7 +28,7 @@ resource "vcfa_library_certificate" "new-certificate" {
 Creating certificate in System (Provider) context:
 
 ```hcl
-resource "vcfa_library_certificate" "new-certificate-for-system" {
+resource "vcfa_certificate_library" "new-certificate-for-system" {
   org                    = "System"
   alias                  = "provider certificate"
   description            = "my description"
@@ -68,7 +68,7 @@ certificates. An example is below:
 [docs-import]: https://www.terraform.io/docs/import/
 
 ```
-terraform import vcfa_library_certificate.imported my-org.my-certificate-alias
+terraform import vcfa_certificate_library.imported my-org.my-certificate-alias
 ```
 
 The above would import the certificate named `my-certificate-alias` which is configured in organization named `my-org`.
