@@ -40,6 +40,18 @@ func convertTypeListToSliceOfStrings(param []interface{}) []string {
 	return result
 }
 
+// convertStringsToTypeSet accepts a slice of strings and returns a *schema.Set suitable for storing in Terraform
+// set of strings
+func convertStringsToTypeSet(param []string) *schema.Set {
+	sliceOfInterfaces := make([]interface{}, len(param))
+	for index, value := range param {
+		sliceOfInterfaces[index] = value
+	}
+
+	set := schema.NewSet(schema.HashSchema(&schema.Schema{Type: schema.TypeString}), sliceOfInterfaces)
+	return set
+}
+
 // addrOf is a generic function to return the address of a variable
 // Note. It is mainly meant for converting literal values to pointers (e.g. `addrOf(true)`) or cases
 // for converting variables coming out straight from Terraform schema (e.g.
