@@ -69,7 +69,7 @@ func resourceVcfaRightsBundleCreate(ctx context.Context, d *schema.ResourceData,
 	rightsBundleName := d.Get("name").(string)
 	publishToAllTenants := d.Get("publish_to_all_orgs").(bool)
 
-	inputRights, err := getRights(vcdClient, fmt.Sprintf("%s create", labelVcfaRightsBundle), d)
+	inputRights, err := getRights(vcdClient, nil, fmt.Sprintf("%s create", labelVcfaRightsBundle), d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -196,7 +196,7 @@ func resourceVcfaRightsBundleUpdate(ctx context.Context, d *schema.ResourceData,
 	var changedRights = d.HasChange("rights")
 	var changedTenants = d.HasChange("org_ids") || d.HasChange("publish_to_all_orgs")
 	if changedRights {
-		inputRights, err = getRights(vcdClient, fmt.Sprintf("%s update", labelVcfaRightsBundle), d)
+		inputRights, err = getRights(vcdClient, nil, fmt.Sprintf("%s update", labelVcfaRightsBundle), d)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -330,7 +330,8 @@ func getOrganizations(client *VCDClient, label string, d *schema.ResourceData) (
 // getRights will collect the list of rights of a rights collection (role, global role, rights bundle)
 // and check whether the necessary implied rights are included.
 // The "label" identifies the calling resource and operation and it is used to form error messages
-func getRights(client *VCDClient, label string, d *schema.ResourceData) ([]types.OpenApiReference, error) {
+// TODO: TM: Switch to TmOrg type and implement GetRightByName
+func getRights(client *VCDClient, org *govcd.AdminOrg, label string, d *schema.ResourceData) ([]types.OpenApiReference, error) {
 	var inputRights []types.OpenApiReference
 
 	if client == nil {
@@ -338,11 +339,18 @@ func getRights(client *VCDClient, label string, d *schema.ResourceData) ([]types
 	}
 	rights := d.Get("rights").(*schema.Set).List()
 
+	var right *types.Right
+	var err error
+
 	for _, r := range rights {
 		rn := r.(string)
-		right, err := client.Client.GetRightByName(rn)
+		if org != nil {
+			right, err = org.GetRightByName(rn)
+		} else {
+			right, err = client.Client.GetRightByName(rn)
+		}
 		if err != nil {
-			return nil, fmt.Errorf("[%s] error retrieving %s %s: %s", label, labelVcfaRight, rn, err)
+			return nil, fmt.Errorf("[%s] error retrieving %s '%s': %s", label, labelVcfaRight, rn, err)
 		}
 		inputRights = append(inputRights, types.OpenApiReference{Name: rn, ID: right.ID})
 	}
