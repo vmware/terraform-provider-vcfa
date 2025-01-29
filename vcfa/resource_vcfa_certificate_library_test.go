@@ -16,7 +16,7 @@ func TestAccVcfaCertificateLibraryResource(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
-	if len(testConfig.Tm.Certificates) != 2 {
+	if len(testConfig.Tm.Certificates) < 2 {
 		t.Skip("there must be at least two certificates in tm.certificates from test configuration")
 	}
 
