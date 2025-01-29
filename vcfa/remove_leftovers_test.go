@@ -25,7 +25,9 @@ type entityList []entityDef
 // doNotDelete contains a list of entities that should not be deleted,
 // despite having a name that starts with `Test` or `test`
 var doNotDelete = entityList{
+	{Type: "vcfa_org", Name: "System", Comment: "Built-in admin Org"},
 	{Type: "vcfa_org", Name: "tenant1", Comment: "tenant loaded with provisioning"},
+	{Type: "vcfa_org", Name: "system-classic-tenant", Comment: "tenant loaded with provisioning"},
 	{Type: "vcfa_org", Name: "tenant1classic", Comment: "classic tenant loaded with provisioning"},
 }
 
@@ -43,11 +45,37 @@ var isTest = regexp.MustCompile(`^[Tt]est`)
 var alwaysShow = []string{
 	"vcfa_vcenter",
 	"vcfa_org",
+	"vcfa_ip_space",
+	"vcfa_org_regional_networking",
+	"vcfa_edge_cluster_qos",
+	"vcfa_content_library",
+	"vcfa_region",
+	"vcfa_nsx_manager",
 }
 
 func removeLeftovers(govcdClient *govcd.VCDClient, verbose bool) error {
 	if verbose {
 		fmt.Printf("Start leftovers removal\n")
+	}
+
+	// --------------------------------------------------------------
+	// Org Regional Network Configuration
+	// --------------------------------------------------------------
+	if govcdClient.Client.IsSysAdmin {
+		all, err := govcdClient.GetAllTmRegionalNetworkingSettings(nil)
+		if err != nil {
+			return fmt.Errorf("error retrieving All Regional Networking Settings: %s", err)
+		}
+		for _, one := range all {
+			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, one.TmRegionalNetworkingSetting.Name, "vcfa_org_regional_networking", 3, verbose)
+			if toBeDeleted {
+				fmt.Printf("\t REMOVING All %s Settings %s\n", labelVcfaRegionalNetworkingSetting, one.TmRegionalNetworkingSetting.Name)
+				err := one.Delete()
+				if err != nil {
+					return fmt.Errorf("error deleting %s Settings '%s': %s", labelVcfaRegionalNetworkingSetting, one.TmRegionalNetworkingSetting.Name, err)
+				}
+			}
+		}
 	}
 
 	// --------------------------------------------------------------
