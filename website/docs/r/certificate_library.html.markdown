@@ -20,7 +20,7 @@ data "vcfa_org" "org1" {
 }
 
 resource "vcfa_certificate_library" "new-certificate" {
-  org                    = data.vcfa_org.org1.id
+  org_id                 = data.vcfa_org.org1.id
   alias                  = "SAML certificate"
   description            = "my description"
   certificate            = file("/home/user/cert.pem")
