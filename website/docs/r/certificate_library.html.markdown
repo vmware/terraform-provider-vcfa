@@ -15,8 +15,12 @@ Provides a resource to manage certificate in System or Org library.
 ## Example Usage
 
 ```hcl
+data "vcfa_org" "org1" {
+  name = "myOrg"
+}
+
 resource "vcfa_certificate_library" "new-certificate" {
-  org                    = "myOrg"
+  org                    = data.vcfa_org.org1.id
   alias                  = "SAML certificate"
   description            = "my description"
   certificate            = file("/home/user/cert.pem")
@@ -28,8 +32,12 @@ resource "vcfa_certificate_library" "new-certificate" {
 Creating certificate in System (Provider) context:
 
 ```hcl
+data "vcfa_org" "system" {
+  name = "System"
+}
+
 resource "vcfa_certificate_library" "new-certificate-for-system" {
-  org                    = "System"
+  org_id                 = data.vcfa_org.system.id
   alias                  = "provider certificate"
   description            = "my description"
   certificate            = file("/home/user/provider-cert.pem")
@@ -42,7 +50,8 @@ resource "vcfa_certificate_library" "new-certificate-for-system" {
 
 The following arguments are supported:
 
-* `alias` - (Required)  - Alias (name) of certificate
+* `org_id` - (Required) - ID of the Organization that owns the certificate
+* `alias` - (Required) - Alias (name) of certificate
 * `description` - (Optional)  - Certificate description
 * `certificate` - (Required)  - Content of Certificate. **Note.** it is best to avoid trailing
   newlines in the certificate, as VCFA could trim trailing newline and `plan/apply` operations might always report it.

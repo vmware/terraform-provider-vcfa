@@ -15,9 +15,13 @@ Provides a data source to read certificate in System or Org library and referenc
 ## Example Usage
 
 ```hcl
+data "vcfa_org" "system" {
+  name = "System"
+}
+
 data "vcfa_certificate_library" "certificate1" {
-  org   = "myOrg"
-  alias = "SAML Encryption"
+  org_id = data.vcfa_org.system.id
+  alias  = "SAML Encryption"
 }
 ```
 
@@ -25,6 +29,7 @@ data "vcfa_certificate_library" "certificate1" {
 
 The following arguments are supported:
 
+* `org_id` - (Required) - ID of the Organization that owns the certificate
 * `alias` - (Optional)  - alias (name) of certificate
 * `id` - (Optional)  - ID of certificate
 

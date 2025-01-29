@@ -25,7 +25,7 @@ func resourceVcfaCertificateLibrary() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"org_id": {
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 				ForceNew:    true,
 				Description: fmt.Sprintf("The ID of %s to use", labelVcfaOrg),
 			},
