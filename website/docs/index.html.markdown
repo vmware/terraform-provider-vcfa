@@ -53,6 +53,51 @@ data "vcfa_tm_version" "version" {
 }
 ```
 
+## Example usage (API token)
+
+```hcl
+provider "vcfa" {
+  api_token            = var.api_token
+  auth_type            = "api_token"
+  org                  = "System"
+  url                  = var.vcfa_url
+  allow_unverified_ssl = var.vcfa_allow_unverified_ssl
+  logging              = true # Enables logging
+  logging_file         = "vcfa.log"
+}
+
+# Fetch the Tenant Manager version
+data "vcfa_tm_version" "version" {
+  condition         = ">= 10.7.0"
+  fail_if_not_match = false
+}
+```
+
+## Example usage (API token file)
+
+```hcl
+provider "vcfa" {
+  api_token_file       = "token.json"
+  auth_type            = "api_token_file"
+  org                  = "System"
+  url                  = var.vcfa_url
+  allow_unverified_ssl = var.vcfa_allow_unverified_ssl
+  logging              = true # Enables logging
+  logging_file         = "vcfa.log"
+}
+
+# Fetch the Tenant Manager version
+data "vcfa_tm_version" "version" {
+  condition         = ">= 10.7.0"
+  fail_if_not_match = false
+}
+```
+
+The file containing the API token needs to be readable and writable, in `json` format with the API key. e.g:
+```json
+{"refresh_token":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+```
+
 ## Argument Reference
 
 The following arguments are used to configure the VMware Cloud Foundation Automation Provider:
