@@ -23,12 +23,12 @@ func TestAccVcfaCertificateLibraryResource(t *testing.T) {
 	// String map to fill the template
 	var params = StringMap{
 		"Org":                      testConfig.Tm.Org,
-		"Alias":                    "TestAccVcdLibraryCertificateResource",
-		"AliasUpdate":              "TestAccVcdLibraryCertificateResourceUpdated",
-		"AliasSystem":              "TestAccVcdLibraryCertificateResourceSys",
-		"AliasPrivate":             "TestAccVcdLibraryCertificateResourcePrivate",
-		"AliasPrivateSystem":       "TestAccVcdLibraryCertificateResourcePrivateSys",
-		"AliasPrivateSystemUpdate": "TestAccVcdLibraryCertificateResourcePrivateSysUpdated",
+		"Alias":                    "TestAccVcfaLibraryCertificateResource",
+		"AliasUpdate":              "TestAccVcfaLibraryCertificateResourceUpdated",
+		"AliasSystem":              "TestAccVcfaLibraryCertificateResourceSys",
+		"AliasPrivate":             "TestAccVcfaLibraryCertificateResourcePrivate",
+		"AliasPrivateSystem":       "TestAccVcfaLibraryCertificateResourcePrivateSys",
+		"AliasPrivateSystemUpdate": "TestAccVcfaLibraryCertificateResourcePrivateSysUpdated",
 		"Certificate1Path":         testConfig.Tm.Certificates[0].Path,
 		"Certificate2Path":         testConfig.Tm.Certificates[1].Path,
 		"PrivateKey2":              testConfig.Tm.Certificates[1].PrivateKeyPath,
@@ -42,15 +42,15 @@ func TestAccVcfaCertificateLibraryResource(t *testing.T) {
 	}
 	testParamsNotEmpty(t, params)
 
-	configText1 := templateFill(testAccVcdLibraryCertificateResource, params)
+	configText1 := templateFill(testAccVcfaLibraryCertificateResource, params)
 	debugPrintf("#[DEBUG] CONFIGURATION for step 1: %s", configText1)
 
 	params["FuncName"] = t.Name() + "-update"
-	configText2 := templateFill(testAccVcdLibraryCertificateResourceUpdate, params)
+	configText2 := templateFill(testAccVcfaLibraryCertificateResourceUpdate, params)
 	debugPrintf("#[DEBUG] CONFIGURATION for step 2: %s", configText2)
 
 	params["FuncName"] = t.Name() + "-ds"
-	configText3 := templateFill(testAccVcdLibraryCertificateDatasource, params)
+	configText3 := templateFill(testAccVcfaLibraryCertificateDatasource, params)
 	debugPrintf("#[DEBUG] CONFIGURATION for step 3: %s", configText3)
 
 	if vcfaShortTest {
@@ -124,7 +124,7 @@ func TestAccVcfaCertificateLibraryResource(t *testing.T) {
 	postTestChecks(t)
 }
 
-const testAccVcdLibraryCertificateResource = `
+const testAccVcfaLibraryCertificateResource = `
 resource "vcfa_org" "org1" {
   name              = "{{.Org}}"
   display_name      = "{{.Org}}"
@@ -168,7 +168,7 @@ resource "vcfa_certificate_library" "sysCertificateWithPrivate" {
 }
 `
 
-const testAccVcdLibraryCertificateResourceUpdate = `
+const testAccVcfaLibraryCertificateResourceUpdate = `
 resource "vcfa_org" "org1" {
   name              = "{{.Org}}"
   display_name      = "{{.Org}}"
@@ -196,7 +196,7 @@ resource "vcfa_certificate_library" "sysCertificateWithPrivate" {
 }
 `
 
-const testAccVcdLibraryCertificateDatasource = testAccVcdLibraryCertificateResourceUpdate + `
+const testAccVcfaLibraryCertificateDatasource = testAccVcfaLibraryCertificateResourceUpdate + `
 data "vcfa_certificate_library" "existing" {
   org_id = vcfa_org.org1.id
   alias  = vcfa_certificate_library.orgCertificate.alias
