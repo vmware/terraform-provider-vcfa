@@ -50,11 +50,12 @@ var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_provider_gateway":                datasourceVcfaProviderGateway(),             // 1.0
 	"vcfa_edge_cluster":                    datasourceVcfaEdgeCluster(),                 // 1.0
 	"vcfa_edge_cluster_qos":                datasourceVcfaEdgeClusterQos(),              // 1.0
+	"vcfa_org_oidc":                        datasourceVcfaOrgOidc(),                     // 1.0
 	"vcfa_org_networking":                  datasourceVcfaOrgNetworking(),               // 1.0
 	"vcfa_org_regional_networking":         datasourceVcfaOrgRegionalNetworking(),       // 1.0
 	"vcfa_org_regional_networking_vpc_qos": datasourceVcfaOrgRegionalNetworkingVpcQos(), // 1.0
-	"vcfa_org_oidc":                        datasourceVcfaOrgOidc(),                     // 1.0
 	"vcfa_right":                           datasourceVcfaRight(),                       // 1.0
+	"vcfa_rights_bundle":                   datasourceVcfaRightsBundle(),
 }
 
 var globalResourceMap = map[string]*schema.Resource{
@@ -68,10 +69,11 @@ var globalResourceMap = map[string]*schema.Resource{
 	"vcfa_content_library_item":            resourceVcfaContentLibraryItem(),          // 1.0
 	"vcfa_provider_gateway":                resourceVcfaProviderGateway(),             // 1.0
 	"vcfa_edge_cluster_qos":                resourceVcfaEdgeClusterQos(),              // 1.0
+	"vcfa_org_oidc":                        resourceVcfaOrgOidc(),                     // 1.0
 	"vcfa_org_networking":                  resourceVcfaOrgNetworking(),               // 1.0
 	"vcfa_org_regional_networking":         resourceVcfaOrgRegionalNetworking(),       // 1.0
 	"vcfa_org_regional_networking_vpc_qos": resourceVcfaOrgRegionalNetworkingVpcQos(), // 1.0
-	"vcfa_org_oidc":                        resourceVcfaOrgOidc(),                     // 1.0
+	"vcfa_rights_bundle":                   resourceVcfaRightsBundle(),                // 1.0
 }
 
 // Provider returns a terraform.ResourceProvider.
