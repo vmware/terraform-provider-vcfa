@@ -1,0 +1,2 @@
+- **New Resource:** `vcfa_certificate_library` to manage Certificate Libraries [GH-23]
+- **New Data Source:** `vcfa_certificate_library` to read Certificate Libraries [GH-23]
