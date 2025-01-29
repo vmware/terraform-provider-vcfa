@@ -215,7 +215,7 @@ func resourceVcdAlbLibraryCertificateDelete(_ context.Context, d *schema.Resourc
 func resourceLibraryCertificateImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	resourceURI := strings.Split(d.Id(), ImportSeparator)
 	if len(resourceURI) != 2 {
-		return nil, fmt.Errorf("resource name must be specified as org-name.certificate-name")
+		return nil, fmt.Errorf("resource name must be specified as org-name%scertificate-name", ImportSeparator)
 	}
 	orgName, certificateName := resourceURI[0], resourceURI[1]
 
