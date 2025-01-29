@@ -66,8 +66,9 @@ The following attributes are exported on this resource:
 
 ## Importing
 
-~> **Note:** The current implementation of Terraform import can only import resources into the state.
-It does not generate configuration. [More information.](https://www.terraform.io/docs/import/)
+~> **Note:** The current implementation of Terraform import can only import resources into the
+state. It does not generate configuration. However, an experimental feature in Terraform 1.5+ allows
+also code generation. See [Importing resources][importing-resources] for more information.
 
 An existing certificate from library can be [imported][docs-import] into this resource
 via supplying the full dot separated path certificate in library. `System` org should be used to import system
