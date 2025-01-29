@@ -3,14 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_api_token"
 sidebar_current: "docs-vcfa-resource-api-token"
 description: |-
-  Provides a resource to manage API Tokens. API Tokens are an easy way to authenticate to VCD. 
+  Provides a resource to manage API Tokens. API Tokens are an easy way to authenticate to VCFA. 
   They are user-based and have the same role as the user.
 ---
 
 # vcfa\_api\_token 
 
-Provides a resource to manage API Tokens. API Tokens are an easy way to authenticate to VCD. 
-They are user-based and have the same role as the user. Explained in more detail [here][api-tokens].
+Provides a resource to manage API Tokens. API Tokens are an easy way to authenticate to VCFA. 
+They are user-based and have the same role as the user.
 
 ## Example usage
 
@@ -44,6 +44,5 @@ the full dot separated path. An example is below:
 terraform import vcfa_api_token.example_token example_token
 ```
 
-[api-tokens]: https://blogs.vmware.com/cloudprovider/2022/03/cloud-director-api-token.html
 [docs-import]: https://www.terraform.io/docs/import/
 [provider-api-token-file]: /providers/vmware/vcfa/latest/docs#api_token_file
