@@ -75,6 +75,7 @@ var globalResourceMap = map[string]*schema.Resource{
 	"vcfa_org_oidc":                resourceVcfaOrgOidc(),               // 1.0
 	"vcfa_rights_bundle":           resourceVcfaRightsBundle(),          // 1.0
 	"vcfa_role":                    resourceVcfaRole(),                  // 1.0
+	"vcfa_api_token":               resourceVcfaApiToken(),              // 1.0
 	"vcfa_global_role":             resourceVcfaGlobalRole(),            // 1.0
 }
 
@@ -118,14 +119,14 @@ func Provider() *schema.Provider {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("VCFA_API_TOKEN", nil),
-				Description: "The API token used instead of username/password for VCFA API operations. (Requires VCFA 10.3.1+)",
+				Description: "The API token used instead of username/password for VCFA API operations",
 			},
 
 			"api_token_file": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("VCFA_API_TOKEN_FILE", nil),
-				Description: "The API token file instead of username/password for VCFA API operations. (Requires VCFA 10.3.1+)",
+				Description: "The API token file instead of username/password for VCFA API operations",
 			},
 
 			"allow_api_token_file": {
