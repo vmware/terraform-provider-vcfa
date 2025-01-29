@@ -27,7 +27,7 @@ func resourceVcfaCertificateLibrary() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				ForceNew:    true,
-				Description: "The ID of organization to use",
+				Description: fmt.Sprintf("The ID of %s to use", labelVcfaOrg),
 			},
 			"alias": {
 				Type:        schema.TypeString,
