@@ -32,8 +32,8 @@ resource "vcfa_global_role" "new-global-role" {
   ]
   publish_to_all_orgs = false
   org_ids = [
-    data.vcfa_org,org1.id,
-    data.vcfa_org,org2.id,
+    data.vcfa_org.org1.id,
+    data.vcfa_org.org2.id,
   ]
 }
 ```
@@ -65,7 +65,7 @@ For example, using this structure, representing an existing Global Role that was
 
 ```hcl
 resource "vcfa_global_role" "my-global-role" {
-  name   = "My Existing Role"
+  name = "My Existing Role"
 }
 ```
 

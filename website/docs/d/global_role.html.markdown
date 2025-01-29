@@ -14,7 +14,7 @@ Provides a VMware Cloud Foundation Automation Global Role data source. This can 
 
 ```hcl
 data "vcfa_global_role" "org_user" {
-  name   = "Organization User"
+  name = "Organization User"
 }
 
 output "org_user_out" {
