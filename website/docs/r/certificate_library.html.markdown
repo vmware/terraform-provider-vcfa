@@ -53,7 +53,7 @@ The following arguments are supported:
 
 The following attributes are exported on this resource:
 
-* `id` - The added to library certificate ID
+* `id` - The added to certificate library ID
 
 ## Importing
 
