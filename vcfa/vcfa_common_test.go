@@ -4,10 +4,11 @@ package vcfa
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
-	"testing"
 )
 
 // getVCenterHcl gets a vCenter data source as first returned parameter and its HCL reference as second one,
@@ -176,6 +177,41 @@ resource "vcfa_ip_space" "test-` + nameSuffix + `" {
   }
 }
 	`, `vcfa_ip_space.test-` + nameSuffix
+}
+
+func getProviderGatewayHcl(t *testing.T, regionHclRef, ipSpaceHclRef string) (string, string) {
+	if testConfig.Tm.ProviderGateway == "" {
+		t.Fatalf("the property tm.providerGateway is required but it is not present in testing JSON")
+	}
+
+	vcdClient := createTemporaryVCFAConnection(false)
+	pg, err := vcdClient.GetTmProviderGatewayByName(testConfig.Tm.ProviderGateway)
+	if err == nil {
+		return `
+data "vcfa_provider_gateway" "test" {
+  name      = "` + pg.TmProviderGateway.Name + `"
+  region_id = ` + regionHclRef + `.id
+}
+`, "data.vcfa_provider_gateway.test"
+	}
+	if !govcd.ContainsNotFound(err) {
+		t.Fatal(err)
+		return "", ""
+	}
+	return `
+data "vcfa_tier0_gateway" "test" {
+  region_id = ` + regionHclRef + `.id 
+  name      = "` + testConfig.Tm.NsxTier0Gateway + `"
+}
+
+resource "vcfa_provider_gateway" "test" {
+  name                  = "` + testConfig.Tm.ProviderGateway + `"
+  description           = "getProviderGatewayHcl"
+  region_id             = ` + regionHclRef + `.id
+  nsxt_tier0_gateway_id = data.vcfa_tier0_gateway.test.id
+  ip_space_ids          = [` + ipSpaceHclRef + `.id]
+}
+`, "vcfa_provider_gateway.test"
 }
 
 func testAccCheckOrgDestroy(orgName string) resource.TestCheckFunc {
