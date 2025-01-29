@@ -41,7 +41,7 @@ func resourceVcfaOrgRegionalNetworkingVpcQos() *schema.Resource {
 				Type:        schema.TypeString, // string + validation due to usual problem of differentiation between 0 and empty value for TypeInt
 				Optional:    true,
 				Computed:    true,
-				Description: fmt.Sprintf("Ingress committed bandwidth in Mbps for %s", labelVcfaEdgeCluster),
+				Description: fmt.Sprintf("Ingress committed bandwidth in Mbps for %s", labelVcfaOrgRegionalNetworkingVpcQos),
 				ValidateDiagFunc: validation.AnyDiag(
 					validation.ToDiagFunc(validation.StringIsEmpty),
 					IsIntAndAtLeast(-1), // -1 is unlimited
@@ -52,7 +52,7 @@ func resourceVcfaOrgRegionalNetworkingVpcQos() *schema.Resource {
 				Type:        schema.TypeString, // string + validation due to usual problem of differentiation between 0 and empty value for TypeInt
 				Optional:    true,
 				Computed:    true,
-				Description: fmt.Sprintf("Ingress burst size bytes for %s", labelVcfaEdgeCluster),
+				Description: fmt.Sprintf("Ingress burst size bytes for %s", labelVcfaOrgRegionalNetworkingVpcQos),
 				ValidateDiagFunc: validation.AnyDiag(
 					validation.ToDiagFunc(validation.StringIsEmpty),
 					IsIntAndAtLeast(-1), // -1 is unlimited
@@ -63,7 +63,7 @@ func resourceVcfaOrgRegionalNetworkingVpcQos() *schema.Resource {
 				Type:        schema.TypeString, // string + validation due to usual problem of differentiation between 0 and empty value for TypeInt
 				Optional:    true,
 				Computed:    true,
-				Description: fmt.Sprintf("Egress committed bandwidth in Mbps for %s", labelVcfaEdgeCluster),
+				Description: fmt.Sprintf("Egress committed bandwidth in Mbps for %s", labelVcfaOrgRegionalNetworkingVpcQos),
 				ValidateDiagFunc: validation.AnyDiag(
 					validation.ToDiagFunc(validation.StringIsEmpty),
 					IsIntAndAtLeast(-1), // -1 is unlimited
@@ -74,7 +74,7 @@ func resourceVcfaOrgRegionalNetworkingVpcQos() *schema.Resource {
 				Type:        schema.TypeString, // string + validation due to usual problem of differentiation between 0 and empty value for TypeInt
 				Optional:    true,
 				Computed:    true,
-				Description: fmt.Sprintf("Ingress burst size bytes for %s", labelVcfaEdgeCluster),
+				Description: fmt.Sprintf("Ingress burst size bytes for %s", labelVcfaOrgRegionalNetworkingVpcQos),
 				ValidateDiagFunc: validation.AnyDiag(
 					validation.ToDiagFunc(validation.StringIsEmpty),
 					IsIntAndAtLeast(-1), // -1 is unlimited
@@ -186,7 +186,7 @@ func resourceVcfaOrgRegionalNetworkingVpcQosImport(ctx context.Context, d *schem
 }
 
 // flag `isCreatedUpdate` is used to separate Create/Update and Delete operations
-func getTmOrgRegionalNetworkingVpcQosType(vcfaClient *VCDClient, rns *govcd.TmRegionalNetworkingSetting, d *schema.ResourceData, isCreatedUpdate bool) (*types.TmRegionalNetworkingVpcConnectivityProfile, error) {
+func getTmOrgRegionalNetworkingVpcQosType(vcfaClient *VCDClient, rns *govcd.TmRegionalNetworkingSetting, d *schema.ResourceData, isCreatedOrUpdated bool) (*types.TmRegionalNetworkingVpcConnectivityProfile, error) {
 	// The QoS config of Edge Cluster that is used for Region is used as main configuration. One
 	// can override it per Org Regional Networking configuration
 
@@ -222,7 +222,7 @@ func getTmOrgRegionalNetworkingVpcQosType(vcfaClient *VCDClient, rns *govcd.TmRe
 	}
 
 	// overriding fields to specified ones if it is Create or Update. Not changing any values for Delete
-	if isCreatedUpdate {
+	if isCreatedOrUpdated {
 		// Overriding just provided fields
 		ingressCommittedBandwidthMbps := d.Get("ingress_committed_bandwidth_mbps").(string)
 		ingressBurstSizeBytes := d.Get("ingress_burst_size_bytes").(string)
