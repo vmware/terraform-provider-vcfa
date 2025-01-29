@@ -27,7 +27,7 @@ data "vcfa_org_regional_networking" "demo" {
 }
 
 resource "vcfa_org_regional_networking_vpc_qos" "demo" {
-  org_regional_networking_id = vcfa_org_regional_networking.demo.id
+  org_regional_networking_id       = vcfa_org_regional_networking.demo.id
   ingress_committed_bandwidth_mbps = 14
   ingress_burst_size_bytes         = 15
   egress_committed_bandwidth_mbps  = 16
