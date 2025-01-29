@@ -12,7 +12,7 @@ import (
 
 // TODO: TM: Review whether this test should be skipped when an API Token or service account
 // is provided instead of user + password, in test configuration
-func TestAccVcdGlobalRole(t *testing.T) {
+func TestAccVcfaGlobalRole(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
