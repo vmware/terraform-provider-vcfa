@@ -39,7 +39,7 @@ func resourceVcfaOrgLocalUser() *schema.Resource {
 				ForceNew:    true,
 				Description: fmt.Sprintf("The ID of %s", labelVcfaOrg),
 			},
-			"role": {
+			"role": { // TODO - user `role_id` reference with `vcfa_role`
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    false,

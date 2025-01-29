@@ -1,4 +1,4 @@
-//go:build user
+//go:build tm || ALL || functional
 
 package vcfa
 
@@ -88,7 +88,6 @@ func prepareUserData(t *testing.T) []userTestData {
 func TestAccVcdOrgUserBasic(t *testing.T) {
 	preTestChecks(t)
 
-	skipTestForServiceAccountAndApiToken(t)
 	userData := prepareUserData(t)
 	willSkipTests := false
 
@@ -105,7 +104,7 @@ func TestAccVcdOrgUserBasic(t *testing.T) {
 		testParamsNotEmpty(t, params)
 
 		configText := templateFill(testAccOrgUserBasic, params)
-		if vcdShortTest {
+		if vcfaShortTest {
 			willSkipTests = true
 		} else {
 			fmt.Printf("%s (%s)\n", ud.name, ud.roleName)
@@ -147,7 +146,6 @@ func TestAccVcdOrgUserBasic(t *testing.T) {
 func TestAccVcdOrgUserFull(t *testing.T) {
 	preTestChecks(t)
 
-	skipTestForServiceAccountAndApiToken(t)
 	userData := prepareUserData(t)
 	willSkipTests := false
 
@@ -193,7 +191,7 @@ func TestAccVcdOrgUserFull(t *testing.T) {
 
 		configTextUpdated := templateFill(testAccOrgUserFull, updateParams)
 
-		if vcdShortTest {
+		if vcfaShortTest {
 			willSkipTests = true
 		} else {
 			fmt.Printf("%s (%s)\n", ud.name, ud.roleName)
@@ -294,7 +292,7 @@ func TestAccVcdOrgUserWithDS(t *testing.T) {
 	}
 
 	configText := templateFill(template, params)
-	if vcdShortTest {
+	if vcfaShortTest {
 		t.Skip(acceptanceTestsSkipped)
 		return
 	} else {
@@ -421,7 +419,7 @@ func TestAccVcdOrgUserResourceNotFound(t *testing.T) {
 	skipTestForServiceAccountAndApiToken(t)
 
 	// This test invokes go-vcloud-director SDK directly
-	if vcdShortTest {
+	if vcfaShortTest {
 		t.Skip(acceptanceTestsSkipped)
 		return
 	}
