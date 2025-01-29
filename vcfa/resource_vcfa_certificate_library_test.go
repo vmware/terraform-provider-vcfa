@@ -22,10 +22,8 @@ func TestAccVcdLibraryCertificateResource(t *testing.T) {
 		return
 	}
 
-	if testConfig.Certificates.Certificate1Path == "" || testConfig.Certificates.Certificate2Path == "" ||
-		testConfig.Certificates.Certificate2PrivateKeyPath == "" || testConfig.Certificates.Certificate2Pass == "" {
-		t.Skip("Variables Certificates.Certificate1Path, Certificates.Certificate2Path2, " +
-			"Certificates.Certificate2PrivateKeyPath, Certificates.Certificate2Pass must be set")
+	if len(testConfig.Tm.Certificates) != 2 {
+		t.Skip("there must be at least two certificates in tm.certificates from test configuration")
 	}
 
 	// String map to fill the template
@@ -37,10 +35,10 @@ func TestAccVcdLibraryCertificateResource(t *testing.T) {
 		"AliasPrivate":             "TestAccVcdLibraryCertificateResourcePrivate",
 		"AliasPrivateSystem":       "TestAccVcdLibraryCertificateResourcePrivateSys",
 		"AliasPrivateSystemUpdate": "TestAccVcdLibraryCertificateResourcePrivateSysUpdated",
-		"Certificate1Path":         testConfig.Certificates.Certificate1Path,
-		"Certificate2Path":         testConfig.Certificates.Certificate2Path,
-		"PrivateKey2":              testConfig.Certificates.Certificate2PrivateKeyPath,
-		"PassPhrase":               testConfig.Certificates.Certificate2Pass,
+		"Certificate1Path":         testConfig.Tm.Certificates[0].Path,
+		"Certificate2Path":         testConfig.Tm.Certificates[1].Path,
+		"PrivateKey2":              testConfig.Tm.Certificates[1].PrivateKeyPath,
+		"PassPhrase":               testConfig.Tm.Certificates[1].Password,
 		"Description1":             "myDescription 1",
 		"Description1Update":       "myDescription 1 updated",
 		"Description2":             "myDescription 2",
