@@ -27,7 +27,7 @@ resource "vcfa_api_token" "example_token" {
 The following arguments are supported:
 
 * `name` - (Required) The unique name of the API Token for a specific user.
-* `file_name` - (Required) The name of the file which will be created containing the API Token. The file has the following
+* `file_name` - (Required) The name of the file which will be created containing the API Token. The file will have the following
 JSON contents:
 ```json
 {
