@@ -47,6 +47,7 @@
     "nsxManagerUrl": "https://nsxmanager.my-company.com",
     "nsxTier0Gateway": "existing-t0-gateway",
     "nsxEdgeCluster": "existing-edge-cluster",
+    "providerGateway": "test-prov-gw",
 
     "oidcServer": {
       "url": "URL-of-test-OIDC-server",
