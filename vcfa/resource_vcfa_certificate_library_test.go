@@ -57,6 +57,10 @@ func TestAccVcdLibraryCertificateResource(t *testing.T) {
 	configText2 := templateFill(testAccVcdLibraryCertificateResourceUpdate, params)
 	debugPrintf("#[DEBUG] CONFIGURATION for step 2: %s", configText2)
 
+	params["FuncName"] = t.Name() + "-ds"
+	configText3 := templateFill(testAccVcdLibraryCertificateDatasource, params)
+	debugPrintf("#[DEBUG] CONFIGURATION for step 3: %s", configText3)
+
 	resourceAddressOrgCert := "vcfa_library_certificate.orgCertificate"
 	resourceAddressOrgPrivateCert := "vcfa_library_certificate.OrgWithPrivateCertificate"
 	resourceAddressSysCert := "vcfa_library_certificate.sysCertificate"
@@ -100,6 +104,15 @@ func TestAccVcdLibraryCertificateResource(t *testing.T) {
 				),
 			},
 			{
+				Config: configText3,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resourceFieldsEqual(resourceAddressOrgCert, "data.vcfa_library_certificate.existing", nil),
+					resourceFieldsEqual(resourceAddressOrgCert, "data.vcfa_library_certificate.existingById", nil),
+					resourceFieldsEqual(resourceAddressSysPrivateCert, "data.vcfa_library_certificate.existingSystem", nil),
+					resourceFieldsEqual(resourceAddressSysPrivateCert, "data.vcfa_library_certificate.existingSystemById", nil),
+				),
+			},
+			{
 				ResourceName:      resourceAddressOrgCert,
 				ImportState:       true,
 				ImportStateVerify: true,
@@ -115,15 +128,25 @@ func TestAccVcdLibraryCertificateResource(t *testing.T) {
 }
 
 const testAccVcdLibraryCertificateResource = `
+resource "vcfa_org" "org1" {
+  name              = "{{.Org}}"
+  display_name      = "{{.Org}}"
+  description       = "{{.Org}}"
+}
+
+data "vcfa_org" "system" {
+  name = "System"
+}
+
 resource "vcfa_library_certificate" "orgCertificate" {
-  org         = "{{.Org}}"
+  org_id      = vcfa_org.org1.id
   alias       = "{{.Alias}}"
   description = "{{.Description1}}"
   certificate = file("{{.Certificate1Path}}")
 }
 
 resource "vcfa_library_certificate" "OrgWithPrivateCertificate" {
-  org                    = "{{.Org}}"
+  org_id                 = vcfa_org.org1.id
   alias                  = "{{.AliasPrivate}}"
   description            = "{{.Description2}}"
   certificate            = file("{{.Certificate2Path}}")
@@ -132,14 +155,14 @@ resource "vcfa_library_certificate" "OrgWithPrivateCertificate" {
 }
 
 resource "vcfa_library_certificate" "sysCertificate" {
-  org         = "System"
+  org_id      = data.vcfa_org.system.id
   alias       = "{{.AliasSystem}}"
   description = "{{.Description3}}"
   certificate = file("{{.Certificate1Path}}")
 }
 
 resource "vcfa_library_certificate" "sysCertificateWithPrivate" {
-  org                    = "System"
+  org_id                 = data.vcfa_org.system.id
   alias                  = "{{.AliasPrivateSystem}}"
   description            = "{{.Description4}}"
   certificate            = file("{{.Certificate2Path}}")
@@ -149,19 +172,51 @@ resource "vcfa_library_certificate" "sysCertificateWithPrivate" {
 `
 
 const testAccVcdLibraryCertificateResourceUpdate = `
+resource "vcfa_org" "org1" {
+  name              = "{{.Org}}"
+  display_name      = "{{.Org}}"
+  description       = "{{.Org}}"
+}
+
+data "vcfa_org" "system" {
+  name = "System"
+}
+
 resource "vcfa_library_certificate" "orgCertificate" {
-  org         = "{{.Org}}"
+  org_id      = vcfa_org.org1.id
   alias       = "{{.AliasUpdate}}"
   description = "{{.Description1Update}}"
   certificate = file("{{.Certificate1Path}}")
 }
 
 resource "vcfa_library_certificate" "sysCertificateWithPrivate" {
-  org                    = "System"
+  org_id                 = data.vcfa_org.system.id
   alias                  = "{{.AliasPrivateSystemUpdate}}"
   description            = "{{.Description4Update}}"
   certificate            = file("{{.Certificate2Path}}")
   private_key            = file("{{.PrivateKey2}}")
   private_key_passphrase = "{{.PassPhrase}}"
+}
+`
+
+const testAccVcdLibraryCertificateDatasource = testAccVcdLibraryCertificateResourceUpdate + `
+data "vcd_library_certificate" "existing" {
+  org_id = vcfa_org.org1.id
+  alias  = vcfa_library_certificate.orgCertificate.alias
+}
+
+data "vcd_library_certificate" "existingById" {
+  org_id = vcfa_org.org1.id
+  id     = vcfa_library_certificate.orgCertificate.id
+}
+
+data "vcd_library_certificate" "existingSystem" {
+  org_id = data.vcfa_org.system.id
+  alias  = vcfa_library_certificate.sysCertificateWithPrivate.alias
+}
+
+data "vcd_library_certificate" "existingSystemById" {
+  org_id = data.vcfa_org.system.id
+  id     = vcfa_library_certificate.sysCertificateWithPrivate.id
 }
 `

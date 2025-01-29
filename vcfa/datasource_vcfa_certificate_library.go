@@ -8,9 +8,9 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/govcd"
 )
 
-func datasourceVcfaLibraryCertificate() *schema.Resource {
+func datasourceVcfaCertificateLibrary() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: datasourceVcdLibraryCertificateRead,
+		ReadContext: datasourceVcfaCertificateLibraryRead,
 
 		Schema: map[string]*schema.Schema{
 			"org_id": {
@@ -32,7 +32,6 @@ func datasourceVcfaLibraryCertificate() *schema.Resource {
 				ExactlyOneOf: []string{"alias", "id"},
 				Description:  "Certificate ID",
 			},
-
 			"description": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -49,8 +48,9 @@ func datasourceVcfaLibraryCertificate() *schema.Resource {
 	}
 }
 
-func datasourceVcdLibraryCertificateRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceVcfaCertificateLibraryRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
+	alias := d.Get("alias").(string)
 
 	org, err := vcdClient.GetTmOrgById(d.Get("org_id").(string))
 	if err != nil {
@@ -60,7 +60,6 @@ func datasourceVcdLibraryCertificateRead(_ context.Context, d *schema.ResourceDa
 	// get by ID when it's available
 	var certificate *govcd.Certificate
 	if isSysOrg(org) {
-		alias := d.Get("alias").(string)
 		if alias != "" {
 			certificate, err = vcdClient.Client.GetCertificateFromLibraryByName(alias)
 		} else if d.Get("id").(string) != "" {
@@ -69,7 +68,6 @@ func datasourceVcdLibraryCertificateRead(_ context.Context, d *schema.ResourceDa
 			return diag.Errorf("Id or Alias value is missing %s", err)
 		}
 	} else {
-		alias := d.Get("alias").(string)
 		// TODO: TM: Implement these methods in TmOrg
 		var adminOrg *govcd.AdminOrg
 		adminOrg, err = vcdClient.GetAdminOrgById(org.TmOrg.ID)

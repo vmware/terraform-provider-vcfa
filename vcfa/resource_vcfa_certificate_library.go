@@ -13,14 +13,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceVcfaLibraryCertificate() *schema.Resource {
+func resourceVcfaCertificateLibrary() *schema.Resource {
 	return &schema.Resource{
-		ReadContext:   resourceVcdLibraryCertificateRead,
-		CreateContext: resourceVcdLibraryCertificateCreate,
-		UpdateContext: resourceVcdLibraryCertificateUpdate,
-		DeleteContext: resourceVcdAlbLibraryCertificateDelete,
+		ReadContext:   resourceVcfaCertificateLibraryRead,
+		CreateContext: resourceVcfaCertificateLibraryCreate,
+		UpdateContext: resourceVcfaCertificateLibraryUpdate,
+		DeleteContext: resourceVcfaCertificateLibraryDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: resourceLibraryCertificateImport,
+			StateContext: resourceVcfaCertificateLibraryImport,
 		},
 		Schema: map[string]*schema.Schema{
 			"org_id": {
@@ -64,8 +64,8 @@ func resourceVcfaLibraryCertificate() *schema.Resource {
 	}
 }
 
-// resourceVcdLibraryCertificateCreate covers Create functionality for resource
-func resourceVcdLibraryCertificateCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+// resourceVcfaCertificateLibraryCreate covers Create functionality for resource
+func resourceVcfaCertificateLibraryCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 
 	org, err := vcdClient.GetTmOrgById(d.Get("org_id").(string))
@@ -77,41 +77,6 @@ func resourceVcdLibraryCertificateCreate(ctx context.Context, d *schema.Resource
 	var createdCertificate *govcd.Certificate
 	if isSysOrg(org) {
 		createdCertificate, err = vcdClient.Client.AddCertificateToLibrary(certificateConfig)
-		if err != nil {
-			return diag.Errorf("error adding certificate library item: %s", err)
-		}
-	} else {
-		// TODO: TM: Implement these methods in TmOrg
-		adminOrg, err := vcdClient.GetAdminOrgById(org.TmOrg.ID)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		createdCertificate, err = adminOrg.AddCertificateToLibrary(certificateConfig)
-		if err != nil {
-			return diag.Errorf("error adding certificate library item: %s", err)
-		}
-
-	}
-	d.SetId(createdCertificate.CertificateLibrary.Id)
-	return resourceVcdLibraryCertificateRead(ctx, d, meta)
-}
-
-func isSysOrg(adminOrg *govcd.TmOrg) bool {
-	return strings.EqualFold(adminOrg.TmOrg.Name, "system")
-}
-
-// resourceVcdLibraryCertificateUpdate covers Update functionality for resource
-func resourceVcdLibraryCertificateUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
-
-	org, err := vcdClient.GetTmOrgById(d.Get("org_id").(string))
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	var certificate *govcd.Certificate
-	if isSysOrg(org) {
-		certificate, err = vcdClient.Client.GetCertificateFromLibraryById(d.Id())
 	} else {
 		// TODO: TM: Implement these methods in TmOrg
 		var adminOrg *govcd.AdminOrg
@@ -119,8 +84,24 @@ func resourceVcdLibraryCertificateUpdate(ctx context.Context, d *schema.Resource
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		certificate, err = adminOrg.GetCertificateFromLibraryById(d.Id())
+		createdCertificate, err = adminOrg.AddCertificateToLibrary(certificateConfig)
 	}
+	if err != nil {
+		return diag.Errorf("error adding certificate library item: %s", err)
+	}
+
+	d.SetId(createdCertificate.CertificateLibrary.Id)
+	return resourceVcfaCertificateLibraryRead(ctx, d, meta)
+}
+
+func isSysOrg(adminOrg *govcd.TmOrg) bool {
+	return strings.EqualFold(adminOrg.TmOrg.Name, "system")
+}
+
+// resourceVcfaCertificateLibraryUpdate covers Update functionality for resource
+func resourceVcfaCertificateLibraryUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	vcdClient := meta.(*VCDClient)
+	certificate, err := getCertificateType(vcdClient, d.Get("org_id").(string), d.Id())
 	if err != nil {
 		return diag.Errorf("[certificate library update] : %s", err)
 	}
@@ -133,7 +114,7 @@ func resourceVcdLibraryCertificateUpdate(ctx context.Context, d *schema.Resource
 		return diag.Errorf("[certificate library update] : %s", err)
 	}
 
-	return resourceVcdLibraryCertificateRead(ctx, d, meta)
+	return resourceVcfaCertificateLibraryRead(ctx, d, meta)
 }
 
 func getCertificateConfigurationType(d *schema.ResourceData) *types.CertificateLibraryItem {
@@ -146,26 +127,10 @@ func getCertificateConfigurationType(d *schema.ResourceData) *types.CertificateL
 	}
 }
 
-func resourceVcdLibraryCertificateRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVcfaCertificateLibraryRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 
-	org, err := vcdClient.GetTmOrgById(d.Get("org_id").(string))
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	var certificate *govcd.Certificate
-	if isSysOrg(org) {
-		certificate, err = vcdClient.Client.GetCertificateFromLibraryById(d.Id())
-	} else {
-		// TODO: TM: Implement these methods in TmOrg
-		var adminOrg *govcd.AdminOrg
-		adminOrg, err = vcdClient.GetAdminOrgById(org.TmOrg.ID)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		certificate, err = adminOrg.GetCertificateFromLibraryById(d.Id())
-	}
+	certificate, err := getCertificateType(vcdClient, d.Get("org_id").(string), d.Id())
 	if err != nil {
 		if govcd.ContainsNotFound(err) {
 			d.SetId("")
@@ -185,34 +150,43 @@ func setCertificateConfigurationData(config *types.CertificateLibraryItem, d *sc
 	dSet(d, "certificate", config.Certificate)
 }
 
-func resourceVcdAlbLibraryCertificateDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
-
-	org, err := vcdClient.GetTmOrgById(d.Get("org_id").(string))
+func getCertificateType(vcdClient *VCDClient, orgId, certLibId string) (*govcd.Certificate, error) {
+	org, err := vcdClient.GetTmOrgById(orgId)
 	if err != nil {
-		return diag.FromErr(err)
+		return nil, err
 	}
-
-	var certificateToDelete *govcd.Certificate
+	var certificate *govcd.Certificate
 	if isSysOrg(org) {
-		certificateToDelete, err = vcdClient.Client.GetCertificateFromLibraryById(d.Id())
+		certificate, err = vcdClient.Client.GetCertificateFromLibraryById(certLibId)
 	} else {
 		// TODO: TM: Implement these methods in TmOrg
 		var adminOrg *govcd.AdminOrg
 		adminOrg, err = vcdClient.GetAdminOrgById(org.TmOrg.ID)
 		if err != nil {
-			return diag.FromErr(err)
+			return nil, err
 		}
-		certificateToDelete, err = adminOrg.GetCertificateFromLibraryById(d.Id())
+		certificate, err = adminOrg.GetCertificateFromLibraryById(certLibId)
 	}
 	if err != nil {
-		return diag.Errorf("[certificate library delete] : %s", err)
+		return nil, err
 	}
-
-	return diag.FromErr(certificateToDelete.Delete())
+	return certificate, nil
 }
 
-func resourceLibraryCertificateImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceVcfaCertificateLibraryDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	vcdClient := meta.(*VCDClient)
+	certificateToDelete, err := getCertificateType(vcdClient, d.Get("org_id").(string), d.Id())
+	if err != nil {
+		return diag.Errorf("[certificate library delete] error fetching certificate library: %s", err)
+	}
+	err = certificateToDelete.Delete()
+	if err != nil {
+		diag.Errorf("[certificate library delete] error deleting certificate library %s", err)
+	}
+	return nil
+}
+
+func resourceVcfaCertificateLibraryImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	resourceURI := strings.Split(d.Id(), ImportSeparator)
 	if len(resourceURI) != 2 {
 		return nil, fmt.Errorf("resource name must be specified as org-name%scertificate-name", ImportSeparator)
@@ -242,7 +216,7 @@ func resourceLibraryCertificateImport(_ context.Context, d *schema.ResourceData,
 	}
 
 	d.SetId(certificate.CertificateLibrary.Id)
-	dSet(d, "org", orgName)
+	dSet(d, "org_id", org.TmOrg.ID)
 	setCertificateConfigurationData(certificate.CertificateLibrary, d)
 
 	return []*schema.ResourceData{d}, nil
