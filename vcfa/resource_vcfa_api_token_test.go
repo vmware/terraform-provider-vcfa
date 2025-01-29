@@ -25,7 +25,7 @@ func TestAccVcfaApiToken(t *testing.T) {
 
 	filename := params["FileName"].(string)
 
-	configText := templateFill(testAccVcdApiToken, params)
+	configText := templateFill(testAccVcfaApiToken, params)
 	if vcfaShortTest {
 		t.Skip(acceptanceTestsSkipped)
 		return
@@ -51,7 +51,7 @@ func TestAccVcfaApiToken(t *testing.T) {
 }
 
 // #nosec G101 -- No hardcoded credentials here
-const testAccVcdApiToken = `
+const testAccVcfaApiToken = `
 resource "vcfa_api_token" "custom" {
   name = "{{.TokenName}}"		
 
