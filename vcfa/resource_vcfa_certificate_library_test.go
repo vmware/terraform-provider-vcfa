@@ -16,13 +16,6 @@ func TestAccVcfaCertificateLibraryResource(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
-	// This test requires access to VCFA before filling templates
-	// Thus it won't run in the short test
-	if vcfaShortTest {
-		t.Skip(acceptanceTestsSkipped)
-		return
-	}
-
 	if len(testConfig.Tm.Certificates) != 2 {
 		t.Skip("there must be at least two certificates in tm.certificates from test configuration")
 	}
@@ -59,6 +52,11 @@ func TestAccVcfaCertificateLibraryResource(t *testing.T) {
 	params["FuncName"] = t.Name() + "-ds"
 	configText3 := templateFill(testAccVcdLibraryCertificateDatasource, params)
 	debugPrintf("#[DEBUG] CONFIGURATION for step 3: %s", configText3)
+
+	if vcfaShortTest {
+		t.Skip(acceptanceTestsSkipped)
+		return
+	}
 
 	resourceAddressOrgCert := "vcfa_certificate_library.orgCertificate"
 	resourceAddressOrgPrivateCert := "vcfa_certificate_library.OrgWithPrivateCertificate"
