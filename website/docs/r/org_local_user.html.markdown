@@ -48,8 +48,8 @@ The following arguments are supported:
 state. It does not generate configuration. However, an experimental feature in Terraform 1.5+ allows
 also code generation. See [Importing resources][importing-resources] for more information.
 
-An existing Org configuration can be [imported][docs-import] into this resource via supplying path
-for it. An example is below:
+An existing Org Local User configuration can be [imported][docs-import] into this resource via
+supplying path for it. An example is below:
 
 [docs-import]: https://www.terraform.io/docs/import/
 

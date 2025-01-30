@@ -13,11 +13,14 @@ Provides a data source to read local users in VMware Cloud Foundation Automation
 ## Example Usage
 
 ```hcl
-data "vcfa_org_local_user" "demo" {
-  org_id   = vcfa_org.test.id
-  username = "demo-local-user"
+data "vcfa_org" "demo" {
+  name = "demo-org"
 }
 
+data "vcfa_org_local_user" "demo" {
+  org_id   = data.vcfa_org.demo.id
+  username = "demo-local-user"
+}
 ```
 
 ## Argument Reference
