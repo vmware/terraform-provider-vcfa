@@ -147,6 +147,6 @@ The following arguments are supported:
 * `description` - A description of the Rights Bundle
 * `bundle_key` - Key used for internationalization
 * `rights` - Set of rights assigned to this role
-* `publish_to_all_tenants` - When true, publishes the Rights Bundle to all tenants
-* `tenants` - Set of tenants to which this Rights Bundle gets published. Ignored if `publish_to_all_tenants` is true
+* `publish_to_all_orgs` - When true, publishes the Rights Bundle to all Organizations
+* `org_ids` - Set of IDs of the Organizations to which this Rights Bundle gets published. Ignored if `publish_to_all_orgs` is `true`
 * `read_only` - Whether this Rights Bundle is read-only
