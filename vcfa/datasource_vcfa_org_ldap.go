@@ -113,7 +113,7 @@ var datasourceLdapGroupAttributes = &schema.Schema{
 
 func datasourceVcfaOrgLdap() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: datasourceVcdOrgLdapRead,
+		ReadContext: datasourceVcfaOrgLdapRead,
 		Schema: map[string]*schema.Schema{
 			"org_id": {
 				Type:        schema.TypeString,
@@ -185,6 +185,6 @@ func datasourceVcfaOrgLdap() *schema.Resource {
 	}
 }
 
-func datasourceVcdOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	return genericVcfaOrgLdapRead(ctx, d, meta, "datasource")
 }

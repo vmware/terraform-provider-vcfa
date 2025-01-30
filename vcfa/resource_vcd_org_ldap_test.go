@@ -37,10 +37,9 @@ func TestAccVcfaOrgLdap(t *testing.T) {
 	debugPrintf("#[DEBUG] CONFIGURATION Resource for Organization LDAP (Custom): %s\n", configText)
 	debugPrintf("#[DEBUG] CONFIGURATION Data source: %s\n", configTextDS)
 
-	orgDef := "vcd_org.org1"
-	ldapResourceDef := "vcd_org_ldap.ldap"
-	ldapDatasourceDef := "data.vcd_org_ldap.ldap-ds"
-	// Note: don't run this test in parallel, as it would clash with TestAccVcdOrgGroup
+	orgDef := "vcfa_org.org1"
+	ldapResourceDef := "vcfa_org_ldap.ldap"
+	ldapDatasourceDef := "data.vcfa_org_ldap.ldap-ds"
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
 		CheckDestroy:      testAccCheckOrgLdapDestroy(ldapResourceDef),
@@ -147,8 +146,8 @@ resource "vcfa_org" "org1" {
   description  = "{{.Org}}"
 }
 
-resource "vcd_org_ldap" "ldap" {
-  org_id    = vcd_org.org1.id
+resource "vcfa_org_ldap" "ldap" {
+  org_id    = vcfa_org.org1.id
   ldap_mode = "CUSTOM"
   custom_settings {
     server                  = "{{.LdapServer}}"
@@ -186,8 +185,8 @@ resource "vcd_org_ldap" "ldap" {
 `
 
 const testAccVcfaOrgLdapDS = testAccVcfaOrgLdap + `
-data "vcd_org_ldap" "ldap-ds" {
-  org_id = vcd_org.org1.id
-  depends_on = [vcd_org_ldap.{{.OrgName}}]
+data "vcfa_org_ldap" "ldap-ds" {
+  org_id = vcfa_org.org1.id
+  depends_on = [vcfa_org_ldap.{{.OrgName}}]
 }
 `

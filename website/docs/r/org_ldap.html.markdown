@@ -20,7 +20,7 @@ provider "vcfa" {
   user     = var.admin_user
   password = var.admin_password
   org      = "System"
-  url      = "https://AcmeVcd/api"
+  url      = "https://AcmeVcfa/api"
 }
 
 data "vcfa_org" "my-org" {
@@ -147,11 +147,11 @@ The `custom_settings` section contains the configuration for the LDAP server
 
 ## Importing
 
-~> **Note:** The current implementation of Terraform import can only import resources into the state. It does not generate
-configuration. [More information.][docs-import]
+~> **Note:** The current implementation of Terraform import can only import resources into the
+state. It does not generate configuration. However, an experimental feature in Terraform 1.5+ allows
+also code generation. See [Importing resources][importing-resources] for more information.
 
-An existing LDAP configuration for an Org can be [imported][docs-import] into this resource via supplying the path for an Org. Since the Org is
-at the top of the vCD hierarchy, the path corresponds to the Org name.
+An existing LDAP configuration for an Organization can be [imported][docs-import] into this resource via supplying the path for an Organization name.
 For example, using this structure, representing an existing LDAP configuration that was **not** created using Terraform:
 
 ```hcl
@@ -167,10 +167,7 @@ resource "vcfa_org_ldap" "my-org-ldap" {
 You can import such LDAP configuration into terraform state using one of the following commands
 
 ```
-# EITHER
 terraform import vcfa_org_ldap.my-org-ldap organization_name
-# OR
-terraform import vcfa_org_ldap.my-org-ldap organization_id
 ```
 
 After that, you must expand the configuration file before you can either update or delete the LDAP configuration. Running `terraform plan`

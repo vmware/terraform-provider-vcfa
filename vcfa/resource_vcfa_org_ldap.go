@@ -212,7 +212,7 @@ func resourceVcfaOrgLdap() *schema.Resource {
 func resourceVcfaOrgLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	if !vcdClient.Client.IsSysAdmin {
-		return diag.Errorf("resource vcd_org_ldap requires System administrator privileges")
+		return diag.Errorf("resource vcfa_org_ldap requires System administrator privileges")
 	}
 	orgId := d.Get("org_id").(string)
 
@@ -243,7 +243,7 @@ func resourceVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta i
 func genericVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	if !vcdClient.Client.IsSysAdmin {
-		return diag.Errorf("resource vcd_org_ldap requires System administrator privileges")
+		return diag.Errorf("resource vcfa_org_ldap requires System administrator privileges")
 	}
 	orgId := d.Get("org_id").(string)
 
@@ -320,7 +320,7 @@ func resourceVcfaOrgLdapUpdate(ctx context.Context, d *schema.ResourceData, meta
 func resourceVcfaOrgLdapDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	if !vcdClient.Client.IsSysAdmin {
-		return diag.Errorf("resource vcd_org_ldap requires System administrator privileges")
+		return diag.Errorf("resource vcfa_org_ldap requires System administrator privileges")
 	}
 	orgId := d.Get("org_id").(string)
 
@@ -412,7 +412,7 @@ func fillLdapSettings(d *schema.ResourceData) (*types.OrgLdapSettingsType, error
 // The d.ID() field as being passed from `terraform import _resource_name_ _the_id_string_ requires
 // a name based dot-formatted path to the object to lookup the object and sets the id of object.
 // `terraform import` automatically performs `refresh` operation which loads up all other fields.
-// For this resource, the import path is just the org name (or Org ID).
+// For this resource, the import path is just the org name.
 //
 // Example import path (id): orgName
 func resourceVcfaOrgLdapImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
