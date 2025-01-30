@@ -32,48 +32,51 @@ func Resources(nameRegexp string, includeDeprecated bool) (map[string]*schema.Re
 }
 
 var globalDataSourceMap = map[string]*schema.Resource{
-	"vcfa_tm_version":              datasourceVcfaTmVersion(),             // 1.0
-	"vcfa_vcenter":                 datasourceVcfaVcenter(),               // 1.0
-	"vcfa_org":                     datasourceVcfaOrg(),                   // 1.0
-	"vcfa_nsx_manager":             datasourceVcfaNsxManager(),            // 1.0
-	"vcfa_supervisor":              datasourceVcfaSupervisor(),            // 1.0
-	"vcfa_supervisor_zone":         datasourceVcfaSupervisorZone(),        // 1.0
-	"vcfa_region":                  datasourceVcfaRegion(),                // 1.0
-	"vcfa_ip_space":                datasourceVcfaIpSpace(),               // 1.0
-	"vcfa_region_zone":             datasourceVcfaRegionZone(),            // 1.0
-	"vcfa_org_vdc":                 datasourceVcfaOrgVdc(),                // 1.0
-	"vcfa_region_storage_policy":   datasourceVcfaRegionStoragePolicy(),   // 1.0
-	"vcfa_storage_class":           datasourceVcfaStorageClass(),          // 1.0
-	"vcfa_content_library":         datasourceVcfaContentLibrary(),        // 1.0
-	"vcfa_content_library_item":    datasourceVcfaContentLibraryItem(),    // 1.0
-	"vcfa_tier0_gateway":           datasourceVcfaTier0Gateway(),          // 1.0
-	"vcfa_provider_gateway":        datasourceVcfaProviderGateway(),       // 1.0
-	"vcfa_edge_cluster":            datasourceVcfaEdgeCluster(),           // 1.0
-	"vcfa_edge_cluster_qos":        datasourceVcfaEdgeClusterQos(),        // 1.0
-	"vcfa_org_networking":          datasourceVcfaOrgNetworking(),         // 1.0
-	"vcfa_org_regional_networking": datasourceVcfaOrgRegionalNetworking(), // 1.0
-	"vcfa_org_oidc":                datasourceVcfaOrgOidc(),               // 1.0
-	"vcfa_right":                   datasourceVcfaRight(),                 // 1.0
-	"vcfa_rights_bundle":           datasourceVcfaRightsBundle(),          // 1.0
-	"vcfa_role":                    datasourceVcfaRole(),                  // 1.0
+	"vcfa_tm_version":                      datasourceVcfaTmVersion(),                   // 1.0
+	"vcfa_vcenter":                         datasourceVcfaVcenter(),                     // 1.0
+	"vcfa_org":                             datasourceVcfaOrg(),                         // 1.0
+	"vcfa_nsx_manager":                     datasourceVcfaNsxManager(),                  // 1.0
+	"vcfa_supervisor":                      datasourceVcfaSupervisor(),                  // 1.0
+	"vcfa_supervisor_zone":                 datasourceVcfaSupervisorZone(),              // 1.0
+	"vcfa_region":                          datasourceVcfaRegion(),                      // 1.0
+	"vcfa_ip_space":                        datasourceVcfaIpSpace(),                     // 1.0
+	"vcfa_region_zone":                     datasourceVcfaRegionZone(),                  // 1.0
+	"vcfa_org_vdc":                         datasourceVcfaOrgVdc(),                      // 1.0
+	"vcfa_region_storage_policy":           datasourceVcfaRegionStoragePolicy(),         // 1.0
+	"vcfa_storage_class":                   datasourceVcfaStorageClass(),                // 1.0
+	"vcfa_content_library":                 datasourceVcfaContentLibrary(),              // 1.0
+	"vcfa_content_library_item":            datasourceVcfaContentLibraryItem(),          // 1.0
+	"vcfa_tier0_gateway":                   datasourceVcfaTier0Gateway(),                // 1.0
+	"vcfa_provider_gateway":                datasourceVcfaProviderGateway(),             // 1.0
+	"vcfa_edge_cluster":                    datasourceVcfaEdgeCluster(),                 // 1.0
+	"vcfa_edge_cluster_qos":                datasourceVcfaEdgeClusterQos(),              // 1.0
+	"vcfa_org_networking":                  datasourceVcfaOrgNetworking(),               // 1.0
+	"vcfa_org_regional_networking":         datasourceVcfaOrgRegionalNetworking(),       // 1.0
+	"vcfa_org_regional_networking_vpc_qos": datasourceVcfaOrgRegionalNetworkingVpcQos(), // 1.0
+	"vcfa_org_oidc":                        datasourceVcfaOrgOidc(),                     // 1.0
+	"vcfa_right":                           datasourceVcfaRight(),                       // 1.0
+	"vcfa_rights_bundle":                   datasourceVcfaRightsBundle(),                // 1.0
+	"vcfa_role":                            datasourceVcfaRole(),                        // 1.0
 }
 
 var globalResourceMap = map[string]*schema.Resource{
-	"vcfa_vcenter":                 resourceVcfaVcenter(),               // 1.0
-	"vcfa_org":                     resourceVcfaOrg(),                   // 1.0
-	"vcfa_nsx_manager":             resourceVcfaNsxManager(),            // 1.0
-	"vcfa_region":                  resourceVcfaRegion(),                // 1.0
-	"vcfa_ip_space":                resourceVcfaIpSpace(),               // 1.0
-	"vcfa_org_vdc":                 resourceVcfaOrgVdc(),                // 1.0
-	"vcfa_content_library":         resourceVcfaContentLibrary(),        // 1.0
-	"vcfa_content_library_item":    resourceVcfaContentLibraryItem(),    // 1.0
-	"vcfa_provider_gateway":        resourceVcfaProviderGateway(),       // 1.0
-	"vcfa_edge_cluster_qos":        resourceVcfaEdgeClusterQos(),        // 1.0
-	"vcfa_org_networking":          resourceVcfaOrgNetworking(),         // 1.0
-	"vcfa_org_regional_networking": resourceVcfaOrgRegionalNetworking(), // 1.0
-	"vcfa_org_oidc":                resourceVcfaOrgOidc(),               // 1.0
-	"vcfa_rights_bundle":           resourceVcfaRightsBundle(),          // 1.0
-	"vcfa_role":                    resourceVcfaRole(),                  // 1.0
+	"vcfa_vcenter":                         resourceVcfaVcenter(),                     // 1.0
+	"vcfa_org":                             resourceVcfaOrg(),                         // 1.0
+	"vcfa_nsx_manager":                     resourceVcfaNsxManager(),                  // 1.0
+	"vcfa_region":                          resourceVcfaRegion(),                      // 1.0
+	"vcfa_ip_space":                        resourceVcfaIpSpace(),                     // 1.0
+	"vcfa_org_vdc":                         resourceVcfaOrgVdc(),                      // 1.0
+	"vcfa_content_library":                 resourceVcfaContentLibrary(),              // 1.0
+	"vcfa_content_library_item":            resourceVcfaContentLibraryItem(),          // 1.0
+	"vcfa_provider_gateway":                resourceVcfaProviderGateway(),             // 1.0
+	"vcfa_edge_cluster_qos":                resourceVcfaEdgeClusterQos(),              // 1.0
+	"vcfa_org_networking":                  resourceVcfaOrgNetworking(),               // 1.0
+	"vcfa_org_regional_networking":         resourceVcfaOrgRegionalNetworking(),       // 1.0
+	"vcfa_org_regional_networking_vpc_qos": resourceVcfaOrgRegionalNetworkingVpcQos(), // 1.0
+	"vcfa_org_oidc":                        resourceVcfaOrgOidc(),                     // 1.0
+	"vcfa_rights_bundle":                   resourceVcfaRightsBundle(),                // 1.0
+	"vcfa_role":                            resourceVcfaRole(),                        // 1.0
+	"vcfa_api_token":                       resourceVcfaApiToken(),                    // 1.0
 }
 
 // Provider returns a terraform.ResourceProvider.
@@ -116,14 +119,14 @@ func Provider() *schema.Provider {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("VCFA_API_TOKEN", nil),
-				Description: "The API token used instead of username/password for VCFA API operations. (Requires VCFA 10.3.1+)",
+				Description: "The API token used instead of username/password for VCFA API operations",
 			},
 
 			"api_token_file": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("VCFA_API_TOKEN_FILE", nil),
-				Description: "The API token file instead of username/password for VCFA API operations. (Requires VCFA 10.3.1+)",
+				Description: "The API token file instead of username/password for VCFA API operations",
 			},
 
 			"allow_api_token_file": {
