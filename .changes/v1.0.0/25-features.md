@@ -1,0 +1,2 @@
+- **New Resource:** `vcfa_org_local_user` to manage Org Local users [GH-25]
+- **New Data Source:** `vcfa_org_local_user` to read Org Local users [GH-25]
