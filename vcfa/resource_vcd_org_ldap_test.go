@@ -187,6 +187,6 @@ resource "vcfa_org_ldap" "ldap" {
 const testAccVcfaOrgLdapDS = testAccVcfaOrgLdap + `
 data "vcfa_org_ldap" "ldap-ds" {
   org_id = vcfa_org.org1.id
-  depends_on = [vcfa_org_ldap.{{.OrgName}}]
+  depends_on = [vcfa_org_ldap.ldap]
 }
 `
