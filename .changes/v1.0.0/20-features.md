@@ -1,0 +1,2 @@
+- **New Resource:** `vcfa_org_regional_networking_vpc_qos` to manage Org Regional Networking VPC QoS [GH-20]
+- **New Data Source:** `vcfa_org_regional_networking_vpc_qos` to read Org Regional Networking VPC QoS [GH-20]
