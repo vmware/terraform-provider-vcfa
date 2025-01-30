@@ -34,12 +34,12 @@ func resourceVcfaLocalUser() *schema.Resource {
 				Type:        schema.TypeSet,
 				Required:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: fmt.Sprintf("%s to use for %s", labelVcfaRole, labelLocalUser),
+				Description: fmt.Sprintf("%ss to use for %s", labelVcfaRole, labelLocalUser),
 			},
 			"username": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: fmt.Sprintf("%s User Name", labelLocalUser),
+				Description: fmt.Sprintf("%s username", labelLocalUser),
 			},
 			"password": {
 				Type:        schema.TypeString,

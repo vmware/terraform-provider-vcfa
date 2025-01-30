@@ -29,7 +29,7 @@ func datasourceVcfaLocalUser() *schema.Resource {
 				Type:        schema.TypeSet,
 				Computed:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: fmt.Sprintf("%s to use for %s", labelVcfaRole, labelLocalUser),
+				Description: fmt.Sprintf("%ss to use for %s", labelVcfaRole, labelLocalUser),
 			},
 		},
 	}
