@@ -16,19 +16,10 @@ This can be used to create, update, and delete LDAP configuration for an organiz
 ## Example Usage 1 - Custom configuration
 
 ```hcl
-provider "vcfa" {
-  user     = var.admin_user
-  password = var.admin_password
-  org      = "System"
-  url      = "https://AcmeVcfa/api"
-}
-
 data "vcfa_org" "my-org" {
   name = "my-org"
 }
 
-# The settings below (except the server IP) are taken from the LDAP docker testing image
-# https://github.com/rroemhild/docker-test-openldap
 resource "vcfa_org_ldap" "my-org-ldap" {
   org_id    = data.vcfa_org.my-org.id
   ldap_mode = "CUSTOM"
@@ -36,10 +27,10 @@ resource "vcfa_org_ldap" "my-org-ldap" {
     server                  = "192.168.1.172"
     port                    = 389
     is_ssl                  = false
-    username                = "cn=admin,dc=planetexpress,dc=com"
-    password                = "GoodNewsEveryone"
+    username                = "cn=admin,dc=foo,dc=com"
+    password                = "StrongPassword"
     authentication_method   = "SIMPLE"
-    base_distinguished_name = "dc=planetexpress,dc=com"
+    base_distinguished_name = "dc=foo,dc=com"
     connector_type          = "OPEN_LDAP"
     user_attributes {
       object_class                = "inetOrgPerson"
