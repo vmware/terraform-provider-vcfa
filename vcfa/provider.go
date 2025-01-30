@@ -60,22 +60,22 @@ var globalDataSourceMap = map[string]*schema.Resource{
 }
 
 var globalResourceMap = map[string]*schema.Resource{
-	"vcfa_vcenter":                         resourceVcfaVcenter(),                     // 1.0
-	"vcfa_org":                             resourceVcfaOrg(),                         // 1.0
-	"vcfa_nsx_manager":                     resourceVcfaNsxManager(),                  // 1.0
-	"vcfa_region":                          resourceVcfaRegion(),                      // 1.0
-	"vcfa_ip_space":                        resourceVcfaIpSpace(),                     // 1.0
-	"vcfa_org_vdc":                         resourceVcfaOrgVdc(),                      // 1.0
-	"vcfa_content_library":                 resourceVcfaContentLibrary(),              // 1.0
-	"vcfa_content_library_item":            resourceVcfaContentLibraryItem(),          // 1.0
-	"vcfa_provider_gateway":                resourceVcfaProviderGateway(),             // 1.0
-	"vcfa_edge_cluster_qos":                resourceVcfaEdgeClusterQos(),              // 1.0
-	"vcfa_org_networking":                  resourceVcfaOrgNetworking(),               // 1.0
-	"vcfa_org_regional_networking":         resourceVcfaOrgRegionalNetworking(),       // 1.0
-	"vcfa_org_regional_networking_vpc_qos": resourceVcfaOrgRegionalNetworkingVpcQos(), // 1.0
-	"vcfa_org_oidc":                        resourceVcfaOrgOidc(),                     // 1.0
-	"vcfa_rights_bundle":                   resourceVcfaRightsBundle(),                // 1.0
-	"vcfa_role":                            resourceVcfaRole(),                        // 1.0
+	"vcfa_vcenter":                 resourceVcfaVcenter(),               // 1.0
+	"vcfa_org":                     resourceVcfaOrg(),                   // 1.0
+	"vcfa_nsx_manager":             resourceVcfaNsxManager(),            // 1.0
+	"vcfa_region":                  resourceVcfaRegion(),                // 1.0
+	"vcfa_ip_space":                resourceVcfaIpSpace(),               // 1.0
+	"vcfa_org_vdc":                 resourceVcfaOrgVdc(),                // 1.0
+	"vcfa_content_library":         resourceVcfaContentLibrary(),        // 1.0
+	"vcfa_content_library_item":    resourceVcfaContentLibraryItem(),    // 1.0
+	"vcfa_provider_gateway":        resourceVcfaProviderGateway(),       // 1.0
+	"vcfa_edge_cluster_qos":        resourceVcfaEdgeClusterQos(),        // 1.0
+	"vcfa_org_networking":          resourceVcfaOrgNetworking(),         // 1.0
+	"vcfa_org_regional_networking": resourceVcfaOrgRegionalNetworking(), // 1.0
+	"vcfa_org_oidc":                resourceVcfaOrgOidc(),               // 1.0
+	"vcfa_rights_bundle":           resourceVcfaRightsBundle(),          // 1.0
+	"vcfa_role":                    resourceVcfaRole(),                  // 1.0
+	"vcfa_api_token":               resourceVcfaApiToken(),              // 1.0
 }
 
 // Provider returns a terraform.ResourceProvider.
@@ -118,14 +118,14 @@ func Provider() *schema.Provider {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("VCFA_API_TOKEN", nil),
-				Description: "The API token used instead of username/password for VCFA API operations. (Requires VCFA 10.3.1+)",
+				Description: "The API token used instead of username/password for VCFA API operations",
 			},
 
 			"api_token_file": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("VCFA_API_TOKEN_FILE", nil),
-				Description: "The API token file instead of username/password for VCFA API operations. (Requires VCFA 10.3.1+)",
+				Description: "The API token file instead of username/password for VCFA API operations",
 			},
 
 			"allow_api_token_file": {
