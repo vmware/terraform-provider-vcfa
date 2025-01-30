@@ -23,20 +23,6 @@ func getTenantContextFromOrgId(vcdClient *VCDClient, orgId string) (*govcd.Tenan
 	}, nil
 }
 
-func getTenantContextFromOrgName(vcdClient *VCDClient, orgName string) (*govcd.TenantContext, error) {
-	if orgName == "" {
-		return &govcd.TenantContext{}, nil
-	}
-	org, err := vcdClient.GetTmOrgByName(orgName)
-	if err != nil {
-		return nil, err
-	}
-	return &govcd.TenantContext{
-		OrgId:   org.TmOrg.ID,
-		OrgName: org.TmOrg.Name,
-	}, nil
-}
-
 // safeClose closes a file and logs the error, if any. This can be used instead of file.Close()
 func safeClose(file *os.File) {
 	if err := file.Close(); err != nil {
