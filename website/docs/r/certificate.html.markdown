@@ -65,7 +65,7 @@ The following arguments are supported:
 
 The following attributes are exported on this resource:
 
-* `id` - The added to Certificate library ID
+* `id` - The ID of the Certificate added to the Certificates Library
 
 ## Importing
 
