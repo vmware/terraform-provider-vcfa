@@ -30,7 +30,6 @@ data "vcfa_role" "org-user" {
   name   = "Organization User"
 }
 
-
 resource "vcfa_org_local_user" "demo" {
   org_id   = vcfa_org.demo.id
   role_ids = [data.vcfa_role.org-admin.id, data.vcfa_role.org-user.id]
