@@ -11,7 +11,7 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
-const labelLocalUser = "Local User"
+const labelLocalUser = "Org Local User"
 
 func resourceVcfaLocalUser() *schema.Resource {
 	return &schema.Resource{

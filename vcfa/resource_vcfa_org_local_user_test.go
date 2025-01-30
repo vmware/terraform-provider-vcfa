@@ -41,29 +41,29 @@ func TestAccVcfaLocalUser(t *testing.T) {
 				Config: configText1,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("vcfa_org.test", "name", t.Name()),
-					resource.TestCheckResourceAttr("vcfa_local_user.test", "username", "new-"+params["Username"].(string)),
-					resource.TestCheckResourceAttr("vcfa_local_user.test", "password", "CHANGE-ME"),
-					resource.TestCheckResourceAttrPair("vcfa_local_user.test", "role_id", "data.vcfa_role.org-admin", "id"),
-					resource.TestCheckResourceAttrPair("vcfa_local_user.test", "org_id", "vcfa_org.test", "id"),
+					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "username", "new-"+params["Username"].(string)),
+					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "password", "CHANGE-ME"),
+					resource.TestCheckResourceAttrPair("vcfa_org_local_user.test", "role_id", "data.vcfa_role.org-admin", "id"),
+					resource.TestCheckResourceAttrPair("vcfa_org_local_user.test", "org_id", "vcfa_org.test", "id"),
 				),
 			},
 			{
 				Config: configText2,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("vcfa_local_user.test", "username", params["Username"].(string)),
-					resource.TestCheckResourceAttr("vcfa_local_user.test", "password", "CHANGE-ME-MORE"),
-					resource.TestCheckResourceAttrPair("vcfa_local_user.test", "role_id", "data.vcfa_role.org-user", "id"),
-					resource.TestCheckResourceAttrPair("vcfa_local_user.test", "org_id", "vcfa_org.test", "id"),
+					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "username", params["Username"].(string)),
+					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "password", "CHANGE-ME-MORE"),
+					resource.TestCheckResourceAttrPair("vcfa_org_local_user.test", "role_id", "data.vcfa_role.org-user", "id"),
+					resource.TestCheckResourceAttrPair("vcfa_org_local_user.test", "org_id", "vcfa_org.test", "id"),
 				),
 			},
 			{
 				Config: configText3,
 				Check: resource.ComposeTestCheckFunc(
-					resourceFieldsEqual("vcfa_local_user.test", "data.vcfa_local_user.test", []string{"%", "password"}),
+					resourceFieldsEqual("vcfa_org_local_user.test", "data.vcfa_org_local_user.test", []string{"%", "password"}),
 				),
 			},
 			{
-				ResourceName:            "vcfa_local_user.test",
+				ResourceName:            "vcfa_org_local_user.test",
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateId:           params["Testname"].(string) + ImportSeparator + params["Username"].(string),
@@ -95,7 +95,7 @@ data "vcfa_role" "org-user" {
 `
 
 const testAccVcfaLocalUserStep1 = testAccVcfaLocalUserPrerequisites + `
-resource "vcfa_local_user" "test" {
+resource "vcfa_org_local_user" "test" {
   org_id   = vcfa_org.test.id
   role_id  = data.vcfa_role.org-admin.id
   username = "new-{{.Username}}"
@@ -104,7 +104,7 @@ resource "vcfa_local_user" "test" {
 `
 
 const testAccVcfaLocalUserStep2 = testAccVcfaLocalUserPrerequisites + `
-resource "vcfa_local_user" "test" {
+resource "vcfa_org_local_user" "test" {
   org_id   = vcfa_org.test.id
   role_id  = data.vcfa_role.org-user.id
   username = "{{.Username}}"
@@ -113,8 +113,8 @@ resource "vcfa_local_user" "test" {
 `
 
 const testAccVcfaLocalUserStep3DS = testAccVcfaLocalUserStep2 + `
-data "vcfa_local_user" "test" {
+data "vcfa_org_local_user" "test" {
   org_id   = vcfa_org.test.id
-  username = vcfa_local_user.test.username
+  username = vcfa_org_local_user.test.username
 }
 `
