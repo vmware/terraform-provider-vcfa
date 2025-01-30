@@ -41,11 +41,11 @@ func datasourceVcfaLocalUserRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.FromErr(err)
 	}
 
-	getByNameFunc := func(username string) (*govcd.TmUser, error) {
+	getByNameFunc := func(username string) (*govcd.OpenApiUser, error) {
 		return vcfaClient.GetUserByName(username, tenantContext)
 	}
 
-	c := dsReadConfig[*govcd.TmUser, types.TmUser]{
+	c := dsReadConfig[*govcd.OpenApiUser, types.OpenApiUser]{
 		entityLabel:              labelLocalUser,
 		getEntityFunc:            getByNameFunc,
 		stateStoreFunc:           setLocalUserData,

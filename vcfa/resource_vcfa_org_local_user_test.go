@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccVcfaLocalUser(t *testing.T) {
+func TestAccVcfaOrgLocalUser(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
