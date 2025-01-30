@@ -25,7 +25,7 @@ data "vcfa_org" "org1" {
 resource "vcfa_certificate" "new-certificate" {
   org_id                 = data.vcfa_org.org1.id
   alias                  = "SAML certificate"
-  description            = "my description"
+  description            = "Created by Terraform VCFA Provider"
   certificate            = file("/home/user/cert.pem")
   private_key            = file("/home/user/key.pem")
   private_key_passphrase = "passphrase"
@@ -42,7 +42,7 @@ data "vcfa_org" "system" {
 resource "vcfa_certificate" "new-certificate-for-system" {
   org_id                 = data.vcfa_org.system.id
   alias                  = "provider certificate"
-  description            = "my description"
+  description            = "Created by Terraform VCFA Provider"
   certificate            = file("/home/user/provider-cert.pem")
   private_key            = file("/home/user/provider-key.pem")
   private_key_passphrase = "passphrase"
@@ -53,13 +53,13 @@ resource "vcfa_certificate" "new-certificate-for-system" {
 
 The following arguments are supported:
 
-* `org_id` - (Required) - ID of the Organization that owns the Certificate
-* `alias` - (Required) - Alias (name) of the Certificate
-* `description` - (Optional) - Certificate description
-* `certificate` - (Required) - Content of the Certificate. **Note:** it is best to avoid trailing
-  newlines in the Certificate, as VCFA could trim trailing newline and `plan/apply` operations might always report it.
-* `private_key` - (Optional) - Content of the private key
-* `private_key_passphrase` - (Optional) - Private key pass phrase 
+* `org_id` - (Required) ID of the Organization that owns the Certificate
+* `alias` - (Required) Alias (name) of the Certificate
+* `description` - (Optional) Certificate description
+* `certificate` - (Required) Content of the Certificate. **Note:** Do not use trailing
+  newlines in the Certificate, as VCFA trims them and `plan/apply` reports a difference in such case
+* `private_key` - (Optional) Content of the private key
+* `private_key_passphrase` - (Optional) Private key pass phrase 
 
 ## Attribute Reference
 
