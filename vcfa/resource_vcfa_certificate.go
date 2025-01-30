@@ -13,14 +13,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceVcfaCertificateLibrary() *schema.Resource {
+func resourceVcfaCertificate() *schema.Resource {
 	return &schema.Resource{
-		ReadContext:   resourceVcfaCertificateLibraryRead,
-		CreateContext: resourceVcfaCertificateLibraryCreate,
-		UpdateContext: resourceVcfaCertificateLibraryUpdate,
-		DeleteContext: resourceVcfaCertificateLibraryDelete,
+		ReadContext:   resourceVcfaCertificateRead,
+		CreateContext: resourceVcfaCertificateCreate,
+		UpdateContext: resourceVcfaCertificateUpdate,
+		DeleteContext: resourceVcfaCertificateDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: resourceVcfaCertificateLibraryImport,
+			StateContext: resourceVcfaCertificateImport,
 		},
 		Schema: map[string]*schema.Schema{
 			"org_id": {
@@ -32,7 +32,7 @@ func resourceVcfaCertificateLibrary() *schema.Resource {
 			"alias": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "Alias of certificate",
+				Description: "Alias of the Certificate",
 			},
 			"description": {
 				Type:        schema.TypeString,
@@ -58,14 +58,14 @@ func resourceVcfaCertificateLibrary() *schema.Resource {
 				Optional:    true,
 				ForceNew:    true,
 				Sensitive:   true,
-				Description: "Certificate private pass phrase",
+				Description: "Certificate private passphrase",
 			},
 		},
 	}
 }
 
-// resourceVcfaCertificateLibraryCreate covers Create functionality for resource
-func resourceVcfaCertificateLibraryCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+// resourceVcfaCertificateCreate covers Create functionality for resource
+func resourceVcfaCertificateCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 
 	org, err := vcdClient.GetTmOrgById(d.Get("org_id").(string))
@@ -91,15 +91,15 @@ func resourceVcfaCertificateLibraryCreate(ctx context.Context, d *schema.Resourc
 	}
 
 	d.SetId(createdCertificate.CertificateLibrary.Id)
-	return resourceVcfaCertificateLibraryRead(ctx, d, meta)
+	return resourceVcfaCertificateRead(ctx, d, meta)
 }
 
 func isSysOrg(adminOrg *govcd.TmOrg) bool {
 	return strings.EqualFold(adminOrg.TmOrg.Name, "system")
 }
 
-// resourceVcfaCertificateLibraryUpdate covers Update functionality for resource
-func resourceVcfaCertificateLibraryUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+// resourceVcfaCertificateUpdate covers Update functionality for resource
+func resourceVcfaCertificateUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	certificate, err := getCertificateType(vcdClient, d.Get("org_id").(string), d.Id())
 	if err != nil {
@@ -114,7 +114,7 @@ func resourceVcfaCertificateLibraryUpdate(ctx context.Context, d *schema.Resourc
 		return diag.Errorf("[certificate library update] : %s", err)
 	}
 
-	return resourceVcfaCertificateLibraryRead(ctx, d, meta)
+	return resourceVcfaCertificateRead(ctx, d, meta)
 }
 
 func getCertificateConfigurationType(d *schema.ResourceData) *types.CertificateLibraryItem {
@@ -127,7 +127,7 @@ func getCertificateConfigurationType(d *schema.ResourceData) *types.CertificateL
 	}
 }
 
-func resourceVcfaCertificateLibraryRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVcfaCertificateRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 
 	certificate, err := getCertificateType(vcdClient, d.Get("org_id").(string), d.Id())
@@ -173,7 +173,7 @@ func getCertificateType(vcdClient *VCDClient, orgId, certLibId string) (*govcd.C
 	return certificate, nil
 }
 
-func resourceVcfaCertificateLibraryDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVcfaCertificateDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	certificateToDelete, err := getCertificateType(vcdClient, d.Get("org_id").(string), d.Id())
 	if err != nil {
@@ -186,7 +186,7 @@ func resourceVcfaCertificateLibraryDelete(_ context.Context, d *schema.ResourceD
 	return nil
 }
 
-func resourceVcfaCertificateLibraryImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceVcfaCertificateImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	resourceURI := strings.Split(d.Id(), ImportSeparator)
 	if len(resourceURI) != 2 {
 		return nil, fmt.Errorf("resource name must be specified as org-name%scertificate-name", ImportSeparator)

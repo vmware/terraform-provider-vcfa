@@ -8,9 +8,9 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/govcd"
 )
 
-func datasourceVcfaCertificateLibrary() *schema.Resource {
+func datasourceVcfaCertificate() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: datasourceVcfaCertificateLibraryRead,
+		ReadContext: datasourceVcfaCertificateRead,
 
 		Schema: map[string]*schema.Schema{
 			"org_id": {
@@ -23,7 +23,7 @@ func datasourceVcfaCertificateLibrary() *schema.Resource {
 				Optional:     true,
 				Computed:     true,
 				ExactlyOneOf: []string{"alias", "id"},
-				Description:  "Alias of certificate",
+				Description:  "Alias of the Certificate",
 			},
 			"id": {
 				Type:         schema.TypeString,
@@ -48,7 +48,7 @@ func datasourceVcfaCertificateLibrary() *schema.Resource {
 	}
 }
 
-func datasourceVcfaCertificateLibraryRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceVcfaCertificateRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	vcdClient := meta.(*VCDClient)
 	alias := d.Get("alias").(string)
 

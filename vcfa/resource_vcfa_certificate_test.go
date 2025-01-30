@@ -10,9 +10,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-// TestAccVcfaCertificateLibraryResource tests certificate libraries. At least two certificates must be provided in the
+// TestAccVcfaCertificateResource tests certificate libraries. At least two certificates must be provided in the
 // testing configuration
-func TestAccVcfaCertificateLibraryResource(t *testing.T) {
+func TestAccVcfaCertificateResource(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
@@ -58,10 +58,10 @@ func TestAccVcfaCertificateLibraryResource(t *testing.T) {
 		return
 	}
 
-	resourceAddressOrgCert := "vcfa_certificate_library.orgCertificate"
-	resourceAddressOrgPrivateCert := "vcfa_certificate_library.OrgWithPrivateCertificate"
-	resourceAddressSysCert := "vcfa_certificate_library.sysCertificate"
-	resourceAddressSysPrivateCert := "vcfa_certificate_library.sysCertificateWithPrivate"
+	resourceAddressOrgCert := "vcfa_certificate.orgCertificate"
+	resourceAddressOrgPrivateCert := "vcfa_certificate.OrgWithPrivateCertificate"
+	resourceAddressSysCert := "vcfa_certificate.sysCertificate"
+	resourceAddressSysPrivateCert := "vcfa_certificate.sysCertificateWithPrivate"
 
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
@@ -103,10 +103,10 @@ func TestAccVcfaCertificateLibraryResource(t *testing.T) {
 			{
 				Config: configText3,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resourceFieldsEqual(resourceAddressOrgCert, "data.vcfa_certificate_library.existing", []string{"%", "private_key", "private_key_passphrase"}),
-					resourceFieldsEqual(resourceAddressOrgCert, "data.vcfa_certificate_library.existingById", []string{"%", "private_key", "private_key_passphrase"}),
-					resourceFieldsEqual(resourceAddressSysPrivateCert, "data.vcfa_certificate_library.existingSystem", []string{"%", "private_key", "private_key_passphrase"}),
-					resourceFieldsEqual(resourceAddressSysPrivateCert, "data.vcfa_certificate_library.existingSystemById", []string{"%", "private_key", "private_key_passphrase"}),
+					resourceFieldsEqual(resourceAddressOrgCert, "data.vcfa_certificate.existing", []string{"%", "private_key", "private_key_passphrase"}),
+					resourceFieldsEqual(resourceAddressOrgCert, "data.vcfa_certificate.existingById", []string{"%", "private_key", "private_key_passphrase"}),
+					resourceFieldsEqual(resourceAddressSysPrivateCert, "data.vcfa_certificate.existingSystem", []string{"%", "private_key", "private_key_passphrase"}),
+					resourceFieldsEqual(resourceAddressSysPrivateCert, "data.vcfa_certificate.existingSystemById", []string{"%", "private_key", "private_key_passphrase"}),
 				),
 			},
 			{
@@ -135,14 +135,14 @@ data "vcfa_org" "system" {
   name = "System"
 }
 
-resource "vcfa_certificate_library" "orgCertificate" {
+resource "vcfa_certificate" "orgCertificate" {
   org_id      = vcfa_org.org1.id
   alias       = "{{.Alias}}"
   description = "{{.Description1}}"
   certificate = file("{{.Certificate1Path}}")
 }
 
-resource "vcfa_certificate_library" "OrgWithPrivateCertificate" {
+resource "vcfa_certificate" "OrgWithPrivateCertificate" {
   org_id                 = vcfa_org.org1.id
   alias                  = "{{.AliasPrivate}}"
   description            = "{{.Description2}}"
@@ -151,14 +151,14 @@ resource "vcfa_certificate_library" "OrgWithPrivateCertificate" {
   private_key_passphrase = "{{.PassPhrase}}"
 }
 
-resource "vcfa_certificate_library" "sysCertificate" {
+resource "vcfa_certificate" "sysCertificate" {
   org_id      = data.vcfa_org.system.id
   alias       = "{{.AliasSystem}}"
   description = "{{.Description3}}"
   certificate = file("{{.Certificate1Path}}")
 }
 
-resource "vcfa_certificate_library" "sysCertificateWithPrivate" {
+resource "vcfa_certificate" "sysCertificateWithPrivate" {
   org_id                 = data.vcfa_org.system.id
   alias                  = "{{.AliasPrivateSystem}}"
   description            = "{{.Description4}}"
@@ -179,14 +179,14 @@ data "vcfa_org" "system" {
   name = "System"
 }
 
-resource "vcfa_certificate_library" "orgCertificate" {
+resource "vcfa_certificate" "orgCertificate" {
   org_id      = vcfa_org.org1.id
   alias       = "{{.AliasUpdate}}"
   description = "{{.Description1Update}}"
   certificate = file("{{.Certificate1Path}}")
 }
 
-resource "vcfa_certificate_library" "sysCertificateWithPrivate" {
+resource "vcfa_certificate" "sysCertificateWithPrivate" {
   org_id                 = data.vcfa_org.system.id
   alias                  = "{{.AliasPrivateSystemUpdate}}"
   description            = "{{.Description4Update}}"
@@ -197,23 +197,23 @@ resource "vcfa_certificate_library" "sysCertificateWithPrivate" {
 `
 
 const testAccVcfaLibraryCertificateDatasource = testAccVcfaLibraryCertificateResourceUpdate + `
-data "vcfa_certificate_library" "existing" {
+data "vcfa_certificate" "existing" {
   org_id = vcfa_org.org1.id
-  alias  = vcfa_certificate_library.orgCertificate.alias
+  alias  = vcfa_certificate.orgCertificate.alias
 }
 
-data "vcfa_certificate_library" "existingById" {
+data "vcfa_certificate" "existingById" {
   org_id = vcfa_org.org1.id
-  id     = vcfa_certificate_library.orgCertificate.id
+  id     = vcfa_certificate.orgCertificate.id
 }
 
-data "vcfa_certificate_library" "existingSystem" {
+data "vcfa_certificate" "existingSystem" {
   org_id = data.vcfa_org.system.id
-  alias  = vcfa_certificate_library.sysCertificateWithPrivate.alias
+  alias  = vcfa_certificate.sysCertificateWithPrivate.alias
 }
 
-data "vcfa_certificate_library" "existingSystemById" {
+data "vcfa_certificate" "existingSystemById" {
   org_id = data.vcfa_org.system.id
-  id     = vcfa_certificate_library.sysCertificateWithPrivate.id
+  id     = vcfa_certificate.sysCertificateWithPrivate.id
 }
 `
