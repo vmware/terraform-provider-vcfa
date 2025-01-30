@@ -36,6 +36,7 @@ At least one of the following tags should be defined:
    * unit:         Runs unit tests that don't need a live VCFA
    * org:          Runs org related tests
    * region:       Runs region related tests
+   * role:         Runs role related tests (rights, roles, global roles, rights bundles)
 
 Examples:
 
