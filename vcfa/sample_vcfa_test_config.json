@@ -52,6 +52,20 @@
     "oidcServer": {
       "url": "URL-of-test-OIDC-server",
       "wellKnownEndpoint": "/.well-known/openid-configuration"
-    }
+    },
+
+    "certificates": [
+      {
+        "path": "../test-resources/cert.pem",
+        "privateKeyPath": "../test-resources/key.pem",
+        "password": "test"
+      },
+      {
+        "path": "../test-resources/cert2.pem",
+        "privateKeyPath": "../test-resources/key2.pem",
+        "password": "test"
+      }
+    ],
+    "rootCertificatePath": "../test-resources/rootCA.pem"
   }
 }

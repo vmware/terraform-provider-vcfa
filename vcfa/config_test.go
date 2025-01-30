@@ -112,6 +112,13 @@ type TestConfig struct {
 			Url               string `json:"url,omitempty"`
 			WellKnownEndpoint string `json:"wellKnownEndpoint,omitempty"`
 		} `json:"oidcServer"`
+
+		Certificates []struct {
+			Path           string `json:"path,omitempty"`
+			PrivateKeyPath string `json:"privateKeyPath,omitempty"`
+			Password       string `json:"password,omitempty"`
+		} `json:"certificates"`
+		RootCertificatePath string `json:"rootCertificatePath"`
 	} `json:"tm,omitempty"`
 	Logging struct {
 		Enabled         bool   `json:"enabled,omitempty"`
@@ -119,15 +126,6 @@ type TestConfig struct {
 		LogHttpRequest  bool   `json:"logHttpRequest,omitempty"`
 		LogHttpResponse bool   `json:"logHttpResponse,omitempty"`
 	} `json:"logging"`
-	Certificates struct {
-		Certificate1Path           string `json:"certificate1Path,omitempty"`           // absolute path to pem file
-		Certificate1PrivateKeyPath string `json:"certificate1PrivateKeyPath,omitempty"` // absolute path to private key pem file
-		Certificate1Pass           string `json:"certificate1Pass,omitempty"`           // pass phrase for private key
-		Certificate2Path           string `json:"certificate2Path,omitempty"`           // absolute path to pem file
-		Certificate2PrivateKeyPath string `json:"certificate2PrivateKeyPath,omitempty"` // absolute path to private key pem file
-		Certificate2Pass           string `json:"certificate2Pass,omitempty"`           // absolute path to pem file
-		RootCertificatePath        string `json:"rootCertificatePath,omitempty"`        // absolute path to pem file
-	} `json:"certificates"`
 	EnvVariables map[string]string `json:"envVariables,omitempty"`
 }
 
@@ -561,40 +559,28 @@ func getConfigStruct(config string) TestConfig {
 		util.InitLogging()
 	}
 
-	if configStruct.Certificates.Certificate1Path != "" {
-		certificatePath1Path, err := filepath.Abs(configStruct.Certificates.Certificate1Path)
-		if err != nil {
-			panic("error retrieving absolute path for certificate 1 path " + configStruct.Certificates.Certificate1Path)
+	for i, certificate := range configStruct.Tm.Certificates {
+		if certificate.Path != "" {
+			certPath, err := filepath.Abs(certificate.Path)
+			if err != nil {
+				panic(fmt.Sprintf("error retrieving absolute path for certificate %d: %s", i, certificate.PrivateKeyPath))
+			}
+			configStruct.Tm.Certificates[i].Path = certPath
 		}
-		configStruct.Certificates.Certificate1Path = certificatePath1Path
+		if certificate.PrivateKeyPath != "" {
+			certPath, err := filepath.Abs(certificate.PrivateKeyPath)
+			if err != nil {
+				panic(fmt.Sprintf("error retrieving absolute path for private key %d: %s", i, certificate.PrivateKeyPath))
+			}
+			configStruct.Tm.Certificates[i].PrivateKeyPath = certPath
+		}
 	}
-	if configStruct.Certificates.Certificate2Path != "" {
-		certificatePath2Path, err := filepath.Abs(configStruct.Certificates.Certificate2Path)
+	if configStruct.Tm.RootCertificatePath != "" {
+		certPath, err := filepath.Abs(configStruct.Tm.RootCertificatePath)
 		if err != nil {
-			panic("error retrieving absolute path for certificate 2 path " + configStruct.Certificates.Certificate2Path)
+			panic("error retrieving absolute path for root certificate " + configStruct.Tm.RootCertificatePath)
 		}
-		configStruct.Certificates.Certificate2Path = certificatePath2Path
-	}
-	if configStruct.Certificates.Certificate1PrivateKeyPath != "" {
-		certificatePrivatePath1Path, err := filepath.Abs(configStruct.Certificates.Certificate1PrivateKeyPath)
-		if err != nil {
-			panic("error retrieving absolute path for private certificate 1 path " + configStruct.Certificates.Certificate1PrivateKeyPath)
-		}
-		configStruct.Certificates.Certificate1PrivateKeyPath = certificatePrivatePath1Path
-	}
-	if configStruct.Certificates.Certificate2PrivateKeyPath != "" {
-		certificatePrivatePath2Path, err := filepath.Abs(configStruct.Certificates.Certificate2PrivateKeyPath)
-		if err != nil {
-			panic("error retrieving absolute path for private certificate 2 path " + configStruct.Certificates.Certificate2PrivateKeyPath)
-		}
-		configStruct.Certificates.Certificate2PrivateKeyPath = certificatePrivatePath2Path
-	}
-	if configStruct.Certificates.RootCertificatePath != "" {
-		rootCertificatePath2Path, err := filepath.Abs(configStruct.Certificates.RootCertificatePath)
-		if err != nil {
-			panic("error retrieving absolute path for certificate 2 path " + configStruct.Certificates.Certificate2Path)
-		}
-		configStruct.Certificates.RootCertificatePath = rootCertificatePath2Path
+		configStruct.Tm.RootCertificatePath = certPath
 	}
 	return configStruct
 }
