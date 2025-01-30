@@ -25,9 +25,10 @@ func datasourceVcfaLocalUser() *schema.Resource {
 				Required:    true,
 				Description: fmt.Sprintf("%s User Name", labelLocalUser),
 			},
-			"role_id": {
-				Type:        schema.TypeString,
+			"role_ids": {
+				Type:        schema.TypeSet,
 				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 				Description: fmt.Sprintf("%s to use for %s", labelVcfaRole, labelLocalUser),
 			},
 		},

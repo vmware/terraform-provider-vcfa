@@ -25,11 +25,17 @@ data "vcfa_role" "org-admin" {
   name   = "Organization Administrator"
 }
 
+data "vcfa_role" "org-user" {
+  org_id = vcfa_org.demo.id
+  name   = "Organization User"
+}
+
+
 resource "vcfa_org_local_user" "demo" {
-  org_id   = vcfa_org.demo.id
-  role_id  = data.vcfa_role.org-admin.id
-  username = "demo-local-user"
-  password = "CHANGE-ME"
+  org_id    = vcfa_org.demo.id
+  role_ids  = [data.vcfa_role.org-admin.id, data.vcfa_role.org-user.id]
+  username  = "demo-local-user"
+  password  = "CHANGE-ME"
 }
 ```
 
@@ -38,7 +44,7 @@ resource "vcfa_org_local_user" "demo" {
 The following arguments are supported:
 
 - `org_id` - (Required) An Org ID for this Local User to be created in 
-- `role_id` - (Required) A role ID to assign to this user
+- `role_ids` - (Required) A set of role IDs to assign to this user
 - `username` - (Required) User name for this local user
 - `password` - (Required) A password for the user
 

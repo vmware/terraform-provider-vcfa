@@ -30,9 +30,10 @@ func resourceVcfaLocalUser() *schema.Resource {
 				ForceNew:    true,
 				Description: fmt.Sprintf("Parent %s ID for %s", labelVcfaOrg, labelLocalUser),
 			},
-			"role_id": {
-				Type:        schema.TypeString,
+			"role_ids": {
+				Type:        schema.TypeSet,
 				Required:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 				Description: fmt.Sprintf("%s to use for %s", labelVcfaRole, labelLocalUser),
 			},
 			"username": {
@@ -159,9 +160,6 @@ func resourceVcfaLocalUserImport(ctx context.Context, d *schema.ResourceData, me
 
 	d.SetId(user.User.ID)
 	dSet(d, "org_id", org.TmOrg.ID)
-	if len(user.User.RoleEntityRefs) > 0 && user.User.RoleEntityRefs[0] != nil {
-		dSet(d, "role_id", user.User.RoleEntityRefs[0].ID)
-	}
 
 	return []*schema.ResourceData{d}, nil
 }
@@ -172,30 +170,30 @@ func getLocalUserType(vcfaClient *VCDClient, d *schema.ResourceData) (*types.Ope
 		return nil, fmt.Errorf("error getting %s: %s", labelVcfaOrg, err)
 	}
 
+	roleSet := convertSchemaSetToSliceOfStrings(d.Get("role_ids").(*schema.Set))
 	t := &types.OpenApiUser{
 		OrgEntityRef:   &types.OpenApiReference{ID: d.Get("org_id").(string), Name: org.TmOrg.Name},
 		Username:       d.Get("username").(string),
 		Password:       d.Get("password").(string),
 		ProviderType:   "LOCAL",
-		RoleEntityRefs: []*types.OpenApiReference{{ID: d.Get("role_id").(string)}},
+		RoleEntityRefs: convertSliceOfStringsToOpenApiReferenceIds(roleSet),
 		Locked:         addrOf(false),
 	}
 
 	// Update requires ID being present
 	if d.Id() != "" { // update operation
 		t.ID = d.Id()
-
-		tenantContext := &govcd.TenantContext{
-			OrgId:   org.TmOrg.ID,
-			OrgName: org.TmOrg.Name,
-		}
-
-		user, err := vcfaClient.GetUserById(d.Id(), tenantContext)
+		user, err := vcfaClient.GetUserById(d.Id(), nil)
 		if err != nil {
 			return nil, fmt.Errorf("error retrieving %s by ID %s: %s", labelLocalUser, d.Id(), err)
 		}
 		// Name In Source must be set to "previous" username when performing update
 		t.NameInSource = user.User.Username
+
+		// if password has not changed - send exactly '******' to prevent updating password just like UI
+		if !d.HasChange("password") {
+			t.Password = "******"
+		}
 	}
 
 	return t, nil
@@ -207,10 +205,13 @@ func setLocalUserData(_ *VCDClient, d *schema.ResourceData, user *govcd.OpenApiU
 	}
 	d.SetId(user.User.ID)
 	dSet(d, "username", user.User.Username)
-	dSet(d, "role_id", "")
-	if len(user.User.RoleEntityRefs) > 0 && user.User.RoleEntityRefs[0] != nil {
-		dSet(d, "role_id", user.User.RoleEntityRefs[0].ID)
+
+	roleIds := extractIdsFromOpenApiReferences(user.User.RoleEntityRefs)
+	err := d.Set("role_ids", roleIds)
+	if err != nil {
+		return fmt.Errorf("error storing 'role_ids': %s", err)
 	}
+
 	dSet(d, "org_id", "")
 	if user.User.OrgEntityRef != nil {
 		dSet(d, "org_id", user.User.OrgEntityRef.ID)

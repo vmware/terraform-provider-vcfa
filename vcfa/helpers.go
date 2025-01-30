@@ -1,9 +1,10 @@
 package vcfa
 
 import (
+	"os"
+
 	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"github.com/vmware/go-vcloud-director/v3/util"
-	"os"
 )
 
 // Returns a valid Tenant Context if the Organization identified by the given ID is valid and exists.
@@ -13,6 +14,20 @@ func getTenantContextFromOrgId(vcdClient *VCDClient, orgId string) (*govcd.Tenan
 		return &govcd.TenantContext{}, nil
 	}
 	org, err := vcdClient.GetTmOrgById(orgId)
+	if err != nil {
+		return nil, err
+	}
+	return &govcd.TenantContext{
+		OrgId:   org.TmOrg.ID,
+		OrgName: org.TmOrg.Name,
+	}, nil
+}
+
+func getTenantContextFromOrgName(vcdClient *VCDClient, orgName string) (*govcd.TenantContext, error) {
+	if orgName == "" {
+		return &govcd.TenantContext{}, nil
+	}
+	org, err := vcdClient.GetTmOrgByName(orgName)
 	if err != nil {
 		return nil, err
 	}

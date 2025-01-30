@@ -24,7 +24,7 @@ func TestAccVcfaOrgLocalUser(t *testing.T) {
 	params["FuncName"] = t.Name() + "-step2"
 	configText2 := templateFill(testAccVcfaLocalUserStep2, params)
 	params["FuncName"] = t.Name() + "-step3"
-	configText3 := templateFill(testAccVcfaLocalUserStep3DS, params)
+	configText3 := templateFill(testAccVcfaLocalUserStep4DS, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
@@ -43,7 +43,7 @@ func TestAccVcfaOrgLocalUser(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_org.test", "name", t.Name()),
 					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "username", "new-"+params["Username"].(string)),
 					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "password", "CHANGE-ME"),
-					resource.TestCheckResourceAttrPair("vcfa_org_local_user.test", "role_id", "data.vcfa_role.org-admin", "id"),
+					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "role_ids.#", "1"),
 					resource.TestCheckResourceAttrPair("vcfa_org_local_user.test", "org_id", "vcfa_org.test", "id"),
 				),
 			},
@@ -52,7 +52,7 @@ func TestAccVcfaOrgLocalUser(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "username", params["Username"].(string)),
 					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "password", "CHANGE-ME-MORE"),
-					resource.TestCheckResourceAttrPair("vcfa_org_local_user.test", "role_id", "data.vcfa_role.org-user", "id"),
+					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "role_ids.#", "2"),
 					resource.TestCheckResourceAttrPair("vcfa_org_local_user.test", "org_id", "vcfa_org.test", "id"),
 				),
 			},
@@ -96,23 +96,23 @@ data "vcfa_role" "org-user" {
 
 const testAccVcfaLocalUserStep1 = testAccVcfaLocalUserPrerequisites + `
 resource "vcfa_org_local_user" "test" {
-  org_id   = vcfa_org.test.id
-  role_id  = data.vcfa_role.org-admin.id
-  username = "new-{{.Username}}"
-  password = "CHANGE-ME"
+  org_id    = vcfa_org.test.id
+  role_ids  = [data.vcfa_role.org-admin.id]
+  username  = "new-{{.Username}}"
+  password  = "CHANGE-ME"
 }
 `
 
 const testAccVcfaLocalUserStep2 = testAccVcfaLocalUserPrerequisites + `
 resource "vcfa_org_local_user" "test" {
-  org_id   = vcfa_org.test.id
-  role_id  = data.vcfa_role.org-user.id
-  username = "{{.Username}}"
-  password = "CHANGE-ME-MORE"
+  org_id    = vcfa_org.test.id
+  role_ids  = [data.vcfa_role.org-user.id, data.vcfa_role.org-admin.id]
+  username  = "{{.Username}}"
+  password  = "CHANGE-ME-MORE"
 }
 `
 
-const testAccVcfaLocalUserStep3DS = testAccVcfaLocalUserStep2 + `
+const testAccVcfaLocalUserStep4DS = testAccVcfaLocalUserStep2 + `
 data "vcfa_org_local_user" "test" {
   org_id   = vcfa_org.test.id
   username = vcfa_org_local_user.test.username
