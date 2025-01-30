@@ -57,6 +57,8 @@ var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_right":                           datasourceVcfaRight(),                       // 1.0
 	"vcfa_rights_bundle":                   datasourceVcfaRightsBundle(),                // 1.0
 	"vcfa_role":                            datasourceVcfaRole(),                        // 1.0
+	"vcfa_global_role":                     datasourceVcfaGlobalRole(),                  // 1.0
+	"vcfa_certificate":                     datasourceVcfaCertificate(),                 // 1.0
 	"vcfa_org_local_user":                  datasourceVcfaLocalUser(),                   // 1.0
 }
 
@@ -77,7 +79,9 @@ var globalResourceMap = map[string]*schema.Resource{
 	"vcfa_org_oidc":                        resourceVcfaOrgOidc(),                     // 1.0
 	"vcfa_rights_bundle":                   resourceVcfaRightsBundle(),                // 1.0
 	"vcfa_role":                            resourceVcfaRole(),                        // 1.0
+	"vcfa_global_role":                     resourceVcfaGlobalRole(),                  // 1.0
 	"vcfa_api_token":                       resourceVcfaApiToken(),                    // 1.0
+	"vcfa_certificate":                     resourceVcfaCertificate(),                 // 1.0
 	"vcfa_org_local_user":                  resourceVcfaLocalUser(),                   // 1.0
 }
 

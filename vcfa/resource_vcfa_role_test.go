@@ -1,4 +1,4 @@
-//go:build tm || rights || ALL || functional
+//go:build tm || role || ALL || functional
 
 package vcfa
 
@@ -21,13 +21,13 @@ func TestAccVcfaRole(t *testing.T) {
 	var roleUpdateDescription = "A shorter description."
 
 	var params = StringMap{
-		"Tenant":                testConfig.Tm.Org,
+		"Org":                   testConfig.Tm.Org,
 		"RoleName":              roleName,
 		"RoleUpdateName":        roleUpdateName,
 		"RoleDescription":       roleDescription,
 		"RoleUpdateDescription": roleUpdateDescription,
 		"FuncName":              roleName,
-		"Tags":                  "tm rights",
+		"Tags":                  "tm role",
 	}
 	testParamsNotEmpty(t, params)
 
@@ -158,9 +158,9 @@ func testAccCheckRoleDestroy(orgId, roleId string) resource.TestCheckFunc {
 
 const testAccRole = `
 resource "vcfa_org" "org1" {
-  name              = "{{.Tenant}}"
-  display_name      = "{{.Tenant}}"
-  description       = "{{.Tenant}}"
+  name         = "{{.Org}}"
+  display_name = "{{.Org}}"
+  description  = "{{.Org}}"
 }
 
 resource "vcfa_role" "{{.RoleName}}" {
@@ -178,9 +178,9 @@ resource "vcfa_role" "{{.RoleName}}" {
 
 const testAccRoleUpdate = `
 resource "vcfa_org" "org1" {
-  name              = "{{.Tenant}}"
-  display_name      = "{{.Tenant}}"
-  description       = "{{.Tenant}}"
+  name         = "{{.Org}}"
+  display_name = "{{.Org}}"
+  description  = "{{.Org}}"
 }
 
 resource "vcfa_role" "{{.RoleName}}" {
