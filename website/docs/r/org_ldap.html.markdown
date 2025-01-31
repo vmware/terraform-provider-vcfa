@@ -105,7 +105,7 @@ The `custom_settings` section contains the configuration for the LDAP server
 * `authentication_method` - (Required) Authentication method: one of `SIMPLE`, `MD5DIGEST`, `NTLM`
 * `connector_type` - (Required) Type of connector: one of `OPEN_LDAP`, `ACTIVE_DIRECTORY`
 * `base_distinguished_name` - (Required) LDAP search base
-* `is_ssl` - (Optional) True if the LDAP service requires an SSL connection
+* `is_ssl` - (Optional) True if the LDAP service requires an SSL connection. If the certificate is not trusted already, `auto_trust_certificate=true` is needed.
 * `username` - (Optional) _Username_ to use when logging in to LDAP, specified using LDAP attribute=value pairs 
   (for example: cn="ldap-admin", c="example", dc="com")
 * `password` - (Optional) _Password_ for the user identified by UserName. This value is never returned by GET. 
