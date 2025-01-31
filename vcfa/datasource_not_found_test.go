@@ -157,7 +157,7 @@ func addMandatoryParams(dataSourceName string, mandatoryFields []string, t *test
 			templateFields = templateFields + `alias = "non-existent-certificate"` + "\n"
 		case "username": // vcfa_org_local_user
 			templateFields = templateFields + `username = "non-existent-local-user"` + "\n"
-		case "org_regional_networking_id": // vcfa_org_local_user
+		case "org_regional_networking_id":
 			templateFields = templateFields + `org_regional_networking_id = "urn:vcloud:regionalNetworkingSetting:12345678-1234-1234-1234-123456789012"` + "\n"
 		}
 	}
