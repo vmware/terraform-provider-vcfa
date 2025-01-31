@@ -144,7 +144,7 @@ func resourceVcfaOrgLdap() *schema.Resource {
 			},
 			"auto_trust_certificate": {
 				Type:        schema.TypeBool,
-				Optional:    true,
+				Required:    true,
 				ForceNew:    true,
 				Description: "Defines if the LDAP certificate should automatically be trusted, only makes sense if 'custom_settings.0.is_ssl=true'",
 			},
