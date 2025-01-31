@@ -5,7 +5,7 @@ on: pull_request
 
 jobs:
   build:
-    if: github.event.review.state == 'approved'
+    # if: github.event.review.state == 'approved'
     name: Check
     runs-on: ubuntu-latest
 
