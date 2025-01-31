@@ -79,9 +79,10 @@ data "vcfa_org" "my-org" {
 }
 
 resource "vcfa_org_ldap" "my-org-ldap" {
-  org_id         = data.vcfa_org.my-org.id
-  ldap_mode      = "SYSTEM"
-  custom_user_ou = "ou=Foo,dc=domain,dc=local base DN"
+  org_id                 = data.vcfa_org.my-org.id
+  ldap_mode              = "SYSTEM"
+  auto_trust_certificate = false
+  custom_user_ou         = "ou=Foo,dc=domain,dc=local base DN"
 }
 ```
 
