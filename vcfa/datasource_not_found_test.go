@@ -153,6 +153,12 @@ func addMandatoryParams(dataSourceName string, mandatoryFields []string, t *test
 			templateFields = templateFields + `edge_cluster_id = "urn:vcloud:edgeCluster:12345678-1234-1234-1234-123456789012"` + "\n"
 		case "content_library_id":
 			templateFields = templateFields + `content_library_id = "urn:vcloud:contentLibrary:12345678-1234-1234-1234-123456789012"` + "\n"
+		case "alias": // vcfa_certificate
+			templateFields = templateFields + `alias = "non-existent-certificate"` + "\n"
+		case "username": // vcfa_org_local_user
+			templateFields = templateFields + `username = "non-existent-local-user"` + "\n"
+		case "org_regional_networking_id": // vcfa_org_local_user
+			templateFields = templateFields + `org_regional_networking_id = "urn:vcloud:orgRegionalNetworking:12345678-1234-1234-1234-123456789012"` + "\n"
 		}
 	}
 
