@@ -11,8 +11,6 @@ description: |-
 Provides a VMware Cloud Foundation Automation Organization LDAP resource.
 This can be used to create, update, and delete LDAP configuration for an organization.
 
--> **Note:** This resource requires system administrator privileges.
-
 ## Example Usage 1 - Custom configuration
 
 ```hcl
