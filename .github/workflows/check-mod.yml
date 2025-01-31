@@ -1,0 +1,21 @@
+name: check-mod
+on: ["push"]
+  #pull_request_review:
+  #  types: [submitted]
+
+jobs:
+  build:
+    if: github.event.review.state == 'approved'
+    name: Check
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v3
+
+      - name: No replaced Go module
+        run: |
+          set +e
+          grep 'replace github.com/vmware/go-vcloud-director' go.mod
+          if [ "$?" -eq 0 ]; then echo "ERROR: Found a replaced go.mod. Remove the replacement and retry"; exit 1; else exit 0; fi
