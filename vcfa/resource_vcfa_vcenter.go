@@ -375,7 +375,7 @@ func autoTrustHostCertificate(urlSchemaFieldName, trustSchemaFieldName string) s
 			return fmt.Errorf("error parsing provided url '%s': %s", schemaUrl, err)
 		}
 
-		_, err = vcdClient.AutoTrustCertificate(parsedUrl)
+		_, err = vcdClient.AutoTrustHttpsCertificate(parsedUrl, nil)
 		if err != nil {
 			return fmt.Errorf("error trusting '%s' certificate: %s", schemaUrl, err)
 		}

@@ -10,7 +10,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVcfaOrgLdap(t *testing.T) {
+// TestAccVcfaOrgLdapWithSsl tests LDAP configuration against an LDAP server with SSL
+func TestAccVcfaOrgLdapWithSsl(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 

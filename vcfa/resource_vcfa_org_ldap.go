@@ -142,6 +142,12 @@ func resourceVcfaOrgLdap() *schema.Resource {
 				Description:  "Type of LDAP settings (one of NONE, SYSTEM, CUSTOM)",
 				ValidateFunc: validation.StringInSlice([]string{types.LdapModeNone, types.LdapModeSystem, types.LdapModeCustom}, false),
 			},
+			"auto_trust_certificate": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				ForceNew:    true,
+				Description: "Defines if the LDAP certificate should automatically be trusted, only makes sense if 'custom_settings.0.is_ssl=true'",
+			},
 			"custom_user_ou": { // CustomUsersOu
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -216,7 +222,7 @@ func resourceVcfaOrgLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceDa
 	}
 	orgId := d.Get("org_id").(string)
 
-	adminOrg, err := vcdClient.GetAdminOrgById(orgId)
+	org, err := vcdClient.GetTmOrgById(orgId)
 	if err != nil {
 		return diag.Errorf("[Org LDAP %s] error searching for Org %s: %s", origin, orgId, err)
 	}
@@ -226,7 +232,7 @@ func resourceVcfaOrgLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceDa
 		return diag.Errorf("[Org LDAP %s] error collecting settings values: %s", origin, err)
 	}
 
-	_, err = adminOrg.LdapConfigure(settings)
+	_, err = org.LdapConfigure(settings, d.Get("auto_trust_certificate").(bool))
 	if err != nil {
 		return diag.Errorf("[Org LDAP %s] error setting org '%s' LDAP configuration: %s", origin, orgId, err)
 	}

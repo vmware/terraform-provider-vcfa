@@ -70,7 +70,7 @@
   },
   "ldap": {
     "host": "my.ldap.server.net",
-    "port": 443,
+    "port": 636,
     "isSsl": true,
     "username": "admin",
     "password": "StrongPassword",
