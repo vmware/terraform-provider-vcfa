@@ -1,11 +1,10 @@
 name: check-mod
 on:
-  pull_request_review:
-    types: [submitted]
+  pull_request
 
 jobs:
   build:
-    if: github.event.review.state == 'approved'
+    if: github.event.pull_request.mergeable_state == 'CLEAN'
     name: Check
     runs-on: ubuntu-latest
 
