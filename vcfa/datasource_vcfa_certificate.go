@@ -50,10 +50,10 @@ func datasourceVcfaCertificate() *schema.Resource {
 }
 
 func datasourceVcfaCertificateRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 	alias := d.Get("alias").(string)
 
-	org, err := vcdClient.GetTmOrgById(d.Get("org_id").(string))
+	org, err := vcfaClient.GetTmOrgById(d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -62,16 +62,16 @@ func datasourceVcfaCertificateRead(_ context.Context, d *schema.ResourceData, me
 	var certificate *govcd.Certificate
 	if isSysOrg(org) {
 		if alias != "" {
-			certificate, err = vcdClient.Client.GetCertificateFromLibraryByName(alias)
+			certificate, err = vcfaClient.Client.GetCertificateFromLibraryByName(alias)
 		} else if d.Get("id").(string) != "" {
-			certificate, err = vcdClient.Client.GetCertificateFromLibraryById(d.Get("id").(string))
+			certificate, err = vcfaClient.Client.GetCertificateFromLibraryById(d.Get("id").(string))
 		} else {
 			return diag.Errorf("Id or Alias value is missing %s", err)
 		}
 	} else {
 		// TODO: TM: Implement these methods in TmOrg
 		var adminOrg *govcd.AdminOrg
-		adminOrg, err = vcdClient.GetAdminOrgById(org.TmOrg.ID)
+		adminOrg, err = vcfaClient.GetAdminOrgById(org.TmOrg.ID)
 		if err != nil {
 			return diag.FromErr(err)
 		}

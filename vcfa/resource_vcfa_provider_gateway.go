@@ -70,20 +70,20 @@ func resourceVcfaProviderGateway() *schema.Resource {
 }
 
 func resourceVcfaProviderGatewayCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.TmProviderGateway, types.TmProviderGateway]{
 		entityLabel:      labelVcfaProviderGateway,
 		getTypeFunc:      getProviderGatewayType,
 		stateStoreFunc:   setProviderGatewayData,
-		createAsyncFunc:  vcdClient.CreateTmProviderGatewayAsync,
-		getEntityFunc:    vcdClient.GetTmProviderGatewayById,
+		createAsyncFunc:  vcfaClient.CreateTmProviderGatewayAsync,
+		getEntityFunc:    vcfaClient.GetTmProviderGatewayById,
 		resourceReadFunc: resourceVcfaProviderGatewayRead,
 	}
 	return createResource(ctx, d, meta, c)
 }
 
 func resourceVcfaProviderGatewayUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 
 	// Update IP Space associations using separate endpoint (more details at the top of file)
 	if d.HasChange("ip_space_ids") {
@@ -97,13 +97,13 @@ func resourceVcfaProviderGatewayUpdate(ctx context.Context, d *schema.ResourceDa
 		// Adding new ones first, because it can happen that all previous IP Spaces are removed and
 		// new ones added, however API prohibits removal of all IP Space associations for Provider
 		// Gateway (at least one IP Space must always be associated)
-		err := addIpSpaceAssociations(vcdClient, d.Id(), convertSchemaSetToSliceOfStrings(toAddSet))
+		err := addIpSpaceAssociations(vcfaClient, d.Id(), convertSchemaSetToSliceOfStrings(toAddSet))
 		if err != nil {
 			return diag.FromErr(err)
 		}
 
 		// Remove associations that are no more in configuration
-		err = removeIpSpaceAssociations(vcdClient, d.Id(), convertSchemaSetToSliceOfStrings(toRemoveSet))
+		err = removeIpSpaceAssociations(vcfaClient, d.Id(), convertSchemaSetToSliceOfStrings(toRemoveSet))
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -114,7 +114,7 @@ func resourceVcfaProviderGatewayUpdate(ctx context.Context, d *schema.ResourceDa
 		c := crudConfig[*govcd.TmProviderGateway, types.TmProviderGateway]{
 			entityLabel:      labelVcfaProviderGateway,
 			getTypeFunc:      getProviderGatewayType,
-			getEntityFunc:    vcdClient.GetTmProviderGatewayById,
+			getEntityFunc:    vcfaClient.GetTmProviderGatewayById,
 			resourceReadFunc: resourceVcfaProviderGatewayRead,
 		}
 
@@ -125,22 +125,22 @@ func resourceVcfaProviderGatewayUpdate(ctx context.Context, d *schema.ResourceDa
 }
 
 func resourceVcfaProviderGatewayRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 
 	c := crudConfig[*govcd.TmProviderGateway, types.TmProviderGateway]{
 		entityLabel:    labelVcfaProviderGateway,
-		getEntityFunc:  vcdClient.GetTmProviderGatewayById,
+		getEntityFunc:  vcfaClient.GetTmProviderGatewayById,
 		stateStoreFunc: setProviderGatewayData,
 	}
 	return readResource(ctx, d, meta, c)
 }
 
 func resourceVcfaProviderGatewayDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 
 	c := crudConfig[*govcd.TmProviderGateway, types.TmProviderGateway]{
 		entityLabel:   labelVcfaProviderGateway,
-		getEntityFunc: vcdClient.GetTmProviderGatewayById,
+		getEntityFunc: vcfaClient.GetTmProviderGatewayById,
 	}
 
 	return deleteResource(ctx, d, meta, c)
@@ -153,13 +153,13 @@ func resourceVcfaProviderGatewayImport(ctx context.Context, d *schema.ResourceDa
 	}
 	regionName, providerGatewayName := resourceURI[0], resourceURI[1]
 
-	vcdClient := meta.(MetaContainer).VcfaClient
-	region, err := vcdClient.GetRegionByName(regionName)
+	vcfaClient := meta.(MetaContainer).VcfaClient
+	region, err := vcfaClient.GetRegionByName(regionName)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s by name '%s': %s", labelVcfaRegion, regionName, err)
 	}
 
-	providerGateway, err := vcdClient.GetTmProviderGatewayByNameAndRegionId(providerGatewayName, region.Region.ID)
+	providerGateway, err := vcfaClient.GetTmProviderGatewayByNameAndRegionId(providerGatewayName, region.Region.ID)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving Provider Gateway: %s", err)
 	}
@@ -168,7 +168,7 @@ func resourceVcfaProviderGatewayImport(ctx context.Context, d *schema.ResourceDa
 	return []*schema.ResourceData{d}, nil
 }
 
-func getProviderGatewayType(vcdClient *VCDClient, d *schema.ResourceData) (*types.TmProviderGateway, error) {
+func getProviderGatewayType(vcfaClient *VCDClient, d *schema.ResourceData) (*types.TmProviderGateway, error) {
 	t := &types.TmProviderGateway{
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
@@ -193,7 +193,7 @@ func getProviderGatewayType(vcdClient *VCDClient, d *schema.ResourceData) (*type
 	return t, nil
 }
 
-func setProviderGatewayData(vcdClient *VCDClient, d *schema.ResourceData, p *govcd.TmProviderGateway) error {
+func setProviderGatewayData(vcfaClient *VCDClient, d *schema.ResourceData, p *govcd.TmProviderGateway) error {
 	if p == nil || p.TmProviderGateway == nil {
 		return fmt.Errorf("nil entity received")
 	}
@@ -206,7 +206,7 @@ func setProviderGatewayData(vcdClient *VCDClient, d *schema.ResourceData, p *gov
 	dSet(d, "status", p.TmProviderGateway.Status)
 
 	// IP Space Associations have to be read separatelly after creation (more details at the top of file)
-	associations, err := vcdClient.GetAllTmIpSpaceAssociationsByProviderGatewayId(p.TmProviderGateway.ID)
+	associations, err := vcfaClient.GetAllTmIpSpaceAssociationsByProviderGatewayId(p.TmProviderGateway.ID)
 	if err != nil {
 		return fmt.Errorf("error retrieving %s for %s", labelVcfaProviderGatewayIpSpaceAssociations, labelVcfaProviderGateway)
 	}
@@ -223,13 +223,13 @@ func setProviderGatewayData(vcdClient *VCDClient, d *schema.ResourceData, p *gov
 	return nil
 }
 
-func addIpSpaceAssociations(vcdClient *VCDClient, providerGatewayId string, addIpSpaceIds []string) error {
+func addIpSpaceAssociations(vcfaClient *VCDClient, providerGatewayId string, addIpSpaceIds []string) error {
 	for _, addIpSpaceId := range addIpSpaceIds {
 		at := &types.TmIpSpaceAssociation{
 			IPSpaceRef:         &types.OpenApiReference{ID: addIpSpaceId},
 			ProviderGatewayRef: &types.OpenApiReference{ID: providerGatewayId},
 		}
-		_, err := vcdClient.CreateTmIpSpaceAssociation(at)
+		_, err := vcfaClient.CreateTmIpSpaceAssociation(at)
 		if err != nil {
 			return fmt.Errorf("error adding new %s for %s with ID '%s': %s",
 				labelVcfaProviderGatewayIpSpaceAssociations, labelVcfaIpSpace, addIpSpaceId, err)
@@ -239,8 +239,8 @@ func addIpSpaceAssociations(vcdClient *VCDClient, providerGatewayId string, addI
 	return nil
 }
 
-func removeIpSpaceAssociations(vcdClient *VCDClient, providerGatewayId string, removeIpSpaceIds []string) error {
-	existingIpSpaceAssociations, err := vcdClient.GetAllTmIpSpaceAssociationsByProviderGatewayId(providerGatewayId)
+func removeIpSpaceAssociations(vcfaClient *VCDClient, providerGatewayId string, removeIpSpaceIds []string) error {
+	existingIpSpaceAssociations, err := vcfaClient.GetAllTmIpSpaceAssociationsByProviderGatewayId(providerGatewayId)
 	if err != nil {
 		return fmt.Errorf("error reading %s for update: %s", labelVcfaProviderGatewayIpSpaceAssociations, err)
 	}

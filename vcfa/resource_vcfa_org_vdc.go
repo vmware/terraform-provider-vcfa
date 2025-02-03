@@ -106,23 +106,23 @@ var orgVdcZoneResourceAllocation = &schema.Resource{
 }
 
 func resourceOrgVdcCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
 		entityLabel:      labelVcfaOrgVdc,
 		getTypeFunc:      getTmVdcType,
 		stateStoreFunc:   setTmVdcData,
-		createFunc:       vcdClient.CreateTmVdc,
+		createFunc:       vcfaClient.CreateTmVdc,
 		resourceReadFunc: resourceOrgVdcRead,
 	}
 	return createResource(ctx, d, meta, c)
 }
 
 func resourceOrgVdcUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
 		entityLabel:      labelVcfaOrgVdc,
 		getTypeFunc:      getTmVdcType,
-		getEntityFunc:    vcdClient.GetTmVdcById,
+		getEntityFunc:    vcfaClient.GetTmVdcById,
 		resourceReadFunc: resourceOrgVdcRead,
 	}
 
@@ -130,35 +130,35 @@ func resourceOrgVdcUpdate(ctx context.Context, d *schema.ResourceData, meta inte
 }
 
 func resourceOrgVdcRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
 		entityLabel:    labelVcfaOrgVdc,
-		getEntityFunc:  vcdClient.GetTmVdcById,
+		getEntityFunc:  vcfaClient.GetTmVdcById,
 		stateStoreFunc: setTmVdcData,
 	}
 	return readResource(ctx, d, meta, c)
 }
 
 func resourceOrgVdcDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 
 	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
 		entityLabel:   labelVcfaOrgVdc,
-		getEntityFunc: vcdClient.GetTmVdcById,
+		getEntityFunc: vcfaClient.GetTmVdcById,
 	}
 
 	return deleteResource(ctx, d, meta, c)
 }
 
 func resourceOrgVdcImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 
 	idSlice := strings.Split(d.Id(), ImportSeparator)
 	if len(idSlice) != 2 {
 		return nil, fmt.Errorf("expected import ID to be <org name>%s<region name>", ImportSeparator)
 	}
 
-	vdc, err := vcdClient.GetTmVdcByName(fmt.Sprintf("%s_%s", idSlice[0], idSlice[1]))
+	vdc, err := vcfaClient.GetTmVdcByName(fmt.Sprintf("%s_%s", idSlice[0], idSlice[1]))
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s: %s", labelVcfaOrgVdc, err)
 	}
@@ -167,14 +167,14 @@ func resourceOrgVdcImport(ctx context.Context, d *schema.ResourceData, meta inte
 	return []*schema.ResourceData{d}, nil
 }
 
-func getTmVdcType(vcdClient *VCDClient, d *schema.ResourceData) (*types.TmVdc, error) {
+func getTmVdcType(vcfaClient *VCDClient, d *schema.ResourceData) (*types.TmVdc, error) {
 	name := d.Get("name").(string)
 	if name == "" {
-		org, err := vcdClient.GetOrgById(d.Get("org_id").(string))
+		org, err := vcfaClient.GetOrgById(d.Get("org_id").(string))
 		if err != nil {
 			return nil, err
 		}
-		region, err := vcdClient.GetRegionById(d.Get("region_id").(string))
+		region, err := vcfaClient.GetRegionById(d.Get("region_id").(string))
 		if err != nil {
 			return nil, err
 		}

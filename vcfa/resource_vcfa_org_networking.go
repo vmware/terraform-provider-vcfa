@@ -117,9 +117,9 @@ func resourceVcfaOrgNetworkingDelete(ctx context.Context, d *schema.ResourceData
 }
 
 func resourceVcfaOrgNetworkingImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 
-	o, err := vcdClient.GetTmOrgByName(d.Id())
+	o, err := vcfaClient.GetTmOrgByName(d.Id())
 	if err != nil {
 		return nil, fmt.Errorf("error getting Org: %s", err)
 	}

@@ -9,11 +9,11 @@ import (
 
 // Returns a valid Tenant Context if the Organization identified by the given ID is valid and exists.
 // Otherwise, it returns either an empty tenant context, or an error if the Organization does not exist or is invalid.
-func getTenantContextFromOrgId(vcdClient *VCDClient, orgId string) (*govcd.TenantContext, error) {
+func getTenantContextFromOrgId(vcfaClient *VCDClient, orgId string) (*govcd.TenantContext, error) {
 	if orgId == "" {
 		return &govcd.TenantContext{}, nil
 	}
-	org, err := vcdClient.GetTmOrgById(orgId)
+	org, err := vcfaClient.GetTmOrgById(orgId)
 	if err != nil {
 		return nil, err
 	}

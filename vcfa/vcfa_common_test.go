@@ -15,8 +15,8 @@ import (
 // only if a vCenter is already configured in VCFA. Otherwise, it returns a vCenter resource HCL as first returned parameter
 // and its HCL reference as second one, only if "createVCenter=true" in the testing configuration
 func getVCenterHcl(t *testing.T) (string, string) {
-	vcdClient := createTemporaryVCFAConnection(false)
-	vc, err := vcdClient.GetVCenterByUrl(testConfig.Tm.VcenterUrl)
+	vcfaClient := createTemporaryVCFAConnection(false)
+	vc, err := vcfaClient.GetVCenterByUrl(testConfig.Tm.VcenterUrl)
 	if err == nil {
 		return `
 data "vcfa_vcenter" "vc" {
@@ -50,8 +50,8 @@ resource "vcfa_vcenter" "vc" {
 // only if a NSX Manager is already configured in VCFA. Otherwise, it returns a NSX Manager resource HCL as first returned parameter
 // and its HCL reference as second one, only if "createNsxManager=true" in the testing configuration
 func getNsxManagerHcl(t *testing.T) (string, string) {
-	vcdClient := createTemporaryVCFAConnection(false)
-	nsxtManager, err := vcdClient.GetNsxtManagerOpenApiByUrl(testConfig.Tm.NsxManagerUrl)
+	vcfaClient := createTemporaryVCFAConnection(false)
+	nsxtManager, err := vcfaClient.GetNsxtManagerOpenApiByUrl(testConfig.Tm.NsxManagerUrl)
 	if err == nil {
 		return `
 data "vcfa_nsx_manager" "nsx_manager" {
@@ -88,8 +88,8 @@ func getRegionHcl(t *testing.T, vCenterHclRef, nsxManagerHclRef string) (string,
 	if testConfig.Tm.Region == "" {
 		t.Fatalf("the property tm.region is required but it is not present in testing JSON")
 	}
-	vcdClient := createTemporaryVCFAConnection(false)
-	region, err := vcdClient.GetRegionByName(testConfig.Tm.Region)
+	vcfaClient := createTemporaryVCFAConnection(false)
+	region, err := vcfaClient.GetRegionByName(testConfig.Tm.Region)
 	if err == nil {
 		return `
 data "vcfa_region" "region" {
@@ -132,8 +132,8 @@ func getContentLibraryHcl(t *testing.T, regionHclRef string) (string, string) {
 	if testConfig.Tm.StorageClass == "" {
 		t.Fatalf("the property tm.storageClass is required but it is not present in testing JSON")
 	}
-	vcdClient := createTemporaryVCFAConnection(false)
-	cl, err := vcdClient.GetContentLibraryByName(testConfig.Tm.ContentLibrary, nil)
+	vcfaClient := createTemporaryVCFAConnection(false)
+	cl, err := vcfaClient.GetContentLibraryByName(testConfig.Tm.ContentLibrary, nil)
 	if err == nil {
 		return `
 data "vcfa_content_library" "content_library" {
@@ -184,8 +184,8 @@ func getProviderGatewayHcl(t *testing.T, regionHclRef, ipSpaceHclRef string) (st
 		t.Fatalf("the property tm.providerGateway is required but it is not present in testing JSON")
 	}
 
-	vcdClient := createTemporaryVCFAConnection(false)
-	pg, err := vcdClient.GetTmProviderGatewayByName(testConfig.Tm.ProviderGateway)
+	vcfaClient := createTemporaryVCFAConnection(false)
+	pg, err := vcfaClient.GetTmProviderGatewayByName(testConfig.Tm.ProviderGateway)
 	if err == nil {
 		return `
 data "vcfa_provider_gateway" "test" {
@@ -216,8 +216,8 @@ resource "vcfa_provider_gateway" "test" {
 
 func testAccCheckOrgDestroy(orgName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		vcdClient := testAccProvider.Meta().(*VCDClient)
-		org, err := vcdClient.GetTmOrgByName(orgName)
+		vcfaClient := testAccProvider.Meta().(*VCDClient)
+		org, err := vcfaClient.GetTmOrgByName(orgName)
 		if org != nil {
 			return fmt.Errorf("%s %s was found", labelVcfaOrg, orgName)
 		}

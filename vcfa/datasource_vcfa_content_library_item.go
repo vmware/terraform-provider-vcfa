@@ -73,10 +73,10 @@ func datasourceVcfaContentLibraryItem() *schema.Resource {
 }
 
 func datasourceVcfaContentLibraryItemRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
-	cl, err := vcdClient.GetContentLibraryById(d.Get("content_library_id").(string), nil)
+	cl, err := vcfaClient.GetContentLibraryById(d.Get("content_library_id").(string), nil)
 	if err != nil {
 		return diag.Errorf("error retrieving %s: %s", labelVcfaContentLibrary, err)
 	}
@@ -86,7 +86,7 @@ func datasourceVcfaContentLibraryItemRead(_ context.Context, d *schema.ResourceD
 		return diag.Errorf("error retrieving %s: %s", labelVcfaContentLibraryItem, err)
 	}
 
-	err = setContentLibraryItemData(vcdClient, d, cli)
+	err = setContentLibraryItemData(vcfaClient, d, cli)
 	if err != nil {
 		return diag.FromErr(err)
 	}

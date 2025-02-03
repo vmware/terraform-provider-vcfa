@@ -101,11 +101,11 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 }
 
 func resourceVcfaContentLibraryItemCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 
 	clId := d.Get("content_library_id").(string)
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
-	cl, err := vcdClient.GetContentLibraryById(clId, nil)
+	cl, err := vcfaClient.GetContentLibraryById(clId, nil)
 	if err != nil {
 		return diag.Errorf("could not retrieve %s with ID '%s': %s", labelVcfaContentLibrary, clId, err)
 	}
@@ -131,10 +131,10 @@ func resourceVcfaContentLibraryItemCreate(ctx context.Context, d *schema.Resourc
 //func resourceVcfaContentLibraryItemUpdate(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
 //	// TODO: TM: Update is not supported yet
 //	return diag.Errorf("update not supported")
-//	vcdClient := meta.(MetaContainer).VcfaClient
+//	vcfaClient := meta.(MetaContainer).VcfaClient
 //
 //	clId := d.Get("content_library_id").(string)
-//	cl, err := vcdClient.GetContentLibraryById(clId)
+//	cl, err := vcfaClient.GetContentLibraryById(clId)
 //	if err != nil {
 //		return diag.Errorf("could not retrieve Content Library with ID '%s': %s", clId, err)
 //	}
@@ -150,11 +150,11 @@ func resourceVcfaContentLibraryItemCreate(ctx context.Context, d *schema.Resourc
 //}
 
 func resourceVcfaContentLibraryItemRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 
 	clId := d.Get("content_library_id").(string)
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
-	cl, err := vcdClient.GetContentLibraryById(clId, nil)
+	cl, err := vcfaClient.GetContentLibraryById(clId, nil)
 	if err != nil {
 		return diag.Errorf("could not retrieve %s with ID '%s': %s", labelVcfaContentLibrary, clId, err)
 	}
@@ -168,11 +168,11 @@ func resourceVcfaContentLibraryItemRead(ctx context.Context, d *schema.ResourceD
 }
 
 func resourceVcfaContentLibraryItemDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 
 	clId := d.Get("content_library_id").(string)
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
-	cl, err := vcdClient.GetContentLibraryById(clId, nil)
+	cl, err := vcfaClient.GetContentLibraryById(clId, nil)
 	if err != nil {
 		return diag.Errorf("could not retrieve %s with ID '%s': %s", labelVcfaContentLibrary, clId, err)
 	}
@@ -186,7 +186,7 @@ func resourceVcfaContentLibraryItemDelete(ctx context.Context, d *schema.Resourc
 }
 
 func resourceVcfaContentLibraryItemImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 
 	id := strings.Split(d.Id(), ImportSeparator)
 	if len(id) != 2 {
@@ -194,7 +194,7 @@ func resourceVcfaContentLibraryItemImport(_ context.Context, d *schema.ResourceD
 	}
 
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
-	cl, err := vcdClient.GetContentLibraryByName(id[0], nil)
+	cl, err := vcfaClient.GetContentLibraryByName(id[0], nil)
 	if err != nil {
 		return nil, fmt.Errorf("error getting %s with name '%s' for import: %s", labelVcfaContentLibrary, id[0], err)
 	}

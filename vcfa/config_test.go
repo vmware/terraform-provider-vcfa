@@ -596,15 +596,15 @@ func setTestEnv() {
 // To get the version, we establish a new connection with the credentials
 // chosen for the current test.
 func getVcfaVersion(config TestConfig) (string, error) {
-	vcdClient, err := getTestVCFAFromJson(config)
-	if vcdClient == nil || err != nil {
+	vcfaClient, err := getTestVCFAFromJson(config)
+	if vcfaClient == nil || err != nil {
 		return "", err
 	}
-	err = ProviderAuthenticate(vcdClient, config.Provider.User, config.Provider.Password, config.Provider.Token, config.Provider.SysOrg, config.Provider.ApiToken, config.Provider.ApiTokenFile, config.Provider.ServiceAccountTokenFile)
+	err = ProviderAuthenticate(vcfaClient, config.Provider.User, config.Provider.Password, config.Provider.Token, config.Provider.SysOrg, config.Provider.ApiToken, config.Provider.ApiTokenFile, config.Provider.ServiceAccountTokenFile)
 	if err != nil {
 		return "", err
 	}
-	version, _, err := vcdClient.Client.GetVcdVersion()
+	version, _, err := vcfaClient.Client.GetVcdVersion()
 	if err != nil {
 		return "", err
 	}
@@ -718,17 +718,17 @@ func TestMain(m *testing.M) {
 	if skipLeftoversRemoval || vcfaShortTest {
 		os.Exit(exitCode)
 	}
-	govcdClient, err := getTestVCFAFromJson(testConfig)
+	govcfaClient, err := getTestVCFAFromJson(testConfig)
 	if err != nil {
 		fmt.Printf("error getting a govcd client: %s\n", err)
 		exitCode = 1
 	} else {
-		err = ProviderAuthenticate(govcdClient, testConfig.Provider.User, testConfig.Provider.Password, testConfig.Provider.Token, testConfig.Provider.SysOrg, testConfig.Provider.ApiToken, testConfig.Provider.ApiTokenFile, testConfig.Provider.ServiceAccountTokenFile)
+		err = ProviderAuthenticate(govcfaClient, testConfig.Provider.User, testConfig.Provider.Password, testConfig.Provider.Token, testConfig.Provider.SysOrg, testConfig.Provider.ApiToken, testConfig.Provider.ApiTokenFile, testConfig.Provider.ServiceAccountTokenFile)
 		if err != nil {
 			fmt.Printf("error authenticating provider: %s\n", err)
 			exitCode = 1
 		}
-		err := removeLeftovers(govcdClient, !silentLeftoversRemoval)
+		err := removeLeftovers(govcfaClient, !silentLeftoversRemoval)
 		if err != nil {
 			fmt.Printf("error during leftover removal: %s\n", err)
 			exitCode = 1
@@ -745,11 +745,11 @@ func getTestVCFAFromJson(testConfig TestConfig) (*govcd.VCDClient, error) {
 	if err != nil {
 		return &govcd.VCDClient{}, fmt.Errorf("could not parse Url: %s", err)
 	}
-	vcdClient := govcd.NewVCDClient(*configUrl, true,
+	vcfaClient := govcd.NewVCDClient(*configUrl, true,
 		govcd.WithHttpUserAgent(buildUserAgent("test", testConfig.Provider.SysOrg)),
 		govcd.WithAPIVersion(minVcfaApiVersion),
 	)
-	return vcdClient, nil
+	return vcfaClient, nil
 }
 
 // setBoolFlag binds a flag to a boolean variable (passed as pointer)

@@ -136,14 +136,14 @@ func resourceVcfaLocalUserDelete(ctx context.Context, d *schema.ResourceData, me
 }
 
 func resourceVcfaLocalUserImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 
 	idSlice := strings.Split(d.Id(), ImportSeparator)
 	if len(idSlice) != 2 {
 		return nil, fmt.Errorf("expected import ID to be <org name>%s<user name>", ImportSeparator)
 	}
 
-	org, err := vcdClient.GetTmOrgByName(idSlice[0])
+	org, err := vcfaClient.GetTmOrgByName(idSlice[0])
 	if err != nil {
 		return nil, fmt.Errorf("error getting %s: %s", labelVcfaOrg, err)
 	}
@@ -153,7 +153,7 @@ func resourceVcfaLocalUserImport(ctx context.Context, d *schema.ResourceData, me
 		OrgName: org.TmOrg.Name,
 	}
 
-	user, err := vcdClient.GetUserByName(idSlice[1], tenantContext)
+	user, err := vcfaClient.GetUserByName(idSlice[1], tenantContext)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s: %s", labelLocalUser, err)
 	}

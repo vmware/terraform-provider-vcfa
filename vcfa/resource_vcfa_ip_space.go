@@ -102,29 +102,29 @@ func resourceVcfaIpSpace() *schema.Resource {
 }
 
 func resourceVcfaIpSpaceCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
-	unlock := vcdClient.lockById(d.Get("region_id").(string))
+	vcfaClient := meta.(MetaContainer).VcfaClient
+	unlock := vcfaClient.lockById(d.Get("region_id").(string))
 	defer unlock()
 
 	c := crudConfig[*govcd.TmIpSpace, types.TmIpSpace]{
 		entityLabel:      labelVcfaIpSpace,
 		getTypeFunc:      getIpSpaceType,
 		stateStoreFunc:   setIpSpaceData,
-		createFunc:       vcdClient.CreateTmIpSpace,
+		createFunc:       vcfaClient.CreateTmIpSpace,
 		resourceReadFunc: resourceVcfaIpSpaceRead,
 	}
 	return createResource(ctx, d, meta, c)
 }
 
 func resourceVcfaIpSpaceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
-	unlock := vcdClient.lockById(d.Get("region_id").(string))
+	vcfaClient := meta.(MetaContainer).VcfaClient
+	unlock := vcfaClient.lockById(d.Get("region_id").(string))
 	defer unlock()
 
 	c := crudConfig[*govcd.TmIpSpace, types.TmIpSpace]{
 		entityLabel:      labelVcfaIpSpace,
 		getTypeFunc:      getIpSpaceType,
-		getEntityFunc:    vcdClient.GetTmIpSpaceById,
+		getEntityFunc:    vcfaClient.GetTmIpSpaceById,
 		resourceReadFunc: resourceVcfaIpSpaceRead,
 	}
 
@@ -132,23 +132,23 @@ func resourceVcfaIpSpaceUpdate(ctx context.Context, d *schema.ResourceData, meta
 }
 
 func resourceVcfaIpSpaceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.TmIpSpace, types.TmIpSpace]{
 		entityLabel:    labelVcfaIpSpace,
-		getEntityFunc:  vcdClient.GetTmIpSpaceById,
+		getEntityFunc:  vcfaClient.GetTmIpSpaceById,
 		stateStoreFunc: setIpSpaceData,
 	}
 	return readResource(ctx, d, meta, c)
 }
 
 func resourceVcfaIpSpaceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(MetaContainer).VcfaClient
-	unlock := vcdClient.lockById(d.Get("region_id").(string))
+	vcfaClient := meta.(MetaContainer).VcfaClient
+	unlock := vcfaClient.lockById(d.Get("region_id").(string))
 	defer unlock()
 
 	c := crudConfig[*govcd.TmIpSpace, types.TmIpSpace]{
 		entityLabel:   labelVcfaIpSpace,
-		getEntityFunc: vcdClient.GetTmIpSpaceById,
+		getEntityFunc: vcfaClient.GetTmIpSpaceById,
 	}
 
 	return deleteResource(ctx, d, meta, c)
@@ -161,13 +161,13 @@ func resourceVcfaIpSpaceImport(ctx context.Context, d *schema.ResourceData, meta
 	}
 	regionName, ipSpaceName := resourceURI[0], resourceURI[1]
 
-	vcdClient := meta.(MetaContainer).VcfaClient
-	region, err := vcdClient.GetRegionByName(regionName)
+	vcfaClient := meta.(MetaContainer).VcfaClient
+	region, err := vcfaClient.GetRegionByName(regionName)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s by name '%s': %s", labelVcfaRegion, regionName, err)
 	}
 
-	ipSpace, err := vcdClient.GetTmIpSpaceByNameAndRegionId(ipSpaceName, region.Region.ID)
+	ipSpace, err := vcfaClient.GetTmIpSpaceByNameAndRegionId(ipSpaceName, region.Region.ID)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s by given name '%s': %s", labelVcfaIpSpace, d.Id(), err)
 	}
@@ -177,7 +177,7 @@ func resourceVcfaIpSpaceImport(ctx context.Context, d *schema.ResourceData, meta
 	return []*schema.ResourceData{d}, nil
 }
 
-func getIpSpaceType(vcdClient *VCDClient, d *schema.ResourceData) (*types.TmIpSpace, error) {
+func getIpSpaceType(vcfaClient *VCDClient, d *schema.ResourceData) (*types.TmIpSpace, error) {
 	t := &types.TmIpSpace{
 		Name:              d.Get("name").(string),
 		Description:       d.Get("description").(string),

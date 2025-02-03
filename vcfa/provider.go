@@ -325,13 +325,13 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 		ImportSeparator = d.Get("import_separator").(string)
 	}
 
-	vcdClient, err := config.Client()
+	vcfaClient, err := config.Client()
 	if err != nil {
 		return nil, diag.FromErr(err)
 	}
 
 	metaContainer := MetaContainer{
-		VcfaClient: vcdClient,
+		VcfaClient: vcfaClient,
 	}
 
 	return metaContainer, providerDiagnostics
