@@ -1,0 +1,1 @@
+- Add GitHub Action to detect replaced go-vcloud-director SDK in `go.mod` in PRs [GH-27]
