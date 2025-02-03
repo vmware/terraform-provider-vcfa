@@ -3,15 +3,16 @@ package vcfa
 import (
 	"context"
 	"fmt"
+	"log"
+	"strings"
+	"time"
+
 	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
-	"log"
-	"strings"
-	"time"
 )
 
 const labelVcfaOidc = "OpenID Connect"
@@ -253,7 +254,7 @@ func resourceVcfaOrgOidc() *schema.Resource {
 }
 
 func resourceVcfaOrgOidcCreateOrUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}, operation string) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	orgId := d.Get("org_id").(string)
 
@@ -364,7 +365,7 @@ func resourceVcfaOrgOidcRead(ctx context.Context, d *schema.ResourceData, meta i
 }
 
 func genericVcfaOrgOidcRead(_ context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	orgId := d.Get("org_id").(string)
 
 	adminOrg, err := vcdClient.GetAdminOrgByNameOrId(orgId)
@@ -452,7 +453,7 @@ func genericVcfaOrgOidcRead(_ context.Context, d *schema.ResourceData, meta inte
 }
 
 func resourceVcfaOrgOidcDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	orgId := d.Get("org_id").(string)
 
 	adminOrg, err := vcdClient.GetAdminOrgById(orgId)
@@ -473,7 +474,7 @@ func resourceVcfaOrgOidcDelete(_ context.Context, d *schema.ResourceData, meta i
 func resourceVcfaOrgOidcImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	orgNameOrId := d.Id()
 
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	adminOrg, err := vcdClient.GetAdminOrgByNameOrId(orgNameOrId)
 	if err != nil {
 		return nil, fmt.Errorf("[%s import] error searching for Organization '%s': %s", labelVcfaOidc, orgNameOrId, err)

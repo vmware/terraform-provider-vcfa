@@ -55,7 +55,7 @@ func datasourceVcfaNsxManager() *schema.Resource {
 }
 
 func datasourceVcfaNsxManagerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := dsReadConfig[*govcd.NsxtManagerOpenApi, types.NsxtManagerOpenApi]{
 		entityLabel:    labelVcfaNsxManager,
 		getEntityFunc:  vcdClient.GetNsxtManagerOpenApiByName,

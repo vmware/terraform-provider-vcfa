@@ -3,6 +3,7 @@ package vcfa
 import (
 	"context"
 	"fmt"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
@@ -64,7 +65,7 @@ func resourceVcfaGlobalRole() *schema.Resource {
 }
 
 func resourceVcfaGlobalRoleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	globalRoleName := d.Get("name").(string)
 	publishToAllOrgs := d.Get("publish_to_all_orgs").(bool)
@@ -114,7 +115,7 @@ func resourceVcfaGlobalRoleRead(ctx context.Context, d *schema.ResourceData, met
 }
 
 func genericGlobalRoleRead(_ context.Context, d *schema.ResourceData, meta interface{}, origin, operation string) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	var globalRole *govcd.GlobalRole
 	var err error
@@ -183,7 +184,7 @@ func genericGlobalRoleRead(_ context.Context, d *schema.ResourceData, meta inter
 }
 
 func resourceVcfaGlobalRoleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	globalRoleName := d.Get("name").(string)
 
@@ -266,7 +267,7 @@ func resourceVcfaGlobalRoleUpdate(ctx context.Context, d *schema.ResourceData, m
 }
 
 func resourceVcfaGlobalRoleDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	globalRoleName := d.Get("name").(string)
 
@@ -291,7 +292,7 @@ func resourceVcfaGlobalRoleDelete(_ context.Context, d *schema.ResourceData, met
 }
 
 func resourceVcfaGlobalRoleImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	globalRole, err := vcdClient.Client.GetGlobalRoleByName(d.Id())
 	if err != nil {
 		return nil, fmt.Errorf("[%s import] error retrieving %s '%s': %s", labelVcfaGlobalRole, labelVcfaGlobalRole, d.Id(), err)

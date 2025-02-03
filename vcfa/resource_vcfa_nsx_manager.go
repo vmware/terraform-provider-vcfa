@@ -75,7 +75,7 @@ func resourceVcfaNsxManager() *schema.Resource {
 }
 
 func resourceVcfaNsxManagerCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.NsxtManagerOpenApi, types.NsxtManagerOpenApi]{
 		entityLabel:      labelVcfaNsxManager,
 		getTypeFunc:      getNsxManagerType,
@@ -88,7 +88,7 @@ func resourceVcfaNsxManagerCreate(ctx context.Context, d *schema.ResourceData, m
 }
 
 func resourceVcfaNsxManagerUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.NsxtManagerOpenApi, types.NsxtManagerOpenApi]{
 		entityLabel:      labelVcfaNsxManager,
 		getTypeFunc:      getNsxManagerType,
@@ -100,7 +100,7 @@ func resourceVcfaNsxManagerUpdate(ctx context.Context, d *schema.ResourceData, m
 }
 
 func resourceVcfaNsxManagerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.NsxtManagerOpenApi, types.NsxtManagerOpenApi]{
 		entityLabel:    labelVcfaNsxManager,
 		getEntityFunc:  vcdClient.GetNsxtManagerOpenApiById,
@@ -110,7 +110,7 @@ func resourceVcfaNsxManagerRead(ctx context.Context, d *schema.ResourceData, met
 }
 
 func resourceVcfaNsxManagerDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	c := crudConfig[*govcd.NsxtManagerOpenApi, types.NsxtManagerOpenApi]{
 		entityLabel:   labelVcfaNsxManager,
@@ -121,7 +121,7 @@ func resourceVcfaNsxManagerDelete(ctx context.Context, d *schema.ResourceData, m
 }
 
 func resourceVcfaNsxManagerImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	nsxManager, err := vcdClient.GetNsxtManagerOpenApiByName(d.Id())
 	if err != nil {

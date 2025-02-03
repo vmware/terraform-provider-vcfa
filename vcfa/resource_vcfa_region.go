@@ -96,7 +96,7 @@ func resourceVcfaRegion() *schema.Resource {
 }
 
 func resourceVcfaRegionCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.Region, types.Region]{
 		entityLabel:      labelVcfaRegion,
 		getTypeFunc:      getRegionType,
@@ -108,7 +108,7 @@ func resourceVcfaRegionCreate(ctx context.Context, d *schema.ResourceData, meta 
 }
 
 func resourceVcfaRegionUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.Region, types.Region]{
 		entityLabel:      labelVcfaRegion,
 		getTypeFunc:      getRegionType,
@@ -119,7 +119,7 @@ func resourceVcfaRegionUpdate(ctx context.Context, d *schema.ResourceData, meta 
 }
 
 func resourceVcfaRegionRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.Region, types.Region]{
 		entityLabel:    labelVcfaRegion,
 		getEntityFunc:  vcdClient.GetRegionById,
@@ -129,7 +129,7 @@ func resourceVcfaRegionRead(ctx context.Context, d *schema.ResourceData, meta in
 }
 
 func resourceVcfaRegionDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	c := crudConfig[*govcd.Region, types.Region]{
 		entityLabel:   labelVcfaRegion,
@@ -140,7 +140,7 @@ func resourceVcfaRegionDelete(ctx context.Context, d *schema.ResourceData, meta 
 }
 
 func resourceVcfaRegionImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	region, err := vcdClient.GetRegionByName(d.Id())
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving Region: %s", err)

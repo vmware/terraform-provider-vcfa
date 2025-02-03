@@ -86,7 +86,7 @@ func datasourceVcfaIpSpace() *schema.Resource {
 }
 
 func datasourceVcfaIpSpaceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	getIpSpaceByName := func(name string) (*govcd.TmIpSpace, error) {
 		return vcdClient.GetTmIpSpaceByNameAndRegionId(name, d.Get("region_id").(string))

@@ -3,6 +3,7 @@ package vcfa
 import (
 	"context"
 	"fmt"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
@@ -49,7 +50,7 @@ func datasourceVcfaCertificate() *schema.Resource {
 }
 
 func datasourceVcfaCertificateRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	alias := d.Get("alias").(string)
 
 	org, err := vcdClient.GetTmOrgById(d.Get("org_id").(string))

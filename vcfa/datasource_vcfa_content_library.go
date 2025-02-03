@@ -3,6 +3,7 @@ package vcfa
 import (
 	"context"
 	"fmt"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
@@ -97,7 +98,7 @@ func datasourceVcfaContentLibrary() *schema.Resource {
 }
 
 func datasourceVcfaContentLibraryRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := dsReadConfig[*govcd.ContentLibrary, types.ContentLibrary]{
 		entityLabel: labelVcfaContentLibrary,
 		getEntityFunc: func(name string) (*govcd.ContentLibrary, error) {

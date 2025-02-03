@@ -74,7 +74,7 @@ func createResource[O updateDeleter[O, I], I any](ctx context.Context, d *schema
 		return diag.Errorf("validation failed: %s", err)
 	}
 
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	t, err := c.getTypeFunc(vcdClient, d)
 	if err != nil {
 		return diag.Errorf("error getting %s type on create: %s", c.entityLabel, err)
@@ -141,7 +141,7 @@ func createResourceValidator[O updateDeleter[O, I], I any](c crudConfig[O, I]) e
 }
 
 func updateResource[O updateDeleter[O, I], I any](ctx context.Context, d *schema.ResourceData, meta interface{}, c crudConfig[O, I]) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	t, err := c.getTypeFunc(vcdClient, d)
 	if err != nil {
 		return diag.Errorf("error getting %s type on update: %s", c.entityLabel, err)
@@ -185,7 +185,7 @@ func readResource[O updateDeleter[O, I], I any](_ context.Context, d *schema.Res
 		return diag.Errorf("error executing read %s hooks: %s", c.entityLabel, err)
 	}
 
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	err = c.stateStoreFunc(vcdClient, d, retrievedEntity)
 	if err != nil {
 		return diag.Errorf("error storing %s to state during resource read: %s", c.entityLabel, err)
@@ -292,7 +292,7 @@ type dsReadConfig[O any, I any] struct {
 
 // readDatasource will read a data source by a 'name' field in Terraform schema
 func readDatasource[O any, I any](_ context.Context, d *schema.ResourceData, meta interface{}, c dsReadConfig[O, I]) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	err := execSchemaHook(vcdClient, d, c.preReadHooks)
 	if err != nil {
 		return diag.Errorf("error executing pre-read %s hooks: %s", c.entityLabel, err)

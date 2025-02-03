@@ -63,7 +63,7 @@ func resourceVcfaOrgRegionalNetworking() *schema.Resource {
 }
 
 func resourceVcfaOrgRegionalNetworkingCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(*VCDClient)
+	vcfaClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.TmRegionalNetworkingSetting, types.TmRegionalNetworkingSetting]{
 		entityLabel:      labelVcfaRegionalNetworkingSetting,
 		getTypeFunc:      getTmRegionalNetworkingSettingType,
@@ -76,7 +76,7 @@ func resourceVcfaOrgRegionalNetworkingCreate(ctx context.Context, d *schema.Reso
 }
 
 func resourceVcfaOrgRegionalNetworkingUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(*VCDClient)
+	vcfaClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.TmRegionalNetworkingSetting, types.TmRegionalNetworkingSetting]{
 		entityLabel:      labelVcfaRegionalNetworkingSetting,
 		getTypeFunc:      getTmRegionalNetworkingSettingType,
@@ -88,7 +88,7 @@ func resourceVcfaOrgRegionalNetworkingUpdate(ctx context.Context, d *schema.Reso
 }
 
 func resourceVcfaOrgRegionalNetworkingRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(*VCDClient)
+	vcfaClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.TmRegionalNetworkingSetting, types.TmRegionalNetworkingSetting]{
 		entityLabel:    labelVcfaRegionalNetworkingSetting,
 		getEntityFunc:  vcfaClient.GetTmRegionalNetworkingSettingById,
@@ -98,7 +98,7 @@ func resourceVcfaOrgRegionalNetworkingRead(ctx context.Context, d *schema.Resour
 }
 
 func resourceVcfaOrgRegionalNetworkingDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(*VCDClient)
+	vcfaClient := meta.(MetaContainer).VcfaClient
 
 	c := crudConfig[*govcd.TmRegionalNetworkingSetting, types.TmRegionalNetworkingSetting]{
 		entityLabel:   labelVcfaRegionalNetworkingSetting,
@@ -109,7 +109,7 @@ func resourceVcfaOrgRegionalNetworkingDelete(ctx context.Context, d *schema.Reso
 }
 
 func resourceVcfaOrgRegionalNetworkingImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcfaClient := meta.(*VCDClient)
+	vcfaClient := meta.(MetaContainer).VcfaClient
 
 	id := strings.Split(d.Id(), ImportSeparator)
 	if len(id) != 2 {

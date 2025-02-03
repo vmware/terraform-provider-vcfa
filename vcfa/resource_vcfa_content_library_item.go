@@ -101,7 +101,7 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 }
 
 func resourceVcfaContentLibraryItemCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	clId := d.Get("content_library_id").(string)
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
@@ -131,7 +131,7 @@ func resourceVcfaContentLibraryItemCreate(ctx context.Context, d *schema.Resourc
 //func resourceVcfaContentLibraryItemUpdate(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
 //	// TODO: TM: Update is not supported yet
 //	return diag.Errorf("update not supported")
-//	vcdClient := meta.(*VCDClient)
+//	vcdClient := meta.(MetaContainer).VcfaClient
 //
 //	clId := d.Get("content_library_id").(string)
 //	cl, err := vcdClient.GetContentLibraryById(clId)
@@ -150,7 +150,7 @@ func resourceVcfaContentLibraryItemCreate(ctx context.Context, d *schema.Resourc
 //}
 
 func resourceVcfaContentLibraryItemRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	clId := d.Get("content_library_id").(string)
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
@@ -168,7 +168,7 @@ func resourceVcfaContentLibraryItemRead(ctx context.Context, d *schema.ResourceD
 }
 
 func resourceVcfaContentLibraryItemDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	clId := d.Get("content_library_id").(string)
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
@@ -186,7 +186,7 @@ func resourceVcfaContentLibraryItemDelete(ctx context.Context, d *schema.Resourc
 }
 
 func resourceVcfaContentLibraryItemImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	id := strings.Split(d.Id(), ImportSeparator)
 	if len(id) != 2 {

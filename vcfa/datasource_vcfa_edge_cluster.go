@@ -79,7 +79,7 @@ func datasourceVcfaEdgeCluster() *schema.Resource {
 }
 
 func datasourceVcfaEdgeClusterRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	regionId := d.Get("region_id").(string)
 	getByName := func(name string) (*govcd.TmEdgeCluster, error) {

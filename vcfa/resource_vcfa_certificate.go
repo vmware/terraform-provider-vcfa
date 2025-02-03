@@ -66,7 +66,7 @@ func resourceVcfaCertificate() *schema.Resource {
 
 // resourceVcfaCertificateCreate covers Create functionality for resource
 func resourceVcfaCertificateCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	org, err := vcdClient.GetTmOrgById(d.Get("org_id").(string))
 	if err != nil {
@@ -100,7 +100,7 @@ func isSysOrg(adminOrg *govcd.TmOrg) bool {
 
 // resourceVcfaCertificateUpdate covers Update functionality for resource
 func resourceVcfaCertificateUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	certificate, err := getCertificateType(vcdClient, d.Get("org_id").(string), d.Id())
 	if err != nil {
 		return diag.Errorf("[certificate library update] : %s", err)
@@ -128,7 +128,7 @@ func getCertificateConfigurationType(d *schema.ResourceData) *types.CertificateL
 }
 
 func resourceVcfaCertificateRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	certificate, err := getCertificateType(vcdClient, d.Get("org_id").(string), d.Id())
 	if err != nil {
@@ -174,7 +174,7 @@ func getCertificateType(vcdClient *VCDClient, orgId, certLibId string) (*govcd.C
 }
 
 func resourceVcfaCertificateDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	certificateToDelete, err := getCertificateType(vcdClient, d.Get("org_id").(string), d.Id())
 	if err != nil {
 		return diag.Errorf("[certificate library delete] error fetching certificate library: %s", err)
@@ -193,7 +193,7 @@ func resourceVcfaCertificateImport(_ context.Context, d *schema.ResourceData, me
 	}
 	orgName, certificateName := resourceURI[0], resourceURI[1]
 
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	org, err := vcdClient.GetTmOrgByName(orgName)
 	if err != nil {
 		return nil, fmt.Errorf("[certificate import] error retrieving org %s: %s", orgName, err)

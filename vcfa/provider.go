@@ -219,6 +219,12 @@ func Provider() *schema.Provider {
 	}
 }
 
+// MetaContainer is a structure that is being passed by Terraform SDK internally into resources via
+// meta `meta interface{}` argument. It is being initialized in providerConfigure method
+type MetaContainer struct {
+	VcfaClient *VCDClient
+}
+
 func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	if err := validateProviderSchema(d); err != nil {
 		return nil, diag.Errorf("[provider validation] :%s", err)
@@ -323,7 +329,12 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 	if err != nil {
 		return nil, diag.FromErr(err)
 	}
-	return vcdClient, providerDiagnostics
+
+	metaContainer := MetaContainer{
+		VcfaClient: vcdClient,
+	}
+
+	return metaContainer, providerDiagnostics
 }
 
 // vcfaSchemaFilter is a function which allows to filters and export type 'map[string]*schema.Resource' which may hold

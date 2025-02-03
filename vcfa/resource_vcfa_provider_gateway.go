@@ -70,7 +70,7 @@ func resourceVcfaProviderGateway() *schema.Resource {
 }
 
 func resourceVcfaProviderGatewayCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.TmProviderGateway, types.TmProviderGateway]{
 		entityLabel:      labelVcfaProviderGateway,
 		getTypeFunc:      getProviderGatewayType,
@@ -83,7 +83,7 @@ func resourceVcfaProviderGatewayCreate(ctx context.Context, d *schema.ResourceDa
 }
 
 func resourceVcfaProviderGatewayUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	// Update IP Space associations using separate endpoint (more details at the top of file)
 	if d.HasChange("ip_space_ids") {
@@ -125,7 +125,7 @@ func resourceVcfaProviderGatewayUpdate(ctx context.Context, d *schema.ResourceDa
 }
 
 func resourceVcfaProviderGatewayRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	c := crudConfig[*govcd.TmProviderGateway, types.TmProviderGateway]{
 		entityLabel:    labelVcfaProviderGateway,
@@ -136,7 +136,7 @@ func resourceVcfaProviderGatewayRead(ctx context.Context, d *schema.ResourceData
 }
 
 func resourceVcfaProviderGatewayDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	c := crudConfig[*govcd.TmProviderGateway, types.TmProviderGateway]{
 		entityLabel:   labelVcfaProviderGateway,
@@ -153,7 +153,7 @@ func resourceVcfaProviderGatewayImport(ctx context.Context, d *schema.ResourceDa
 	}
 	regionName, providerGatewayName := resourceURI[0], resourceURI[1]
 
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	region, err := vcdClient.GetRegionByName(regionName)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s by name '%s': %s", labelVcfaRegion, regionName, err)

@@ -185,7 +185,7 @@ func setVcenterData(_ *VCDClient, d *schema.ResourceData, v *govcd.VCenter) erro
 }
 
 func resourceVcfaVcenterCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	c := crudConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
 		entityLabel:      labelVcfaVirtualCenter,
@@ -206,7 +206,7 @@ func resourceVcfaVcenterUpdate(ctx context.Context, d *schema.ResourceData, meta
 		return nil
 	}
 
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
 		entityLabel:      labelVcfaVirtualCenter,
 		getTypeFunc:      getVcenterType,
@@ -218,7 +218,7 @@ func resourceVcfaVcenterUpdate(ctx context.Context, d *schema.ResourceData, meta
 }
 
 func resourceVcfaVcenterRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	// prefetch vCenter so that vc.VSphereVCenter.IsEnabled and vc.VSphereVCenter.IsConnected flags
 	// can be verified and avoid triggering refreshes if VC is disconnected
@@ -272,7 +272,7 @@ func resourceVcfaVcenterRead(ctx context.Context, d *schema.ResourceData, meta i
 }
 
 func resourceVcfaVcenterDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	c := crudConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
 		entityLabel:    labelVcfaVirtualCenter,
@@ -284,7 +284,7 @@ func resourceVcfaVcenterDelete(ctx context.Context, d *schema.ResourceData, meta
 }
 
 func resourceVcfaVcenterImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	v, err := vcdClient.GetVCenterByName(d.Id())
 	if err != nil {

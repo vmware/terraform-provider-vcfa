@@ -33,7 +33,7 @@ func datasourceVcfaSupervisor() *schema.Resource {
 }
 
 func datasourceVcfaSupervisorRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	s, err := vcdClient.GetSupervisorByNameAndVcenterId(d.Get("name").(string), d.Get("vcenter_id").(string))
 	if err != nil {

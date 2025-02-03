@@ -60,7 +60,7 @@ func resourceVcfaRole() *schema.Resource {
 }
 
 func resourceVcfaRoleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	roleName := d.Get("name").(string)
 	orgId := d.Get("org_id").(string)
@@ -101,7 +101,7 @@ func resourceVcfaRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 }
 
 func genericVcfaRoleRead(_ context.Context, d *schema.ResourceData, meta interface{}, origin, operation string) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	roleName := d.Get("name").(string)
 	orgId := d.Get("org_id").(string)
@@ -154,7 +154,7 @@ func genericVcfaRoleRead(_ context.Context, d *schema.ResourceData, meta interfa
 }
 
 func resourceVcfaRoleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	roleName := d.Get("name").(string)
 	orgId := d.Get("org_id").(string)
@@ -205,7 +205,7 @@ func resourceVcfaRoleUpdate(ctx context.Context, d *schema.ResourceData, meta in
 }
 
 func resourceVcfaRoleDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	roleName := d.Get("name").(string)
 	orgId := d.Get("org_id").(string)
@@ -239,7 +239,7 @@ func resourceVcfaRoleImport(_ context.Context, d *schema.ResourceData, meta inte
 	}
 	orgName, roleName := resourceURI[0], resourceURI[1]
 
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	// TODO: TM: Change to vcdClient.GetTmOrgByName(orgName), requires implementing Role support for that type
 	org, err := vcdClient.GetAdminOrgByName(orgName)

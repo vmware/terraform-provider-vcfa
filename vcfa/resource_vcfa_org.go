@@ -105,7 +105,7 @@ func resourceVcfaOrg() *schema.Resource {
 }
 
 func resourceVcfaOrgCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.TmOrg, types.TmOrg]{
 		entityLabel:      labelVcfaOrg,
 		getTypeFunc:      getOrgType,
@@ -117,7 +117,7 @@ func resourceVcfaOrgCreate(ctx context.Context, d *schema.ResourceData, meta int
 }
 
 func resourceVcfaOrgUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.TmOrg, types.TmOrg]{
 		entityLabel:      labelVcfaOrg,
 		getTypeFunc:      getOrgType,
@@ -134,7 +134,7 @@ func resourceVcfaOrgUpdate(ctx context.Context, d *schema.ResourceData, meta int
 }
 
 func resourceVcfaOrgRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.TmOrg, types.TmOrg]{
 		entityLabel:    labelVcfaOrg,
 		getEntityFunc:  vcdClient.GetTmOrgById,
@@ -144,7 +144,7 @@ func resourceVcfaOrgRead(ctx context.Context, d *schema.ResourceData, meta inter
 }
 
 func resourceVcfaOrgDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	c := crudConfig[*govcd.TmOrg, types.TmOrg]{
 		entityLabel:    labelVcfaOrg,
@@ -186,7 +186,7 @@ func validateRenameOrgDisabled(d *schema.ResourceData, oldCfg *govcd.TmOrg, newC
 }
 
 func resourceVcfaOrgImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	o, err := vcdClient.GetTmOrgByName(d.Id())
 	if err != nil {

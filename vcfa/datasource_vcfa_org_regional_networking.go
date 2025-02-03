@@ -50,7 +50,7 @@ func datasourceVcfaOrgRegionalNetworking() *schema.Resource {
 }
 
 func datasourceVcfaOrgRegionalNetworkingRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(*VCDClient)
+	vcfaClient := meta.(MetaContainer).VcfaClient
 
 	getTmRegionalNetworkingSettingByName := func(name string) (*govcd.TmRegionalNetworkingSetting, error) {
 		return vcfaClient.GetTmRegionalNetworkingSettingByNameAndOrgId(name, d.Get("org_id").(string))

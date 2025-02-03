@@ -86,7 +86,7 @@ func resourceVcfaEdgeClusterQos() *schema.Resource {
 }
 
 func resourceVcfaEdgeClusterQosCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 
 	// The Edge Cluster is already existing that is handled by 'vcfa_edge_cluster' data source.
 	// This is not a "real" entity creation, rather a lookup and update of existing one
@@ -109,7 +109,7 @@ func resourceVcfaEdgeClusterQosCreate(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceVcfaEdgeClusterQosUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.TmEdgeCluster, types.TmEdgeCluster]{
 		entityLabel:      labelVcfaEdgeClusterQos,
 		getTypeFunc:      getTmEdgeClusterQosType,
@@ -121,7 +121,7 @@ func resourceVcfaEdgeClusterQosUpdate(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceVcfaEdgeClusterQosRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.TmEdgeCluster, types.TmEdgeCluster]{
 		entityLabel:    labelVcfaEdgeClusterQos,
 		getEntityFunc:  vcdClient.GetTmEdgeClusterById,
@@ -131,7 +131,7 @@ func resourceVcfaEdgeClusterQosRead(ctx context.Context, d *schema.ResourceData,
 }
 
 func resourceVcfaEdgeClusterQosDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	c := crudConfig[*govcd.TmEdgeCluster, types.TmEdgeCluster]{
 		entityLabel:   labelVcfaEdgeClusterQos,
 		getEntityFunc: vcdClient.GetTmEdgeClusterById,
@@ -141,7 +141,7 @@ func resourceVcfaEdgeClusterQosDelete(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceVcfaEdgeClusterQosImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(*VCDClient)
+	vcdClient := meta.(MetaContainer).VcfaClient
 	resourceURI := strings.Split(d.Id(), ImportSeparator)
 	if len(resourceURI) != 2 {
 		return nil, fmt.Errorf("resource name must be specified as region-name.edge-cluster-name")
