@@ -4,6 +4,7 @@ on:
 
 jobs:
   build:
+    if: github.event.pull_request.mergeable_state == 'CLEAN'
     name: Check
     runs-on: ubuntu-latest
 
