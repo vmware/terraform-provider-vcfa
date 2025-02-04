@@ -66,9 +66,9 @@ func resourceVcfaCertificate() *schema.Resource {
 
 // resourceVcfaCertificateCreate covers Create functionality for resource
 func resourceVcfaCertificateCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
-	org, err := vcfaClient.GetTmOrgById(d.Get("org_id").(string))
+	org, err := tmClient.GetTmOrgById(d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -76,11 +76,11 @@ func resourceVcfaCertificateCreate(ctx context.Context, d *schema.ResourceData, 
 	certificateConfig := getCertificateConfigurationType(d)
 	var createdCertificate *govcd.Certificate
 	if isSysOrg(org) {
-		createdCertificate, err = vcfaClient.Client.AddCertificateToLibrary(certificateConfig)
+		createdCertificate, err = tmClient.Client.AddCertificateToLibrary(certificateConfig)
 	} else {
 		// TODO: TM: Implement these methods in TmOrg
 		var adminOrg *govcd.AdminOrg
-		adminOrg, err = vcfaClient.GetAdminOrgById(org.TmOrg.ID)
+		adminOrg, err = tmClient.GetAdminOrgById(org.TmOrg.ID)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -100,8 +100,8 @@ func isSysOrg(adminOrg *govcd.TmOrg) bool {
 
 // resourceVcfaCertificateUpdate covers Update functionality for resource
 func resourceVcfaCertificateUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
-	certificate, err := getCertificateType(vcfaClient, d.Get("org_id").(string), d.Id())
+	tmClient := meta.(ClientContainer).tmClient
+	certificate, err := getCertificateType(tmClient, d.Get("org_id").(string), d.Id())
 	if err != nil {
 		return diag.Errorf("[certificate library update] : %s", err)
 	}
@@ -128,9 +128,9 @@ func getCertificateConfigurationType(d *schema.ResourceData) *types.CertificateL
 }
 
 func resourceVcfaCertificateRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
-	certificate, err := getCertificateType(vcfaClient, d.Get("org_id").(string), d.Id())
+	certificate, err := getCertificateType(tmClient, d.Get("org_id").(string), d.Id())
 	if err != nil {
 		if govcd.ContainsNotFound(err) {
 			d.SetId("")
@@ -150,18 +150,18 @@ func setCertificateConfigurationData(config *types.CertificateLibraryItem, d *sc
 	dSet(d, "certificate", config.Certificate)
 }
 
-func getCertificateType(vcfaClient *VCDClient, orgId, certLibId string) (*govcd.Certificate, error) {
-	org, err := vcfaClient.GetTmOrgById(orgId)
+func getCertificateType(tmClient *VCDClient, orgId, certLibId string) (*govcd.Certificate, error) {
+	org, err := tmClient.GetTmOrgById(orgId)
 	if err != nil {
 		return nil, err
 	}
 	var certificate *govcd.Certificate
 	if isSysOrg(org) {
-		certificate, err = vcfaClient.Client.GetCertificateFromLibraryById(certLibId)
+		certificate, err = tmClient.Client.GetCertificateFromLibraryById(certLibId)
 	} else {
 		// TODO: TM: Implement these methods in TmOrg
 		var adminOrg *govcd.AdminOrg
-		adminOrg, err = vcfaClient.GetAdminOrgById(org.TmOrg.ID)
+		adminOrg, err = tmClient.GetAdminOrgById(org.TmOrg.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -174,8 +174,8 @@ func getCertificateType(vcfaClient *VCDClient, orgId, certLibId string) (*govcd.
 }
 
 func resourceVcfaCertificateDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
-	certificateToDelete, err := getCertificateType(vcfaClient, d.Get("org_id").(string), d.Id())
+	tmClient := meta.(ClientContainer).tmClient
+	certificateToDelete, err := getCertificateType(tmClient, d.Get("org_id").(string), d.Id())
 	if err != nil {
 		return diag.Errorf("[certificate library delete] error fetching certificate library: %s", err)
 	}
@@ -193,19 +193,19 @@ func resourceVcfaCertificateImport(_ context.Context, d *schema.ResourceData, me
 	}
 	orgName, certificateName := resourceURI[0], resourceURI[1]
 
-	vcfaClient := meta.(ClientContainer).tmClient
-	org, err := vcfaClient.GetTmOrgByName(orgName)
+	tmClient := meta.(ClientContainer).tmClient
+	org, err := tmClient.GetTmOrgByName(orgName)
 	if err != nil {
 		return nil, fmt.Errorf("[certificate import] error retrieving org %s: %s", orgName, err)
 	}
 
 	var certificate *govcd.Certificate
 	if isSysOrg(org) {
-		certificate, err = vcfaClient.Client.GetCertificateFromLibraryByName(certificateName)
+		certificate, err = tmClient.Client.GetCertificateFromLibraryByName(certificateName)
 	} else {
 		// TODO: TM: Implement these methods in TmOrg
 		var adminOrg *govcd.AdminOrg
-		adminOrg, err = vcfaClient.GetAdminOrgById(org.TmOrg.ID)
+		adminOrg, err = tmClient.GetAdminOrgById(org.TmOrg.ID)
 		if err != nil {
 			return nil, err
 		}

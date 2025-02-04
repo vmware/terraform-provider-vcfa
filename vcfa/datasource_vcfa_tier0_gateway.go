@@ -47,16 +47,16 @@ func datasourceVcfaTier0Gateway() *schema.Resource {
 }
 
 func datasourceVcfaTier0GatewayRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 	// Fetching the region to conform to standard of returning 'ErrorEntityNotFound', because the API behind
 	// GetTmTier0GatewayWithContextByName does not handle it well
-	region, err := vcfaClient.GetRegionById(d.Get("region_id").(string))
+	region, err := tmClient.GetRegionById(d.Get("region_id").(string))
 	if err != nil {
 		return diag.Errorf("no region with ID '%s' found: %s", d.Get("region_id").(string), err)
 	}
 
 	getT0ByName := func(name string) (*govcd.TmTier0Gateway, error) {
-		return vcfaClient.GetTmTier0GatewayWithContextByName(name, region.Region.ID, true)
+		return tmClient.GetTmTier0GatewayWithContextByName(name, region.Region.ID, true)
 	}
 
 	c := dsReadConfig[*govcd.TmTier0Gateway, types.TmTier0Gateway]{

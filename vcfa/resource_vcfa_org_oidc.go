@@ -254,11 +254,11 @@ func resourceVcfaOrgOidc() *schema.Resource {
 }
 
 func resourceVcfaOrgOidcCreateOrUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}, operation string) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	orgId := d.Get("org_id").(string)
 
-	org, err := vcfaClient.GetAdminOrgById(orgId)
+	org, err := tmClient.GetAdminOrgById(orgId)
 	if err != nil {
 		return diag.Errorf("[%s %s] error searching for Org '%s': %s", labelVcfaOidc, operation, orgId, err)
 	}
@@ -365,10 +365,10 @@ func resourceVcfaOrgOidcRead(ctx context.Context, d *schema.ResourceData, meta i
 }
 
 func genericVcfaOrgOidcRead(_ context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 	orgId := d.Get("org_id").(string)
 
-	adminOrg, err := vcfaClient.GetAdminOrgByNameOrId(orgId)
+	adminOrg, err := tmClient.GetAdminOrgByNameOrId(orgId)
 	if govcd.ContainsNotFound(err) && origin == "resource" {
 		log.Printf("[INFO] unable to find Organization '%s' %s settings: %s. Removing from state", orgId, labelVcfaOidc, err)
 		d.SetId("")
@@ -453,10 +453,10 @@ func genericVcfaOrgOidcRead(_ context.Context, d *schema.ResourceData, meta inte
 }
 
 func resourceVcfaOrgOidcDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 	orgId := d.Get("org_id").(string)
 
-	adminOrg, err := vcfaClient.GetAdminOrgById(orgId)
+	adminOrg, err := tmClient.GetAdminOrgById(orgId)
 	if err != nil {
 		return diag.Errorf("[%s delete] error searching for Organization '%s': %s", labelVcfaOidc, orgId, err)
 	}
@@ -474,8 +474,8 @@ func resourceVcfaOrgOidcDelete(_ context.Context, d *schema.ResourceData, meta i
 func resourceVcfaOrgOidcImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	orgNameOrId := d.Id()
 
-	vcfaClient := meta.(ClientContainer).tmClient
-	adminOrg, err := vcfaClient.GetAdminOrgByNameOrId(orgNameOrId)
+	tmClient := meta.(ClientContainer).tmClient
+	adminOrg, err := tmClient.GetAdminOrgByNameOrId(orgNameOrId)
 	if err != nil {
 		return nil, fmt.Errorf("[%s import] error searching for Organization '%s': %s", labelVcfaOidc, orgNameOrId, err)
 	}

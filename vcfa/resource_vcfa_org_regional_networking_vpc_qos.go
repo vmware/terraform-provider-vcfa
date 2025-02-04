@@ -86,8 +86,8 @@ func resourceVcfaOrgRegionalNetworkingVpcQos() *schema.Resource {
 }
 
 func resourceVcfaOrgRegionalNetworkingVpcQosCreateUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
-	rns, err := vcfaClient.GetTmRegionalNetworkingSettingById(d.Get("org_regional_networking_id").(string))
+	tmClient := meta.(ClientContainer).tmClient
+	rns, err := tmClient.GetTmRegionalNetworkingSettingById(d.Get("org_regional_networking_id").(string))
 	if err != nil {
 		return diag.Errorf("error looking up %s by ID: %s", labelVcfaOrgNetworking, err)
 	}
@@ -95,7 +95,7 @@ func resourceVcfaOrgRegionalNetworkingVpcQosCreateUpdate(ctx context.Context, d 
 	// ID is Org Regional Networking Setting ID
 	d.SetId(rns.TmRegionalNetworkingSetting.ID)
 
-	cfg, err := getTmOrgRegionalNetworkingVpcQosType(vcfaClient, rns, d, true)
+	cfg, err := getTmOrgRegionalNetworkingVpcQosType(tmClient, rns, d, true)
 	if err != nil {
 		return diag.Errorf("error getting %s configuration: %s", labelVcfaOrgRegionalNetworkingVpcQos, err)
 	}
@@ -109,8 +109,8 @@ func resourceVcfaOrgRegionalNetworkingVpcQosCreateUpdate(ctx context.Context, d 
 }
 
 func resourceVcfaOrgRegionalNetworkingVpcQosRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
-	rns, err := vcfaClient.GetTmRegionalNetworkingSettingById(d.Id())
+	tmClient := meta.(ClientContainer).tmClient
+	rns, err := tmClient.GetTmRegionalNetworkingSettingById(d.Id())
 	if err != nil {
 		if govcd.ContainsNotFound(err) {
 			d.SetId("")
@@ -128,7 +128,7 @@ func resourceVcfaOrgRegionalNetworkingVpcQosRead(ctx context.Context, d *schema.
 		return diag.Errorf("error retrieving %s: %s", labelVcfaOrgRegionalNetworkingVpcQos, err)
 	}
 
-	err = setTmOrgRegionalNetworkingVpcQosData(vcfaClient, d, vpcProfile)
+	err = setTmOrgRegionalNetworkingVpcQosData(tmClient, d, vpcProfile)
 	if err != nil {
 		return diag.Errorf("error storing %s configuration to state: %s", labelVcfaOrgRegionalNetworkingVpcQos, err)
 	}
@@ -137,8 +137,8 @@ func resourceVcfaOrgRegionalNetworkingVpcQosRead(ctx context.Context, d *schema.
 }
 
 func resourceVcfaOrgRegionalNetworkingVpcQosDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
-	rns, err := vcfaClient.GetTmRegionalNetworkingSettingById(d.Get("org_regional_networking_id").(string))
+	tmClient := meta.(ClientContainer).tmClient
+	rns, err := tmClient.GetTmRegionalNetworkingSettingById(d.Get("org_regional_networking_id").(string))
 	if err != nil {
 		return diag.Errorf("error looking up %s by ID: %s", labelVcfaOrgNetworking, err)
 	}
@@ -146,7 +146,7 @@ func resourceVcfaOrgRegionalNetworkingVpcQosDelete(ctx context.Context, d *schem
 	// ID is Org Regional Networking Setting ID
 	d.SetId(rns.TmRegionalNetworkingSetting.ID)
 
-	cfg, err := getTmOrgRegionalNetworkingVpcQosType(vcfaClient, rns, d, false)
+	cfg, err := getTmOrgRegionalNetworkingVpcQosType(tmClient, rns, d, false)
 	if err != nil {
 		return diag.Errorf("error getting %s configuration: %s", labelVcfaOrgRegionalNetworkingVpcQos, err)
 	}
@@ -162,19 +162,19 @@ func resourceVcfaOrgRegionalNetworkingVpcQosDelete(ctx context.Context, d *schem
 }
 
 func resourceVcfaOrgRegionalNetworkingVpcQosImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	id := strings.Split(d.Id(), ImportSeparator)
 	if len(id) != 2 {
 		return nil, fmt.Errorf("ID syntax should be <%s name>%s<%s name>", labelVcfaOrg, ImportSeparator, labelVcfaRegionalNetworkingSetting)
 	}
 
-	org, err := vcfaClient.GetTmOrgByName(id[0])
+	org, err := tmClient.GetTmOrgByName(id[0])
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s '%s': %s", labelVcfaOrg, id[0], err)
 	}
 
-	rns, err := vcfaClient.GetTmRegionalNetworkingSettingByNameAndOrgId(id[1], org.TmOrg.ID)
+	rns, err := tmClient.GetTmRegionalNetworkingSettingByNameAndOrgId(id[1], org.TmOrg.ID)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s '%s' within %s '%s': %s",
 			labelVcfaRegionalNetworkingSetting, id[1], labelVcfaOrg, id[0], err)
@@ -186,7 +186,7 @@ func resourceVcfaOrgRegionalNetworkingVpcQosImport(ctx context.Context, d *schem
 }
 
 // flag `isCreatedUpdate` is used to separate Create/Update and Delete operations
-func getTmOrgRegionalNetworkingVpcQosType(vcfaClient *VCDClient, rns *govcd.TmRegionalNetworkingSetting, d *schema.ResourceData, isCreatedOrUpdated bool) (*types.TmRegionalNetworkingVpcConnectivityProfile, error) {
+func getTmOrgRegionalNetworkingVpcQosType(tmClient *VCDClient, rns *govcd.TmRegionalNetworkingSetting, d *schema.ResourceData, isCreatedOrUpdated bool) (*types.TmRegionalNetworkingVpcConnectivityProfile, error) {
 	// The QoS config of Edge Cluster that is used for Region is used as main configuration. One
 	// can override it per Org Regional Networking configuration
 
@@ -202,7 +202,7 @@ func getTmOrgRegionalNetworkingVpcQosType(vcfaClient *VCDClient, rns *govcd.TmRe
 	}
 
 	// Fetch parent Edge Cluster QoS Config
-	backingEdgeCluster, err := vcfaClient.GetTmEdgeClusterById(existingVpcProfile.ServiceEdgeClusterRef.ID)
+	backingEdgeCluster, err := tmClient.GetTmEdgeClusterById(existingVpcProfile.ServiceEdgeClusterRef.ID)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving parent %s for %s with ID %s", labelVcfaEdgeCluster, labelVcfaOrgNetworking, rns.TmRegionalNetworkingSetting.ID)
 	}

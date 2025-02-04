@@ -45,12 +45,12 @@ func datasourceVcfaTmVersion() *schema.Resource {
 }
 
 func datasourceVcfaTmVersionRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
-	vcfaVersion, err := vcfaClient.VCDClient.Client.GetVcdShortVersion()
+	tmClient := meta.(ClientContainer).tmClient
+	vcfaVersion, err := tmClient.VCDClient.Client.GetVcdShortVersion()
 	if err != nil {
 		return diag.Errorf("could not get VCFA Tenant Manager version: %s", err)
 	}
-	apiVersion, err := vcfaClient.VCDClient.Client.MaxSupportedVersion()
+	apiVersion, err := tmClient.VCDClient.Client.MaxSupportedVersion()
 	if err != nil {
 		return diag.Errorf("could not get VCFA Tenant Manager API version: %s", err)
 	}

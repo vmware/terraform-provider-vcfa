@@ -62,17 +62,17 @@ func resourceVcfaApiToken() *schema.Resource {
 }
 
 func resourceVcfaApiTokenCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	// System Admin can't create API tokens outside SysOrg,
 	// just as Org admins can't create API tokens in other Orgs
-	org := vcfaClient.SysOrg
+	org := tmClient.SysOrg
 	if org == "" {
-		org = vcfaClient.Org
+		org = tmClient.Org
 	}
 
 	tokenName := d.Get("name").(string)
-	token, err := vcfaClient.CreateToken(org, tokenName)
+	token, err := tmClient.CreateToken(org, tokenName)
 	if err != nil {
 		return diag.Errorf("[%s create] error creating %s: %s", labelVcfaApiToken, labelVcfaApiToken, err)
 	}
@@ -85,7 +85,7 @@ func resourceVcfaApiTokenCreate(ctx context.Context, d *schema.ResourceData, met
 
 	filename := d.Get("file_name").(string)
 
-	err = govcd.SaveApiTokenToFile(filename, vcfaClient.Client.UserAgent, apiToken)
+	err = govcd.SaveApiTokenToFile(filename, tmClient.Client.UserAgent, apiToken)
 	if err != nil {
 		return diag.Errorf("[%s create] error saving %s to file: %s", labelVcfaApiToken, labelVcfaApiToken, err)
 	}
@@ -94,9 +94,9 @@ func resourceVcfaApiTokenCreate(ctx context.Context, d *schema.ResourceData, met
 }
 
 func resourceVcfaApiTokenRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
-	token, err := vcfaClient.GetTokenById(d.Id())
+	token, err := tmClient.GetTokenById(d.Id())
 	if govcd.ContainsNotFound(err) {
 		d.SetId("")
 		log.Printf("[DEBUG] %s no longer exists. Removing from tfstate", labelVcfaApiToken)
@@ -112,9 +112,9 @@ func resourceVcfaApiTokenRead(ctx context.Context, d *schema.ResourceData, meta 
 }
 
 func resourceVcfaApiTokenDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
-	token, err := vcfaClient.GetTokenById(d.Id())
+	token, err := tmClient.GetTokenById(d.Id())
 	if err != nil {
 		return diag.Errorf("[%s delete] error getting %s: %s", labelVcfaApiToken, labelVcfaApiToken, err)
 	}
@@ -130,13 +130,13 @@ func resourceVcfaApiTokenDelete(ctx context.Context, d *schema.ResourceData, met
 func resourceVcfaApiTokenImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[TRACE] %s import initiated", labelVcfaApiToken)
 
-	vcfaClient := meta.(ClientContainer).tmClient
-	sessionInfo, err := vcfaClient.Client.GetSessionInfo()
+	tmClient := meta.(ClientContainer).tmClient
+	sessionInfo, err := tmClient.Client.GetSessionInfo()
 	if err != nil {
 		return []*schema.ResourceData{}, fmt.Errorf("[%s import] error getting username: %s", labelVcfaApiToken, err)
 	}
 
-	token, err := vcfaClient.GetTokenByNameAndUsername(d.Id(), sessionInfo.User.Name)
+	token, err := tmClient.GetTokenByNameAndUsername(d.Id(), sessionInfo.User.Name)
 	if err != nil {
 		return []*schema.ResourceData{}, fmt.Errorf("[%s import] error getting %s by name: %s", labelVcfaApiToken, labelVcfaApiToken, err)
 	}

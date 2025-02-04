@@ -23,16 +23,16 @@ func TestAccDataSourceNotFound(t *testing.T) {
 	}
 
 	// Setup temporary client to evaluate versions and conditionally skip tests
-	vcfaClient := createTemporaryVCFAConnection(false)
+	tmClient := createTemporaryVCFAConnection(false)
 
 	// Run a sub-test for each of data source defined in provider
 	for _, dataSource := range Provider().DataSources() {
-		t.Run(dataSource.Name, testSpecificDataSourceNotFound(dataSource.Name, vcfaClient))
+		t.Run(dataSource.Name, testSpecificDataSourceNotFound(dataSource.Name, tmClient))
 	}
 	postTestChecks(t)
 }
 
-func testSpecificDataSourceNotFound(dataSourceName string, vcfaClient *VCDClient) func(*testing.T) {
+func testSpecificDataSourceNotFound(dataSourceName string, tmClient *VCDClient) func(*testing.T) {
 	return func(t *testing.T) {
 		type skipAlways struct {
 			dataSourceName string
@@ -65,7 +65,7 @@ func testSpecificDataSourceNotFound(dataSourceName string, vcfaClient *VCDClient
 		skipOnVersionsVersionsOlderThan := []skipOnVersion{}
 
 		for _, constraintSkip := range skipOnVersionsVersionsOlderThan {
-			if dataSourceName == constraintSkip.datasourceName && vcfaClient.Client.APIVCDMaxVersionIs(constraintSkip.skipVersionConstraint) {
+			if dataSourceName == constraintSkip.datasourceName && tmClient.Client.APIVCDMaxVersionIs(constraintSkip.skipVersionConstraint) {
 				t.Skipf("This test does not work on API versions %s", constraintSkip.skipVersionConstraint)
 			}
 		}
@@ -91,7 +91,7 @@ func testSpecificDataSourceNotFound(dataSourceName string, vcfaClient *VCDClient
 
 		// Get list of mandatory fields in schema for a particular data source
 		mandatoryFields := getMandatoryDataSourceSchemaFields(dataSourceName)
-		addedParams := addMandatoryParams(dataSourceName, mandatoryFields, t, vcfaClient)
+		addedParams := addMandatoryParams(dataSourceName, mandatoryFields, t, tmClient)
 
 		var params = StringMap{
 			"DataSourceName":  dataSourceName,
@@ -135,7 +135,7 @@ func getMandatoryDataSourceSchemaFields(dataSourceName string) []string {
 	return mandatoryFields
 }
 
-func addMandatoryParams(dataSourceName string, mandatoryFields []string, t *testing.T, vcfaClient *VCDClient) string {
+func addMandatoryParams(dataSourceName string, mandatoryFields []string, t *testing.T, tmClient *VCDClient) string {
 	var templateFields string
 	for fieldIndex := range mandatoryFields {
 		switch mandatoryFields[fieldIndex] {

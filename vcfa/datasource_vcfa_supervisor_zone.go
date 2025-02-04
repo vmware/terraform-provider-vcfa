@@ -61,9 +61,9 @@ func datasourceVcfaSupervisorZone() *schema.Resource {
 }
 
 func datasourceVcfaSupervisorZoneRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
-	s, err := vcfaClient.GetSupervisorById(d.Get("supervisor_id").(string))
+	s, err := tmClient.GetSupervisorById(d.Get("supervisor_id").(string))
 	if err != nil {
 		return diag.Errorf("error getting Supervisor: %s", err)
 	}

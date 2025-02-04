@@ -79,11 +79,11 @@ func datasourceVcfaEdgeCluster() *schema.Resource {
 }
 
 func datasourceVcfaEdgeClusterRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	regionId := d.Get("region_id").(string)
 	getByName := func(name string) (*govcd.TmEdgeCluster, error) {
-		return vcfaClient.GetTmEdgeClusterByNameAndRegionId(name, regionId)
+		return tmClient.GetTmEdgeClusterByNameAndRegionId(name, regionId)
 	}
 
 	c := dsReadConfig[*govcd.TmEdgeCluster, types.TmEdgeCluster]{
@@ -118,9 +118,9 @@ func setTmEdgeClusterData(_ *VCDClient, d *schema.ResourceData, t *govcd.TmEdgeC
 	return nil
 }
 
-func syncTmEdgeClustersBeforeReadHook(vcfaClient *VCDClient, d *schema.ResourceData) error {
+func syncTmEdgeClustersBeforeReadHook(tmClient *VCDClient, d *schema.ResourceData) error {
 	if d.Get("sync_before_read").(bool) {
-		err := vcfaClient.TmSyncEdgeClusters()
+		err := tmClient.TmSyncEdgeClusters()
 		if err != nil {
 			return fmt.Errorf("error syncing %s before lookup: %s", labelVcfaEdgeClusterSync, err)
 		}

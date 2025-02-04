@@ -64,16 +64,16 @@ func resourceVcfaRightsBundle() *schema.Resource {
 	}
 }
 func resourceVcfaRightsBundleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	rightsBundleName := d.Get("name").(string)
 	publishToAllTenants := d.Get("publish_to_all_orgs").(bool)
 
-	inputRights, err := getRights(vcfaClient, nil, fmt.Sprintf("%s create", labelVcfaRightsBundle), d)
+	inputRights, err := getRights(tmClient, nil, fmt.Sprintf("%s create", labelVcfaRightsBundle), d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	rightsBundle, err := vcfaClient.Client.CreateRightsBundle(&types.RightsBundle{
+	rightsBundle, err := tmClient.Client.CreateRightsBundle(&types.RightsBundle{
 		Name:        rightsBundleName,
 		Description: d.Get("description").(string),
 		BundleKey:   types.VcloudUndefinedKey,
@@ -89,7 +89,7 @@ func resourceVcfaRightsBundleCreate(ctx context.Context, d *schema.ResourceData,
 		}
 	}
 
-	inputTenants, err := getOrganizations(vcfaClient, fmt.Sprintf("%s create", labelVcfaRightsBundle), d)
+	inputTenants, err := getOrganizations(tmClient, fmt.Sprintf("%s create", labelVcfaRightsBundle), d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -114,7 +114,7 @@ func resourceVcfaRightsBundleRead(ctx context.Context, d *schema.ResourceData, m
 }
 
 func genericVcfaRightsBundleRead(_ context.Context, d *schema.ResourceData, meta interface{}, origin, operation string) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	var rightsBundle *govcd.RightsBundle
 	var err error
@@ -122,9 +122,9 @@ func genericVcfaRightsBundleRead(_ context.Context, d *schema.ResourceData, meta
 	identifier := d.Id()
 
 	if identifier == "" {
-		rightsBundle, err = vcfaClient.Client.GetRightsBundleByName(rightsBundleName)
+		rightsBundle, err = tmClient.Client.GetRightsBundleByName(rightsBundleName)
 	} else {
-		rightsBundle, err = vcfaClient.Client.GetRightsBundleById(identifier)
+		rightsBundle, err = tmClient.Client.GetRightsBundleById(identifier)
 	}
 	if err != nil {
 		if origin == "resource" && govcd.ContainsNotFound(err) {
@@ -182,11 +182,11 @@ func genericVcfaRightsBundleRead(_ context.Context, d *schema.ResourceData, meta
 }
 
 func resourceVcfaRightsBundleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 	rightsBundleName := d.Get("name").(string)
 	publishToAllTenants := d.Get("publish_to_all_orgs").(bool)
 
-	rightsBundle, err := vcfaClient.Client.GetRightsBundleById(d.Id())
+	rightsBundle, err := tmClient.Client.GetRightsBundleById(d.Id())
 	if err != nil {
 		return diag.Errorf("[%s update] error retrieving %s %s: %s", labelVcfaRightsBundle, labelVcfaRightsBundle, rightsBundleName, err)
 	}
@@ -196,7 +196,7 @@ func resourceVcfaRightsBundleUpdate(ctx context.Context, d *schema.ResourceData,
 	var changedRights = d.HasChange("rights")
 	var changedTenants = d.HasChange("org_ids") || d.HasChange("publish_to_all_orgs")
 	if changedRights {
-		inputRights, err = getRights(vcfaClient, nil, fmt.Sprintf("%s update", labelVcfaRightsBundle), d)
+		inputRights, err = getRights(tmClient, nil, fmt.Sprintf("%s update", labelVcfaRightsBundle), d)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -232,7 +232,7 @@ func resourceVcfaRightsBundleUpdate(ctx context.Context, d *schema.ResourceData,
 		}
 	}
 	if changedTenants {
-		inputTenants, err = getOrganizations(vcfaClient, fmt.Sprintf("%s create", labelVcfaRightsBundle), d)
+		inputTenants, err = getOrganizations(tmClient, fmt.Sprintf("%s create", labelVcfaRightsBundle), d)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -260,7 +260,7 @@ func resourceVcfaRightsBundleUpdate(ctx context.Context, d *schema.ResourceData,
 }
 
 func resourceVcfaRightsBundleDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	rightsBundleName := d.Get("name").(string)
 
@@ -268,9 +268,9 @@ func resourceVcfaRightsBundleDelete(_ context.Context, d *schema.ResourceData, m
 	var err error
 	identifier := d.Id()
 	if identifier == "" {
-		rightsBundle, err = vcfaClient.Client.GetRightsBundleByName(rightsBundleName)
+		rightsBundle, err = tmClient.Client.GetRightsBundleByName(rightsBundleName)
 	} else {
-		rightsBundle, err = vcfaClient.Client.GetRightsBundleById(identifier)
+		rightsBundle, err = tmClient.Client.GetRightsBundleById(identifier)
 	}
 
 	if err != nil {
@@ -291,9 +291,9 @@ func resourceVcfaRightsBundleImport(_ context.Context, d *schema.ResourceData, m
 	}
 	rightsBundleName := resourceVcfaURI[0]
 
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
-	rightsBundle, err := vcfaClient.Client.GetRightsBundleByName(rightsBundleName)
+	rightsBundle, err := tmClient.Client.GetRightsBundleByName(rightsBundleName)
 	if err != nil {
 		return nil, fmt.Errorf("[%s import] error retrieving %s %s: %s", labelVcfaRightsBundle, labelVcfaRightsBundle, rightsBundleName, err)
 	}

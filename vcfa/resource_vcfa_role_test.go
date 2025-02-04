@@ -136,7 +136,7 @@ func testAccCheckRoleDestroy(orgId, roleId string) resource.TestCheckFunc {
 
 		conn := testAccProvider.Meta().(ClientContainer).tmClient
 
-		// TODO: TM: Change to vcfaClient.GetTmOrgById(orgId), requires implementing Role support for that type
+		// TODO: TM: Change to tmClient.GetTmOrgById(orgId), requires implementing Role support for that type
 		org, err := conn.GetAdminOrgById(rsOrg.Primary.ID)
 		if err != nil {
 			// TODO: TM: Would be nice to have a method to retrieve the role without an Org. This way we can check

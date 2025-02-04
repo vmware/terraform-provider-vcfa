@@ -92,17 +92,17 @@ var orgVdcDsZoneResourceAllocation = &schema.Resource{
 }
 
 func datasourceVcfaOrgVdcRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 	getByNameAndOrgId := func(_ string) (*govcd.TmVdc, error) {
-		region, err := vcfaClient.GetRegionById(d.Get("region_id").(string))
+		region, err := tmClient.GetRegionById(d.Get("region_id").(string))
 		if err != nil {
 			return nil, err
 		}
-		org, err := vcfaClient.GetOrgById(d.Get("org_id").(string))
+		org, err := tmClient.GetOrgById(d.Get("org_id").(string))
 		if err != nil {
 			return nil, err
 		}
-		return vcfaClient.GetTmVdcByName(fmt.Sprintf("%s_%s", org.Org.Name, region.Region.Name))
+		return tmClient.GetTmVdcByName(fmt.Sprintf("%s_%s", org.Org.Name, region.Region.Name))
 	}
 
 	c := dsReadConfig[*govcd.TmVdc, types.TmVdc]{

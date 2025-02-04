@@ -96,52 +96,52 @@ func resourceVcfaRegion() *schema.Resource {
 }
 
 func resourceVcfaRegionCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.Region, types.Region]{
 		entityLabel:      labelVcfaRegion,
 		getTypeFunc:      getRegionType,
 		stateStoreFunc:   setRegionData,
-		createFunc:       vcfaClient.CreateRegion,
+		createFunc:       tmClient.CreateRegion,
 		resourceReadFunc: resourceVcfaRegionRead,
 	}
 	return createResource(ctx, d, meta, c)
 }
 
 func resourceVcfaRegionUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.Region, types.Region]{
 		entityLabel:      labelVcfaRegion,
 		getTypeFunc:      getRegionType,
-		getEntityFunc:    vcfaClient.GetRegionById,
+		getEntityFunc:    tmClient.GetRegionById,
 		resourceReadFunc: resourceVcfaRegionRead,
 	}
 	return updateResource(ctx, d, meta, c)
 }
 
 func resourceVcfaRegionRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.Region, types.Region]{
 		entityLabel:    labelVcfaRegion,
-		getEntityFunc:  vcfaClient.GetRegionById,
+		getEntityFunc:  tmClient.GetRegionById,
 		stateStoreFunc: setRegionData,
 	}
 	return readResource(ctx, d, meta, c)
 }
 
 func resourceVcfaRegionDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	c := crudConfig[*govcd.Region, types.Region]{
 		entityLabel:   labelVcfaRegion,
-		getEntityFunc: vcfaClient.GetRegionById,
+		getEntityFunc: tmClient.GetRegionById,
 	}
 
 	return deleteResource(ctx, d, meta, c)
 }
 
 func resourceVcfaRegionImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcfaClient := meta.(ClientContainer).tmClient
-	region, err := vcfaClient.GetRegionByName(d.Id())
+	tmClient := meta.(ClientContainer).tmClient
+	region, err := tmClient.GetRegionByName(d.Id())
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving Region: %s", err)
 	}
@@ -151,7 +151,7 @@ func resourceVcfaRegionImport(ctx context.Context, d *schema.ResourceData, meta 
 	return []*schema.ResourceData{d}, nil
 }
 
-func getRegionType(vcfaClient *VCDClient, d *schema.ResourceData) (*types.Region, error) {
+func getRegionType(tmClient *VCDClient, d *schema.ResourceData) (*types.Region, error) {
 	t := &types.Region{
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
@@ -163,7 +163,7 @@ func getRegionType(vcfaClient *VCDClient, d *schema.ResourceData) (*types.Region
 	supervisorIds := convertSchemaSetToSliceOfStrings(d.Get("supervisor_ids").(*schema.Set))
 	superVisorReferences := make([]types.OpenApiReference, 0)
 	for _, singleSupervisorId := range supervisorIds {
-		supervisor, err := vcfaClient.GetSupervisorById(singleSupervisorId)
+		supervisor, err := tmClient.GetSupervisorById(singleSupervisorId)
 		if err != nil {
 			return nil, fmt.Errorf("error retrieving Supervisor with ID %s: %s", singleSupervisorId, err)
 		}

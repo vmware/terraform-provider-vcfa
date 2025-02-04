@@ -60,19 +60,19 @@ func resourceVcfaRole() *schema.Resource {
 }
 
 func resourceVcfaRoleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	roleName := d.Get("name").(string)
 	orgId := d.Get("org_id").(string)
 
-	// TODO: TM: Change to vcfaClient.GetTmOrgById(orgId), requires implementing Role support for that type
-	org, err := vcfaClient.GetAdminOrgById(orgId)
+	// TODO: TM: Change to tmClient.GetTmOrgById(orgId), requires implementing Role support for that type
+	org, err := tmClient.GetAdminOrgById(orgId)
 	if err != nil {
 		return diag.Errorf("[%s create] error retrieving %s '%s': %s", labelVcfaRole, labelVcfaOrg, orgId, err)
 	}
 
 	// Check rights early, so that we can show a friendly error message when there are missing implied rights
-	inputRights, err := getRights(vcfaClient, org, fmt.Sprintf("%s create", labelVcfaRole), d)
+	inputRights, err := getRights(tmClient, org, fmt.Sprintf("%s create", labelVcfaRole), d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -101,7 +101,7 @@ func resourceVcfaRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 }
 
 func genericVcfaRoleRead(_ context.Context, d *schema.ResourceData, meta interface{}, origin, operation string) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	roleName := d.Get("name").(string)
 	orgId := d.Get("org_id").(string)
@@ -110,8 +110,8 @@ func genericVcfaRoleRead(_ context.Context, d *schema.ResourceData, meta interfa
 	var role *govcd.Role
 	var err error
 
-	// TODO: TM: Change to vcfaClient.GetTmOrgById(orgId), requires implementing Role support for that type
-	org, err := vcfaClient.GetAdminOrgById(orgId)
+	// TODO: TM: Change to tmClient.GetTmOrgById(orgId), requires implementing Role support for that type
+	org, err := tmClient.GetAdminOrgById(orgId)
 	if err != nil {
 		return diag.Errorf("[%s %s-%s] error retrieving %s '%s': %s", labelVcfaRole, operation, origin, labelVcfaOrg, orgId, err)
 	}
@@ -154,13 +154,13 @@ func genericVcfaRoleRead(_ context.Context, d *schema.ResourceData, meta interfa
 }
 
 func resourceVcfaRoleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	roleName := d.Get("name").(string)
 	orgId := d.Get("org_id").(string)
 
-	// TODO: TM: Change to vcfaClient.GetTmOrgById(orgId), requires implementing Role support for that type
-	org, err := vcfaClient.GetAdminOrgById(orgId)
+	// TODO: TM: Change to tmClient.GetTmOrgById(orgId), requires implementing Role support for that type
+	org, err := tmClient.GetAdminOrgById(orgId)
 	if err != nil {
 		return diag.Errorf("[%s update] error retrieving %s '%s': %s", labelVcfaRole, labelVcfaOrg, orgId, err)
 	}
@@ -179,7 +179,7 @@ func resourceVcfaRoleUpdate(ctx context.Context, d *schema.ResourceData, meta in
 		}
 	}
 
-	inputRights, err := getRights(vcfaClient, org, fmt.Sprintf("%s update", labelVcfaRole), d)
+	inputRights, err := getRights(tmClient, org, fmt.Sprintf("%s update", labelVcfaRole), d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -205,13 +205,13 @@ func resourceVcfaRoleUpdate(ctx context.Context, d *schema.ResourceData, meta in
 }
 
 func resourceVcfaRoleDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	roleName := d.Get("name").(string)
 	orgId := d.Get("org_id").(string)
 
-	// TODO: TM: Change to vcfaClient.GetTmOrgById(orgId), requires implementing Role support for that type
-	org, err := vcfaClient.GetAdminOrgById(orgId)
+	// TODO: TM: Change to tmClient.GetTmOrgById(orgId), requires implementing Role support for that type
+	org, err := tmClient.GetAdminOrgById(orgId)
 	if err != nil {
 		return diag.Errorf("[%s delete] error retrieving %s '%s': %s", labelVcfaRole, labelVcfaOrg, orgId, err)
 	}
@@ -239,10 +239,10 @@ func resourceVcfaRoleImport(_ context.Context, d *schema.ResourceData, meta inte
 	}
 	orgName, roleName := resourceURI[0], resourceURI[1]
 
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
-	// TODO: TM: Change to vcfaClient.GetTmOrgByName(orgName), requires implementing Role support for that type
-	org, err := vcfaClient.GetAdminOrgByName(orgName)
+	// TODO: TM: Change to tmClient.GetTmOrgByName(orgName), requires implementing Role support for that type
+	org, err := tmClient.GetAdminOrgByName(orgName)
 	if err != nil {
 		return nil, fmt.Errorf("[%s import] error retrieving %s '%s': %s", labelVcfaRole, labelVcfaOrg, orgName, err)
 	}

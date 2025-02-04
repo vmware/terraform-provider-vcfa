@@ -34,8 +34,8 @@ func datasourceVcfaOrgNetworking() *schema.Resource {
 }
 
 func datasourceVcfaOrgNetworkingRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
-	org, err := vcfaClient.GetTmOrgById(d.Get("org_id").(string))
+	tmClient := meta.(ClientContainer).tmClient
+	org, err := tmClient.GetTmOrgById(d.Get("org_id").(string))
 	if err != nil {
 		return diag.Errorf("error retrieving %s: %s", labelVcfaOrg, err)
 	}
@@ -48,7 +48,7 @@ func datasourceVcfaOrgNetworkingRead(ctx context.Context, d *schema.ResourceData
 		return diag.Errorf("error retrieving %s for %s:%s", labelVcfaOrgNetworking, labelVcfaOrg, err)
 	}
 
-	err = setOrgNetworkingSettingsData(vcfaClient, d, orgNetworkingSettings)
+	err = setOrgNetworkingSettingsData(tmClient, d, orgNetworkingSettings)
 	if err != nil {
 		return diag.Errorf("error storing read %s: %s", labelVcfaOrgNetworking, err)
 	}

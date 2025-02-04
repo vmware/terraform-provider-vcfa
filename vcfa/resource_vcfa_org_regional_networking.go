@@ -63,24 +63,24 @@ func resourceVcfaOrgRegionalNetworking() *schema.Resource {
 }
 
 func resourceVcfaOrgRegionalNetworkingCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.TmRegionalNetworkingSetting, types.TmRegionalNetworkingSetting]{
 		entityLabel:      labelVcfaRegionalNetworkingSetting,
 		getTypeFunc:      getTmRegionalNetworkingSettingType,
 		stateStoreFunc:   setTmRegionalNetworkingSettingData,
-		createAsyncFunc:  vcfaClient.CreateTmRegionalNetworkingSettingAsync,
-		getEntityFunc:    vcfaClient.GetTmRegionalNetworkingSettingById,
+		createAsyncFunc:  tmClient.CreateTmRegionalNetworkingSettingAsync,
+		getEntityFunc:    tmClient.GetTmRegionalNetworkingSettingById,
 		resourceReadFunc: resourceVcfaOrgRegionalNetworkingRead,
 	}
 	return createResource(ctx, d, meta, c)
 }
 
 func resourceVcfaOrgRegionalNetworkingUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.TmRegionalNetworkingSetting, types.TmRegionalNetworkingSetting]{
 		entityLabel:      labelVcfaRegionalNetworkingSetting,
 		getTypeFunc:      getTmRegionalNetworkingSettingType,
-		getEntityFunc:    vcfaClient.GetTmRegionalNetworkingSettingById,
+		getEntityFunc:    tmClient.GetTmRegionalNetworkingSettingById,
 		resourceReadFunc: resourceVcfaOrgRegionalNetworkingRead,
 	}
 
@@ -88,40 +88,40 @@ func resourceVcfaOrgRegionalNetworkingUpdate(ctx context.Context, d *schema.Reso
 }
 
 func resourceVcfaOrgRegionalNetworkingRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.TmRegionalNetworkingSetting, types.TmRegionalNetworkingSetting]{
 		entityLabel:    labelVcfaRegionalNetworkingSetting,
-		getEntityFunc:  vcfaClient.GetTmRegionalNetworkingSettingById,
+		getEntityFunc:  tmClient.GetTmRegionalNetworkingSettingById,
 		stateStoreFunc: setTmRegionalNetworkingSettingData,
 	}
 	return readResource(ctx, d, meta, c)
 }
 
 func resourceVcfaOrgRegionalNetworkingDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	c := crudConfig[*govcd.TmRegionalNetworkingSetting, types.TmRegionalNetworkingSetting]{
 		entityLabel:   labelVcfaRegionalNetworkingSetting,
-		getEntityFunc: vcfaClient.GetTmRegionalNetworkingSettingById,
+		getEntityFunc: tmClient.GetTmRegionalNetworkingSettingById,
 	}
 
 	return deleteResource(ctx, d, meta, c)
 }
 
 func resourceVcfaOrgRegionalNetworkingImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	id := strings.Split(d.Id(), ImportSeparator)
 	if len(id) != 2 {
 		return nil, fmt.Errorf("ID syntax should be <%s name>%s<%s name>", labelVcfaOrg, ImportSeparator, labelVcfaRegionalNetworkingSetting)
 	}
 
-	org, err := vcfaClient.GetTmOrgByName(id[0])
+	org, err := tmClient.GetTmOrgByName(id[0])
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s '%s': %s", labelVcfaOrg, id[0], err)
 	}
 
-	rns, err := vcfaClient.GetTmRegionalNetworkingSettingByNameAndOrgId(id[1], org.TmOrg.ID)
+	rns, err := tmClient.GetTmRegionalNetworkingSettingByNameAndOrgId(id[1], org.TmOrg.ID)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s '%s' within %s '%s': %s",
 			labelVcfaRegionalNetworkingSetting, id[1], labelVcfaOrg, id[0], err)
@@ -131,7 +131,7 @@ func resourceVcfaOrgRegionalNetworkingImport(ctx context.Context, d *schema.Reso
 	return []*schema.ResourceData{d}, nil
 }
 
-func getTmRegionalNetworkingSettingType(vcfaClient *VCDClient, d *schema.ResourceData) (*types.TmRegionalNetworkingSetting, error) {
+func getTmRegionalNetworkingSettingType(tmClient *VCDClient, d *schema.ResourceData) (*types.TmRegionalNetworkingSetting, error) {
 	t := &types.TmRegionalNetworkingSetting{
 		Name:               d.Get("name").(string),
 		OrgRef:             types.OpenApiReference{ID: d.Get("org_id").(string)},

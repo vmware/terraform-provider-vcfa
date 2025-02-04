@@ -98,15 +98,15 @@ func datasourceVcfaContentLibrary() *schema.Resource {
 }
 
 func datasourceVcfaContentLibraryRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 	c := dsReadConfig[*govcd.ContentLibrary, types.ContentLibrary]{
 		entityLabel: labelVcfaContentLibrary,
 		getEntityFunc: func(name string) (*govcd.ContentLibrary, error) {
-			tenantContext, err := getTenantContextFromOrgId(vcfaClient, d.Get("org_id").(string))
+			tenantContext, err := getTenantContextFromOrgId(tmClient, d.Get("org_id").(string))
 			if err != nil {
 				return nil, err
 			}
-			return vcfaClient.GetContentLibraryByName(name, tenantContext)
+			return tmClient.GetContentLibraryByName(name, tenantContext)
 		},
 		stateStoreFunc: setContentLibraryData,
 	}

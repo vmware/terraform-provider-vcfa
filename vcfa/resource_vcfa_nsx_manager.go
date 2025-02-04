@@ -75,12 +75,12 @@ func resourceVcfaNsxManager() *schema.Resource {
 }
 
 func resourceVcfaNsxManagerCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.NsxtManagerOpenApi, types.NsxtManagerOpenApi]{
 		entityLabel:      labelVcfaNsxManager,
 		getTypeFunc:      getNsxManagerType,
 		stateStoreFunc:   setNsxManagerData,
-		createFunc:       vcfaClient.CreateNsxtManagerOpenApi,
+		createFunc:       tmClient.CreateNsxtManagerOpenApi,
 		resourceReadFunc: resourceVcfaNsxManagerRead,
 		preCreateHooks:   []schemaHook{autoTrustHostCertificate("url", "auto_trust_certificate")},
 	}
@@ -88,11 +88,11 @@ func resourceVcfaNsxManagerCreate(ctx context.Context, d *schema.ResourceData, m
 }
 
 func resourceVcfaNsxManagerUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.NsxtManagerOpenApi, types.NsxtManagerOpenApi]{
 		entityLabel:      labelVcfaNsxManager,
 		getTypeFunc:      getNsxManagerType,
-		getEntityFunc:    vcfaClient.GetNsxtManagerOpenApiById,
+		getEntityFunc:    tmClient.GetNsxtManagerOpenApiById,
 		resourceReadFunc: resourceVcfaNsxManagerRead,
 	}
 
@@ -100,30 +100,30 @@ func resourceVcfaNsxManagerUpdate(ctx context.Context, d *schema.ResourceData, m
 }
 
 func resourceVcfaNsxManagerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.NsxtManagerOpenApi, types.NsxtManagerOpenApi]{
 		entityLabel:    labelVcfaNsxManager,
-		getEntityFunc:  vcfaClient.GetNsxtManagerOpenApiById,
+		getEntityFunc:  tmClient.GetNsxtManagerOpenApiById,
 		stateStoreFunc: setNsxManagerData,
 	}
 	return readResource(ctx, d, meta, c)
 }
 
 func resourceVcfaNsxManagerDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	c := crudConfig[*govcd.NsxtManagerOpenApi, types.NsxtManagerOpenApi]{
 		entityLabel:   labelVcfaNsxManager,
-		getEntityFunc: vcfaClient.GetNsxtManagerOpenApiById,
+		getEntityFunc: tmClient.GetNsxtManagerOpenApiById,
 	}
 
 	return deleteResource(ctx, d, meta, c)
 }
 
 func resourceVcfaNsxManagerImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
-	nsxManager, err := vcfaClient.GetNsxtManagerOpenApiByName(d.Id())
+	nsxManager, err := tmClient.GetNsxtManagerOpenApiByName(d.Id())
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s '%s': %s", labelVcfaNsxManager, d.Id(), err)
 	}

@@ -52,14 +52,14 @@ func resourceVcfaLocalUser() *schema.Resource {
 }
 
 func resourceVcfaLocalUserCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
-	tenantContext, err := getTenantContextFromOrgId(vcfaClient, d.Get("org_id").(string))
+	tmClient := meta.(ClientContainer).tmClient
+	tenantContext, err := getTenantContextFromOrgId(tmClient, d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	createFunc := func(config *types.OpenApiUser) (*govcd.OpenApiUser, error) {
-		return vcfaClient.CreateUser(config, tenantContext)
+		return tmClient.CreateUser(config, tenantContext)
 	}
 
 	c := crudConfig[*govcd.OpenApiUser, types.OpenApiUser]{
@@ -73,14 +73,14 @@ func resourceVcfaLocalUserCreate(ctx context.Context, d *schema.ResourceData, me
 }
 
 func resourceVcfaLocalUserUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
-	tenantContext, err := getTenantContextFromOrgId(vcfaClient, d.Get("org_id").(string))
+	tmClient := meta.(ClientContainer).tmClient
+	tenantContext, err := getTenantContextFromOrgId(tmClient, d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	getByIdFunc := func(id string) (*govcd.OpenApiUser, error) {
-		return vcfaClient.GetUserById(id, tenantContext)
+		return tmClient.GetUserById(id, tenantContext)
 	}
 
 	c := crudConfig[*govcd.OpenApiUser, types.OpenApiUser]{
@@ -94,8 +94,8 @@ func resourceVcfaLocalUserUpdate(ctx context.Context, d *schema.ResourceData, me
 }
 
 func resourceVcfaLocalUserRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
-	tenantContext, err := getTenantContextFromOrgId(vcfaClient, d.Get("org_id").(string))
+	tmClient := meta.(ClientContainer).tmClient
+	tenantContext, err := getTenantContextFromOrgId(tmClient, d.Get("org_id").(string))
 	if err != nil {
 		if govcd.ContainsNotFound(err) { // Org no longer exists, therefore user is also gone
 			d.SetId("")
@@ -105,7 +105,7 @@ func resourceVcfaLocalUserRead(ctx context.Context, d *schema.ResourceData, meta
 	}
 
 	getByIdFunc := func(id string) (*govcd.OpenApiUser, error) {
-		return vcfaClient.GetUserById(id, tenantContext)
+		return tmClient.GetUserById(id, tenantContext)
 	}
 
 	c := crudConfig[*govcd.OpenApiUser, types.OpenApiUser]{
@@ -117,14 +117,14 @@ func resourceVcfaLocalUserRead(ctx context.Context, d *schema.ResourceData, meta
 }
 
 func resourceVcfaLocalUserDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
-	tenantContext, err := getTenantContextFromOrgId(vcfaClient, d.Get("org_id").(string))
+	tenantContext, err := getTenantContextFromOrgId(tmClient, d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	getByIdFunc := func(id string) (*govcd.OpenApiUser, error) {
-		return vcfaClient.GetUserById(id, tenantContext)
+		return tmClient.GetUserById(id, tenantContext)
 	}
 
 	c := crudConfig[*govcd.OpenApiUser, types.OpenApiUser]{
@@ -136,14 +136,14 @@ func resourceVcfaLocalUserDelete(ctx context.Context, d *schema.ResourceData, me
 }
 
 func resourceVcfaLocalUserImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcfaClient := meta.(ClientContainer).tmClient
+	tmClient := meta.(ClientContainer).tmClient
 
 	idSlice := strings.Split(d.Id(), ImportSeparator)
 	if len(idSlice) != 2 {
 		return nil, fmt.Errorf("expected import ID to be <org name>%s<user name>", ImportSeparator)
 	}
 
-	org, err := vcfaClient.GetTmOrgByName(idSlice[0])
+	org, err := tmClient.GetTmOrgByName(idSlice[0])
 	if err != nil {
 		return nil, fmt.Errorf("error getting %s: %s", labelVcfaOrg, err)
 	}
@@ -153,7 +153,7 @@ func resourceVcfaLocalUserImport(ctx context.Context, d *schema.ResourceData, me
 		OrgName: org.TmOrg.Name,
 	}
 
-	user, err := vcfaClient.GetUserByName(idSlice[1], tenantContext)
+	user, err := tmClient.GetUserByName(idSlice[1], tenantContext)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s: %s", labelLocalUser, err)
 	}
@@ -164,8 +164,8 @@ func resourceVcfaLocalUserImport(ctx context.Context, d *schema.ResourceData, me
 	return []*schema.ResourceData{d}, nil
 }
 
-func getLocalUserType(vcfaClient *VCDClient, d *schema.ResourceData) (*types.OpenApiUser, error) {
-	org, err := vcfaClient.GetTmOrgById(d.Get("org_id").(string))
+func getLocalUserType(tmClient *VCDClient, d *schema.ResourceData) (*types.OpenApiUser, error) {
+	org, err := tmClient.GetTmOrgById(d.Get("org_id").(string))
 	if err != nil {
 		return nil, fmt.Errorf("error getting %s: %s", labelVcfaOrg, err)
 	}
@@ -183,7 +183,7 @@ func getLocalUserType(vcfaClient *VCDClient, d *schema.ResourceData) (*types.Ope
 	// Update requires ID being present
 	if d.Id() != "" { // update operation
 		t.ID = d.Id()
-		user, err := vcfaClient.GetUserById(d.Id(), nil)
+		user, err := tmClient.GetUserById(d.Id(), nil)
 		if err != nil {
 			return nil, fmt.Errorf("error retrieving %s by ID %s: %s", labelLocalUser, d.Id(), err)
 		}
