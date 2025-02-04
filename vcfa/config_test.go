@@ -718,17 +718,17 @@ func TestMain(m *testing.M) {
 	if skipLeftoversRemoval || vcfaShortTest {
 		os.Exit(exitCode)
 	}
-	gotmClient, err := getTestVCFAFromJson(testConfig)
+	tmClient, err := getTestVCFAFromJson(testConfig)
 	if err != nil {
 		fmt.Printf("error getting a govcd client: %s\n", err)
 		exitCode = 1
 	} else {
-		err = ProviderAuthenticate(gotmClient, testConfig.Provider.User, testConfig.Provider.Password, testConfig.Provider.Token, testConfig.Provider.SysOrg, testConfig.Provider.ApiToken, testConfig.Provider.ApiTokenFile, testConfig.Provider.ServiceAccountTokenFile)
+		err = ProviderAuthenticate(tmClient, testConfig.Provider.User, testConfig.Provider.Password, testConfig.Provider.Token, testConfig.Provider.SysOrg, testConfig.Provider.ApiToken, testConfig.Provider.ApiTokenFile, testConfig.Provider.ServiceAccountTokenFile)
 		if err != nil {
 			fmt.Printf("error authenticating provider: %s\n", err)
 			exitCode = 1
 		}
-		err := removeLeftovers(gotmClient, !silentLeftoversRemoval)
+		err := removeLeftovers(tmClient, !silentLeftoversRemoval)
 		if err != nil {
 			fmt.Printf("error during leftover removal: %s\n", err)
 			exitCode = 1

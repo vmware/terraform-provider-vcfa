@@ -53,7 +53,7 @@ var alwaysShow = []string{
 	"vcfa_nsx_manager",
 }
 
-func removeLeftovers(gotmClient *govcd.VCDClient, verbose bool) error {
+func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 	if verbose {
 		fmt.Printf("Start leftovers removal\n")
 	}
@@ -61,8 +61,8 @@ func removeLeftovers(gotmClient *govcd.VCDClient, verbose bool) error {
 	// --------------------------------------------------------------
 	// Org Regional Network Configuration
 	// --------------------------------------------------------------
-	if gotmClient.Client.IsSysAdmin {
-		all, err := gotmClient.GetAllTmRegionalNetworkingSettings(nil)
+	if tmClient.Client.IsSysAdmin {
+		all, err := tmClient.GetAllTmRegionalNetworkingSettings(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving All Regional Networking Settings: %s", err)
 		}
@@ -81,8 +81,8 @@ func removeLeftovers(gotmClient *govcd.VCDClient, verbose bool) error {
 	// --------------------------------------------------------------
 	// Edge Cluster QoS (Edge Clusters themselves are read-only)
 	// --------------------------------------------------------------
-	if gotmClient.Client.IsSysAdmin {
-		allEcs, err := gotmClient.GetAllTmEdgeClusters(nil)
+	if tmClient.Client.IsSysAdmin {
+		allEcs, err := tmClient.GetAllTmEdgeClusters(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving Edge Clusters: %s", err)
 		}
@@ -101,8 +101,8 @@ func removeLeftovers(gotmClient *govcd.VCDClient, verbose bool) error {
 	// --------------------------------------------------------------
 	// Content Libraries
 	// --------------------------------------------------------------
-	if gotmClient.Client.IsSysAdmin {
-		cls, err := gotmClient.GetAllContentLibraries(nil, nil)
+	if tmClient.Client.IsSysAdmin {
+		cls, err := tmClient.GetAllContentLibraries(nil, nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving Content Libraries: %s", err)
 		}
@@ -121,8 +121,8 @@ func removeLeftovers(gotmClient *govcd.VCDClient, verbose bool) error {
 	// --------------------------------------------------------------
 	// IP Spaces
 	// --------------------------------------------------------------
-	if gotmClient.Client.IsSysAdmin {
-		ipSpaces, err := gotmClient.GetAllTmIpSpaces(nil)
+	if tmClient.Client.IsSysAdmin {
+		ipSpaces, err := tmClient.GetAllTmIpSpaces(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving IP Spaces: %s", err)
 		}
@@ -141,8 +141,8 @@ func removeLeftovers(gotmClient *govcd.VCDClient, verbose bool) error {
 	// --------------------------------------------------------------
 	// VDCs
 	// --------------------------------------------------------------
-	if gotmClient.Client.IsSysAdmin {
-		vdcs, err := gotmClient.GetAllTmVdcs(nil)
+	if tmClient.Client.IsSysAdmin {
+		vdcs, err := tmClient.GetAllTmVdcs(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving VDCs: %s", err)
 		}
@@ -161,8 +161,8 @@ func removeLeftovers(gotmClient *govcd.VCDClient, verbose bool) error {
 	// --------------------------------------------------------------
 	// Regions
 	// --------------------------------------------------------------
-	if gotmClient.Client.IsSysAdmin {
-		regions, err := gotmClient.GetAllRegions(nil)
+	if tmClient.Client.IsSysAdmin {
+		regions, err := tmClient.GetAllRegions(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving Regions: %s", err)
 		}
@@ -181,8 +181,8 @@ func removeLeftovers(gotmClient *govcd.VCDClient, verbose bool) error {
 	// --------------------------------------------------------------
 	// NSX Managers
 	// --------------------------------------------------------------
-	if gotmClient.Client.IsSysAdmin {
-		allNsxManagers, err := gotmClient.GetAllNsxtManagersOpenApi(nil)
+	if tmClient.Client.IsSysAdmin {
+		allNsxManagers, err := tmClient.GetAllNsxtManagersOpenApi(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving provider NSX Managers: %s", err)
 		}
@@ -201,8 +201,8 @@ func removeLeftovers(gotmClient *govcd.VCDClient, verbose bool) error {
 	// --------------------------------------------------------------
 	// vCenters
 	// --------------------------------------------------------------
-	if gotmClient.Client.IsSysAdmin {
-		allVcs, err := gotmClient.GetAllVCenters(nil)
+	if tmClient.Client.IsSysAdmin {
+		allVcs, err := tmClient.GetAllVCenters(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving provider vCenters: %s", err)
 		}
@@ -225,8 +225,8 @@ func removeLeftovers(gotmClient *govcd.VCDClient, verbose bool) error {
 	// --------------------------------------------------------------
 	// Organizations
 	// --------------------------------------------------------------
-	if gotmClient.Client.IsSysAdmin {
-		orgs, err := gotmClient.GetAllTmOrgs(nil)
+	if tmClient.Client.IsSysAdmin {
+		orgs, err := tmClient.GetAllTmOrgs(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving Organizations: %s", err)
 		}
