@@ -86,7 +86,7 @@ func resourceVcfaOrgRegionalNetworkingVpcQos() *schema.Resource {
 }
 
 func resourceVcfaOrgRegionalNetworkingVpcQosCreateUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 	rns, err := vcfaClient.GetTmRegionalNetworkingSettingById(d.Get("org_regional_networking_id").(string))
 	if err != nil {
 		return diag.Errorf("error looking up %s by ID: %s", labelVcfaOrgNetworking, err)
@@ -109,7 +109,7 @@ func resourceVcfaOrgRegionalNetworkingVpcQosCreateUpdate(ctx context.Context, d 
 }
 
 func resourceVcfaOrgRegionalNetworkingVpcQosRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 	rns, err := vcfaClient.GetTmRegionalNetworkingSettingById(d.Id())
 	if err != nil {
 		if govcd.ContainsNotFound(err) {
@@ -137,7 +137,7 @@ func resourceVcfaOrgRegionalNetworkingVpcQosRead(ctx context.Context, d *schema.
 }
 
 func resourceVcfaOrgRegionalNetworkingVpcQosDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 	rns, err := vcfaClient.GetTmRegionalNetworkingSettingById(d.Get("org_regional_networking_id").(string))
 	if err != nil {
 		return diag.Errorf("error looking up %s by ID: %s", labelVcfaOrgNetworking, err)
@@ -162,7 +162,7 @@ func resourceVcfaOrgRegionalNetworkingVpcQosDelete(ctx context.Context, d *schem
 }
 
 func resourceVcfaOrgRegionalNetworkingVpcQosImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	id := strings.Split(d.Id(), ImportSeparator)
 	if len(id) != 2 {

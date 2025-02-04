@@ -53,7 +53,7 @@ func datasourceVcfaProviderGateway() *schema.Resource {
 }
 
 func datasourceVcfaProviderGatewayRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 	getProviderGateway := func(name string) (*govcd.TmProviderGateway, error) {
 		return vcfaClient.GetTmProviderGatewayByNameAndRegionId(name, d.Get("region_id").(string))
 	}

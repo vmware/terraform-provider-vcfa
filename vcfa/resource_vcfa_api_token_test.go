@@ -83,7 +83,7 @@ func testCheckFileExists(filename string) resource.TestCheckFunc {
 
 func testAccCheckApiTokenDestroy(tokenName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		conn := testAccProvider.Meta().(ClientContainer).VcfaClient
+		conn := testAccProvider.Meta().(ClientContainer).tmClient
 
 		for _, rs := range s.RootModule().Resources {
 			if rs.Type != "vcfa_api_token" || rs.Primary.Attributes["name"] != tokenName {

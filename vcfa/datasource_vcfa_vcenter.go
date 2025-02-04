@@ -90,7 +90,7 @@ func datasourceVcfaVcenter() *schema.Resource {
 }
 
 func datasourceVcfaVcenterRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	c := dsReadConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
 		entityLabel:    labelVcfaVirtualCenter,

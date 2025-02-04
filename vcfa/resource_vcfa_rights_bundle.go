@@ -64,7 +64,7 @@ func resourceVcfaRightsBundle() *schema.Resource {
 	}
 }
 func resourceVcfaRightsBundleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	rightsBundleName := d.Get("name").(string)
 	publishToAllTenants := d.Get("publish_to_all_orgs").(bool)
@@ -114,7 +114,7 @@ func resourceVcfaRightsBundleRead(ctx context.Context, d *schema.ResourceData, m
 }
 
 func genericVcfaRightsBundleRead(_ context.Context, d *schema.ResourceData, meta interface{}, origin, operation string) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	var rightsBundle *govcd.RightsBundle
 	var err error
@@ -182,7 +182,7 @@ func genericVcfaRightsBundleRead(_ context.Context, d *schema.ResourceData, meta
 }
 
 func resourceVcfaRightsBundleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 	rightsBundleName := d.Get("name").(string)
 	publishToAllTenants := d.Get("publish_to_all_orgs").(bool)
 
@@ -260,7 +260,7 @@ func resourceVcfaRightsBundleUpdate(ctx context.Context, d *schema.ResourceData,
 }
 
 func resourceVcfaRightsBundleDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	rightsBundleName := d.Get("name").(string)
 
@@ -291,7 +291,7 @@ func resourceVcfaRightsBundleImport(_ context.Context, d *schema.ResourceData, m
 	}
 	rightsBundleName := resourceVcfaURI[0]
 
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	rightsBundle, err := vcfaClient.Client.GetRightsBundleByName(rightsBundleName)
 	if err != nil {

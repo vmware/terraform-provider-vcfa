@@ -76,7 +76,7 @@ func datasourceVcfaRegion() *schema.Resource {
 }
 
 func datasourceVcfaRegionRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 	c := dsReadConfig[*govcd.Region, types.Region]{
 		entityLabel:    labelVcfaRegion,
 		getEntityFunc:  vcfaClient.GetRegionByName,

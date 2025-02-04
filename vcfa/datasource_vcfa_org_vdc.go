@@ -92,7 +92,7 @@ var orgVdcDsZoneResourceAllocation = &schema.Resource{
 }
 
 func datasourceVcfaOrgVdcRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 	getByNameAndOrgId := func(_ string) (*govcd.TmVdc, error) {
 		region, err := vcfaClient.GetRegionById(d.Get("region_id").(string))
 		if err != nil {

@@ -65,7 +65,7 @@ func resourceVcfaGlobalRole() *schema.Resource {
 }
 
 func resourceVcfaGlobalRoleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	globalRoleName := d.Get("name").(string)
 	publishToAllOrgs := d.Get("publish_to_all_orgs").(bool)
@@ -115,7 +115,7 @@ func resourceVcfaGlobalRoleRead(ctx context.Context, d *schema.ResourceData, met
 }
 
 func genericGlobalRoleRead(_ context.Context, d *schema.ResourceData, meta interface{}, origin, operation string) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	var globalRole *govcd.GlobalRole
 	var err error
@@ -184,7 +184,7 @@ func genericGlobalRoleRead(_ context.Context, d *schema.ResourceData, meta inter
 }
 
 func resourceVcfaGlobalRoleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	globalRoleName := d.Get("name").(string)
 
@@ -267,7 +267,7 @@ func resourceVcfaGlobalRoleUpdate(ctx context.Context, d *schema.ResourceData, m
 }
 
 func resourceVcfaGlobalRoleDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	globalRoleName := d.Get("name").(string)
 
@@ -292,7 +292,7 @@ func resourceVcfaGlobalRoleDelete(_ context.Context, d *schema.ResourceData, met
 }
 
 func resourceVcfaGlobalRoleImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 	globalRole, err := vcfaClient.Client.GetGlobalRoleByName(d.Id())
 	if err != nil {
 		return nil, fmt.Errorf("[%s import] error retrieving %s '%s': %s", labelVcfaGlobalRole, labelVcfaGlobalRole, d.Id(), err)

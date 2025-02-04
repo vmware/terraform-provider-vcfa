@@ -92,7 +92,7 @@ func testAccCheckRightsBundleExists(identifier string) resource.TestCheckFunc {
 			return fmt.Errorf("no %s ID is set", labelVcfaRightsBundle)
 		}
 
-		conn := testAccProvider.Meta().(ClientContainer).VcfaClient
+		conn := testAccProvider.Meta().(ClientContainer).tmClient
 
 		_, err := conn.Client.GetRightsBundleById(rs.Primary.ID)
 		return err
@@ -110,7 +110,7 @@ func testAccCheckRightsBundleDestroy(identifier string) resource.TestCheckFunc {
 			return fmt.Errorf("no %s ID is set", labelVcfaRightsBundle)
 		}
 
-		conn := testAccProvider.Meta().(ClientContainer).VcfaClient
+		conn := testAccProvider.Meta().(ClientContainer).tmClient
 
 		_, err := conn.Client.GetRightsBundleById(rs.Primary.ID)
 

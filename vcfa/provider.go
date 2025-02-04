@@ -222,7 +222,7 @@ func Provider() *schema.Provider {
 // ClientContainer is a structure that is being passed by Terraform SDK internally into resources via
 // meta `meta interface{}` argument. It is being initialized in providerConfigure method
 type ClientContainer struct {
-	VcfaClient *VCDClient
+	tmClient *VCDClient
 }
 
 func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
@@ -331,7 +331,7 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 	}
 
 	metaContainer := ClientContainer{
-		VcfaClient: vcfaClient,
+		tmClient: vcfaClient,
 	}
 
 	return metaContainer, providerDiagnostics

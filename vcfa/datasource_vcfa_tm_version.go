@@ -45,7 +45,7 @@ func datasourceVcfaTmVersion() *schema.Resource {
 }
 
 func datasourceVcfaTmVersionRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 	vcfaVersion, err := vcfaClient.VCDClient.Client.GetVcdShortVersion()
 	if err != nil {
 		return diag.Errorf("could not get VCFA Tenant Manager version: %s", err)

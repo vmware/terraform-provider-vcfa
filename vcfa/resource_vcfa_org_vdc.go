@@ -106,7 +106,7 @@ var orgVdcZoneResourceAllocation = &schema.Resource{
 }
 
 func resourceOrgVdcCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
 		entityLabel:      labelVcfaOrgVdc,
 		getTypeFunc:      getTmVdcType,
@@ -118,7 +118,7 @@ func resourceOrgVdcCreate(ctx context.Context, d *schema.ResourceData, meta inte
 }
 
 func resourceOrgVdcUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
 		entityLabel:      labelVcfaOrgVdc,
 		getTypeFunc:      getTmVdcType,
@@ -130,7 +130,7 @@ func resourceOrgVdcUpdate(ctx context.Context, d *schema.ResourceData, meta inte
 }
 
 func resourceOrgVdcRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
 		entityLabel:    labelVcfaOrgVdc,
 		getEntityFunc:  vcfaClient.GetTmVdcById,
@@ -140,7 +140,7 @@ func resourceOrgVdcRead(ctx context.Context, d *schema.ResourceData, meta interf
 }
 
 func resourceOrgVdcDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
 		entityLabel:   labelVcfaOrgVdc,
@@ -151,7 +151,7 @@ func resourceOrgVdcDelete(ctx context.Context, d *schema.ResourceData, meta inte
 }
 
 func resourceOrgVdcImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	idSlice := strings.Split(d.Id(), ImportSeparator)
 	if len(idSlice) != 2 {

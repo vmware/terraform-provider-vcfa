@@ -47,7 +47,7 @@ func datasourceVcfaTier0Gateway() *schema.Resource {
 }
 
 func datasourceVcfaTier0GatewayRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 	// Fetching the region to conform to standard of returning 'ErrorEntityNotFound', because the API behind
 	// GetTmTier0GatewayWithContextByName does not handle it well
 	region, err := vcfaClient.GetRegionById(d.Get("region_id").(string))

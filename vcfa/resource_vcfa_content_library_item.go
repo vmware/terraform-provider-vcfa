@@ -101,7 +101,7 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 }
 
 func resourceVcfaContentLibraryItemCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	clId := d.Get("content_library_id").(string)
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
@@ -150,7 +150,7 @@ func resourceVcfaContentLibraryItemCreate(ctx context.Context, d *schema.Resourc
 //}
 
 func resourceVcfaContentLibraryItemRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	clId := d.Get("content_library_id").(string)
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
@@ -168,7 +168,7 @@ func resourceVcfaContentLibraryItemRead(ctx context.Context, d *schema.ResourceD
 }
 
 func resourceVcfaContentLibraryItemDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	clId := d.Get("content_library_id").(string)
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
@@ -186,7 +186,7 @@ func resourceVcfaContentLibraryItemDelete(ctx context.Context, d *schema.Resourc
 }
 
 func resourceVcfaContentLibraryItemImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcfaClient := meta.(ClientContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).tmClient
 
 	id := strings.Split(d.Id(), ImportSeparator)
 	if len(id) != 2 {
