@@ -102,7 +102,7 @@ func resourceVcfaIpSpace() *schema.Resource {
 }
 
 func resourceVcfaIpSpaceCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	unlock := vcfaClient.lockById(d.Get("region_id").(string))
 	defer unlock()
 
@@ -117,7 +117,7 @@ func resourceVcfaIpSpaceCreate(ctx context.Context, d *schema.ResourceData, meta
 }
 
 func resourceVcfaIpSpaceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	unlock := vcfaClient.lockById(d.Get("region_id").(string))
 	defer unlock()
 
@@ -132,7 +132,7 @@ func resourceVcfaIpSpaceUpdate(ctx context.Context, d *schema.ResourceData, meta
 }
 
 func resourceVcfaIpSpaceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	c := crudConfig[*govcd.TmIpSpace, types.TmIpSpace]{
 		entityLabel:    labelVcfaIpSpace,
 		getEntityFunc:  vcfaClient.GetTmIpSpaceById,
@@ -142,7 +142,7 @@ func resourceVcfaIpSpaceRead(ctx context.Context, d *schema.ResourceData, meta i
 }
 
 func resourceVcfaIpSpaceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	unlock := vcfaClient.lockById(d.Get("region_id").(string))
 	defer unlock()
 
@@ -161,7 +161,7 @@ func resourceVcfaIpSpaceImport(ctx context.Context, d *schema.ResourceData, meta
 	}
 	regionName, ipSpaceName := resourceURI[0], resourceURI[1]
 
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	region, err := vcfaClient.GetRegionByName(regionName)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s by name '%s': %s", labelVcfaRegion, regionName, err)

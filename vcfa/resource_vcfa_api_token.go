@@ -62,7 +62,7 @@ func resourceVcfaApiToken() *schema.Resource {
 }
 
 func resourceVcfaApiTokenCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 
 	// System Admin can't create API tokens outside SysOrg,
 	// just as Org admins can't create API tokens in other Orgs
@@ -94,7 +94,7 @@ func resourceVcfaApiTokenCreate(ctx context.Context, d *schema.ResourceData, met
 }
 
 func resourceVcfaApiTokenRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 
 	token, err := vcfaClient.GetTokenById(d.Id())
 	if govcd.ContainsNotFound(err) {
@@ -112,7 +112,7 @@ func resourceVcfaApiTokenRead(ctx context.Context, d *schema.ResourceData, meta 
 }
 
 func resourceVcfaApiTokenDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 
 	token, err := vcfaClient.GetTokenById(d.Id())
 	if err != nil {
@@ -130,7 +130,7 @@ func resourceVcfaApiTokenDelete(ctx context.Context, d *schema.ResourceData, met
 func resourceVcfaApiTokenImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[TRACE] %s import initiated", labelVcfaApiToken)
 
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	sessionInfo, err := vcfaClient.Client.GetSessionInfo()
 	if err != nil {
 		return []*schema.ResourceData{}, fmt.Errorf("[%s import] error getting username: %s", labelVcfaApiToken, err)

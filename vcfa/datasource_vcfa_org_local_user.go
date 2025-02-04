@@ -36,7 +36,7 @@ func datasourceVcfaLocalUser() *schema.Resource {
 }
 
 func datasourceVcfaLocalUserRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	tenantContext, err := getTenantContextFromOrgId(vcfaClient, d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)

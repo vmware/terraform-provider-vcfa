@@ -129,7 +129,7 @@ func resourceVcfaContentLibrary() *schema.Resource {
 }
 
 func resourceVcfaContentLibraryCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	tenantContext, err := getTenantContextFromOrgId(vcfaClient, d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
@@ -146,7 +146,7 @@ func resourceVcfaContentLibraryCreate(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceVcfaContentLibraryRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	tenantContext, err := getTenantContextFromOrgId(vcfaClient, d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
@@ -176,7 +176,7 @@ func resourceVcfaContentLibraryRead(_ context.Context, d *schema.ResourceData, m
 }
 
 func resourceVcfaContentLibraryUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	tenantContext, err := getTenantContextFromOrgId(vcfaClient, d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
@@ -193,7 +193,7 @@ func resourceVcfaContentLibraryUpdate(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceVcfaContentLibraryDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	tenantContext, err := getTenantContextFromOrgId(vcfaClient, d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
@@ -210,7 +210,7 @@ func resourceVcfaContentLibraryDelete(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceVcfaContentLibraryImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 
 	idSplit := strings.Split(d.Id(), ImportSeparator)
 	if len(idSplit) > 2 {

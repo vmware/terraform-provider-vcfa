@@ -48,7 +48,7 @@ func datasourceVcfaOrgRegionalNetworkingVpcQos() *schema.Resource {
 }
 
 func datasourceVcfaOrgRegionalNetworkingVpcQosRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	rns, err := vcfaClient.GetTmRegionalNetworkingSettingById(d.Get("org_regional_networking_id").(string))
 	if err != nil {
 		return diag.Errorf("error looking up %s by ID: %s", labelVcfaOrgNetworking, err)

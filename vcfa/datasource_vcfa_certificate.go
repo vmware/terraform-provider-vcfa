@@ -50,7 +50,7 @@ func datasourceVcfaCertificate() *schema.Resource {
 }
 
 func datasourceVcfaCertificateRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	alias := d.Get("alias").(string)
 
 	org, err := vcfaClient.GetTmOrgById(d.Get("org_id").(string))

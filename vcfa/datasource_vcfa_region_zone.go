@@ -62,7 +62,7 @@ func datasourceVcfaRegionZone() *schema.Resource {
 }
 
 func resourceVcfaRegionZoneRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	region, err := vcfaClient.GetRegionById(d.Get("region_id").(string))
 	if err != nil {
 		return diag.Errorf("error retrieving %s: %s", labelVcfaRegion, err)

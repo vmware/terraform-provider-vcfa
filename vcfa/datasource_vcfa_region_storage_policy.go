@@ -52,7 +52,7 @@ func datasourceVcfaRegionStoragePolicy() *schema.Resource {
 }
 
 func datasourceVcfaRegionStoragePolicyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	c := dsReadConfig[*govcd.RegionStoragePolicy, types.RegionStoragePolicy]{
 		entityLabel: labelVcfaRegionStoragePolicy,
 		getEntityFunc: func(name string) (*govcd.RegionStoragePolicy, error) {

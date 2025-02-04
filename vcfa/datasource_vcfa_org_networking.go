@@ -34,7 +34,7 @@ func datasourceVcfaOrgNetworking() *schema.Resource {
 }
 
 func datasourceVcfaOrgNetworkingRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	org, err := vcfaClient.GetTmOrgById(d.Get("org_id").(string))
 	if err != nil {
 		return diag.Errorf("error retrieving %s: %s", labelVcfaOrg, err)

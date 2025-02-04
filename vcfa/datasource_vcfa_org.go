@@ -94,7 +94,7 @@ func datasourceVcfaOrg() *schema.Resource {
 }
 
 func datasourceVcfaRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	c := dsReadConfig[*govcd.TmOrg, types.TmOrg]{
 		entityLabel:    labelVcfaOrg,
 		getEntityFunc:  vcfaClient.GetTmOrgByName,

@@ -102,7 +102,7 @@ func testAccCheckRoleExists(orgId, roleId string) resource.TestCheckFunc {
 			return fmt.Errorf("no %s ID is set", labelVcfaRole)
 		}
 
-		conn := testAccProvider.Meta().(MetaContainer).VcfaClient
+		conn := testAccProvider.Meta().(ClientContainer).VcfaClient
 
 		org, err := conn.GetAdminOrgById(rsOrg.Primary.ID)
 		if err != nil {
@@ -134,7 +134,7 @@ func testAccCheckRoleDestroy(orgId, roleId string) resource.TestCheckFunc {
 			return fmt.Errorf("no %s ID is set", labelVcfaRole)
 		}
 
-		conn := testAccProvider.Meta().(MetaContainer).VcfaClient
+		conn := testAccProvider.Meta().(ClientContainer).VcfaClient
 
 		// TODO: TM: Change to vcfaClient.GetTmOrgById(orgId), requires implementing Role support for that type
 		org, err := conn.GetAdminOrgById(rsOrg.Primary.ID)

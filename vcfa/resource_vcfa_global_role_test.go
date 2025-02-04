@@ -92,7 +92,7 @@ func testAccCheckGlobalRoleExists(identifier string) resource.TestCheckFunc {
 			return fmt.Errorf("no %s ID is set", labelVcfaGlobalRole)
 		}
 
-		conn := testAccProvider.Meta().(MetaContainer).VcfaClient
+		conn := testAccProvider.Meta().(ClientContainer).VcfaClient
 
 		_, err := conn.Client.GetGlobalRoleById(rs.Primary.ID)
 		return err
@@ -110,7 +110,7 @@ func testAccCheckGlobalRoleDestroy(identifier string) resource.TestCheckFunc {
 			return fmt.Errorf("no %s ID is set", labelVcfaGlobalRole)
 		}
 
-		conn := testAccProvider.Meta().(MetaContainer).VcfaClient
+		conn := testAccProvider.Meta().(ClientContainer).VcfaClient
 
 		_, err := conn.Client.GetGlobalRoleById(rs.Primary.ID)
 

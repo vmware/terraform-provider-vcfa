@@ -98,7 +98,7 @@ func datasourceVcfaContentLibrary() *schema.Resource {
 }
 
 func datasourceVcfaContentLibraryRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	c := dsReadConfig[*govcd.ContentLibrary, types.ContentLibrary]{
 		entityLabel: labelVcfaContentLibrary,
 		getEntityFunc: func(name string) (*govcd.ContentLibrary, error) {

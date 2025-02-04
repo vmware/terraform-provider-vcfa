@@ -52,7 +52,7 @@ func resourceVcfaLocalUser() *schema.Resource {
 }
 
 func resourceVcfaLocalUserCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	tenantContext, err := getTenantContextFromOrgId(vcfaClient, d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
@@ -73,7 +73,7 @@ func resourceVcfaLocalUserCreate(ctx context.Context, d *schema.ResourceData, me
 }
 
 func resourceVcfaLocalUserUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	tenantContext, err := getTenantContextFromOrgId(vcfaClient, d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
@@ -94,7 +94,7 @@ func resourceVcfaLocalUserUpdate(ctx context.Context, d *schema.ResourceData, me
 }
 
 func resourceVcfaLocalUserRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	tenantContext, err := getTenantContextFromOrgId(vcfaClient, d.Get("org_id").(string))
 	if err != nil {
 		if govcd.ContainsNotFound(err) { // Org no longer exists, therefore user is also gone
@@ -117,7 +117,7 @@ func resourceVcfaLocalUserRead(ctx context.Context, d *schema.ResourceData, meta
 }
 
 func resourceVcfaLocalUserDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 
 	tenantContext, err := getTenantContextFromOrgId(vcfaClient, d.Get("org_id").(string))
 	if err != nil {
@@ -136,7 +136,7 @@ func resourceVcfaLocalUserDelete(ctx context.Context, d *schema.ResourceData, me
 }
 
 func resourceVcfaLocalUserImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 
 	idSlice := strings.Split(d.Id(), ImportSeparator)
 	if len(idSlice) != 2 {

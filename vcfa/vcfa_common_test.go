@@ -216,7 +216,7 @@ resource "vcfa_provider_gateway" "test" {
 
 func testAccCheckOrgDestroy(orgName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		vcfaClient := testAccProvider.Meta().(MetaContainer).VcfaClient
+		vcfaClient := testAccProvider.Meta().(ClientContainer).VcfaClient
 		org, err := vcfaClient.GetTmOrgByName(orgName)
 		if org != nil {
 			return fmt.Errorf("%s %s was found", labelVcfaOrg, orgName)
@@ -240,7 +240,7 @@ func testAccCheckVcfaOrgExists(orgResource string) resource.TestCheckFunc {
 			return fmt.Errorf("no %s ID is set", labelVcfaOrg)
 		}
 
-		conn := testAccProvider.Meta().(MetaContainer).VcfaClient
+		conn := testAccProvider.Meta().(ClientContainer).VcfaClient
 		orgName := rs.Primary.Attributes["name"]
 		_, err := conn.VCDClient.GetTmOrgByName(orgName)
 		if err != nil {

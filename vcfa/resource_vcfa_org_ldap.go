@@ -210,7 +210,7 @@ func resourceVcfaOrgLdap() *schema.Resource {
 }
 
 func resourceVcfaOrgLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	if !vcfaClient.Client.IsSysAdmin {
 		return diag.Errorf("resource vcfa_org_ldap requires System administrator privileges")
 	}
@@ -241,7 +241,7 @@ func resourceVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta i
 }
 
 func genericVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	if !vcfaClient.Client.IsSysAdmin {
 		return diag.Errorf("resource vcfa_org_ldap requires System administrator privileges")
 	}
@@ -318,7 +318,7 @@ func resourceVcfaOrgLdapUpdate(ctx context.Context, d *schema.ResourceData, meta
 }
 
 func resourceVcfaOrgLdapDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	if !vcfaClient.Client.IsSysAdmin {
 		return diag.Errorf("resource vcfa_org_ldap requires System administrator privileges")
 	}
@@ -418,7 +418,7 @@ func fillLdapSettings(d *schema.ResourceData) (*types.OrgLdapSettingsType, error
 func resourceVcfaOrgLdapImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	orgName := d.Id()
 
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 	tmOrg, err := vcfaClient.GetTmOrgByName(orgName)
 	if err != nil {
 		return nil, err

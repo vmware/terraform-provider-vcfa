@@ -73,7 +73,7 @@ func datasourceVcfaContentLibraryItem() *schema.Resource {
 }
 
 func datasourceVcfaContentLibraryItemRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(MetaContainer).VcfaClient
+	vcfaClient := meta.(ClientContainer).VcfaClient
 
 	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
 	cl, err := vcfaClient.GetContentLibraryById(d.Get("content_library_id").(string), nil)
