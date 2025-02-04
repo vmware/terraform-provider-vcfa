@@ -63,11 +63,11 @@ func datasourceVcfaRight() *schema.Resource {
 }
 
 func datasourceRightRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
 	rightName := d.Get("name").(string)
 
-	right, err := vcdClient.Client.GetRightByName(rightName)
+	right, err := tmClient.Client.GetRightByName(rightName)
 	if err != nil {
 		return diag.Errorf("[%s read] error searching for right %s: %s", labelVcfaRight, rightName, err)
 	}

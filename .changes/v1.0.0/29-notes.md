@@ -1,0 +1,1 @@
+- Use `ClientContainer` to store provider SDK Clients, including `govcd.VCDClient` [GH-29]

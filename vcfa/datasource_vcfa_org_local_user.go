@@ -36,14 +36,14 @@ func datasourceVcfaLocalUser() *schema.Resource {
 }
 
 func datasourceVcfaLocalUserRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(*VCDClient)
-	tenantContext, err := getTenantContextFromOrgId(vcfaClient, d.Get("org_id").(string))
+	tmClient := meta.(ClientContainer).tmClient
+	tenantContext, err := getTenantContextFromOrgId(tmClient, d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	getByNameFunc := func(username string) (*govcd.OpenApiUser, error) {
-		return vcfaClient.GetUserByName(username, tenantContext)
+		return tmClient.GetUserByName(username, tenantContext)
 	}
 
 	c := dsReadConfig[*govcd.OpenApiUser, types.OpenApiUser]{

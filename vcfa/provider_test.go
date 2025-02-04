@@ -126,14 +126,14 @@ func TestAccClientUserAgent(t *testing.T) {
 		InsecureFlag: testConfig.Provider.AllowInsecure,
 	}
 
-	vcdClient, err := clientConfig.Client()
+	tmClient, err := clientConfig.Client()
 	if err != nil {
 		t.Fatal("error initializing go-vcloud-director client: " + err.Error())
 	}
 
 	expectedHeaderPrefix := "terraform-provider-vcfa/"
-	if !strings.HasPrefix(vcdClient.VCDClient.Client.UserAgent, expectedHeaderPrefix) {
+	if !strings.HasPrefix(tmClient.VCDClient.Client.UserAgent, expectedHeaderPrefix) {
 		t.Fatalf("Expected User-Agent header in go-vcloud-director to be '%s', got '%s'",
-			expectedHeaderPrefix, vcdClient.VCDClient.Client.UserAgent)
+			expectedHeaderPrefix, tmClient.VCDClient.Client.UserAgent)
 	}
 }

@@ -3,12 +3,13 @@ package vcfa
 import (
 	"context"
 	"fmt"
+	"log"
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
-	"log"
-	"strings"
 )
 
 const labelVcfaContentLibrary = "Content Library"
@@ -128,16 +129,16 @@ func resourceVcfaContentLibrary() *schema.Resource {
 }
 
 func resourceVcfaContentLibraryCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
-	tenantContext, err := getTenantContextFromOrgId(vcdClient, d.Get("org_id").(string))
+	tmClient := meta.(ClientContainer).tmClient
+	tenantContext, err := getTenantContextFromOrgId(tmClient, d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	cl, err := vcdClient.CreateContentLibrary(getContentLibraryType(d), tenantContext)
+	cl, err := tmClient.CreateContentLibrary(getContentLibraryType(d), tenantContext)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	err = setContentLibraryData(vcdClient, d, cl)
+	err = setContentLibraryData(tmClient, d, cl)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -145,8 +146,8 @@ func resourceVcfaContentLibraryCreate(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceVcfaContentLibraryRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
-	tenantContext, err := getTenantContextFromOrgId(vcdClient, d.Get("org_id").(string))
+	tmClient := meta.(ClientContainer).tmClient
+	tenantContext, err := getTenantContextFromOrgId(tmClient, d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -154,10 +155,10 @@ func resourceVcfaContentLibraryRead(_ context.Context, d *schema.ResourceData, m
 	var cl *govcd.ContentLibrary
 	idOrName := d.Id()
 	if idOrName != "" {
-		cl, err = vcdClient.GetContentLibraryById(idOrName, tenantContext)
+		cl, err = tmClient.GetContentLibraryById(idOrName, tenantContext)
 	} else {
 		idOrName = d.Get("name").(string)
-		cl, err = vcdClient.GetContentLibraryByName(idOrName, tenantContext)
+		cl, err = tmClient.GetContentLibraryByName(idOrName, tenantContext)
 	}
 	if govcd.ContainsNotFound(err) {
 		d.SetId("")
@@ -167,7 +168,7 @@ func resourceVcfaContentLibraryRead(_ context.Context, d *schema.ResourceData, m
 		return diag.FromErr(err)
 	}
 
-	err = setContentLibraryData(vcdClient, d, cl)
+	err = setContentLibraryData(tmClient, d, cl)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -175,12 +176,12 @@ func resourceVcfaContentLibraryRead(_ context.Context, d *schema.ResourceData, m
 }
 
 func resourceVcfaContentLibraryUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
-	tenantContext, err := getTenantContextFromOrgId(vcdClient, d.Get("org_id").(string))
+	tmClient := meta.(ClientContainer).tmClient
+	tenantContext, err := getTenantContextFromOrgId(tmClient, d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	cl, err := vcdClient.GetContentLibraryById(d.Id(), tenantContext)
+	cl, err := tmClient.GetContentLibraryById(d.Id(), tenantContext)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -192,12 +193,12 @@ func resourceVcfaContentLibraryUpdate(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceVcfaContentLibraryDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
-	tenantContext, err := getTenantContextFromOrgId(vcdClient, d.Get("org_id").(string))
+	tmClient := meta.(ClientContainer).tmClient
+	tenantContext, err := getTenantContextFromOrgId(tmClient, d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	cl, err := vcdClient.GetContentLibraryById(d.Id(), tenantContext)
+	cl, err := tmClient.GetContentLibraryById(d.Id(), tenantContext)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -209,7 +210,7 @@ func resourceVcfaContentLibraryDelete(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceVcfaContentLibraryImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
 	idSplit := strings.Split(d.Id(), ImportSeparator)
 	if len(idSplit) > 2 {
@@ -220,13 +221,13 @@ func resourceVcfaContentLibraryImport(_ context.Context, d *schema.ResourceData,
 	var err error
 	if len(idSplit) == 1 {
 		// Nor Organization specified, meaning that is a PROVIDER Content Library
-		cl, err = vcdClient.GetContentLibraryByName(idSplit[0], nil)
+		cl, err = tmClient.GetContentLibraryByName(idSplit[0], nil)
 	} else {
-		org, err = vcdClient.GetTmOrgByName(idSplit[0])
+		org, err = tmClient.GetTmOrgByName(idSplit[0])
 		if err != nil {
 			return nil, err
 		}
-		cl, err = vcdClient.GetContentLibraryByName(idSplit[1], &govcd.TenantContext{
+		cl, err = tmClient.GetContentLibraryByName(idSplit[1], &govcd.TenantContext{
 			OrgId:   org.TmOrg.ID,
 			OrgName: org.TmOrg.Name,
 		})

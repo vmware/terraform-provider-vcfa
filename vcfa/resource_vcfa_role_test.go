@@ -4,8 +4,9 @@ package vcfa
 
 import (
 	"fmt"
-	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"testing"
+
+	"github.com/vmware/go-vcloud-director/v3/govcd"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
@@ -101,7 +102,7 @@ func testAccCheckRoleExists(orgId, roleId string) resource.TestCheckFunc {
 			return fmt.Errorf("no %s ID is set", labelVcfaRole)
 		}
 
-		conn := testAccProvider.Meta().(*VCDClient)
+		conn := testAccProvider.Meta().(ClientContainer).tmClient
 
 		org, err := conn.GetAdminOrgById(rsOrg.Primary.ID)
 		if err != nil {
@@ -133,9 +134,9 @@ func testAccCheckRoleDestroy(orgId, roleId string) resource.TestCheckFunc {
 			return fmt.Errorf("no %s ID is set", labelVcfaRole)
 		}
 
-		conn := testAccProvider.Meta().(*VCDClient)
+		conn := testAccProvider.Meta().(ClientContainer).tmClient
 
-		// TODO: TM: Change to vcdClient.GetTmOrgById(orgId), requires implementing Role support for that type
+		// TODO: TM: Change to tmClient.GetTmOrgById(orgId), requires implementing Role support for that type
 		org, err := conn.GetAdminOrgById(rsOrg.Primary.ID)
 		if err != nil {
 			// TODO: TM: Would be nice to have a method to retrieve the role without an Org. This way we can check

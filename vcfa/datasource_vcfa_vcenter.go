@@ -90,11 +90,11 @@ func datasourceVcfaVcenter() *schema.Resource {
 }
 
 func datasourceVcfaVcenterRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
 	c := dsReadConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
 		entityLabel:    labelVcfaVirtualCenter,
-		getEntityFunc:  vcdClient.GetVCenterByName,
+		getEntityFunc:  tmClient.GetVCenterByName,
 		stateStoreFunc: setVcenterData,
 	}
 	return readDatasource(ctx, d, meta, c)

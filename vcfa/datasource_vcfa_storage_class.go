@@ -3,6 +3,7 @@ package vcfa
 import (
 	"context"
 	"fmt"
+
 	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 
@@ -50,11 +51,11 @@ func datasourceVcfaStorageClass() *schema.Resource {
 }
 
 func datasourceVcfaStorageClassRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 	c := dsReadConfig[*govcd.StorageClass, types.StorageClass]{
 		entityLabel: labelVcfaStorageClass,
 		getEntityFunc: func(name string) (*govcd.StorageClass, error) {
-			return vcdClient.GetStorageClassByName(name)
+			return tmClient.GetStorageClassByName(name)
 		},
 		stateStoreFunc: setStorageClassData,
 	}

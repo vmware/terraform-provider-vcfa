@@ -15,13 +15,13 @@ func TestAccVcfaTmVersion(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
-	vcdClient := createSystemTemporaryVCFAConnection()
-	currentVersion, err := vcdClient.Client.GetVcdShortVersion()
+	tmClient := createSystemTemporaryVCFAConnection()
+	currentVersion, err := tmClient.Client.GetVcdShortVersion()
 	if err != nil {
 		t.Fatalf("could not get VCFA version: %s", err)
 	}
 
-	apiVersion, err := vcdClient.VCDClient.Client.MaxSupportedVersion()
+	apiVersion, err := tmClient.VCDClient.Client.MaxSupportedVersion()
 	if err != nil {
 		t.Fatalf("could not get VCFA API version: %s", err)
 	}

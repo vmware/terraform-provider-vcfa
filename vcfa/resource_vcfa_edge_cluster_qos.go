@@ -86,12 +86,12 @@ func resourceVcfaEdgeClusterQos() *schema.Resource {
 }
 
 func resourceVcfaEdgeClusterQosCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
 	// The Edge Cluster is already existing that is handled by 'vcfa_edge_cluster' data source.
 	// This is not a "real" entity creation, rather a lookup and update of existing one
 	createQosConfigInEdgeCluster := func(config *types.TmEdgeCluster) (*govcd.TmEdgeCluster, error) {
-		ec, err := vcdClient.GetTmEdgeClusterById(d.Get("edge_cluster_id").(string))
+		ec, err := tmClient.GetTmEdgeClusterById(d.Get("edge_cluster_id").(string))
 		if err != nil {
 			return nil, fmt.Errorf("error looking up %s by ID: %s", labelVcfaEdgeCluster, err)
 		}
@@ -109,11 +109,11 @@ func resourceVcfaEdgeClusterQosCreate(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceVcfaEdgeClusterQosUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.TmEdgeCluster, types.TmEdgeCluster]{
 		entityLabel:      labelVcfaEdgeClusterQos,
 		getTypeFunc:      getTmEdgeClusterQosType,
-		getEntityFunc:    vcdClient.GetTmEdgeClusterById,
+		getEntityFunc:    tmClient.GetTmEdgeClusterById,
 		resourceReadFunc: resourceVcfaEdgeClusterQosRead,
 	}
 
@@ -121,39 +121,39 @@ func resourceVcfaEdgeClusterQosUpdate(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceVcfaEdgeClusterQosRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.TmEdgeCluster, types.TmEdgeCluster]{
 		entityLabel:    labelVcfaEdgeClusterQos,
-		getEntityFunc:  vcdClient.GetTmEdgeClusterById,
+		getEntityFunc:  tmClient.GetTmEdgeClusterById,
 		stateStoreFunc: setTmEdgeClusterQosData,
 	}
 	return readResource(ctx, d, meta, c)
 }
 
 func resourceVcfaEdgeClusterQosDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.TmEdgeCluster, types.TmEdgeCluster]{
 		entityLabel:   labelVcfaEdgeClusterQos,
-		getEntityFunc: vcdClient.GetTmEdgeClusterById,
+		getEntityFunc: tmClient.GetTmEdgeClusterById,
 	}
 
 	return deleteResource(ctx, d, meta, c)
 }
 
 func resourceVcfaEdgeClusterQosImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 	resourceURI := strings.Split(d.Id(), ImportSeparator)
 	if len(resourceURI) != 2 {
 		return nil, fmt.Errorf("resource name must be specified as region-name.edge-cluster-name")
 	}
 	regionName, edgeClusterName := resourceURI[0], resourceURI[1]
 
-	region, err := vcdClient.GetRegionByName(regionName)
+	region, err := tmClient.GetRegionByName(regionName)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s by name '%s': %s", labelVcfaRegion, regionName, err)
 	}
 
-	ec, err := vcdClient.GetTmEdgeClusterByNameAndRegionId(edgeClusterName, region.Region.ID)
+	ec, err := tmClient.GetTmEdgeClusterByNameAndRegionId(edgeClusterName, region.Region.ID)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s by Name '%s' in %s '%s': %s",
 			labelVcfaEdgeClusterQos, edgeClusterName, labelVcfaRegion, regionName, err)
@@ -163,7 +163,7 @@ func resourceVcfaEdgeClusterQosImport(ctx context.Context, d *schema.ResourceDat
 	return []*schema.ResourceData{d}, nil
 }
 
-func getTmEdgeClusterQosType(vcdClient *VCDClient, d *schema.ResourceData) (*types.TmEdgeCluster, error) {
+func getTmEdgeClusterQosType(tmClient *VCDClient, d *schema.ResourceData) (*types.TmEdgeCluster, error) {
 	// Only the QoS configuration is updatable, everything else is read-only
 	t := &types.TmEdgeCluster{DefaultQosConfig: types.TmEdgeClusterDefaultQosConfig{}}
 

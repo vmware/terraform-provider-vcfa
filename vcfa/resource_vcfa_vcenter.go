@@ -185,14 +185,14 @@ func setVcenterData(_ *VCDClient, d *schema.ResourceData, v *govcd.VCenter) erro
 }
 
 func resourceVcfaVcenterCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
 	c := crudConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
 		entityLabel:      labelVcfaVirtualCenter,
 		getTypeFunc:      getVcenterType,
 		stateStoreFunc:   setVcenterData,
-		createAsyncFunc:  vcdClient.CreateVcenterAsync,
-		getEntityFunc:    vcdClient.GetVCenterById,
+		createAsyncFunc:  tmClient.CreateVcenterAsync,
+		getEntityFunc:    tmClient.GetVCenterById,
 		resourceReadFunc: resourceVcfaVcenterRead,
 		// certificate should be trusted for the vCenter to work
 		preCreateHooks: []schemaHook{autoTrustHostCertificate("url", "auto_trust_certificate")},
@@ -206,11 +206,11 @@ func resourceVcfaVcenterUpdate(ctx context.Context, d *schema.ResourceData, meta
 		return nil
 	}
 
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
 		entityLabel:      labelVcfaVirtualCenter,
 		getTypeFunc:      getVcenterType,
-		getEntityFunc:    vcdClient.GetVCenterById,
+		getEntityFunc:    tmClient.GetVCenterById,
 		resourceReadFunc: resourceVcfaVcenterRead,
 	}
 
@@ -218,11 +218,11 @@ func resourceVcfaVcenterUpdate(ctx context.Context, d *schema.ResourceData, meta
 }
 
 func resourceVcfaVcenterRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
 	// prefetch vCenter so that vc.VSphereVCenter.IsEnabled and vc.VSphereVCenter.IsConnected flags
 	// can be verified and avoid triggering refreshes if VC is disconnected
-	vc, err := vcdClient.GetVCenterById(d.Id())
+	vc, err := tmClient.GetVCenterById(d.Id())
 	if err != nil {
 		if govcd.ContainsNotFound(err) {
 			d.SetId("")
@@ -235,7 +235,7 @@ func resourceVcfaVcenterRead(ctx context.Context, d *schema.ResourceData, meta i
 	// URL with port http://host:443, while the one by name - doesn't). Using the same getByName to
 	// match format everywhere
 	fakeGetById := func(_ string) (*govcd.VCenter, error) {
-		return vcdClient.GetVCenterByName(vc.VSphereVCenter.Name)
+		return tmClient.GetVCenterByName(vc.VSphereVCenter.Name)
 	}
 
 	shouldRefresh := d.Get("refresh_vcenter_on_read").(bool)
@@ -254,7 +254,7 @@ func resourceVcfaVcenterRead(ctx context.Context, d *schema.ResourceData, meta i
 	}
 	c := crudConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
 		entityLabel: labelVcfaVirtualCenter,
-		// getEntityFunc:  vcdClient.GetVCenterById,// TODO: TM: use this function
+		// getEntityFunc:  tmClient.GetVCenterById,// TODO: TM: use this function
 		getEntityFunc:  fakeGetById, // TODO: TM: remove this function
 		stateStoreFunc: setVcenterData,
 		readHooks: []outerEntityHook[*govcd.VCenter]{
@@ -272,11 +272,11 @@ func resourceVcfaVcenterRead(ctx context.Context, d *schema.ResourceData, meta i
 }
 
 func resourceVcfaVcenterDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
 	c := crudConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
 		entityLabel:    labelVcfaVirtualCenter,
-		getEntityFunc:  vcdClient.GetVCenterById,
+		getEntityFunc:  tmClient.GetVCenterById,
 		preDeleteHooks: []outerEntityHook[*govcd.VCenter]{disableVcenter}, // vCenter must be disabled before deletion
 	}
 
@@ -284,9 +284,9 @@ func resourceVcfaVcenterDelete(ctx context.Context, d *schema.ResourceData, meta
 }
 
 func resourceVcfaVcenterImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
-	v, err := vcdClient.GetVCenterByName(d.Id())
+	v, err := tmClient.GetVCenterByName(d.Id())
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving %s by name: %s", labelVcfaVirtualCenter, err)
 	}
@@ -363,7 +363,7 @@ func shouldWaitForListenerStatusConnected(shouldWait bool) func(v *govcd.VCenter
 // * trustSchemaFieldName - Terraform schema field (TypeBool) name that defines if the certificate should be trusted
 // Note. It will not add new entry if the certificate is already trusted
 func autoTrustHostCertificate(urlSchemaFieldName, trustSchemaFieldName string) schemaHook {
-	return func(vcdClient *VCDClient, d *schema.ResourceData) error {
+	return func(tmClient *VCDClient, d *schema.ResourceData) error {
 		shouldExecute := d.Get(trustSchemaFieldName).(bool)
 		if !shouldExecute {
 			util.Logger.Printf("[DEBUG] Skipping certificate trust execution as '%s' is false", trustSchemaFieldName)
@@ -375,7 +375,7 @@ func autoTrustHostCertificate(urlSchemaFieldName, trustSchemaFieldName string) s
 			return fmt.Errorf("error parsing provided url '%s': %s", schemaUrl, err)
 		}
 
-		_, err = vcdClient.AutoTrustCertificate(parsedUrl)
+		_, err = tmClient.AutoTrustCertificate(parsedUrl)
 		if err != nil {
 			return fmt.Errorf("error trusting '%s' certificate: %s", schemaUrl, err)
 		}

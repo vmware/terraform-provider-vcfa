@@ -46,9 +46,9 @@ func resourceVcfaOrgNetworking() *schema.Resource {
 }
 
 func resourceVcfaOrgNetworkingCreateUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
-	org, err := vcfaClient.GetTmOrgById(d.Get("org_id").(string))
+	org, err := tmClient.GetTmOrgById(d.Get("org_id").(string))
 	if err != nil {
 		return diag.Errorf("error retrieving %s: %s", labelVcfaOrg, err)
 	}
@@ -56,7 +56,7 @@ func resourceVcfaOrgNetworkingCreateUpdate(ctx context.Context, d *schema.Resour
 	d.SetId(org.TmOrg.ID)
 	dSet(d, "org_id", org.TmOrg.ID)
 
-	orgNetworkingSettings, err := getOrgNetworkingSettingsType(vcfaClient, d)
+	orgNetworkingSettings, err := getOrgNetworkingSettingsType(tmClient, d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -70,8 +70,8 @@ func resourceVcfaOrgNetworkingCreateUpdate(ctx context.Context, d *schema.Resour
 }
 
 func resourceVcfaOrgNetworkingRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(*VCDClient)
-	org, err := vcfaClient.GetTmOrgById(d.Get("org_id").(string))
+	tmClient := meta.(ClientContainer).tmClient
+	org, err := tmClient.GetTmOrgById(d.Get("org_id").(string))
 	if err != nil {
 		return diag.Errorf("error retrieving %s: %s", labelVcfaOrg, err)
 	}
@@ -88,7 +88,7 @@ func resourceVcfaOrgNetworkingRead(ctx context.Context, d *schema.ResourceData, 
 		return diag.Errorf("error retrieving %s for %s:%s", labelVcfaOrgNetworking, labelVcfaOrg, err)
 	}
 
-	err = setOrgNetworkingSettingsData(vcfaClient, d, orgNetworkingSettings)
+	err = setOrgNetworkingSettingsData(tmClient, d, orgNetworkingSettings)
 	if err != nil {
 		return diag.Errorf("error storing read %s: %s", labelVcfaOrgNetworking, err)
 	}
@@ -97,8 +97,8 @@ func resourceVcfaOrgNetworkingRead(ctx context.Context, d *schema.ResourceData, 
 }
 
 func resourceVcfaOrgNetworkingDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcfaClient := meta.(*VCDClient)
-	org, err := vcfaClient.GetTmOrgById(d.Get("org_id").(string))
+	tmClient := meta.(ClientContainer).tmClient
+	org, err := tmClient.GetTmOrgById(d.Get("org_id").(string))
 	if err != nil {
 		return diag.Errorf("error retrieving %s: %s", labelVcfaOrg, err)
 	}
@@ -117,9 +117,9 @@ func resourceVcfaOrgNetworkingDelete(ctx context.Context, d *schema.ResourceData
 }
 
 func resourceVcfaOrgNetworkingImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
-	o, err := vcdClient.GetTmOrgByName(d.Id())
+	o, err := tmClient.GetTmOrgByName(d.Id())
 	if err != nil {
 		return nil, fmt.Errorf("error getting Org: %s", err)
 	}

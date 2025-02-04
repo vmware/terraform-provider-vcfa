@@ -51,12 +51,12 @@ func datasourceVcfaEdgeClusterQos() *schema.Resource {
 }
 
 func datasourceVcfaEdgeClusterQosRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 	c := dsReadConfig[*govcd.TmEdgeCluster, types.TmEdgeCluster]{
 		entityLabel:              labelVcfaEdgeClusterQos,
 		stateStoreFunc:           setTmEdgeClusterQosData,
 		overrideDefaultNameField: "edge_cluster_id", // pass the value of this field to getEntityFunc
-		getEntityFunc:            vcdClient.GetTmEdgeClusterById,
+		getEntityFunc:            tmClient.GetTmEdgeClusterById,
 	}
 	return readDatasource(ctx, d, meta, c)
 }

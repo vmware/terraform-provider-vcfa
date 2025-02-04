@@ -175,7 +175,7 @@ func (c *Config) Client() (*VCDClient, error) {
 
 	userAgent := buildUserAgent(BuildVersion, c.SysOrg)
 
-	vcdClient := &VCDClient{
+	tmClient := &VCDClient{
 		VCDClient: govcd.NewVCDClient(*authUrl, c.InsecureFlag,
 			govcd.WithHttpUserAgent(userAgent),
 			govcd.WithAPIVersion(minVcfaApiVersion),
@@ -185,16 +185,16 @@ func (c *Config) Client() (*VCDClient, error) {
 		Vdc:          c.Vdc,
 		InsecureFlag: c.InsecureFlag}
 
-	err = ProviderAuthenticate(vcdClient.VCDClient, c.User, c.Password, c.Token, c.SysOrg, c.ApiToken, c.ApiTokenFile, c.ServiceAccountTokenFile)
+	err = ProviderAuthenticate(tmClient.VCDClient, c.User, c.Password, c.Token, c.SysOrg, c.ApiToken, c.ApiTokenFile, c.ServiceAccountTokenFile)
 	if err != nil {
 		return nil, fmt.Errorf("something went wrong during authentication: %s", err)
 	}
 
 	cachedVCDClients.Lock()
-	cachedVCDClients.conMap[checksum] = cachedConnection{initTime: time.Now(), connection: vcdClient}
+	cachedVCDClients.conMap[checksum] = cachedConnection{initTime: time.Now(), connection: tmClient}
 	cachedVCDClients.Unlock()
 
-	return vcdClient, nil
+	return tmClient, nil
 }
 
 // callFuncName returns the name of the function that called the current function. It is used for

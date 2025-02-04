@@ -210,13 +210,13 @@ func resourceVcfaOrgLdap() *schema.Resource {
 }
 
 func resourceVcfaOrgLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
-	if !vcdClient.Client.IsSysAdmin {
+	tmClient := meta.(ClientContainer).tmClient
+	if !tmClient.Client.IsSysAdmin {
 		return diag.Errorf("resource vcfa_org_ldap requires System administrator privileges")
 	}
 	orgId := d.Get("org_id").(string)
 
-	adminOrg, err := vcdClient.GetAdminOrgById(orgId)
+	adminOrg, err := tmClient.GetAdminOrgById(orgId)
 	if err != nil {
 		return diag.Errorf("[Org LDAP %s] error searching for Org %s: %s", origin, orgId, err)
 	}
@@ -241,13 +241,13 @@ func resourceVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta i
 }
 
 func genericVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
-	if !vcdClient.Client.IsSysAdmin {
+	tmClient := meta.(ClientContainer).tmClient
+	if !tmClient.Client.IsSysAdmin {
 		return diag.Errorf("resource vcfa_org_ldap requires System administrator privileges")
 	}
 	orgId := d.Get("org_id").(string)
 
-	tmOrg, err := vcdClient.GetTmOrgById(orgId)
+	tmOrg, err := tmClient.GetTmOrgById(orgId)
 	if govcd.IsNotFound(err) && origin == "resource" {
 		log.Printf("[INFO] unable to find Organization %s LDAP settings: %s. Removing from state", orgId, err)
 		d.SetId("")
@@ -318,13 +318,13 @@ func resourceVcfaOrgLdapUpdate(ctx context.Context, d *schema.ResourceData, meta
 }
 
 func resourceVcfaOrgLdapDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
-	if !vcdClient.Client.IsSysAdmin {
+	tmClient := meta.(ClientContainer).tmClient
+	if !tmClient.Client.IsSysAdmin {
 		return diag.Errorf("resource vcfa_org_ldap requires System administrator privileges")
 	}
 	orgId := d.Get("org_id").(string)
 
-	tmOrg, err := vcdClient.GetTmOrgById(orgId)
+	tmOrg, err := tmClient.GetTmOrgById(orgId)
 	if err != nil {
 		return diag.Errorf("[Org LDAP delete] error searching for Org %s: %s", orgId, err)
 	}
@@ -418,8 +418,8 @@ func fillLdapSettings(d *schema.ResourceData) (*types.OrgLdapSettingsType, error
 func resourceVcfaOrgLdapImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	orgName := d.Id()
 
-	vcdClient := meta.(*VCDClient)
-	tmOrg, err := vcdClient.GetTmOrgByName(orgName)
+	tmClient := meta.(ClientContainer).tmClient
+	tmOrg, err := tmClient.GetTmOrgByName(orgName)
 	if err != nil {
 		return nil, err
 	}
