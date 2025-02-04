@@ -1,1 +1,1 @@
-- Use `MetaContainer` to store provider SDK Clients, including `govcd.VCDClient` [GH-29]
+- Use `ClientContainer` to store provider SDK Clients, including `govcd.VCDClient` [GH-29]
