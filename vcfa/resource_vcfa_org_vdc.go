@@ -62,6 +62,12 @@ func resourceVcfaOrgVdc() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("Name of the %s", labelVcfaOrgVdc),
 			},
+			"region_vm_class_ids": {
+				Type:        schema.TypeSet,
+				Required:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: fmt.Sprintf("A set of %s IDs to assign to this %s", labelVcfaRegionVmClass, labelVcfaOrgVdc),
+			},
 		},
 	}
 }
@@ -105,6 +111,37 @@ var orgVdcZoneResourceAllocation = &schema.Resource{
 	},
 }
 
+func assignVmClassesToRegionQuota(d *schema.ResourceData, tmClient *VCDClient) error {
+	// Lock the whole Region Quota as we're changing its internals
+	vcfa.kvLock(d.Id())
+	defer vcfa.kvUnlock(d.Id())
+
+	vmClassIds := convertSchemaSetToSliceOfStrings(d.Get("region_vm_class_ids").(*schema.Set))
+	err := tmClient.AssignVmClassesToRegionQuota(d.Id(), &types.RegionVirtualMachineClasses{Values: convertSliceOfStringsToOpenApiReferenceIds(vmClassIds)})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func saveVmClassesInState(tmClient *VCDClient, d *schema.ResourceData, vdcId string) error {
+	vmClasses, err := tmClient.GetVmClassesFromRegionQuota(vdcId)
+	if err != nil {
+		return fmt.Errorf("could not fetch VM Classes from Region Quota '%s': %s", vdcId, err)
+	}
+	if vmClasses != nil {
+		vmcIds := make([]interface{}, len(vmClasses.Values))
+		for i, vmc := range vmClasses.Values {
+			vmcIds[i] = vmc.ID
+		}
+		err = d.Set("region_vm_class_ids", vmcIds)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func resourceOrgVdcCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
@@ -112,9 +149,18 @@ func resourceOrgVdcCreate(ctx context.Context, d *schema.ResourceData, meta inte
 		getTypeFunc:      getTmVdcType,
 		stateStoreFunc:   setTmVdcData,
 		createFunc:       tmClient.CreateTmVdc,
-		resourceReadFunc: resourceOrgVdcRead,
+		resourceReadFunc: nil, // We don't use generic Read, as we didn't finish creation yet
 	}
-	return createResource(ctx, d, meta, c)
+	diags := createResource(ctx, d, meta, c)
+	if diags != nil {
+		return diags
+	}
+	err := assignVmClassesToRegionQuota(d, tmClient)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	return resourceOrgVdcRead(ctx, d, meta)
 }
 
 func resourceOrgVdcUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -123,18 +169,33 @@ func resourceOrgVdcUpdate(ctx context.Context, d *schema.ResourceData, meta inte
 		entityLabel:      labelVcfaOrgVdc,
 		getTypeFunc:      getTmVdcType,
 		getEntityFunc:    tmClient.GetTmVdcById,
-		resourceReadFunc: resourceOrgVdcRead,
+		resourceReadFunc: nil, // We don't use generic Read, as we didn't finish updating yet
 	}
 
-	return updateResource(ctx, d, meta, c)
+	diags := updateResource(ctx, d, meta, c)
+	if diags != nil {
+		return diags
+	}
+	err := assignVmClassesToRegionQuota(d, tmClient)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	return resourceOrgVdcRead(ctx, d, meta)
 }
 
 func resourceOrgVdcRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
-		entityLabel:    labelVcfaOrgVdc,
-		getEntityFunc:  tmClient.GetTmVdcById,
-		stateStoreFunc: setTmVdcData,
+		entityLabel:   labelVcfaOrgVdc,
+		getEntityFunc: tmClient.GetTmVdcById,
+		stateStoreFunc: func(tmClient *VCDClient, d *schema.ResourceData, outerType *govcd.TmVdc) error {
+			err := setTmVdcData(tmClient, d, outerType)
+			if err != nil {
+				return err
+			}
+			return saveVmClassesInState(tmClient, d, outerType.TmVdc.ID)
+		},
 	}
 	return readResource(ctx, d, meta, c)
 }
@@ -212,7 +273,7 @@ func getTmVdcType(tmClient *VCDClient, d *schema.ResourceData) (*types.TmVdc, er
 	return t, nil
 }
 
-func setTmVdcData(_ *VCDClient, d *schema.ResourceData, vdc *govcd.TmVdc) error {
+func setTmVdcData(tmClient *VCDClient, d *schema.ResourceData, vdc *govcd.TmVdc) error {
 	if vdc == nil {
 		return fmt.Errorf("provided VDC is nil")
 	}
@@ -258,6 +319,5 @@ func setTmVdcData(_ *VCDClient, d *schema.ResourceData, vdc *govcd.TmVdc) error 
 	if err != nil {
 		return fmt.Errorf("error setting 'zone_resource_allocations' after read: %s", err)
 	}
-
 	return nil
 }

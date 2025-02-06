@@ -42,6 +42,7 @@ var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_ip_space":                        datasourceVcfaIpSpace(),                     // 1.0
 	"vcfa_region_zone":                     datasourceVcfaRegionZone(),                  // 1.0
 	"vcfa_org_vdc":                         datasourceVcfaOrgVdc(),                      // 1.0
+	"vcfa_region_vm_class":                 datasourceVcfaRegionVmClass(),               // 1.0
 	"vcfa_region_storage_policy":           datasourceVcfaRegionStoragePolicy(),         // 1.0
 	"vcfa_storage_class":                   datasourceVcfaStorageClass(),                // 1.0
 	"vcfa_content_library":                 datasourceVcfaContentLibrary(),              // 1.0
