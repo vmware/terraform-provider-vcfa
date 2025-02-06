@@ -80,6 +80,7 @@ func testSpecificDataSourceNotFound(dataSourceName string, tmClient *VCDClient) 
 			"vcfa_ip_space",
 			"vcfa_region_zone",
 			"vcfa_org_vdc",
+			"vcfa_region_vm_class",
 			"vcfa_tier0_gateway",
 			"vcfa_content_library",
 			"vcfa_content_library_item",
