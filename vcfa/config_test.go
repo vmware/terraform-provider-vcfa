@@ -85,12 +85,13 @@ type TestConfig struct {
 		UseConnectionCache       bool   `json:"useConnectionCache"`
 	} `json:"provider"`
 	Tm struct {
-		Org            string `json:"org"` // temporary field to make skipIfNotTm work
-		CreateRegion   bool   `json:"createRegion"`
-		Region         string `json:"region"`
-		StorageClass   string `json:"storageClass"`
-		Vdc            string `json:"vdc"`
-		ContentLibrary string `json:"contentLibrary"`
+		Org             string   `json:"org"` // temporary field to make skipIfNotTm work
+		CreateRegion    bool     `json:"createRegion"`
+		Region          string   `json:"region"`
+		StorageClass    string   `json:"storageClass"`
+		RegionVmClasses []string `json:"regionVmClasses"`
+		Vdc             string   `json:"vdc"`
+		ContentLibrary  string   `json:"contentLibrary"`
 
 		CreateNsxManager   bool   `json:"createNsxManager"`
 		NsxManagerUsername string `json:"nsxManagerUsername"`

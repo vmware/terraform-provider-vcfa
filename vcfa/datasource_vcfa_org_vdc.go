@@ -52,6 +52,12 @@ func datasourceVcfaOrgVdc() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("%s status", labelVcfaOrgVdc),
 			},
+			"region_vm_class_ids": {
+				Type:        schema.TypeSet,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: fmt.Sprintf("A set of %s IDs assigned to this %s", labelVcfaRegionVmClass, labelVcfaOrgVdc),
+			},
 		},
 	}
 }
@@ -106,9 +112,15 @@ func datasourceVcfaOrgVdcRead(ctx context.Context, d *schema.ResourceData, meta 
 	}
 
 	c := dsReadConfig[*govcd.TmVdc, types.TmVdc]{
-		entityLabel:    labelVcfaOrgVdc,
-		getEntityFunc:  getByNameAndOrgId,
-		stateStoreFunc: setTmVdcData,
+		entityLabel:   labelVcfaOrgVdc,
+		getEntityFunc: getByNameAndOrgId,
+		stateStoreFunc: func(tmClient *VCDClient, d *schema.ResourceData, outerType *govcd.TmVdc) error {
+			err := setTmVdcData(tmClient, d, outerType)
+			if err != nil {
+				return err
+			}
+			return saveVmClassesInState(tmClient, d, outerType.TmVdc.ID)
+		},
 	}
 	return readDatasource(ctx, d, meta, c)
 }

@@ -4,6 +4,7 @@ package vcfa
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -16,12 +17,14 @@ func TestAccVcfaOrgVdc(t *testing.T) {
 	vCenterHcl, vCenterHclRef := getVCenterHcl(t)
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
 	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
+	vmClassesHcl, vmClassesRefs := getRegionVmClassesHcl(t, regionHclRef)
 	var params = StringMap{
 		"Testname":           t.Name(),
 		"SupervisorName":     testConfig.Tm.VcenterSupervisor,
 		"SupervisorZoneName": testConfig.Tm.VcenterSupervisorZone,
 		"VcenterRef":         vCenterHclRef,
 		"RegionId":           fmt.Sprintf("%s.id", regionHclRef),
+		"RegionVmClassRefs":  strings.Join(vmClassesRefs, ".id,\n    ") + ".id",
 		"Tags":               "tm org vdc",
 	}
 	testParamsNotEmpty(t, params)
@@ -33,7 +36,7 @@ func TestAccVcfaOrgVdc(t *testing.T) {
 	configText0 := templateFill(vCenterHcl+nsxManagerHcl+skipBinaryTest, params)
 	params["FuncName"] = t.Name() + "-step0"
 
-	preRequisites := vCenterHcl + nsxManagerHcl + regionHcl
+	preRequisites := vCenterHcl + nsxManagerHcl + regionHcl + vmClassesHcl
 	configText1 := templateFill(preRequisites+testAccVcfaOrgVdcStep1, params)
 	params["FuncName"] = t.Name() + "-step2"
 	configText2 := templateFill(preRequisites+testAccVcfaOrgVdcStep2, params)
@@ -134,7 +137,9 @@ resource "vcfa_org_vdc" "test" {
     memory_limit_mib       = 1024
     memory_reservation_mib = 512
   }
-  
+  region_vm_class_ids = [
+    {{.RegionVmClassRefs}}
+  ]
 }
 
 resource "vcfa_org" "test" {
@@ -175,6 +180,9 @@ resource "vcfa_org_vdc" "test" {
     memory_limit_mib       = 500
     memory_reservation_mib = 200
   }
+  region_vm_class_ids = [
+    {{.RegionVmClassRefs}}
+  ]
 }
 `
 

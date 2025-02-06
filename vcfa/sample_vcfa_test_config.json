@@ -28,6 +28,7 @@
     "createRegion": true,
     "region": "one-region",
     "storageClass": "vSAN Default Storage Policy",
+    "regionVmClasses": ["best-effort-4xlarge", "best-effort-8xlarge"],
     "vdc": "one-vdc",
     "contentLibrary": "content-library-one",
     "//": "Library is named 'terraform-provider-vcfa-publisher-cl' in below vCenter instance",
