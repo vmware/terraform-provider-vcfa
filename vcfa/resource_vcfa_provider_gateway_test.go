@@ -73,7 +73,7 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "nsxt_tier0_gateway_id"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "name", t.Name()),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "description", "Made using Terraform"),
-					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "ip_space_ids.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "ip_space_ids.#", "2"),
 				),
 			},
 			{
@@ -161,7 +161,7 @@ resource "vcfa_provider_gateway" "test" {
   description           = "Made using Terraform"
   region_id             = {{.RegionId}}
   nsxt_tier0_gateway_id = data.vcfa_tier0_gateway.test.id
-  ip_space_ids          = [ vcfa_ip_space.test.id ]
+  ip_space_ids          = [ vcfa_ip_space.test.id, vcfa_ip_space.test2.id ]
 }
 `
 

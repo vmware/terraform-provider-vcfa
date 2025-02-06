@@ -74,27 +74,26 @@ func TestAccVcfaOrgVdc(t *testing.T) {
 					}),
 				),
 			},
-			// TODO: TM: Update throws a NullPointerException when trying to modify Region Zone allocations
-			//{
-			//	Config: configText2,
-			//	Check: resource.ComposeTestCheckFunc(
-			//		resource.TestCheckResourceAttrSet("vcfa_org_vdc.test", "id"),
-			//		resource.TestCheckResourceAttr("vcfa_org_vdc.test", "name", fmt.Sprintf("%s_%s", params["Testname"], testConfig.Tm.Region)), // Name is a combination of Org name + Region name
-			//		resource.TestCheckResourceAttr("vcfa_org_vdc.test", "status", "READY"),
-			//		resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "org_id", "vcfa_org.test", "id"),
-			//		resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "region_id", "vcfa_region.region", "id"),
-			//		resource.TestCheckResourceAttr("vcfa_org_vdc.test", "supervisor_ids.#", "1"),
-			//		resource.TestCheckTypeSetElemAttrPair("vcfa_org_vdc.test", "supervisor_ids.*", "data.vcfa_supervisor.test", "id"),
-			//		resource.TestCheckResourceAttr("vcfa_org_vdc.test", "zone_resource_allocations.#", "1"),
-			//		resource.TestCheckTypeSetElemNestedAttrs("vcfa_org_vdc.test", "zone_resource_allocations.*", map[string]string{
-			//			"region_zone_name":       testConfig.Tm.VcenterSupervisorZone,
-			//			"cpu_limit_mhz":          "1900",
-			//			"cpu_reservation_mhz":    "90",
-			//			"memory_limit_mib":       "500",
-			//			"memory_reservation_mib": "200",
-			//		}),
-			//	),
-			//},
+			{
+				Config: configText2,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("vcfa_org_vdc.test", "id"),
+					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "name", fmt.Sprintf("%s_%s", params["Testname"], testConfig.Tm.Region)), // Name is a combination of Org name + Region name
+					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "status", "READY"),
+					resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "org_id", "vcfa_org.test", "id"),
+					resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "region_id", "vcfa_region.region", "id"),
+					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "supervisor_ids.#", "1"),
+					resource.TestCheckTypeSetElemAttrPair("vcfa_org_vdc.test", "supervisor_ids.*", "data.vcfa_supervisor.test", "id"),
+					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "zone_resource_allocations.#", "1"),
+					resource.TestCheckTypeSetElemNestedAttrs("vcfa_org_vdc.test", "zone_resource_allocations.*", map[string]string{
+						"region_zone_name":       testConfig.Tm.VcenterSupervisorZone,
+						"cpu_limit_mhz":          "1900",
+						"cpu_reservation_mhz":    "90",
+						"memory_limit_mib":       "500",
+						"memory_reservation_mib": "200",
+					}),
+				),
+			},
 			{
 				Config: configText3,
 				Check: resource.ComposeTestCheckFunc(
@@ -178,8 +177,7 @@ resource "vcfa_org_vdc" "test" {
 }
 `
 
-// TODO: TM: Change to testAccVcfaOrgVdcStep2 when Update is fixed
-const testAccVcfaOrgVdcStep3DS = testAccVcfaOrgVdcStep1 + `
+const testAccVcfaOrgVdcStep3DS = testAccVcfaOrgVdcStep2 + `
 data "vcfa_org_vdc" "test" {
   org_id    = vcfa_org.test.id
   region_id = {{.RegionId}}
