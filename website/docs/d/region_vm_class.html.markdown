@@ -23,7 +23,7 @@ data "vcfa_region_vm_class" "vm_class" {
   region_id = data.vcfa_region.region1.id
 }
 
-data "vcfa_region_vm_class" "vm_class" {
+data "vcfa_region_vm_class" "vm_class2" {
   name      = "best-effort-8xlarge"
   region_id = data.vcfa_region.region1.id
 }

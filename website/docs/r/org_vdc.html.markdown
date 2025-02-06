@@ -31,6 +31,16 @@ data "vcfa_region_zone" "one" {
   name      = "my-zone"
 }
 
+data "vcfa_region_vm_class" "vm_class1" {
+  name      = "best-effort-4xlarge"
+  region_id = data.vcfa_region.region1.id
+}
+
+data "vcfa_region_vm_class" "vm_class2" {
+  name      = "best-effort-8xlarge"
+  region_id = data.vcfa_region.region1.id
+}
+
 resource "vcfa_org_vdc" "first" {
   org_id         = vcfa_org.test.id
   region_id      = data.vcfa_region.one.id
@@ -42,6 +52,10 @@ resource "vcfa_org_vdc" "first" {
     memory_limit_mib       = 1024
     memory_reservation_mib = 512
   }
+  region_vm_class_ids = [
+    data.vcfa_region_vm_class.vm_class1.id,
+    data.vcfa_region_vm_class.vm_class2.id,
+  ]
 }
 ```
 
@@ -54,6 +68,7 @@ The following arguments are supported:
 - `supervisor_ids` - (Required) A set of Supervisor IDs that back this Organization VDC (Region Quota). Can be looked up
   using [`vcfa_supervisor`](/providers/vmware/vcfa/latest/docs/data-sources/supervisor) data source
 - `zone_resource_allocations` - (Required) A set of Zone Resource Allocation definitions. See [Zone Resource Allocations](#zone-resource-allocations-block)
+- `region_vm_class_ids` - (Required) A set of Region VM Class IDs. These can be fetched with [`vcfa_region_vm_class` data source](/providers/vmware/vcfa/latest/docs/data-sources/region_vm_class)
 
 <a id="zone-resource-allocations-block"></a>
 ## Zone Resource Allocations

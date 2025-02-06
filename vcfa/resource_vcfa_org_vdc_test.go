@@ -134,6 +134,7 @@ resource "vcfa_org_vdc" "test" {
     memory_limit_mib       = 1024
     memory_reservation_mib = 512
   }
+  
 }
 
 resource "vcfa_org" "test" {
