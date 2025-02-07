@@ -9,7 +9,7 @@ description: |-
 # vcfa\_region\_vm\_class
 
 Provides a data source to read Region Virtual Machine Classes in VMware Cloud Foundation Automation. These are useful
-when configuring an [Organization Region Quota](/providers/vmware/vcfa/latest/docs/resources/org_vdc) `region_vm_class_ids` argument.
+when configuring an [Organization Region Quota](/providers/vmware/vcfa/latest/docs/resources/org_region_quota) `region_vm_class_ids` argument.
 
 ## Example Usage
 
