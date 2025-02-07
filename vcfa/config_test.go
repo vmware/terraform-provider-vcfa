@@ -90,7 +90,6 @@ type TestConfig struct {
 		Region          string   `json:"region"`
 		StorageClass    string   `json:"storageClass"`
 		RegionVmClasses []string `json:"regionVmClasses"`
-		RegionQuota     string   `json:"regionQuota"`
 		ContentLibrary  string   `json:"contentLibrary"`
 
 		CreateNsxManager   bool   `json:"createNsxManager"`
