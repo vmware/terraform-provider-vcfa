@@ -55,11 +55,6 @@ func resourceVcfaNsxManager() *schema.Resource {
 				ForceNew:    true,
 				Description: fmt.Sprintf("Defines if the %s certificate should automatically be trusted", labelVcfaNsxManager),
 			},
-			"network_provider_scope": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: fmt.Sprintf("Network Provider Scope for %s", labelVcfaNsxManager),
-			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -133,12 +128,11 @@ func resourceVcfaNsxManagerImport(ctx context.Context, d *schema.ResourceData, m
 
 func getNsxManagerType(_ *VCDClient, d *schema.ResourceData) (*types.NsxtManagerOpenApi, error) {
 	t := &types.NsxtManagerOpenApi{
-		Name:                 d.Get("name").(string),
-		Description:          d.Get("description").(string),
-		Username:             d.Get("username").(string),
-		Password:             d.Get("password").(string),
-		Url:                  d.Get("url").(string),
-		NetworkProviderScope: d.Get("network_provider_scope").(string),
+		Name:        d.Get("name").(string),
+		Description: d.Get("description").(string),
+		Username:    d.Get("username").(string),
+		Password:    d.Get("password").(string),
+		Url:         d.Get("url").(string),
 	}
 
 	return t, nil
@@ -156,7 +150,6 @@ func setNsxManagerData(_ *VCDClient, d *schema.ResourceData, t *govcd.NsxtManage
 	dSet(d, "username", n.Username)
 	// dSet(d, "password", n.Password) // real password is never returned
 	dSet(d, "url", n.Url)
-	dSet(d, "network_provider_scope", n.NetworkProviderScope)
 	dSet(d, "status", n.Status)
 	dSet(d, "href", t.BuildHref())
 
