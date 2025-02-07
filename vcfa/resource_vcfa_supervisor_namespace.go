@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/vmware/go-vcloud-director/v3/tpTypes"
+	"github.com/vmware/go-vcloud-director/v3/tptypes"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -229,7 +229,7 @@ func resourceVcfaSupervisorNamespaceCreate(ctx context.Context, d *schema.Resour
 		return diag.Errorf("error creating %s: %s", labelSupervisorNamespace, err)
 	}
 
-	d.SetId(buildResourceId(d.Get("project_name").(string), createdSupervisorNamespace.SupervisorNamespace.GetName()))
+	d.SetId(buildSupervisorNamespaceResourceId(d.Get("project_name").(string), createdSupervisorNamespace.SupervisorNamespace.GetName()))
 
 	return resourceVcfaSupervisorNamespaceRead(ctx, d, meta)
 }
@@ -241,7 +241,7 @@ func resourceVcfaSupervisorNamespaceUpdate(ctx context.Context, d *schema.Resour
 func resourceVcfaSupervisorNamespaceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tpClient := meta.(ClientContainer).tpClient
 
-	projectName, name, err := parseResourceId(d.Id())
+	projectName, name, err := parseSupervisorNamespaceResourceId(d.Id())
 	if err != nil {
 		return diag.Errorf("error parsing %s resource id %s: %s", labelSupervisorNamespace, d.Id(), err)
 	}
@@ -261,7 +261,7 @@ func resourceVcfaSupervisorNamespaceRead(ctx context.Context, d *schema.Resource
 func resourceVcfaSupervisorNamespaceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tpClient := meta.(ClientContainer).tpClient
 
-	projectName, name, err := parseResourceId(d.Id())
+	projectName, name, err := parseSupervisorNamespaceResourceId(d.Id())
 	if err != nil {
 		return diag.Errorf("error parsing %s resource id %s: %s", labelSupervisorNamespace, d.Id(), err)
 	}
@@ -294,64 +294,16 @@ func resourceVcfaSupervisorNamespaceImport(ctx context.Context, d *schema.Resour
 		return nil, fmt.Errorf("error reading %s: %s", labelSupervisorNamespace, err)
 	}
 
-	d.SetId(buildResourceId(projectName, name))
+	d.SetId(buildSupervisorNamespaceResourceId(projectName, name))
 
 	return []*schema.ResourceData{d}, nil
 }
 
-// func createsupervisorNamespace(tmClient *VCDClient, projectName string, supervisorNamespace supervisorNamespace) (supervisorNamespace, error) {
-// 	var supervisorNamespaceOut supervisorNamespace
-// 	supervisorNamespaceURL, err := buildsupervisorNamespaceURL(tmClient, projectName, "")
-// 	if err != nil {
-// 		return supervisorNamespace, fmt.Errorf("error building %s URL: %s", labelSupervisorNamespace, err)
-// 	}
-// 	if err := tmClient.VCDClient.Client.OpenApiPostItem(tpTypes.SupervisorNamespaceVersion, supervisorNamespaceURL, nil, &supervisorNamespace, &supervisorNamespaceOut, nil); err != nil {
-// 		return supervisorNamespace, fmt.Errorf("error creating %s in Project %s: %s", labelSupervisorNamespace, projectName, err)
-// 	}
-// 	return supervisorNamespaceOut, nil
-// }
-
-// func readsupervisorNamespace(tmClient *VCDClient, projectName string, supervisorNamespaceName string) (supervisorNamespace, error) {
-// 	var supervisorNamespace supervisorNamespace
-// 	supervisorNamespaceURL, err := buildsupervisorNamespaceURL(tmClient, projectName, supervisorNamespaceName)
-// 	if err != nil {
-// 		return supervisorNamespace, fmt.Errorf("error building %s URL: %s", labelSupervisorNamespace, err)
-// 	}
-// 	if err := tmClient.VCDClient.Client.OpenApiGetItem(tpTypes.SupervisorNamespaceVersion, supervisorNamespaceURL, nil, &supervisorNamespace, nil); err != nil {
-// 		return supervisorNamespace, fmt.Errorf("error reading %s %s in Project %s: %s", labelSupervisorNamespace, supervisorNamespaceName, projectName, err)
-// 	}
-// 	return supervisorNamespace, nil
-// }
-
-// func deletesupervisorNamespace(tmClient *VCDClient, projectName string, supervisorNamespaceName string) error {
-// 	supervisorNamespaceURL, err := buildsupervisorNamespaceURL(tmClient, projectName, supervisorNamespaceName)
-// 	if err != nil {
-// 		return fmt.Errorf("error building %s URL: %s", labelSupervisorNamespace, err)
-// 	}
-// 	if err := tmClient.VCDClient.Client.OpenApiDeleteItem(tpTypes.SupervisorNamespaceVersion, supervisorNamespaceURL, nil, nil); err != nil {
-// 		return fmt.Errorf("error deleting %s %s in Project %s: %s", labelSupervisorNamespace, supervisorNamespaceName, projectName, err)
-// 	}
-// 	return nil
-// }
-
-// func buildsupervisorNamespaceURL(tmClient *VCDClient, projectName string, supervisorNamespaceName string) (*url.URL, error) {
-// 	server := fmt.Sprintf(cciKubernetesSubpath, tmClient.Client.VCDHREF.Scheme, tmClient.Client.VCDHREF.Host)
-// 	supervisorNamespaceRawURL := fmt.Sprintf(tpTypes.SupervisorNamespacesURL, server, projectName)
-// 	if supervisorNamespaceName != "" {
-// 		supervisorNamespaceRawURL = supervisorNamespaceRawURL + "/" + supervisorNamespaceName
-// 	}
-// 	supervisorNamespaceURL, err := url.ParseRequestURI(supervisorNamespaceRawURL)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("error parsing %s URL %s: %s", labelSupervisorNamespace, supervisorNamespaceRawURL, err)
-// 	}
-// 	return supervisorNamespaceURL, nil
-// }
-
-func buildResourceId(projectName string, supervisorNamespaceName string) string {
+func buildSupervisorNamespaceResourceId(projectName string, supervisorNamespaceName string) string {
 	return fmt.Sprintf("%s:%s", projectName, supervisorNamespaceName)
 }
 
-func parseResourceId(id string) (string, string, error) {
+func parseSupervisorNamespaceResourceId(id string) (string, string, error) {
 	idParts := strings.Split(id, ":")
 	if len(idParts) != 2 {
 		return "", "", fmt.Errorf("id %s does not contain two parts", id)
@@ -359,20 +311,20 @@ func parseResourceId(id string) (string, string, error) {
 	return idParts[0], idParts[1], nil
 }
 
-func getsupervisorNamespaceType(d *schema.ResourceData) *tpTypes.SupervisorNamespace {
-	supervisorNamespace := &tpTypes.SupervisorNamespace{
+func getsupervisorNamespaceType(d *schema.ResourceData) *tptypes.SupervisorNamespace {
+	supervisorNamespace := &tptypes.SupervisorNamespace{
 		TypeMeta: v1.TypeMeta{
-			Kind:       tpTypes.SupervisorNamespaceKind,
-			APIVersion: tpTypes.SupervisorNamespaceAPI + "/" + tpTypes.SupervisorNamespaceVersion,
+			Kind:       tptypes.SupervisorNamespaceKind,
+			APIVersion: tptypes.SupervisorNamespaceAPI + "/" + tptypes.SupervisorNamespaceVersion,
 		},
 		ObjectMeta: v1.ObjectMeta{
 			GenerateName: d.Get("name_prefix").(string),
 			Namespace:    d.Get("project_name").(string),
 		},
-		Spec: tpTypes.SupervisorNamespaceSpec{
+		Spec: tptypes.SupervisorNamespaceSpec{
 			ClassName:                   d.Get("class_name").(string),
 			Description:                 d.Get("description").(string),
-			InitialClassConfigOverrides: tpTypes.SupervisorNamespaceSpecInitialClassConfigOverrides{},
+			InitialClassConfigOverrides: tptypes.SupervisorNamespaceSpecInitialClassConfigOverrides{},
 			RegionName:                  d.Get("region_name").(string),
 			VpcName:                     d.Get("vpc_name").(string),
 		},
@@ -380,10 +332,10 @@ func getsupervisorNamespaceType(d *schema.ResourceData) *tpTypes.SupervisorNames
 
 	storageClassesInitialClassConfigOverridesList := d.Get("storage_classes_initial_class_config_overrides").(*schema.Set).List()
 	if len(storageClassesInitialClassConfigOverridesList) > 0 {
-		storageClassesInitialClassConfigOverrides := make([]tpTypes.SupervisorNamespaceSpecInitialClassConfigOverridesStorageClass, len(storageClassesInitialClassConfigOverridesList))
+		storageClassesInitialClassConfigOverrides := make([]tptypes.SupervisorNamespaceSpecInitialClassConfigOverridesStorageClass, len(storageClassesInitialClassConfigOverridesList))
 		for i, k := range storageClassesInitialClassConfigOverridesList {
 			storageClass := k.(map[string]interface{})
-			storageClassesInitialClassConfigOverrides[i] = tpTypes.SupervisorNamespaceSpecInitialClassConfigOverridesStorageClass{
+			storageClassesInitialClassConfigOverrides[i] = tptypes.SupervisorNamespaceSpecInitialClassConfigOverridesStorageClass{
 				LimitMiB: int64(storageClass["limit_mib"].(int)),
 				Name:     storageClass["name"].(string),
 			}
@@ -393,10 +345,10 @@ func getsupervisorNamespaceType(d *schema.ResourceData) *tpTypes.SupervisorNames
 
 	zonesInitialClassConfigOverridesList := d.Get("zones_initial_class_config_overrides").(*schema.Set).List()
 	if len(zonesInitialClassConfigOverridesList) > 0 {
-		zonesInitialClassConfigOverrides := make([]tpTypes.SupervisorNamespaceSpecInitialClassConfigOverridesZone, len(zonesInitialClassConfigOverridesList))
+		zonesInitialClassConfigOverrides := make([]tptypes.SupervisorNamespaceSpecInitialClassConfigOverridesZone, len(zonesInitialClassConfigOverridesList))
 		for i, k := range zonesInitialClassConfigOverridesList {
 			zone := k.(map[string]interface{})
-			zonesInitialClassConfigOverrides[i] = tpTypes.SupervisorNamespaceSpecInitialClassConfigOverridesZone{
+			zonesInitialClassConfigOverrides[i] = tptypes.SupervisorNamespaceSpecInitialClassConfigOverridesZone{
 				CpuLimitMHz:          int64(zone["cpu_limit_mhz"].(int)),
 				CpuReservationMHz:    int64(zone["cpu_reservation_mhz"].(int)),
 				MemoryLimitMiB:       int64(zone["memory_limit_mib"].(int)),
@@ -410,12 +362,12 @@ func getsupervisorNamespaceType(d *schema.ResourceData) *tpTypes.SupervisorNames
 	return supervisorNamespace
 }
 
-func setsupervisorNamespaceData(d *schema.ResourceData, projectName string, supervisorNamespaceName string, supervisorNamespace *tpTypes.SupervisorNamespace) error {
+func setsupervisorNamespaceData(d *schema.ResourceData, projectName string, supervisorNamespaceName string, supervisorNamespace *tptypes.SupervisorNamespace) error {
 	if supervisorNamespace == nil {
 		return fmt.Errorf("error - provided Supervisor Namespace")
 	}
 
-	d.SetId(buildResourceId(projectName, supervisorNamespaceName))
+	d.SetId(buildSupervisorNamespaceResourceId(projectName, supervisorNamespaceName))
 	dSet(d, "name", supervisorNamespaceName)
 	dSet(d, "project_name", projectName)
 	dSet(d, "class_name", supervisorNamespace.Spec.ClassName)
