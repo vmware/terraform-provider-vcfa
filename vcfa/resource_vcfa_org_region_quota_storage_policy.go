@@ -12,6 +12,11 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
+// TODO: TM:
+// - Data source
+// - Test
+// - Documentation
+
 const labelVcfaOrgRegionQuotaStoragePolicy = "Org Region Quota Storage Policy"
 
 func resourceVcfaOrgRegionQuotaStoragePolicy() *schema.Resource {
