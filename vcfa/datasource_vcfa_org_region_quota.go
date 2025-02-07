@@ -10,9 +10,9 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
-func datasourceVcfaOrgVdc() *schema.Resource {
+func datasourceVcfaOrgRegionQuota() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: datasourceVcfaOrgVdcRead,
+		ReadContext: datasourceVcfaOrgRegionQuotaRead,
 
 		Schema: map[string]*schema.Schema{
 			"org_id": {
@@ -28,41 +28,41 @@ func datasourceVcfaOrgVdc() *schema.Resource {
 			"description": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: fmt.Sprintf("Description of the %s", labelVcfaOrgVdc),
+				Description: fmt.Sprintf("Description of the %s", labelVcfaOrgRegionQuota),
 			},
 			"name": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: fmt.Sprintf("Name of the %s", labelVcfaOrgVdc),
+				Description: fmt.Sprintf("Name of the %s", labelVcfaOrgRegionQuota),
 			},
 			"supervisor_ids": {
 				Type:        schema.TypeSet,
 				Computed:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: fmt.Sprintf("A set of Supervisor IDs that back this %s", labelVcfaOrgVdc),
+				Description: fmt.Sprintf("A set of Supervisor IDs that back this %s", labelVcfaOrgRegionQuota),
 			},
 			"zone_resource_allocations": {
 				Type:        schema.TypeSet,
 				Computed:    true,
-				Elem:        orgVdcDsZoneResourceAllocation,
+				Elem:        orgRegionQuotaDsZoneResourceAllocation,
 				Description: "A set of Region Zones and their resource allocations",
 			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: fmt.Sprintf("%s status", labelVcfaOrgVdc),
+				Description: fmt.Sprintf("%s status", labelVcfaOrgRegionQuota),
 			},
 			"region_vm_class_ids": {
 				Type:        schema.TypeSet,
 				Computed:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: fmt.Sprintf("A set of %s IDs assigned to this %s", labelVcfaRegionVmClass, labelVcfaOrgVdc),
+				Description: fmt.Sprintf("A set of %s IDs assigned to this %s", labelVcfaRegionVmClass, labelVcfaOrgRegionQuota),
 			},
 		},
 	}
 }
 
-var orgVdcDsZoneResourceAllocation = &schema.Resource{
+var orgRegionQuotaDsZoneResourceAllocation = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"region_zone_name": {
 			Type:        schema.TypeString,
@@ -97,9 +97,9 @@ var orgVdcDsZoneResourceAllocation = &schema.Resource{
 	},
 }
 
-func datasourceVcfaOrgVdcRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceVcfaOrgRegionQuotaRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
-	getByNameAndOrgId := func(_ string) (*govcd.TmVdc, error) {
+	getByNameAndOrgId := func(_ string) (*govcd.RegionQuota, error) {
 		region, err := tmClient.GetRegionById(d.Get("region_id").(string))
 		if err != nil {
 			return nil, err
@@ -108,14 +108,14 @@ func datasourceVcfaOrgVdcRead(ctx context.Context, d *schema.ResourceData, meta 
 		if err != nil {
 			return nil, err
 		}
-		return tmClient.GetTmVdcByName(fmt.Sprintf("%s_%s", org.Org.Name, region.Region.Name))
+		return tmClient.GetRegionQuotaByName(fmt.Sprintf("%s_%s", org.Org.Name, region.Region.Name))
 	}
 
-	c := dsReadConfig[*govcd.TmVdc, types.TmVdc]{
-		entityLabel:   labelVcfaOrgVdc,
+	c := dsReadConfig[*govcd.RegionQuota, types.TmVdc]{
+		entityLabel:   labelVcfaOrgRegionQuota,
 		getEntityFunc: getByNameAndOrgId,
-		stateStoreFunc: func(tmClient *VCDClient, d *schema.ResourceData, outerType *govcd.TmVdc) error {
-			err := setTmVdcData(tmClient, d, outerType)
+		stateStoreFunc: func(tmClient *VCDClient, d *schema.ResourceData, outerType *govcd.RegionQuota) error {
+			err := setOrgRegionQuotaData(tmClient, d, outerType)
 			if err != nil {
 				return err
 			}

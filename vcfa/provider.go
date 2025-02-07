@@ -41,7 +41,7 @@ var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_region":                          datasourceVcfaRegion(),                      // 1.0
 	"vcfa_ip_space":                        datasourceVcfaIpSpace(),                     // 1.0
 	"vcfa_region_zone":                     datasourceVcfaRegionZone(),                  // 1.0
-	"vcfa_org_vdc":                         datasourceVcfaOrgVdc(),                      // 1.0
+	"vcfa_org_region_quota":                datasourceVcfaOrgRegionQuota(),              // 1.0
 	"vcfa_region_vm_class":                 datasourceVcfaRegionVmClass(),               // 1.0
 	"vcfa_region_storage_policy":           datasourceVcfaRegionStoragePolicy(),         // 1.0
 	"vcfa_storage_class":                   datasourceVcfaStorageClass(),                // 1.0
@@ -70,7 +70,8 @@ var globalResourceMap = map[string]*schema.Resource{
 	"vcfa_nsx_manager":                     resourceVcfaNsxManager(),                  // 1.0
 	"vcfa_region":                          resourceVcfaRegion(),                      // 1.0
 	"vcfa_ip_space":                        resourceVcfaIpSpace(),                     // 1.0
-	"vcfa_org_vdc":                         resourceVcfaOrgVdc(),                      // 1.0
+	"vcfa_org_region_quota":                resourceVcfaOrgRegionQuota(),              // 1.0
+	"vcfa_org_region_quota_storage_policy": resourceVcfaOrgRegionQuotaStoragePolicy(), // 1.0
 	"vcfa_content_library":                 resourceVcfaContentLibrary(),              // 1.0
 	"vcfa_content_library_item":            resourceVcfaContentLibraryItem(),          // 1.0
 	"vcfa_provider_gateway":                resourceVcfaProviderGateway(),             // 1.0
@@ -173,13 +174,6 @@ func Provider() *schema.Provider {
 				Description: "The VCFA Org for API operations",
 			},
 
-			"vdc": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("VCFA_VDC", nil),
-				Description: "The VDC for API operations",
-			},
-
 			"url": {
 				Type:        schema.TypeString,
 				Required:    true,
@@ -249,7 +243,6 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 		AllowSATokenFile:        d.Get("allow_service_account_token_file").(bool),
 		SysOrg:                  connectOrg,            // Connection org
 		Org:                     d.Get("org").(string), // Default org for operations
-		Vdc:                     d.Get("vdc").(string), // Default vdc
 		Href:                    d.Get("url").(string),
 		InsecureFlag:            d.Get("allow_unverified_ssl").(bool),
 	}

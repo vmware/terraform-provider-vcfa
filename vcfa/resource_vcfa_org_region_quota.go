@@ -12,67 +12,73 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
-const labelVcfaOrgVdc = "Org VDC"
+const labelVcfaOrgRegionQuota = "Org Region Quota"
 
-func resourceVcfaOrgVdc() *schema.Resource {
+func resourceVcfaOrgRegionQuota() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceOrgVdcCreate,
-		ReadContext:   resourceOrgVdcRead,
-		UpdateContext: resourceOrgVdcUpdate,
-		DeleteContext: resourceOrgVdcDelete,
+		CreateContext: resourceOrgRegionQuotaCreate,
+		ReadContext:   resourceOrgRegionQuotaRead,
+		UpdateContext: resourceOrgRegionQuotaUpdate,
+		DeleteContext: resourceOrgRegionQuotaDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: resourceOrgVdcImport,
+			StateContext: resourceOrgRegionQuotaImport,
 		},
 
 		Schema: map[string]*schema.Schema{
 			"org_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "Parent Organization ID",
+				Description: fmt.Sprintf("Parent %s ID", labelVcfaOrg),
 			},
 			"region_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "Parent Region ID",
+				Description: fmt.Sprintf("Parent %s ID", labelVcfaRegion),
 			},
 			"description": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: fmt.Sprintf("Description of the %s", labelVcfaOrgVdc),
+				Description: fmt.Sprintf("Description of the %s", labelVcfaOrgRegionQuota),
 			},
 			"supervisor_ids": {
 				Type:        schema.TypeSet,
 				Required:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: fmt.Sprintf("A set of Supervisor IDs that back this %s", labelVcfaOrgVdc),
+				Description: fmt.Sprintf("A set of Supervisor IDs that back this %s", labelVcfaOrgRegionQuota),
 			},
 			"zone_resource_allocations": {
 				Type:        schema.TypeSet,
 				Required:    true,
-				Elem:        orgVdcZoneResourceAllocation,
+				Elem:        OrgRegionQuotaZoneResourceAllocation,
 				Description: "A set of Region Zones and their resource allocations",
 			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: fmt.Sprintf("%s status", labelVcfaOrgVdc),
+				Description: fmt.Sprintf("%s status", labelVcfaOrgRegionQuota),
 			},
 			"name": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: fmt.Sprintf("Name of the %s", labelVcfaOrgVdc),
+				Description: fmt.Sprintf("Name of the %s", labelVcfaOrgRegionQuota),
 			},
 			"region_vm_class_ids": {
 				Type:        schema.TypeSet,
 				Required:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: fmt.Sprintf("A set of %s IDs to assign to this %s", labelVcfaRegionVmClass, labelVcfaOrgVdc),
+				Description: fmt.Sprintf("A set of %s IDs to assign to this %s", labelVcfaRegionVmClass, labelVcfaOrgRegionQuota),
+			},
+			"storage_class_ids": {
+				Type:        schema.TypeSet,
+				Required:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: fmt.Sprintf("A set of %s IDs to assign to this %s", labelVcfaStorageClass, labelVcfaOrgRegionQuota),
 			},
 		},
 	}
 }
 
-var orgVdcZoneResourceAllocation = &schema.Resource{
+var OrgRegionQuotaZoneResourceAllocation = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"region_zone_name": {
 			Type:        schema.TypeString,
@@ -124,10 +130,10 @@ func assignVmClassesToRegionQuota(d *schema.ResourceData, tmClient *VCDClient) e
 	return nil
 }
 
-func saveVmClassesInState(tmClient *VCDClient, d *schema.ResourceData, vdcId string) error {
-	vmClasses, err := tmClient.GetVmClassesFromRegionQuota(vdcId)
+func saveVmClassesInState(tmClient *VCDClient, d *schema.ResourceData, rqId string) error {
+	vmClasses, err := tmClient.GetVmClassesFromRegionQuota(rqId)
 	if err != nil {
-		return fmt.Errorf("could not fetch VM Classes from Region Quota '%s': %s", vdcId, err)
+		return fmt.Errorf("could not fetch VM Classes from Region Quota '%s': %s", rqId, err)
 	}
 	if vmClasses != nil {
 		vmcIds := make([]interface{}, len(vmClasses.Values))
@@ -142,13 +148,13 @@ func saveVmClassesInState(tmClient *VCDClient, d *schema.ResourceData, vdcId str
 	return nil
 }
 
-func resourceOrgVdcCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceOrgRegionQuotaCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
-	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
-		entityLabel:      labelVcfaOrgVdc,
-		getTypeFunc:      getTmVdcType,
-		stateStoreFunc:   setTmVdcData,
-		createFunc:       tmClient.CreateTmVdc,
+	c := crudConfig[*govcd.RegionQuota, types.TmVdc]{
+		entityLabel:      labelVcfaOrgRegionQuota,
+		getTypeFunc:      getOrgRegionQuotaType,
+		stateStoreFunc:   setOrgRegionQuotaData,
+		createFunc:       tmClient.CreateRegionQuota,
 		resourceReadFunc: nil, // We don't use generic Read, as we didn't finish creation yet
 	}
 	diags := createResource(ctx, d, meta, c)
@@ -160,16 +166,16 @@ func resourceOrgVdcCreate(ctx context.Context, d *schema.ResourceData, meta inte
 		return diag.FromErr(err)
 	}
 
-	return resourceOrgVdcRead(ctx, d, meta)
+	return resourceOrgRegionQuotaRead(ctx, d, meta)
 }
 
-func resourceOrgVdcUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceOrgRegionQuotaUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
-	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
-		entityLabel:      labelVcfaOrgVdc,
-		getTypeFunc:      getTmVdcType,
-		getEntityFunc:    tmClient.GetTmVdcById,
-		resourceReadFunc: nil, // We don't use generic Read, as we didn't finish updating yet
+	c := crudConfig[*govcd.RegionQuota, types.TmVdc]{
+		entityLabel:      labelVcfaOrgRegionQuota,
+		getTypeFunc:      getOrgRegionQuotaType,
+		getEntityFunc:    tmClient.GetRegionQuotaById,
+		resourceReadFunc: nil, // We don't use generic Read, as we didn't finish creation yet
 	}
 
 	diags := updateResource(ctx, d, meta, c)
@@ -181,16 +187,16 @@ func resourceOrgVdcUpdate(ctx context.Context, d *schema.ResourceData, meta inte
 		return diag.FromErr(err)
 	}
 
-	return resourceOrgVdcRead(ctx, d, meta)
+	return resourceOrgRegionQuotaRead(ctx, d, meta)
 }
 
-func resourceOrgVdcRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceOrgRegionQuotaRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
-	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
-		entityLabel:   labelVcfaOrgVdc,
-		getEntityFunc: tmClient.GetTmVdcById,
-		stateStoreFunc: func(tmClient *VCDClient, d *schema.ResourceData, outerType *govcd.TmVdc) error {
-			err := setTmVdcData(tmClient, d, outerType)
+	c := crudConfig[*govcd.RegionQuota, types.TmVdc]{
+		entityLabel:   labelVcfaOrgRegionQuota,
+		getEntityFunc: tmClient.GetRegionQuotaById,
+		stateStoreFunc: func(tmClient *VCDClient, d *schema.ResourceData, outerType *govcd.RegionQuota) error {
+			err := setOrgRegionQuotaData(tmClient, d, outerType)
 			if err != nil {
 				return err
 			}
@@ -200,18 +206,18 @@ func resourceOrgVdcRead(ctx context.Context, d *schema.ResourceData, meta interf
 	return readResource(ctx, d, meta, c)
 }
 
-func resourceOrgVdcDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceOrgRegionQuotaDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 
-	c := crudConfig[*govcd.TmVdc, types.TmVdc]{
-		entityLabel:   labelVcfaOrgVdc,
-		getEntityFunc: tmClient.GetTmVdcById,
+	c := crudConfig[*govcd.RegionQuota, types.TmVdc]{
+		entityLabel:   labelVcfaOrgRegionQuota,
+		getEntityFunc: tmClient.GetRegionQuotaById,
 	}
 
 	return deleteResource(ctx, d, meta, c)
 }
 
-func resourceOrgVdcImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceOrgRegionQuotaImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	tmClient := meta.(ClientContainer).tmClient
 
 	idSlice := strings.Split(d.Id(), ImportSeparator)
@@ -219,16 +225,16 @@ func resourceOrgVdcImport(ctx context.Context, d *schema.ResourceData, meta inte
 		return nil, fmt.Errorf("expected import ID to be <org name>%s<region name>", ImportSeparator)
 	}
 
-	vdc, err := tmClient.GetTmVdcByName(fmt.Sprintf("%s_%s", idSlice[0], idSlice[1]))
+	rq, err := tmClient.GetRegionQuotaByName(fmt.Sprintf("%s_%s", idSlice[0], idSlice[1]))
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving %s: %s", labelVcfaOrgVdc, err)
+		return nil, fmt.Errorf("error retrieving %s: %s", labelVcfaOrgRegionQuota, err)
 	}
 
-	d.SetId(vdc.TmVdc.ID)
+	d.SetId(rq.TmVdc.ID)
 	return []*schema.ResourceData{d}, nil
 }
 
-func getTmVdcType(tmClient *VCDClient, d *schema.ResourceData) (*types.TmVdc, error) {
+func getOrgRegionQuotaType(tmClient *VCDClient, d *schema.ResourceData) (*types.TmVdc, error) {
 	name := d.Get("name").(string)
 	if name == "" {
 		org, err := tmClient.GetOrgById(d.Get("org_id").(string))
@@ -273,36 +279,36 @@ func getTmVdcType(tmClient *VCDClient, d *schema.ResourceData) (*types.TmVdc, er
 	return t, nil
 }
 
-func setTmVdcData(_ *VCDClient, d *schema.ResourceData, vdc *govcd.TmVdc) error {
-	if vdc == nil {
-		return fmt.Errorf("provided VDC is nil")
+func setOrgRegionQuotaData(_ *VCDClient, d *schema.ResourceData, rq *govcd.RegionQuota) error {
+	if rq == nil || rq.TmVdc == nil {
+		return fmt.Errorf("provided %s is nil", labelVcfaOrgRegionQuota)
 	}
 
-	d.SetId(vdc.TmVdc.ID)
-	dSet(d, "name", vdc.TmVdc.Name)
-	dSet(d, "description", vdc.TmVdc.Description)
-	dSet(d, "status", vdc.TmVdc.Status)
+	d.SetId(rq.TmVdc.ID)
+	dSet(d, "name", rq.TmVdc.Name)
+	dSet(d, "description", rq.TmVdc.Description)
+	dSet(d, "status", rq.TmVdc.Status)
 
 	orgId := ""
-	if vdc.TmVdc.Org != nil {
-		orgId = vdc.TmVdc.Org.ID
+	if rq.TmVdc.Org != nil {
+		orgId = rq.TmVdc.Org.ID
 	}
 	dSet(d, "org_id", orgId)
 
 	regionId := ""
-	if vdc.TmVdc.Region != nil {
-		regionId = vdc.TmVdc.Region.ID
+	if rq.TmVdc.Region != nil {
+		regionId = rq.TmVdc.Region.ID
 	}
 	dSet(d, "region_id", regionId)
 
-	supervisors := extractIdsFromOpenApiReferences(vdc.TmVdc.Supervisors)
+	supervisors := extractIdsFromOpenApiReferences(rq.TmVdc.Supervisors)
 	err := d.Set("supervisor_ids", supervisors)
 	if err != nil {
 		return fmt.Errorf("error storing 'supervisor_ids': %s", err)
 	}
 
-	zoneCompute := make([]interface{}, len(vdc.TmVdc.ZoneResourceAllocation))
-	for zoneIndex, zone := range vdc.TmVdc.ZoneResourceAllocation {
+	zoneCompute := make([]interface{}, len(rq.TmVdc.ZoneResourceAllocation))
+	for zoneIndex, zone := range rq.TmVdc.ZoneResourceAllocation {
 		oneZone := make(map[string]interface{})
 		oneZone["region_zone_name"] = zone.Zone.Name
 		oneZone["region_zone_id"] = zone.Zone.ID
@@ -314,7 +320,7 @@ func setTmVdcData(_ *VCDClient, d *schema.ResourceData, vdc *govcd.TmVdc) error 
 		zoneCompute[zoneIndex] = oneZone
 	}
 
-	autoAllocatedSubnetSet := schema.NewSet(schema.HashResource(orgVdcZoneResourceAllocation), zoneCompute)
+	autoAllocatedSubnetSet := schema.NewSet(schema.HashResource(OrgRegionQuotaZoneResourceAllocation), zoneCompute)
 	err = d.Set("zone_resource_allocations", autoAllocatedSubnetSet)
 	if err != nil {
 		return fmt.Errorf("error setting 'zone_resource_allocations' after read: %s", err)

@@ -36,7 +36,6 @@ type Config struct {
 	AllowSATokenFile        bool   // Setting to suppress Service Account Token File security warnings
 	SysOrg                  string // Org used for authentication
 	Org                     string // Default Org used for API operations
-	Vdc                     string // Default (optional) VDC for API operations
 	Href                    string
 	InsecureFlag            bool
 }
@@ -45,7 +44,6 @@ type VCDClient struct {
 	*govcd.VCDClient
 	SysOrg       string
 	Org          string // name of default Org
-	Vdc          string // name of default VDC
 	InsecureFlag bool
 }
 
@@ -144,7 +142,6 @@ func (c *Config) Client() (*VCDClient, error) {
 		c.ApiTokenFile + "#" +
 		c.ServiceAccountTokenFile + "#" +
 		c.SysOrg + "#" +
-		c.Vdc + "#" +
 		c.Href
 	checksum := fmt.Sprintf("%x", sha256.Sum256([]byte(rawData)))
 
@@ -182,7 +179,6 @@ func (c *Config) Client() (*VCDClient, error) {
 		),
 		SysOrg:       c.SysOrg,
 		Org:          c.Org,
-		Vdc:          c.Vdc,
 		InsecureFlag: c.InsecureFlag}
 
 	err = ProviderAuthenticate(tmClient.VCDClient, c.User, c.Password, c.Token, c.SysOrg, c.ApiToken, c.ApiTokenFile, c.ServiceAccountTokenFile)

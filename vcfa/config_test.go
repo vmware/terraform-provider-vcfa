@@ -53,7 +53,7 @@ func init() {
 	setBoolFlag(&vcfaShortTest, "vcfa-short", "VCFA_SHORT_TEST", "runs short test")
 	setBoolFlag(&vcfaAddProvider, "vcfa-add-provider", envVcfaAddProvider, "add provider to test scripts")
 	setBoolFlag(&vcfaSkipTemplateWriting, "vcfa-skip-template-write", envVcfaSkipTemplateWriting, "Skip writing templates to file")
-	setBoolFlag(&vcfaRemoveOrgVdcFromTemplate, "vcfa-remove-org-vdc-from-template", envVcfaRemoveOrgVdcFromTemplate, "Remove org and VDC from template")
+	setBoolFlag(&vcfaRemoveOrgFromTemplate, "vcfa-remove-org-from-template", envVcfaRemoveOrgFromTemplate, "Remove org from template")
 	setBoolFlag(&vcfaTestOrgUser, "vcfa-test-org-user", envVcfaTestOrgUser, "Run tests with org user")
 	setStringFlag(&vcfaSkipPattern, "vcfa-skip-pattern", "VCFA_SKIP_PATTERN", "Skip tests that match the pattern (implies vcfa-pre-post-checks")
 	setBoolFlag(&skipLeftoversRemoval, "vcfa-skip-leftovers-removal", "VCFA_SKIP_LEFTOVERS_REMOVAL", "Do not attempt removal of leftovers at the end of the test suite")
@@ -90,7 +90,7 @@ type TestConfig struct {
 		Region          string   `json:"region"`
 		StorageClass    string   `json:"storageClass"`
 		RegionVmClasses []string `json:"regionVmClasses"`
-		Vdc             string   `json:"vdc"`
+		RegionQuota     string   `json:"regionQuota"`
 		ContentLibrary  string   `json:"contentLibrary"`
 
 		CreateNsxManager   bool   `json:"createNsxManager"`
@@ -138,9 +138,9 @@ var (
 	// vcfaSkipTemplateWriting disable the writing of the template to a .tf file
 	vcfaSkipTemplateWriting = false
 
-	// vcfaRemoveOrgVdcFromTemplate removes org and vdc from template, thus tetsing with the
+	// vcfaRemoveOrgFromTemplate removes org from template, thus tetsing with the
 	// variables in provider section
-	vcfaRemoveOrgVdcFromTemplate = false
+	vcfaRemoveOrgFromTemplate = false
 
 	// vcfaTestOrgUser enables testing with the Org User
 	vcfaTestOrgUser = false
@@ -203,11 +203,11 @@ const (
 	providerVcfaSystem2   = "vcfasys2"
 	providerVcfaSys2Alias = "vcfa.sys2"
 
-	testArtifactsDirectory          = "test-artifacts"
-	envVcfaAddProvider              = "VCFA_ADD_PROVIDER"
-	envVcfaSkipTemplateWriting      = "VCFA_SKIP_TEMPLATE_WRITING"
-	envVcfaRemoveOrgVdcFromTemplate = "REMOVE_ORG_VDC_FROM_TEMPLATE"
-	envVcfaTestOrgUser              = "VCFA_TEST_ORG_USER"
+	testArtifactsDirectory       = "test-artifacts"
+	envVcfaAddProvider           = "VCFA_ADD_PROVIDER"
+	envVcfaSkipTemplateWriting   = "VCFA_SKIP_TEMPLATE_WRITING"
+	envVcfaRemoveOrgFromTemplate = "REMOVE_ORG_FROM_TEMPLATE"
+	envVcfaTestOrgUser           = "VCFA_TEST_ORG_USER"
 
 	// Warning message used for all tests
 	acceptanceTestsSkipped = "Acceptance tests skipped unless env 'TF_ACC' set"
@@ -400,15 +400,13 @@ func templateFill(tmpl string, inputData StringMap) string {
 	var populatedStr = buf.Bytes()
 
 	// This is a quick way of enabling an alternate testing mode:
-	// When REMOVE_ORG_VDC_FROM_TEMPLATE is set, the terraform
+	// When REMOVE_ORG_FROM_TEMPLATE is set, the terraform
 	// templates will be changed on-the-fly, to comment out the
-	// definitions of org and vdc. This will force the test to
-	// borrow org and vcfa from the provider.
-	if vcfaRemoveOrgVdcFromTemplate {
+	// definitions of org. This will force the test to
+	// borrow org from the provider.
+	if vcfaRemoveOrgFromTemplate {
 		reOrg := regexp.MustCompile(`\sorg\s*=`)
 		buf2 := reOrg.ReplaceAll(buf.Bytes(), []byte("# org = "))
-		reVdc := regexp.MustCompile(`\svdc\s*=`)
-		buf2 = reVdc.ReplaceAll(buf2, []byte("# vdc = "))
 		populatedStr = buf2
 	}
 	if TemplateWriting {

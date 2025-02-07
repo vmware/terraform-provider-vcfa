@@ -1,4 +1,4 @@
-//go:build tm || org || vdc || ALL || functional
+//go:build tm || org || regionQuota || ALL || functional
 
 package vcfa
 
@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccVcfaOrgVdc(t *testing.T) {
+func TestAccVcfaOrgRegionQuota(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
@@ -25,7 +25,7 @@ func TestAccVcfaOrgVdc(t *testing.T) {
 		"VcenterRef":         vCenterHclRef,
 		"RegionId":           fmt.Sprintf("%s.id", regionHclRef),
 		"RegionVmClassRefs":  strings.Join(vmClassesRefs, ".id,\n    ") + ".id",
-		"Tags":               "tm org vdc",
+		"Tags":               "tm org regionQuota",
 	}
 	testParamsNotEmpty(t, params)
 
@@ -37,11 +37,12 @@ func TestAccVcfaOrgVdc(t *testing.T) {
 	params["FuncName"] = t.Name() + "-step0"
 
 	preRequisites := vCenterHcl + nsxManagerHcl + regionHcl + vmClassesHcl
-	configText1 := templateFill(preRequisites+testAccVcfaOrgVdcStep1, params)
+	configText1 := templateFill(preRequisites+testAccVcfaOrgRegionQuotaStep1, params)
 	params["FuncName"] = t.Name() + "-step2"
-	configText2 := templateFill(preRequisites+testAccVcfaOrgVdcStep2, params)
+	params["RegionVmClassRefs"] = fmt.Sprintf("%s.id", vmClassesRefs[0]) // There is always at least one VM class in config
+	configText2 := templateFill(preRequisites+testAccVcfaOrgRegionQuotaStep2, params)
 	params["FuncName"] = t.Name() + "-step3"
-	configText3 := templateFill(preRequisites+testAccVcfaOrgVdcStep3DS, params)
+	configText3 := templateFill(preRequisites+testAccVcfaOrgRegionQuotaStep3DS, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
@@ -60,51 +61,53 @@ func TestAccVcfaOrgVdc(t *testing.T) {
 			{
 				Config: configText1,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttrSet("vcfa_org_vdc.test", "id"),
-					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "name", fmt.Sprintf("%s_%s", params["Testname"], testConfig.Tm.Region)), // Name is a combination of Org name + Region name
-					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "status", "READY"),
-					resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "org_id", "vcfa_org.test", "id"),
-					resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "region_id", regionHclRef, "id"),
-					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "supervisor_ids.#", "1"),
-					resource.TestCheckTypeSetElemAttrPair("vcfa_org_vdc.test", "supervisor_ids.*", "data.vcfa_supervisor.test", "id"),
-					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "zone_resource_allocations.#", "1"),
-					resource.TestCheckTypeSetElemNestedAttrs("vcfa_org_vdc.test", "zone_resource_allocations.*", map[string]string{
+					resource.TestCheckResourceAttrSet("vcfa_org_region_quota.test", "id"),
+					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "name", fmt.Sprintf("%s_%s", params["Testname"], testConfig.Tm.Region)), // Name is a combination of Org name + Region name
+					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "status", "READY"),
+					resource.TestCheckResourceAttrPair("vcfa_org_region_quota.test", "org_id", "vcfa_org.test", "id"),
+					resource.TestCheckResourceAttrPair("vcfa_org_region_quota.test", "region_id", regionHclRef, "id"),
+					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "supervisor_ids.#", "1"),
+					resource.TestCheckTypeSetElemAttrPair("vcfa_org_region_quota.test", "supervisor_ids.*", "data.vcfa_supervisor.test", "id"),
+					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "zone_resource_allocations.#", "1"),
+					resource.TestCheckTypeSetElemNestedAttrs("vcfa_org_region_quota.test", "zone_resource_allocations.*", map[string]string{
 						"region_zone_name":       testConfig.Tm.VcenterSupervisorZone,
 						"cpu_limit_mhz":          "2000",
 						"cpu_reservation_mhz":    "100",
 						"memory_limit_mib":       "1024",
 						"memory_reservation_mib": "512",
 					}),
+					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "region_vm_class_ids.#", fmt.Sprintf("%d", len(vmClassesRefs))),
 				),
 			},
 			{
 				Config: configText2,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet("vcfa_org_vdc.test", "id"),
-					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "name", fmt.Sprintf("%s_%s", params["Testname"], testConfig.Tm.Region)), // Name is a combination of Org name + Region name
-					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "status", "READY"),
-					resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "org_id", "vcfa_org.test", "id"),
-					resource.TestCheckResourceAttrPair("vcfa_org_vdc.test", "region_id", "vcfa_region.region", "id"),
-					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "supervisor_ids.#", "1"),
-					resource.TestCheckTypeSetElemAttrPair("vcfa_org_vdc.test", "supervisor_ids.*", "data.vcfa_supervisor.test", "id"),
-					resource.TestCheckResourceAttr("vcfa_org_vdc.test", "zone_resource_allocations.#", "1"),
-					resource.TestCheckTypeSetElemNestedAttrs("vcfa_org_vdc.test", "zone_resource_allocations.*", map[string]string{
+					resource.TestCheckResourceAttrSet("vcfa_org_region_quota.test", "id"),
+					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "name", fmt.Sprintf("%s_%s", params["Testname"], testConfig.Tm.Region)), // Name is a combination of Org name + Region name
+					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "status", "READY"),
+					resource.TestCheckResourceAttrPair("vcfa_org_region_quota.test", "org_id", "vcfa_org.test", "id"),
+					resource.TestCheckResourceAttrPair("vcfa_org_region_quota.test", "region_id", "vcfa_region.region", "id"),
+					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "supervisor_ids.#", "1"),
+					resource.TestCheckTypeSetElemAttrPair("vcfa_org_region_quota.test", "supervisor_ids.*", "data.vcfa_supervisor.test", "id"),
+					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "zone_resource_allocations.#", "1"),
+					resource.TestCheckTypeSetElemNestedAttrs("vcfa_org_region_quota.test", "zone_resource_allocations.*", map[string]string{
 						"region_zone_name":       testConfig.Tm.VcenterSupervisorZone,
 						"cpu_limit_mhz":          "1900",
 						"cpu_reservation_mhz":    "90",
 						"memory_limit_mib":       "500",
 						"memory_reservation_mib": "200",
 					}),
+					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "region_vm_class_ids.#", "1"),
 				),
 			},
 			{
 				Config: configText3,
 				Check: resource.ComposeTestCheckFunc(
-					resourceFieldsEqual("vcfa_org_vdc.test", "data.vcfa_org_vdc.test", nil),
+					resourceFieldsEqual("vcfa_org_region_quota.test", "data.vcfa_org_region_quota.test", nil),
 				),
 			},
 			{
-				ResourceName:      "vcfa_org_vdc.test",
+				ResourceName:      "vcfa_org_region_quota.test",
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateId:     fmt.Sprintf("%s%s%s", params["Testname"], ImportSeparator, testConfig.Tm.Region), // Org name and Region name
@@ -115,7 +118,7 @@ func TestAccVcfaOrgVdc(t *testing.T) {
 	postTestChecks(t)
 }
 
-const testAccVcfaOrgVdcStep1 = `
+const testAccVcfaOrgRegionQuotaStep1 = `
 data "vcfa_supervisor" "test" {
   name       = "{{.SupervisorName}}"
   vcenter_id = {{.VcenterRef}}.id
@@ -126,7 +129,7 @@ data "vcfa_region_zone" "test" {
   name      = "{{.SupervisorZoneName}}"
 }
 
-resource "vcfa_org_vdc" "test" {
+resource "vcfa_org_region_quota" "test" {
   org_id         = vcfa_org.test.id
   region_id      = {{.RegionId}}
   supervisor_ids = [data.vcfa_supervisor.test.id]
@@ -150,7 +153,7 @@ resource "vcfa_org" "test" {
 }
 `
 
-const testAccVcfaOrgVdcStep2 = `
+const testAccVcfaOrgRegionQuotaStep2 = `
 data "vcfa_supervisor" "test" {
   name       = "{{.SupervisorName}}"
   vcenter_id = {{.VcenterRef}}.id
@@ -169,7 +172,7 @@ resource "vcfa_org" "test" {
   is_enabled   = true
 }
 
-resource "vcfa_org_vdc" "test" {
+resource "vcfa_org_region_quota" "test" {
   org_id         = vcfa_org.test.id
   region_id      = {{.RegionId}}
   supervisor_ids = [data.vcfa_supervisor.test.id]
@@ -186,8 +189,8 @@ resource "vcfa_org_vdc" "test" {
 }
 `
 
-const testAccVcfaOrgVdcStep3DS = testAccVcfaOrgVdcStep2 + `
-data "vcfa_org_vdc" "test" {
+const testAccVcfaOrgRegionQuotaStep3DS = testAccVcfaOrgRegionQuotaStep2 + `
+data "vcfa_org_region_quota" "test" {
   org_id    = vcfa_org.test.id
   region_id = {{.RegionId}}
 }
