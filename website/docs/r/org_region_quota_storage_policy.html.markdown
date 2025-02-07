@@ -1,12 +1,12 @@
 ---
 layout: "vcfa"
-page_title: "VMware Cloud Foundation Automation: vcfa_region_quota_storage_policy"
-sidebar_current: "docs-vcfa-resource-region-quota-storage-policy"
+page_title: "VMware Cloud Foundation Automation: vcfa_org_region_quota_storage_policy"
+sidebar_current: "docs-vcfa-resource-org-region-quota-storage-policy"
 description: |-
   Provides a resource to manage Storage Policies of Organization Region Quotas in VMware Cloud Foundation Automation.
 ---
 
-# vcfa\_region\_quota\_storage\_policy
+# vcfa\_org\_region\_quota\_storage\_policy
 
 Provides a resource to manage Storage Policies of Organization Region Quotas in VMware Cloud Foundation Automation.
 

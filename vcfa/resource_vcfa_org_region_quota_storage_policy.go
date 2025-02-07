@@ -17,16 +17,16 @@ import (
 // - Test
 // - Documentation
 
-const labelVcfaOrgRegionQuotaStoragePolicy = "Org Region Quota Storage Policy"
+const labelVcfaRegionQuotaStoragePolicy = "Region Quota Storage Policy"
 
-func resourceVcfaOrgRegionQuotaStoragePolicy() *schema.Resource {
+func resourceVcfaRegionQuotaStoragePolicy() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceOrgRegionQuotaStoragePolicyCreate,
-		ReadContext:   resourceOrgRegionQuotaStoragePolicyRead,
-		UpdateContext: resourceOrgRegionQuotaStoragePolicyUpdate,
-		DeleteContext: resourceOrgRegionQuotaStoragePolicyDelete,
+		CreateContext: resourceRegionQuotaStoragePolicyCreate,
+		ReadContext:   resourceRegionQuotaStoragePolicyRead,
+		UpdateContext: resourceRegionQuotaStoragePolicyUpdate,
+		DeleteContext: resourceRegionQuotaStoragePolicyDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: resourceOrgRegionQuotaStoragePolicyImport,
+			StateContext: resourceRegionQuotaStoragePolicyImport,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -40,7 +40,7 @@ func resourceVcfaOrgRegionQuotaStoragePolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
-				Description: fmt.Sprintf("The parent %s for this %s", labelVcfaRegionStoragePolicy, labelVcfaOrgRegionQuotaStoragePolicy),
+				Description: fmt.Sprintf("The parent %s for this %s", labelVcfaRegionStoragePolicy, labelVcfaRegionQuotaStoragePolicy),
 			},
 			"storage_limit_mib": {
 				Type:             schema.TypeInt,
@@ -51,7 +51,7 @@ func resourceVcfaOrgRegionQuotaStoragePolicy() *schema.Resource {
 			"name": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: fmt.Sprintf("The name of the %s. It follows RFC 1123 Label Names to conform with Kubernetes standards", labelVcfaOrgRegionQuotaStoragePolicy),
+				Description: fmt.Sprintf("The name of the %s. It follows RFC 1123 Label Names to conform with Kubernetes standards", labelVcfaRegionQuotaStoragePolicy),
 			},
 			"storage_used_mib": {
 				Type:        schema.TypeInt,
@@ -62,14 +62,14 @@ func resourceVcfaOrgRegionQuotaStoragePolicy() *schema.Resource {
 	}
 }
 
-func resourceOrgRegionQuotaStoragePolicyCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceRegionQuotaStoragePolicyCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	regionQuotaId := d.Get("org_region_quota_id").(string)
 	vcfa.kvLock(regionQuotaId)
 	defer vcfa.kvUnlock(regionQuotaId)
 
 	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.RegionQuotaStoragePolicy, types.VirtualDatacenterStoragePolicy]{
-		entityLabel:    labelVcfaOrgRegionQuotaStoragePolicy,
+		entityLabel:    labelVcfaRegionQuotaStoragePolicy,
 		getTypeFunc:    getRegionQuotaStoragePolicyType,
 		stateStoreFunc: setRegionQuotaStoragePolicyData,
 		createFunc: func(config *types.VirtualDatacenterStoragePolicy) (*govcd.RegionQuotaStoragePolicy, error) {
@@ -82,35 +82,35 @@ func resourceOrgRegionQuotaStoragePolicyCreate(ctx context.Context, d *schema.Re
 				return nil, err
 			}
 			if len(sps) != 1 {
-				return nil, fmt.Errorf("expected 1 %s after creation, received %d", labelVcfaOrgRegionQuotaStoragePolicy, len(sps))
+				return nil, fmt.Errorf("expected 1 %s after creation, received %d", labelVcfaRegionQuotaStoragePolicy, len(sps))
 			}
 			return sps[0], nil
 		},
-		resourceReadFunc: resourceOrgRegionQuotaStoragePolicyRead,
+		resourceReadFunc: resourceRegionQuotaStoragePolicyRead,
 	}
 	return createResource(ctx, d, meta, c)
 }
 
-func resourceOrgRegionQuotaStoragePolicyUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceRegionQuotaStoragePolicyUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	regionQuotaId := d.Get("org_region_quota_id").(string)
 	vcfa.kvLock(regionQuotaId)
 	defer vcfa.kvUnlock(regionQuotaId)
 
 	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.RegionQuotaStoragePolicy, types.VirtualDatacenterStoragePolicy]{
-		entityLabel:      labelVcfaOrgRegionQuotaStoragePolicy,
+		entityLabel:      labelVcfaRegionQuotaStoragePolicy,
 		getTypeFunc:      getRegionQuotaStoragePolicyType,
 		getEntityFunc:    tmClient.GetRegionQuotaStoragePolicyById,
-		resourceReadFunc: resourceOrgRegionQuotaStoragePolicyRead,
+		resourceReadFunc: resourceRegionQuotaStoragePolicyRead,
 	}
 
 	return updateResource(ctx, d, meta, c)
 }
 
-func resourceOrgRegionQuotaStoragePolicyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceRegionQuotaStoragePolicyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.RegionQuota, types.TmVdc]{
-		entityLabel:   labelVcfaOrgRegionQuotaStoragePolicy,
+		entityLabel:   labelVcfaRegionQuotaStoragePolicy,
 		getEntityFunc: tmClient.GetRegionQuotaById,
 		stateStoreFunc: func(tmClient *VCDClient, d *schema.ResourceData, outerType *govcd.RegionQuota) error {
 			err := setOrgRegionQuotaData(tmClient, d, outerType)
@@ -123,7 +123,7 @@ func resourceOrgRegionQuotaStoragePolicyRead(ctx context.Context, d *schema.Reso
 	return readResource(ctx, d, meta, c)
 }
 
-func resourceOrgRegionQuotaStoragePolicyDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceRegionQuotaStoragePolicyDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	regionQuotaId := d.Get("org_region_quota_id").(string)
 	vcfa.kvLock(regionQuotaId)
 	defer vcfa.kvUnlock(regionQuotaId)
@@ -131,14 +131,14 @@ func resourceOrgRegionQuotaStoragePolicyDelete(ctx context.Context, d *schema.Re
 	tmClient := meta.(ClientContainer).tmClient
 
 	c := crudConfig[*govcd.RegionQuota, types.TmVdc]{
-		entityLabel:   labelVcfaOrgRegionQuotaStoragePolicy,
+		entityLabel:   labelVcfaRegionQuotaStoragePolicy,
 		getEntityFunc: tmClient.GetRegionQuotaById,
 	}
 
 	return deleteResource(ctx, d, meta, c)
 }
 
-func resourceOrgRegionQuotaStoragePolicyImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceRegionQuotaStoragePolicyImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	tmClient := meta.(ClientContainer).tmClient
 
 	idSlice := strings.Split(d.Id(), ImportSeparator)
@@ -153,7 +153,7 @@ func resourceOrgRegionQuotaStoragePolicyImport(_ context.Context, d *schema.Reso
 
 	policy, err := rq.GetStoragePolicyByName(idSlice[2])
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving %s: %s", labelVcfaOrgRegionQuotaStoragePolicy, err)
+		return nil, fmt.Errorf("error retrieving %s: %s", labelVcfaRegionQuotaStoragePolicy, err)
 	}
 
 	d.SetId(policy.VirtualDatacenterStoragePolicy.ID)
@@ -175,7 +175,7 @@ func getRegionQuotaStoragePolicyType(_ *VCDClient, d *schema.ResourceData) (*typ
 
 func setRegionQuotaStoragePolicyData(_ *VCDClient, d *schema.ResourceData, rqSp *govcd.RegionQuotaStoragePolicy) error {
 	if rqSp == nil || rqSp.VirtualDatacenterStoragePolicy == nil {
-		return fmt.Errorf("provided %s is nil", labelVcfaOrgRegionQuotaStoragePolicy)
+		return fmt.Errorf("provided %s is nil", labelVcfaRegionQuotaStoragePolicy)
 	}
 
 	d.SetId(rqSp.VirtualDatacenterStoragePolicy.ID)
