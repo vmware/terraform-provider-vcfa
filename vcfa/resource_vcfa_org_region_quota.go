@@ -50,7 +50,7 @@ func resourceVcfaOrgRegionQuota() *schema.Resource {
 				Type:        schema.TypeSet,
 				Required:    true,
 				Elem:        OrgRegionQuotaZoneResourceAllocation,
-				Description: "A set of Region Zones and their resource allocations",
+				Description: fmt.Sprintf("A set of %ss and their resource allocations", labelVcfaRegionZone),
 			},
 			"status": {
 				Type:        schema.TypeString,
@@ -175,7 +175,7 @@ func resourceOrgRegionQuotaUpdate(ctx context.Context, d *schema.ResourceData, m
 		entityLabel:      labelVcfaOrgRegionQuota,
 		getTypeFunc:      getOrgRegionQuotaType,
 		getEntityFunc:    tmClient.GetRegionQuotaById,
-		resourceReadFunc: nil, // We don't use generic Read, as we didn't finish creation yet
+		resourceReadFunc: nil, // We don't use generic Read, as we didn't finish update yet
 	}
 
 	diags := updateResource(ctx, d, meta, c)
