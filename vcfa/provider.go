@@ -71,7 +71,7 @@ var globalResourceMap = map[string]*schema.Resource{
 	"vcfa_region":                          resourceVcfaRegion(),                      // 1.0
 	"vcfa_ip_space":                        resourceVcfaIpSpace(),                     // 1.0
 	"vcfa_org_region_quota":                resourceVcfaOrgRegionQuota(),              // 1.0
-	"vcfa_org_region_quota_storage_policy": resourceVcfaRegionQuotaStoragePolicy(),    // 1.0
+	"vcfa_org_region_quota_storage_policy": resourceVcfaOrgRegionQuotaStoragePolicy(), // 1.0
 	"vcfa_content_library":                 resourceVcfaContentLibrary(),              // 1.0
 	"vcfa_content_library_item":            resourceVcfaContentLibraryItem(),          // 1.0
 	"vcfa_provider_gateway":                resourceVcfaProviderGateway(),             // 1.0

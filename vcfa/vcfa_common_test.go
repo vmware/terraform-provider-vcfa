@@ -74,7 +74,6 @@ resource "vcfa_nsx_manager" "nsx_manager" {
   username               = "` + testConfig.Tm.NsxManagerUsername + `"
   password               = "` + testConfig.Tm.NsxManagerPassword + `"
   url                    = "` + testConfig.Tm.NsxManagerUrl + `"
-  network_provider_scope = ""
   auto_trust_certificate = true
 }
 

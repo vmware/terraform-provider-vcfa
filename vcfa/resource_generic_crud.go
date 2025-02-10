@@ -170,7 +170,10 @@ func updateResource[O updateDeleter[O, I], I any](ctx context.Context, d *schema
 		return diag.Errorf("error updating %s with ID: %s", c.entityLabel, err)
 	}
 
-	return c.resourceReadFunc(ctx, d, meta)
+	if c.resourceReadFunc != nil {
+		return c.resourceReadFunc(ctx, d, meta)
+	}
+	return nil
 }
 
 func readResource[O updateDeleter[O, I], I any](_ context.Context, d *schema.ResourceData, meta interface{}, c crudConfig[O, I]) diag.Diagnostics {

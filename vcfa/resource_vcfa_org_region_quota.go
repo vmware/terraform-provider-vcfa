@@ -16,12 +16,12 @@ const labelVcfaOrgRegionQuota = "Org Region Quota"
 
 func resourceVcfaOrgRegionQuota() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceOrgRegionQuotaCreate,
-		ReadContext:   resourceOrgRegionQuotaRead,
-		UpdateContext: resourceOrgRegionQuotaUpdate,
-		DeleteContext: resourceOrgRegionQuotaDelete,
+		CreateContext: resourceVcfaOrgRegionQuotaCreate,
+		ReadContext:   resourceVcfaOrgRegionQuotaRead,
+		UpdateContext: resourceVcfaOrgRegionQuotaUpdate,
+		DeleteContext: resourceVcfaOrgRegionQuotaDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: resourceOrgRegionQuotaImport,
+			StateContext: resourceVcfaOrgRegionQuotaImport,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -67,12 +67,6 @@ func resourceVcfaOrgRegionQuota() *schema.Resource {
 				Required:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Description: fmt.Sprintf("A set of %s IDs to assign to this %s", labelVcfaRegionVmClass, labelVcfaOrgRegionQuota),
-			},
-			"storage_class_ids": {
-				Type:        schema.TypeSet,
-				Required:    true,
-				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: fmt.Sprintf("A set of %s IDs to assign to this %s", labelVcfaStorageClass, labelVcfaOrgRegionQuota),
 			},
 		},
 	}
@@ -148,7 +142,7 @@ func saveVmClassesInState(tmClient *VCDClient, d *schema.ResourceData, rqId stri
 	return nil
 }
 
-func resourceOrgRegionQuotaCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVcfaOrgRegionQuotaCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.RegionQuota, types.TmVdc]{
 		entityLabel:      labelVcfaOrgRegionQuota,
@@ -166,10 +160,10 @@ func resourceOrgRegionQuotaCreate(ctx context.Context, d *schema.ResourceData, m
 		return diag.FromErr(err)
 	}
 
-	return resourceOrgRegionQuotaRead(ctx, d, meta)
+	return resourceVcfaOrgRegionQuotaRead(ctx, d, meta)
 }
 
-func resourceOrgRegionQuotaUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVcfaOrgRegionQuotaUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.RegionQuota, types.TmVdc]{
 		entityLabel:      labelVcfaOrgRegionQuota,
@@ -187,10 +181,10 @@ func resourceOrgRegionQuotaUpdate(ctx context.Context, d *schema.ResourceData, m
 		return diag.FromErr(err)
 	}
 
-	return resourceOrgRegionQuotaRead(ctx, d, meta)
+	return resourceVcfaOrgRegionQuotaRead(ctx, d, meta)
 }
 
-func resourceOrgRegionQuotaRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVcfaOrgRegionQuotaRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.RegionQuota, types.TmVdc]{
 		entityLabel:   labelVcfaOrgRegionQuota,
@@ -206,7 +200,7 @@ func resourceOrgRegionQuotaRead(ctx context.Context, d *schema.ResourceData, met
 	return readResource(ctx, d, meta, c)
 }
 
-func resourceOrgRegionQuotaDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVcfaOrgRegionQuotaDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 
 	c := crudConfig[*govcd.RegionQuota, types.TmVdc]{
@@ -217,7 +211,7 @@ func resourceOrgRegionQuotaDelete(ctx context.Context, d *schema.ResourceData, m
 	return deleteResource(ctx, d, meta, c)
 }
 
-func resourceOrgRegionQuotaImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceVcfaOrgRegionQuotaImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	tmClient := meta.(ClientContainer).tmClient
 
 	idSlice := strings.Split(d.Id(), ImportSeparator)

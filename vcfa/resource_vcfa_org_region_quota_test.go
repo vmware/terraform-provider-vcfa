@@ -25,6 +25,8 @@ func TestAccVcfaOrgRegionQuota(t *testing.T) {
 		"VcenterRef":         vCenterHclRef,
 		"RegionId":           fmt.Sprintf("%s.id", regionHclRef),
 		"RegionVmClassRefs":  strings.Join(vmClassesRefs, ".id,\n    ") + ".id",
+		"StorageClass":       testConfig.Tm.StorageClass,
+		"StorageLimitMib":    "100",
 		"Tags":               "tm org regionQuota",
 	}
 	testParamsNotEmpty(t, params)
@@ -43,10 +45,17 @@ func TestAccVcfaOrgRegionQuota(t *testing.T) {
 	configText2 := templateFill(preRequisites+testAccVcfaOrgRegionQuotaStep2, params)
 	params["FuncName"] = t.Name() + "-step3"
 	configText3 := templateFill(preRequisites+testAccVcfaOrgRegionQuotaStep3DS, params)
+	params["FuncName"] = t.Name() + "-step4"
+	configText4 := templateFill(preRequisites+testAccVcfaOrgRegionQuotaStep4, params)
+	params["FuncName"] = t.Name() + "-step4update"
+	params["StorageLimitMib"] = "77"
+	configText4update := templateFill(preRequisites+testAccVcfaOrgRegionQuotaStep4, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
 	debugPrintf("#[DEBUG] CONFIGURATION step3: %s\n", configText3)
+	debugPrintf("#[DEBUG] CONFIGURATION step4: %s\n", configText4)
+	debugPrintf("#[DEBUG] CONFIGURATION step4update: %s\n", configText4update)
 	if vcfaShortTest {
 		t.Skip(acceptanceTestsSkipped)
 		return
@@ -86,7 +95,7 @@ func TestAccVcfaOrgRegionQuota(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "name", fmt.Sprintf("%s_%s", params["Testname"], testConfig.Tm.Region)), // Name is a combination of Org name + Region name
 					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "status", "READY"),
 					resource.TestCheckResourceAttrPair("vcfa_org_region_quota.test", "org_id", "vcfa_org.test", "id"),
-					resource.TestCheckResourceAttrPair("vcfa_org_region_quota.test", "region_id", "vcfa_region.region", "id"),
+					resource.TestCheckResourceAttrPair("vcfa_org_region_quota.test", "region_id", regionHclRef, "id"),
 					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "supervisor_ids.#", "1"),
 					resource.TestCheckTypeSetElemAttrPair("vcfa_org_region_quota.test", "supervisor_ids.*", "data.vcfa_supervisor.test", "id"),
 					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "zone_resource_allocations.#", "1"),
@@ -107,10 +116,24 @@ func TestAccVcfaOrgRegionQuota(t *testing.T) {
 				),
 			},
 			{
+				Config: configText4,
+				Check:  resource.ComposeTestCheckFunc(),
+			},
+			{
+				Config: configText4update,
+				Check:  resource.ComposeTestCheckFunc(),
+			},
+			{
 				ResourceName:      "vcfa_org_region_quota.test",
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateId:     fmt.Sprintf("%s%s%s", params["Testname"], ImportSeparator, testConfig.Tm.Region), // Org name and Region name
+			},
+			{
+				ResourceName:      "vcfa_org_region_quota_storage_policy.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateId:     fmt.Sprintf("%s%s%s%s%s", params["Testname"], ImportSeparator, testConfig.Tm.Region, ImportSeparator, testConfig.Tm.StorageClass), // Org name, Region name and Region Storage policy name
 			},
 		},
 	})
@@ -193,5 +216,18 @@ const testAccVcfaOrgRegionQuotaStep3DS = testAccVcfaOrgRegionQuotaStep2 + `
 data "vcfa_org_region_quota" "test" {
   org_id    = vcfa_org.test.id
   region_id = {{.RegionId}}
+}
+`
+
+const testAccVcfaOrgRegionQuotaStep4 = testAccVcfaOrgRegionQuotaStep3DS + `
+data "vcfa_region_storage_policy" "sp" {
+  name      = "{{.StorageClass}}"
+  region_id = data.vcfa_org_region_quota.test.region_id
+}
+
+resource "vcfa_org_region_quota_storage_policy" "test" {
+  org_region_quota_id      = data.vcfa_org_region_quota.test.id
+  region_storage_policy_id = data.vcfa_region_storage_policy.sp.id
+  storage_limit_mib        = {{.StorageLimitMib}}
 }
 `
