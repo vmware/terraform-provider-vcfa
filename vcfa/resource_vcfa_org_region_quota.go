@@ -74,10 +74,6 @@ func resourceVcfaOrgRegionQuota() *schema.Resource {
 				Required:    true,
 				Elem:        orgRegionQuotaRegionStoragePolicy,
 				Description: fmt.Sprintf("A set of %s to assign to this %s", labelVcfaRegionStoragePolicy, labelVcfaOrgRegionQuota),
-				// We just use the ID of the Region Quota Storage Policy so it is trivial to find a compare
-				Set: func(i interface{}) int {
-					return hashcodeString(i.(map[string]interface{})["id"].(string))
-				},
 			},
 		},
 	}
@@ -185,29 +181,64 @@ func createStoragePoliciesInRegionQuota(d *schema.ResourceData, tmClient *VCDCli
 	return nil
 }
 
-// updateStoragePoliciesInRegionQuota updates the set of Region Quota Storage Policies. For this one to work properly,
-// the argument Set must use the hash code of the Region Quota Storage Policy ID only.
+// updateStoragePoliciesInRegionQuota updates the set of Region Quota Storage Policies.
 func updateStoragePoliciesInRegionQuota(d *schema.ResourceData, tmClient *VCDClient) error {
 	regionQuotaId := d.Id()
 	oldRsps, newRsps := d.GetChange("region_storage_policy")
-	oldRspsSet := oldRsps.(*schema.Set)
-	newRspsSet := newRsps.(*schema.Set)
+	oldRspsList := oldRsps.(*schema.Set).List()
+	newRspsList := newRsps.(*schema.Set).List()
 
 	// Delete the Storage Policies that are no longer present in the new set of Policies.
-	// We can use .Contains() because the hash function only uses ID of the policies.
-	for _, oldRsp := range oldRspsSet.List() {
-		if !newRspsSet.Contains(oldRsp) {
+	for _, oldRsp := range oldRspsList {
+		oldRegionStoragePolicy := oldRsp.(map[string]interface{})
+		found := false
+		for _, newRsp := range newRspsList {
+			newRegionStoragePolicy := newRsp.(map[string]interface{})
+			if newRegionStoragePolicy["region_storage_policy_id"] == oldRegionStoragePolicy["region_storage_policy_id"] {
+				found = true
+				break
+			}
+		}
+		if !found {
 			err := tmClient.DeleteRegionQuotaStoragePolicy(oldRsp.(map[string]interface{})["id"].(string))
 			if err != nil {
 				return fmt.Errorf("could not delete old Storage Policies during Region Quota '%s' update: %s", regionQuotaId, err)
 			}
 		}
 	}
+
+	// Update the Storage Policies that are both present in the old and new set of Policies.
+	// Create the ones just present in the new set.
 	var policiesToCreate []types.VirtualDatacenterStoragePolicy
-	for _, newRsp := range newRspsSet.List() {
+	for _, newRsp := range newRspsList {
 		newRegionStoragePolicy := newRsp.(map[string]interface{})
-		// Create the Storage Policies that are not present in the old set of Policies
-		if !oldRspsSet.Contains(newRsp) {
+		found := false
+		for _, oldRsp := range oldRspsList {
+			oldRegionStoragePolicy := oldRsp.(map[string]interface{})
+
+			// Update the policy if it is found
+			if newRegionStoragePolicy["region_storage_policy_id"] == oldRegionStoragePolicy["region_storage_policy_id"] {
+				found = true
+				_, err := tmClient.UpdateRegionQuotaStoragePolicy(oldRegionStoragePolicy["id"].(string), &types.VirtualDatacenterStoragePolicy{
+					ID: oldRegionStoragePolicy["id"].(string),
+					RegionStoragePolicy: types.OpenApiReference{
+						ID: oldRegionStoragePolicy["region_storage_policy_id"].(string),
+					},
+					Name:            oldRegionStoragePolicy["name"].(string),
+					StorageLimitMiB: int64(newRegionStoragePolicy["storage_limit_mib"].(int)),
+					VirtualDatacenter: types.OpenApiReference{
+						ID: regionQuotaId,
+					},
+				})
+				if err != nil {
+					return fmt.Errorf("could not update existing Storage Policy '%s': %s", oldRegionStoragePolicy["id"], err)
+				}
+				// Found, no need to continue searching
+				break
+			}
+		}
+		// Create the policy if it is not found
+		if !found {
 			policiesToCreate = append(policiesToCreate, types.VirtualDatacenterStoragePolicy{
 				RegionStoragePolicy: types.OpenApiReference{
 					ID: newRegionStoragePolicy["region_storage_policy_id"].(string),
@@ -217,35 +248,9 @@ func updateStoragePoliciesInRegionQuota(d *schema.ResourceData, tmClient *VCDCli
 					ID: regionQuotaId,
 				},
 			})
-		} else {
-			// SDK does not provide a way to retrieve items from a set, so we need to iterate and find it
-			for _, oldRsp := range oldRspsSet.List() {
-				oldStoragePolicy := oldRsp.(map[string]interface{})
-
-				if newRegionStoragePolicy["id"] == oldStoragePolicy["id"] {
-					// Update the Storage Policies that are present in the old set of Policies, if needed
-					if newRegionStoragePolicy["storage_limit_mib"] != oldStoragePolicy["storage_limit_mib"] {
-						_, err := tmClient.UpdateRegionQuotaStoragePolicy(oldStoragePolicy["id"].(string), &types.VirtualDatacenterStoragePolicy{
-							ID: oldStoragePolicy["id"].(string),
-							RegionStoragePolicy: types.OpenApiReference{
-								ID: oldStoragePolicy["region_storage_policy_id"].(string),
-							},
-							Name:            oldStoragePolicy["name"].(string),
-							StorageLimitMiB: int64(newRegionStoragePolicy["storage_limit_mib"].(int)),
-							VirtualDatacenter: types.OpenApiReference{
-								ID: regionQuotaId,
-							},
-						})
-						if err != nil {
-							return fmt.Errorf("could not update existing Storage Policy '%s': %s", oldStoragePolicy["id"], err)
-						}
-					}
-					// Found the item to update, we no longer need to explore the old data
-					break
-				}
-			}
 		}
 	}
+
 	if len(policiesToCreate) > 0 {
 		_, err := tmClient.CreateRegionQuotaStoragePolicies(regionQuotaId, &types.VirtualDatacenterStoragePolicies{Values: policiesToCreate})
 		if err != nil {
@@ -284,9 +289,9 @@ func saveRegionStoragePoliciesInState(d *schema.ResourceData, regionQuota *govcd
 		spAttr := make(map[string]interface{})
 		spAttr["id"] = sp.VirtualDatacenterStoragePolicy.ID
 		spAttr["region_storage_policy_id"] = sp.VirtualDatacenterStoragePolicy.RegionStoragePolicy.ID // Can't be nil
-		spAttr["storage_limit_mib"] = sp.VirtualDatacenterStoragePolicy.StorageLimitMiB
+		spAttr["storage_limit_mib"] = int(sp.VirtualDatacenterStoragePolicy.StorageLimitMiB)
 		spAttr["name"] = sp.VirtualDatacenterStoragePolicy.Name
-		spAttr["storage_used_mib"] = sp.VirtualDatacenterStoragePolicy.StorageUsedMiB
+		spAttr["storage_used_mib"] = int(sp.VirtualDatacenterStoragePolicy.StorageUsedMiB)
 		spsAttr[i] = spAttr
 	}
 

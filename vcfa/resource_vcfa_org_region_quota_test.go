@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
+// TODO: TM: Improve this test so it has more than 1 Region Storage Policy
 func TestAccVcfaOrgRegionQuota(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
@@ -184,6 +185,11 @@ data "vcfa_supervisor" "test" {
 data "vcfa_region_zone" "test" {
   region_id = {{.RegionId}}
   name      = "{{.SupervisorZoneName}}"
+}
+
+data "vcfa_region_storage_policy" "sp" {
+  name      = "{{.StorageClass}}"
+  region_id = {{.RegionId}}
 }
 
 resource "vcfa_org" "test" {
