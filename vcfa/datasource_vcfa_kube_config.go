@@ -70,7 +70,7 @@ func datasourceVcfaKubeConfig() *schema.Resource {
 }
 
 func datasourceVcfaKubeConfigRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	tpClient := meta.(ClientContainer).tpClient
+	tpClient := meta.(ClientContainer).cciClient
 	tmClient := meta.(ClientContainer).tmClient
 
 	clusterName := fmt.Sprintf("%s:%s", tmClient.Org, tmClient.Client.VCDHREF.Host)

@@ -94,12 +94,12 @@ func datasourceVcfaSupervisorNamespace() *schema.Resource {
 }
 
 func datasourceVcfaSupervisorNamespaceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	tpClient := meta.(ClientContainer).tpClient
+	cciClient := meta.(ClientContainer).cciClient
 
 	projectName := d.Get("project_name").(string)
 	name := d.Get("name").(string)
 
-	supervisorNamespace, err := tpClient.GetSupervisorNamespaceByName(projectName, name)
+	supervisorNamespace, err := cciClient.GetSupervisorNamespaceByName(projectName, name)
 	if err != nil {
 		return diag.Errorf("error retrieving %s '%s' in Project '%s': %s", labelSupervisorNamespace, name, projectName, err)
 	}
