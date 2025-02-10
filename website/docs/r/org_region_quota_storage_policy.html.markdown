@@ -13,6 +13,61 @@ Provides a resource to manage Storage Policies of Organization Region Quotas in 
 ## Example Usage
 
 ```hcl
+data "vcfa_vcenter" "vc" {
+  name = "my-vcenter"
+}
+
+data "vcfa_supervisor" "supervisor" {
+  name       = "my-supervisor"
+  vcenter_id = vcfa_vcenter.vc.id
+}
+
+data "vcfa_region" "one" {
+  name = "region-one"
+}
+
+data "vcfa_region_zone" "one" {
+  region_id = data.vcfa_region.one.id
+  name      = "my-zone"
+}
+
+data "vcfa_region_vm_class" "vm_class1" {
+  name      = "best-effort-4xlarge"
+  region_id = data.vcfa_region.region1.id
+}
+
+data "vcfa_region_vm_class" "vm_class2" {
+  name      = "best-effort-8xlarge"
+  region_id = data.vcfa_region.region1.id
+}
+
+resource "vcfa_org_region_quota" "first" {
+  org_id         = vcfa_org.test.id
+  region_id      = data.vcfa_region.one.id
+  supervisor_ids = [data.vcfa_supervisor.test.id]
+  zone_resource_allocations {
+    region_zone_id         = data.vcfa_region_zone.one.id
+    cpu_limit_mhz          = 2000
+    cpu_reservation_mhz    = 100
+    memory_limit_mib       = 1024
+    memory_reservation_mib = 512
+  }
+  region_vm_class_ids = [
+    data.vcfa_region_vm_class.vm_class1.id,
+    data.vcfa_region_vm_class.vm_class2.id,
+  ]
+}
+
+data "vcfa_region_storage_policy" "region-sp" {
+  name      = "wcplocal_storage_profile"
+  region_id = data.vcfa_org_region_quota.test.region_id
+}
+
+resource "vcfa_org_region_quota_storage_policy" "rq-sp" {
+  org_region_quota_id      = vcfa_org_region_quota.first.id
+  region_storage_policy_id = data.vcfa_region_storage_policy.region-sp.id
+  storage_limit_mib        = 100
+}
 ```
 
 ## Argument Reference

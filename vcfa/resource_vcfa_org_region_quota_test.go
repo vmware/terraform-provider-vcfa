@@ -226,7 +226,7 @@ data "vcfa_region_storage_policy" "sp" {
 }
 
 resource "vcfa_org_region_quota_storage_policy" "test" {
-  org_region_quota_id      = data.vcfa_org_region_quota.test.id
+  org_region_quota_id      = vcfa_org_region_quota.test.id
   region_storage_policy_id = data.vcfa_region_storage_policy.sp.id
   storage_limit_mib        = {{.StorageLimitMib}}
 }
