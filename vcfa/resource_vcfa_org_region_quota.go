@@ -185,70 +185,54 @@ func createStoragePoliciesInRegionQuota(d *schema.ResourceData, tmClient *VCDCli
 func updateStoragePoliciesInRegionQuota(d *schema.ResourceData, tmClient *VCDClient) error {
 	regionQuotaId := d.Id()
 	oldRsps, newRsps := d.GetChange("region_storage_policy")
-	oldRspsList := oldRsps.(*schema.Set).List()
-	newRspsList := newRsps.(*schema.Set).List()
 
-	// Delete the Storage Policies that are no longer present in the new set of Policies.
-	for _, oldRsp := range oldRspsList {
-		oldRegionStoragePolicy := oldRsp.(map[string]interface{})
-		found := false
-		for _, newRsp := range newRspsList {
-			newRegionStoragePolicy := newRsp.(map[string]interface{})
-			if newRegionStoragePolicy["region_storage_policy_id"] == oldRegionStoragePolicy["region_storage_policy_id"] {
-				found = true
-				break
-			}
-		}
-		if !found {
-			err := tmClient.DeleteRegionQuotaStoragePolicy(oldRsp.(map[string]interface{})["id"].(string))
-			if err != nil {
-				return fmt.Errorf("could not delete old Storage Policies during Region Quota '%s' update: %s", regionQuotaId, err)
-			}
-		}
+	deleteFunc := func(oldSp map[string]interface{}) error {
+		return tmClient.DeleteRegionQuotaStoragePolicy(oldSp["id"].(string))
 	}
 
-	// Update the Storage Policies that are both present in the old and new set of Policies.
-	// Create the ones just present in the new set.
-	var policiesToCreate []types.VirtualDatacenterStoragePolicy
-	for _, newRsp := range newRspsList {
-		newRegionStoragePolicy := newRsp.(map[string]interface{})
-		found := false
-		for _, oldRsp := range oldRspsList {
-			oldRegionStoragePolicy := oldRsp.(map[string]interface{})
+	updateFunc := func(newSp, oldSp map[string]interface{}) error {
+		_, err := tmClient.UpdateRegionQuotaStoragePolicy(oldSp["id"].(string), &types.VirtualDatacenterStoragePolicy{
+			ID: oldSp["id"].(string),
+			RegionStoragePolicy: types.OpenApiReference{
+				ID: oldSp["region_storage_policy_id"].(string),
+			},
+			Name:            oldSp["name"].(string),
+			StorageLimitMiB: int64(newSp["storage_limit_mib"].(int)),
+			VirtualDatacenter: types.OpenApiReference{
+				ID: regionQuotaId,
+			},
+		})
+		if err != nil {
+			return err
+		}
+		return nil
+	}
 
-			// Update the policy if it is found
-			if newRegionStoragePolicy["region_storage_policy_id"] == oldRegionStoragePolicy["region_storage_policy_id"] {
-				found = true
-				_, err := tmClient.UpdateRegionQuotaStoragePolicy(oldRegionStoragePolicy["id"].(string), &types.VirtualDatacenterStoragePolicy{
-					ID: oldRegionStoragePolicy["id"].(string),
-					RegionStoragePolicy: types.OpenApiReference{
-						ID: oldRegionStoragePolicy["region_storage_policy_id"].(string),
-					},
-					Name:            oldRegionStoragePolicy["name"].(string),
-					StorageLimitMiB: int64(newRegionStoragePolicy["storage_limit_mib"].(int)),
-					VirtualDatacenter: types.OpenApiReference{
-						ID: regionQuotaId,
-					},
-				})
-				if err != nil {
-					return fmt.Errorf("could not update existing Storage Policy '%s': %s", oldRegionStoragePolicy["id"], err)
-				}
-				// Found, no need to continue searching
-				break
-			}
-		}
-		// Create the policy if it is not found
-		if !found {
-			policiesToCreate = append(policiesToCreate, types.VirtualDatacenterStoragePolicy{
-				RegionStoragePolicy: types.OpenApiReference{
-					ID: newRegionStoragePolicy["region_storage_policy_id"].(string),
-				},
-				StorageLimitMiB: int64(newRegionStoragePolicy["storage_limit_mib"].(int)),
-				VirtualDatacenter: types.OpenApiReference{
-					ID: regionQuotaId,
-				},
-			})
-		}
+	var policiesToCreate []types.VirtualDatacenterStoragePolicy
+	createFunc := func(newSp map[string]interface{}) error {
+		policiesToCreate = append(policiesToCreate, types.VirtualDatacenterStoragePolicy{
+			RegionStoragePolicy: types.OpenApiReference{
+				ID: newSp["region_storage_policy_id"].(string),
+			},
+			StorageLimitMiB: int64(newSp["storage_limit_mib"].(int)),
+			VirtualDatacenter: types.OpenApiReference{
+				ID: regionQuotaId,
+			},
+		})
+		return nil
+	}
+
+	oldRspsSet := oldRsps.(*schema.Set)
+	newRspsSet := newRsps.(*schema.Set)
+
+	err := searchSetAndApply(oldRspsSet, newRspsSet, "region_storage_policy_id", nil, deleteFunc)
+	if err != nil {
+		return fmt.Errorf("could not delete old Storage Policies during Region Quota '%s' update: %s", regionQuotaId, err)
+	}
+
+	err = searchSetAndApply(newRspsSet, oldRspsSet, "region_storage_policy_id", updateFunc, createFunc)
+	if err != nil {
+		return fmt.Errorf("could not update Storage Policies of Region Quota '%s': %s", regionQuotaId, err)
 	}
 
 	if len(policiesToCreate) > 0 {
