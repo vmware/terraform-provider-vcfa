@@ -45,17 +45,10 @@ func TestAccVcfaOrgRegionQuota(t *testing.T) {
 	configText2 := templateFill(preRequisites+testAccVcfaOrgRegionQuotaStep2, params)
 	params["FuncName"] = t.Name() + "-step3"
 	configText3 := templateFill(preRequisites+testAccVcfaOrgRegionQuotaStep3DS, params)
-	params["FuncName"] = t.Name() + "-step4"
-	configText4 := templateFill(preRequisites+testAccVcfaOrgRegionQuotaStep4, params)
-	params["FuncName"] = t.Name() + "-step4update"
-	params["StorageLimitMib"] = "77"
-	configText4update := templateFill(preRequisites+testAccVcfaOrgRegionQuotaStep4, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
 	debugPrintf("#[DEBUG] CONFIGURATION step3: %s\n", configText3)
-	debugPrintf("#[DEBUG] CONFIGURATION step4: %s\n", configText4)
-	debugPrintf("#[DEBUG] CONFIGURATION step4update: %s\n", configText4update)
 	if vcfaShortTest {
 		t.Skip(acceptanceTestsSkipped)
 		return
@@ -86,6 +79,11 @@ func TestAccVcfaOrgRegionQuota(t *testing.T) {
 						"memory_reservation_mib": "512",
 					}),
 					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "region_vm_class_ids.#", fmt.Sprintf("%d", len(vmClassesRefs))),
+					resource.TestCheckTypeSetElemNestedAttrs("vcfa_org_region_quota.test", "region_storage_policy.*", map[string]string{
+						"storage_limit_mib": "100",
+						"name":              params["StorageClass"].(string),
+					}),
+					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "region_storage_policy.#", "1"),
 				),
 			},
 			{
@@ -107,6 +105,11 @@ func TestAccVcfaOrgRegionQuota(t *testing.T) {
 						"memory_reservation_mib": "200",
 					}),
 					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "region_vm_class_ids.#", "1"),
+					resource.TestCheckTypeSetElemNestedAttrs("vcfa_org_region_quota.test", "region_storage_policy.*", map[string]string{
+						"storage_limit_mib": "77",
+						"name":              params["StorageClass"].(string),
+					}),
+					resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "region_storage_policy.#", "1"),
 				),
 			},
 			{
@@ -116,24 +119,10 @@ func TestAccVcfaOrgRegionQuota(t *testing.T) {
 				),
 			},
 			{
-				Config: configText4,
-				Check:  resource.ComposeTestCheckFunc(),
-			},
-			{
-				Config: configText4update,
-				Check:  resource.ComposeTestCheckFunc(),
-			},
-			{
 				ResourceName:      "vcfa_org_region_quota.test",
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateId:     fmt.Sprintf("%s%s%s", params["Testname"], ImportSeparator, testConfig.Tm.Region), // Org name and Region name
-			},
-			{
-				ResourceName:      "vcfa_org_region_quota_storage_policy.test",
-				ImportState:       true,
-				ImportStateVerify: true,
-				ImportStateId:     fmt.Sprintf("%s%s%s%s%s", params["Testname"], ImportSeparator, testConfig.Tm.Region, ImportSeparator, testConfig.Tm.StorageClass), // Org name, Region name and Region Storage policy name
 			},
 		},
 	})
@@ -152,6 +141,11 @@ data "vcfa_region_zone" "test" {
   name      = "{{.SupervisorZoneName}}"
 }
 
+data "vcfa_region_storage_policy" "sp" {
+  name      = "{{.StorageClass}}"
+  region_id = {{.RegionId}}
+}
+
 resource "vcfa_org_region_quota" "test" {
   org_id         = vcfa_org.test.id
   region_id      = {{.RegionId}}
@@ -166,6 +160,10 @@ resource "vcfa_org_region_quota" "test" {
   region_vm_class_ids = [
     {{.RegionVmClassRefs}}
   ]
+  region_storage_policy {
+    region_storage_policy_id = data.vcfa_region_storage_policy.sp.id
+    storage_limit_mib        = 100
+  }
 }
 
 resource "vcfa_org" "test" {
@@ -209,6 +207,10 @@ resource "vcfa_org_region_quota" "test" {
   region_vm_class_ids = [
     {{.RegionVmClassRefs}}
   ]
+  region_storage_policy {
+    region_storage_policy_id = data.vcfa_region_storage_policy.sp.id
+    storage_limit_mib        = 77
+  }
 }
 `
 
@@ -216,18 +218,5 @@ const testAccVcfaOrgRegionQuotaStep3DS = testAccVcfaOrgRegionQuotaStep2 + `
 data "vcfa_org_region_quota" "test" {
   org_id    = vcfa_org.test.id
   region_id = {{.RegionId}}
-}
-`
-
-const testAccVcfaOrgRegionQuotaStep4 = testAccVcfaOrgRegionQuotaStep3DS + `
-data "vcfa_region_storage_policy" "sp" {
-  name      = "{{.StorageClass}}"
-  region_id = data.vcfa_org_region_quota.test.region_id
-}
-
-resource "vcfa_org_region_quota_storage_policy" "test" {
-  org_region_quota_id      = vcfa_org_region_quota.test.id
-  region_storage_policy_id = data.vcfa_region_storage_policy.sp.id
-  storage_limit_mib        = {{.StorageLimitMib}}
 }
 `

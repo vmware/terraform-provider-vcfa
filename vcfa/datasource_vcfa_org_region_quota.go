@@ -3,7 +3,6 @@ package vcfa
 import (
 	"context"
 	"fmt"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
@@ -58,6 +57,12 @@ func datasourceVcfaOrgRegionQuota() *schema.Resource {
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Description: fmt.Sprintf("A set of %s IDs assigned to this %s", labelVcfaRegionVmClass, labelVcfaOrgRegionQuota),
 			},
+			"region_storage_policy": {
+				Type:        schema.TypeSet,
+				Computed:    true,
+				Elem:        orgRegionQuotaDsRegionStoragePolicy,
+				Description: fmt.Sprintf("A set of %s assigned to this %s", labelVcfaRegionStoragePolicy, labelVcfaOrgRegionQuota),
+			},
 		},
 	}
 }
@@ -97,6 +102,36 @@ var orgRegionQuotaDsZoneResourceAllocation = &schema.Resource{
 	},
 }
 
+var orgRegionQuotaDsRegionStoragePolicy = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"region_storage_policy_id": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: fmt.Sprintf("The ID of the %s for this %s", labelVcfaRegionStoragePolicy, labelVcfaOrgRegionQuota),
+		},
+		"storage_limit_mib": {
+			Type:        schema.TypeInt,
+			Computed:    true,
+			Description: "Maximum allowed storage allocation in mebibytes",
+		},
+		"id": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: fmt.Sprintf("The ID of the %s Storage Policy", labelVcfaOrgRegionQuota),
+		},
+		"name": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "The name of the Storage Policy. It follows RFC 1123 Label Names to conform with Kubernetes standards",
+		},
+		"storage_used_mib": {
+			Type:        schema.TypeInt,
+			Computed:    true,
+			Description: "Amount of storage used in mebibytes",
+		},
+	},
+}
+
 func datasourceVcfaOrgRegionQuotaRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 	getByNameAndOrgId := func(_ string) (*govcd.RegionQuota, error) {
@@ -119,7 +154,11 @@ func datasourceVcfaOrgRegionQuotaRead(ctx context.Context, d *schema.ResourceDat
 			if err != nil {
 				return err
 			}
-			return saveVmClassesInState(tmClient, d, outerType.TmVdc.ID)
+			err = saveVmClassesInState(tmClient, d, outerType.TmVdc.ID)
+			if err != nil {
+				return err
+			}
+			return saveRegionStoragePoliciesInState(d, outerType, "datasource")
 		},
 	}
 	return readDatasource(ctx, d, meta, c)

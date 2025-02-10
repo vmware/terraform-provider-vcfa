@@ -56,6 +56,10 @@ resource "vcfa_org_region_quota" "first" {
     data.vcfa_region_vm_class.vm_class1.id,
     data.vcfa_region_vm_class.vm_class2.id,
   ]
+  region_storage_policy {
+    region_storage_policy_id = data.vcfa_region_storage_policy.region-sp.id
+    storage_limit_mib        = 100
+  }
 }
 ```
 
@@ -69,6 +73,7 @@ The following arguments are supported:
   using [`vcfa_supervisor`](/providers/vmware/vcfa/latest/docs/data-sources/supervisor) data source
 - `zone_resource_allocations` - (Required) A set of Zone Resource Allocation definitions. See [Zone Resource Allocations](#zone-resource-allocations-block)
 - `region_vm_class_ids` - (Required) A set of Region VM Class IDs. These can be fetched with [`vcfa_region_vm_class` data source](/providers/vmware/vcfa/latest/docs/data-sources/region_vm_class)
+- `region_storage_policy` - (Required) A set of Region Storage Policies. See [Region Storage Policies](#region-storage-policies)
 
 <a id="zone-resource-allocations-block"></a>
 ## Zone Resource Allocations
@@ -82,6 +87,17 @@ The following arguments are supported:
 
 A computed attribute `region_zone_name` will be set in each `zone_resource_allocations` block.
 
+<a id="region-storage-policies"></a>
+## Region Storage Policies
+
+- `region_storage_policy_id` - The ID of a Region Storage Policy. It can be fetched with [`vcfa_region_storage_policy` data source](/providers/vmware/vcfa/latest/docs/data-sources/region_storage_policy).
+- `storage_limit_mib` - Maximum allowed storage allocation in mebibytes. Minimum value: `0`
+
+Each block defines some read-only attributes:
+
+- `id` - ID of the Region Quota Storage Policy
+- `name` - The name of the Region Quota Storage Policy. It follows RFC 1123 Label Names to conform with Kubernetes standards
+- `storage_used_mib` - Amount of storage used in mebibytes
 
 ## Attribute Reference
 

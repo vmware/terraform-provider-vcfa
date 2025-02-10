@@ -49,7 +49,7 @@ func resourceVcfaOrgRegionQuota() *schema.Resource {
 			"zone_resource_allocations": {
 				Type:        schema.TypeSet,
 				Required:    true,
-				Elem:        OrgRegionQuotaZoneResourceAllocation,
+				Elem:        orgRegionQuotaZoneResourceAllocation,
 				Description: fmt.Sprintf("A set of %ss and their resource allocations", labelVcfaRegionZone),
 			},
 			"status": {
@@ -68,11 +68,22 @@ func resourceVcfaOrgRegionQuota() *schema.Resource {
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Description: fmt.Sprintf("A set of %s IDs to assign to this %s", labelVcfaRegionVmClass, labelVcfaOrgRegionQuota),
 			},
+			"region_storage_policy": {
+				Type:        schema.TypeSet,
+				MinItems:    1,
+				Required:    true,
+				Elem:        orgRegionQuotaRegionStoragePolicy,
+				Description: fmt.Sprintf("A set of %s to assign to this %s", labelVcfaRegionStoragePolicy, labelVcfaOrgRegionQuota),
+				// We just use the ID of the Region Quota Storage Policy so it is trivial to find a compare
+				Set: func(i interface{}) int {
+					return hashcodeString(i.(map[string]interface{})["id"].(string))
+				},
+			},
 		},
 	}
 }
 
-var OrgRegionQuotaZoneResourceAllocation = &schema.Resource{
+var orgRegionQuotaZoneResourceAllocation = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"region_zone_name": {
 			Type:        schema.TypeString,
@@ -111,15 +122,135 @@ var OrgRegionQuotaZoneResourceAllocation = &schema.Resource{
 	},
 }
 
-func assignVmClassesToRegionQuota(d *schema.ResourceData, tmClient *VCDClient) error {
-	// Lock the whole Region Quota as we're changing its internals
-	vcfa.kvLock(d.Id())
-	defer vcfa.kvUnlock(d.Id())
+var orgRegionQuotaRegionStoragePolicy = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"region_storage_policy_id": {
+			Type:        schema.TypeString,
+			Required:    true,
+			Description: fmt.Sprintf("The ID of the %s for this %s", labelVcfaRegionStoragePolicy, labelVcfaOrgRegionQuota),
+		},
+		"storage_limit_mib": {
+			Type:             schema.TypeInt,
+			Required:         true,
+			Description:      "Maximum allowed storage allocation in mebibytes. Minimum value: 0",
+			ValidateDiagFunc: validation.ToDiagFunc(validation.IntAtLeast(0)),
+		},
+		"id": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: fmt.Sprintf("The ID of the %s Storage Policy", labelVcfaOrgRegionQuota),
+		},
+		"name": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "The name of the Storage Policy. It follows RFC 1123 Label Names to conform with Kubernetes standards",
+		},
+		"storage_used_mib": {
+			Type:        schema.TypeInt,
+			Computed:    true,
+			Description: "Amount of storage used in mebibytes",
+		},
+	},
+}
 
+func assignVmClassesToRegionQuota(d *schema.ResourceData, tmClient *VCDClient) error {
 	vmClassIds := convertSchemaSetToSliceOfStrings(d.Get("region_vm_class_ids").(*schema.Set))
 	err := tmClient.AssignVmClassesToRegionQuota(d.Id(), &types.RegionVirtualMachineClasses{Values: convertSliceOfStringsToOpenApiReferenceIds(vmClassIds)})
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func createStoragePoliciesInRegionQuota(d *schema.ResourceData, tmClient *VCDClient) error {
+	regionQuotaId := d.Id()
+	rsps := d.Get("region_storage_policy").(*schema.Set).List()
+	payload := make([]types.VirtualDatacenterStoragePolicy, len(rsps))
+	for i, rsp := range rsps {
+		regionStoragePolicy := rsp.(map[string]interface{})
+		payload[i] = types.VirtualDatacenterStoragePolicy{
+			RegionStoragePolicy: types.OpenApiReference{
+				ID: regionStoragePolicy["region_storage_policy_id"].(string),
+			},
+			StorageLimitMiB: int64(regionStoragePolicy["storage_limit_mib"].(int)),
+			VirtualDatacenter: types.OpenApiReference{
+				ID: regionQuotaId,
+			},
+		}
+	}
+	_, err := tmClient.CreateRegionQuotaStoragePolicies(regionQuotaId, &types.VirtualDatacenterStoragePolicies{Values: payload})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// updateStoragePoliciesInRegionQuota updates the set of Region Quota Storage Policies. For this one to work properly,
+// the argument Set must use the hash code of the Region Quota Storage Policy ID only.
+func updateStoragePoliciesInRegionQuota(d *schema.ResourceData, tmClient *VCDClient) error {
+	regionQuotaId := d.Id()
+	oldRsps, newRsps := d.GetChange("region_storage_policy")
+	oldRspsSet := oldRsps.(*schema.Set)
+	newRspsSet := newRsps.(*schema.Set)
+
+	// Delete the Storage Policies that are no longer present in the new set of Policies.
+	// We can use .Contains() because the hash function only uses ID of the policies.
+	for _, oldRsp := range oldRspsSet.List() {
+		if !newRspsSet.Contains(oldRsp) {
+			err := tmClient.DeleteRegionQuotaStoragePolicy(oldRsp.(map[string]interface{})["id"].(string))
+			if err != nil {
+				return fmt.Errorf("could not delete old Storage Policies during Region Quota '%s' update: %s", regionQuotaId, err)
+			}
+		}
+	}
+	var policiesToCreate []types.VirtualDatacenterStoragePolicy
+	for _, newRsp := range newRspsSet.List() {
+		newRegionStoragePolicy := newRsp.(map[string]interface{})
+		// Create the Storage Policies that are not present in the old set of Policies
+		if !oldRspsSet.Contains(newRsp) {
+			policiesToCreate = append(policiesToCreate, types.VirtualDatacenterStoragePolicy{
+				RegionStoragePolicy: types.OpenApiReference{
+					ID: newRegionStoragePolicy["region_storage_policy_id"].(string),
+				},
+				StorageLimitMiB: int64(newRegionStoragePolicy["storage_limit_mib"].(int)),
+				VirtualDatacenter: types.OpenApiReference{
+					ID: regionQuotaId,
+				},
+			})
+		} else {
+			// SDK does not provide a way to retrieve items from a set, so we need to iterate and find it
+			for _, oldRsp := range oldRspsSet.List() {
+				oldStoragePolicy := oldRsp.(map[string]interface{})
+
+				if newRegionStoragePolicy["id"] == oldStoragePolicy["id"] {
+					// Update the Storage Policies that are present in the old set of Policies, if needed
+					if newRegionStoragePolicy["storage_limit_mib"] != oldStoragePolicy["storage_limit_mib"] {
+						_, err := tmClient.UpdateRegionQuotaStoragePolicy(oldStoragePolicy["id"].(string), &types.VirtualDatacenterStoragePolicy{
+							ID: oldStoragePolicy["id"].(string),
+							RegionStoragePolicy: types.OpenApiReference{
+								ID: oldStoragePolicy["region_storage_policy_id"].(string),
+							},
+							Name:            oldStoragePolicy["name"].(string),
+							StorageLimitMiB: int64(newRegionStoragePolicy["storage_limit_mib"].(int)),
+							VirtualDatacenter: types.OpenApiReference{
+								ID: regionQuotaId,
+							},
+						})
+						if err != nil {
+							return fmt.Errorf("could not update existing Storage Policy '%s': %s", oldStoragePolicy["id"], err)
+						}
+					}
+					// Found the item to update, we no longer need to explore the old data
+					break
+				}
+			}
+		}
+	}
+	if len(policiesToCreate) > 0 {
+		_, err := tmClient.CreateRegionQuotaStoragePolicies(regionQuotaId, &types.VirtualDatacenterStoragePolicies{Values: policiesToCreate})
+		if err != nil {
+			return fmt.Errorf("could not create Storage Policies during Region Quota '%s' update: %s", regionQuotaId, err)
+		}
 	}
 	return nil
 }
@@ -136,8 +267,39 @@ func saveVmClassesInState(tmClient *VCDClient, d *schema.ResourceData, rqId stri
 		}
 		err = d.Set("region_vm_class_ids", vmcIds)
 		if err != nil {
-			return err
+			return fmt.Errorf("error setting 'region_vm_class_ids' after read: %s", err)
 		}
+	}
+	return nil
+}
+
+func saveRegionStoragePoliciesInState(d *schema.ResourceData, regionQuota *govcd.RegionQuota, origin string) error {
+	storagePolicies, err := regionQuota.GetAllStoragePolicies(nil)
+	if err != nil {
+		return fmt.Errorf("could not fetch Storage Policies from Region Quota '%s': %s", regionQuota.TmVdc.ID, err)
+	}
+
+	spsAttr := make([]interface{}, len(storagePolicies))
+	for i, sp := range storagePolicies {
+		spAttr := make(map[string]interface{})
+		spAttr["id"] = sp.VirtualDatacenterStoragePolicy.ID
+		spAttr["region_storage_policy_id"] = sp.VirtualDatacenterStoragePolicy.RegionStoragePolicy.ID // Can't be nil
+		spAttr["storage_limit_mib"] = sp.VirtualDatacenterStoragePolicy.StorageLimitMiB
+		spAttr["name"] = sp.VirtualDatacenterStoragePolicy.Name
+		spAttr["storage_used_mib"] = sp.VirtualDatacenterStoragePolicy.StorageUsedMiB
+		spsAttr[i] = spAttr
+	}
+
+	var attr *schema.Set
+	if origin == "resource" {
+		attr = schema.NewSet(schema.HashResource(orgRegionQuotaRegionStoragePolicy), spsAttr)
+	} else {
+		attr = schema.NewSet(schema.HashResource(orgRegionQuotaDsRegionStoragePolicy), spsAttr)
+	}
+
+	err = d.Set("region_storage_policy", attr)
+	if err != nil {
+		return fmt.Errorf("error setting 'region_storage_policy' after read: %s", err)
 	}
 	return nil
 }
@@ -155,7 +317,12 @@ func resourceVcfaOrgRegionQuotaCreate(ctx context.Context, d *schema.ResourceDat
 	if diags != nil {
 		return diags
 	}
+
 	err := assignVmClassesToRegionQuota(d, tmClient)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	err = createStoragePoliciesInRegionQuota(d, tmClient)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -176,7 +343,12 @@ func resourceVcfaOrgRegionQuotaUpdate(ctx context.Context, d *schema.ResourceDat
 	if diags != nil {
 		return diags
 	}
+
 	err := assignVmClassesToRegionQuota(d, tmClient)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	err = updateStoragePoliciesInRegionQuota(d, tmClient)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -194,7 +366,11 @@ func resourceVcfaOrgRegionQuotaRead(ctx context.Context, d *schema.ResourceData,
 			if err != nil {
 				return err
 			}
-			return saveVmClassesInState(tmClient, d, outerType.TmVdc.ID)
+			err = saveVmClassesInState(tmClient, d, outerType.TmVdc.ID)
+			if err != nil {
+				return err
+			}
+			return saveRegionStoragePoliciesInState(d, outerType, "resource")
 		},
 	}
 	return readResource(ctx, d, meta, c)
@@ -314,7 +490,7 @@ func setOrgRegionQuotaData(_ *VCDClient, d *schema.ResourceData, rq *govcd.Regio
 		zoneCompute[zoneIndex] = oneZone
 	}
 
-	autoAllocatedSubnetSet := schema.NewSet(schema.HashResource(OrgRegionQuotaZoneResourceAllocation), zoneCompute)
+	autoAllocatedSubnetSet := schema.NewSet(schema.HashResource(orgRegionQuotaZoneResourceAllocation), zoneCompute)
 	err = d.Set("zone_resource_allocations", autoAllocatedSubnetSet)
 	if err != nil {
 		return fmt.Errorf("error setting 'zone_resource_allocations' after read: %s", err)
