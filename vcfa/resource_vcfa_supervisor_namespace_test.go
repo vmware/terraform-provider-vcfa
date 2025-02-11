@@ -4,6 +4,7 @@ package vcfa
 
 import (
 	"fmt"
+	"net/url"
 	"regexp"
 	"testing"
 
@@ -14,6 +15,10 @@ import (
 func TestAccVcfaSupervisorNamespace(t *testing.T) {
 	preTestChecks(t)
 
+	ref, err := url.Parse(testConfig.Provider.Url)
+	if err != nil {
+		t.Fatalf("failed parsing '%s' host: %s", testConfig.Provider.Url, err)
+	}
 	var params = StringMap{
 		"Testname":           t.Name(),
 		"ProjectName":        "tf-project",
@@ -29,15 +34,19 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 	configText1 := templateFill(testAccVcfaSupervisorNamespaceStep1, params)
 	params["FuncName"] = t.Name() + "-step2"
 	configText2 := templateFill(testAccVcfaSupervisorNamespaceStep2DS, params)
+	params["FuncName"] = t.Name() + "-step4"
+	configText4 := templateFill(testAccVcfaSupervisorNamespaceStep4KubeConfig, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
+	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
+	debugPrintf("#[DEBUG] CONFIGURATION step4: %s\n", configText4)
 
 	if vcfaShortTest {
 		t.Skip(acceptanceTestsSkipped)
 		return
 	}
 
-	cachedProjectName := &testCachedFieldValue{}
+	cachedNamespaceName := &testCachedFieldValue{}
 
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
@@ -46,18 +55,18 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 
 				Config: configText1,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("vcfa_project.test", "id", "test-project"),
-					resource.TestCheckResourceAttr("vcfa_project.test", "name", "test-project"),
+					resource.TestCheckResourceAttr("vcfa_project.test", "id", params["ProjectName"].(string)),
+					resource.TestCheckResourceAttr("vcfa_project.test", "name", params["ProjectName"].(string)),
 					resource.TestCheckResourceAttr("vcfa_project.test", "description", "description"),
 
-					resource.TestMatchResourceAttr("vcfa_supervisor_namespace.test", "id", regexp.MustCompile(`^test-project:terraform-test`)),
+					resource.TestMatchResourceAttr("vcfa_supervisor_namespace.test", "id", regexp.MustCompile(`^tf-project:terraform-test`)),
 					resource.TestMatchResourceAttr("vcfa_supervisor_namespace.test", "name", regexp.MustCompile(`^terraform-test`)),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "description", "Supervisor Namespace created by Terraform"),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "region_name", params["RegionName"].(string)),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "vpc_name", params["VpcName"].(string)),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "storage_classes_initial_class_config_overrides.#", "1"),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "zones_initial_class_config_overrides.#", "1"),
-					cachedProjectName.cacheTestResourceFieldValue("vcfa_supervisor_namespace.test", "name"), // capturing computed 'name' to use for import test
+					cachedNamespaceName.cacheTestResourceFieldValue("vcfa_supervisor_namespace.test", "name"), // capturing computed 'name' to use for other test steps
 				),
 			},
 			{
@@ -74,8 +83,20 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"name_prefix"},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					return "test-project" + ImportSeparator + cachedProjectName.fieldValue, nil
+					return params["ProjectName"].(string) + ImportSeparator + cachedNamespaceName.fieldValue, nil
 				},
+			},
+			{
+
+				Config: configText4,
+				Check: resource.ComposeTestCheckFunc(
+					cachedNamespaceName.testCheckCachedResourceFieldValuePattern("data.vcfa_kube_config.test-namespace", "id", fmt.Sprintf("%s:%%s:%s", testConfig.Org.Name, params["ProjectName"].(string))),
+					cachedNamespaceName.testCheckCachedResourceFieldValuePattern("data.vcfa_kube_config.test-namespace", "context_name", fmt.Sprintf("%s:%%s:%s", testConfig.Org.Name, params["ProjectName"].(string))),
+					resource.TestCheckResourceAttr("data.vcfa_kube_config.test-namespace", "insecure_skip_tls_verify", fmt.Sprintf("%t", testConfig.Provider.AllowInsecure)),
+					resource.TestCheckResourceAttr("data.vcfa_kube_config.test-namespace", "user", fmt.Sprintf("%s:%s@%s", testConfig.Org.Name, testConfig.Org.User, ref.Host)),
+					resource.TestCheckResourceAttrSet("data.vcfa_kube_config.test-namespace", "token"),
+					resource.TestCheckResourceAttrSet("data.vcfa_kube_config.test-namespace", "kube_config_raw"),
+				),
 			},
 		},
 	})
@@ -85,7 +106,7 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 
 const testAccVcfaSupervisorNamespaceStep1 = `
 resource "vcfa_project" "test" {
-  name        = "test-project"
+  name        = "{{.ProjectName}}"
   description = "description"
 }
 
@@ -116,5 +137,17 @@ const testAccVcfaSupervisorNamespaceStep2DS = testAccVcfaSupervisorNamespaceStep
 data "vcfa_supervisor_namespace" "test" {
   name         = vcfa_supervisor_namespace.test.name
   project_name = vcfa_supervisor_namespace.test.project_name
+}
+`
+
+const testAccVcfaSupervisorNamespaceStep4KubeConfig = testAccVcfaSupervisorNamespaceStep1 + `
+data "vcfa_supervisor_namespace" "test" {
+  name         = vcfa_supervisor_namespace.test.name
+  project_name = vcfa_supervisor_namespace.test.project_name
+}
+
+data "vcfa_kube_config" "test-namespace" {
+  project_name              = vcfa_supervisor_namespace.test.project_name
+  supervisor_namespace_name = vcfa_supervisor_namespace.test.name
 }
 `
