@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVcfaTpSupervisorNamespace(t *testing.T) {
+func TestAccVcfaSupervisorNamespace(t *testing.T) {
 	preTestChecks(t)
 
 	var params = StringMap{
@@ -26,9 +26,9 @@ func TestAccVcfaTpSupervisorNamespace(t *testing.T) {
 	}
 	testParamsNotEmpty(t, params)
 
-	configText1 := templateFill(testAccVcfaTpSupervisorNamespaceStep1, params)
+	configText1 := templateFill(testAccVcfaSupervisorNamespaceStep1, params)
 	params["FuncName"] = t.Name() + "-step2"
-	configText2 := templateFill(testAccVcfaTpSupervisorNamespaceStep2DS, params)
+	configText2 := templateFill(testAccVcfaSupervisorNamespaceStep2DS, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 
@@ -83,7 +83,7 @@ func TestAccVcfaTpSupervisorNamespace(t *testing.T) {
 	postTestChecks(t)
 }
 
-const testAccVcfaTpSupervisorNamespaceStep1 = `
+const testAccVcfaSupervisorNamespaceStep1 = `
 resource "vcfa_project" "test" {
   name        = "test-project"
   description = "description"
@@ -112,7 +112,7 @@ resource "vcfa_supervisor_namespace" "test" {
 }
 `
 
-const testAccVcfaTpSupervisorNamespaceStep2DS = testAccVcfaTpSupervisorNamespaceStep1 + `
+const testAccVcfaSupervisorNamespaceStep2DS = testAccVcfaSupervisorNamespaceStep1 + `
 data "vcfa_supervisor_namespace" "test" {
   name         = vcfa_supervisor_namespace.test.name
   project_name = vcfa_supervisor_namespace.test.project_name
