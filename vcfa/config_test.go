@@ -85,7 +85,7 @@ type TestConfig struct {
 		UseConnectionCache       bool   `json:"useConnectionCache"`
 	} `json:"provider"`
 	Tm struct {
-		Org             string   `json:"org"` // temporary field to make skipIfNotTm work
+		Org             string   `json:"org"`
 		CreateRegion    bool     `json:"createRegion"`
 		Region          string   `json:"region"`
 		StorageClass    string   `json:"storageClass"`
