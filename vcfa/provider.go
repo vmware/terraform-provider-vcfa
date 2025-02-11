@@ -64,7 +64,6 @@ var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_org_ldap":                        datasourceVcfaOrgLdap(),                     // 1.0
 	"vcfa_kube_config":                     datasourceVcfaKubeConfig(),                  // 1.0
 	"vcfa_supervisor_namespace":            datasourceVcfaSupervisorNamespace(),         // 1.0
-	"vcfa_project":                         datasourceVcfaSupervisorNamespace(),         // 1.0
 }
 
 var globalResourceMap = map[string]*schema.Resource{
@@ -89,8 +88,8 @@ var globalResourceMap = map[string]*schema.Resource{
 	"vcfa_certificate":                     resourceVcfaCertificate(),                 // 1.0
 	"vcfa_org_local_user":                  resourceVcfaLocalUser(),                   // 1.0
 	"vcfa_org_ldap":                        resourceVcfaOrgLdap(),                     // 1.0
-	"vcfa_supervisor_namespace":            resourceVcfaSupervisorNamespace(),         // 1.0
 	"vcfa_project":                         resourceVcfaProject(),                     // 1.0
+	"vcfa_supervisor_namespace":            resourceVcfaSupervisorNamespace(),         // 1.0
 }
 
 // Provider returns a terraform.ResourceProvider.
