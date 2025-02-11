@@ -222,7 +222,6 @@ func resourceVcfaSupervisorNamespaceCreate(ctx context.Context, d *schema.Resour
 	cciClient := meta.(ClientContainer).cciClient
 
 	projectName := d.Get("project_name").(string)
-
 	supervisorNamespace := getsupervisorNamespaceType(d)
 	createdSupervisorNamespace, err := cciClient.CreateSupervisorNamespace(projectName, supervisorNamespace)
 	if err != nil {
@@ -315,7 +314,7 @@ func getsupervisorNamespaceType(d *schema.ResourceData) *ccitypes.SupervisorName
 	supervisorNamespace := &ccitypes.SupervisorNamespace{
 		TypeMeta: v1.TypeMeta{
 			Kind:       ccitypes.SupervisorNamespaceKind,
-			APIVersion: ccitypes.SupervisorNamespaceAPI + "/" + ccitypes.SupervisorNamespaceVersion,
+			APIVersion: ccitypes.InfrastructureCciAPI + "/" + ccitypes.ApiVersion,
 		},
 		ObjectMeta: v1.ObjectMeta{
 			GenerateName: d.Get("name_prefix").(string),
