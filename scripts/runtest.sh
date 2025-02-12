@@ -357,6 +357,10 @@ case $wanted in
         export VCFA_TEST_ORG_USER=1
         acceptance_test functional
         ;;
+    acceptance-cci)
+        # export VCFA_TEST_ORG_USER=1
+        acceptance_test "unit cci" "-vcfa-test-org-user -vcfa-skip-leftovers-removal"
+        ;;
     acceptance)
         acceptance_test "unit functional"
         ;;

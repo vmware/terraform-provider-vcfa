@@ -26,7 +26,6 @@ func TestAccVcfaKubeConfig(t *testing.T) {
 	testParamsNotEmpty(t, params)
 
 	configText1 := templateFill(testAccVcfaKubeConfigStep1, params)
-
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 
 	if vcfaShortTest {
