@@ -41,6 +41,11 @@ data "vcfa_region_vm_class" "vm_class2" {
   region_id = data.vcfa_region.region1.id
 }
 
+data "vcfa_region_storage_policy" "region-sp" {
+  name      = "vSAN Default Storage Policy"
+  region_id = vcfa_region.region1.id
+}
+
 resource "vcfa_org_region_quota" "first" {
   org_id         = vcfa_org.test.id
   region_id      = data.vcfa_region.one.id
@@ -58,7 +63,7 @@ resource "vcfa_org_region_quota" "first" {
   ]
   region_storage_policy {
     region_storage_policy_id = data.vcfa_region_storage_policy.region-sp.id
-    storage_limit_mib        = 100
+    storage_limit_mib        = 1024
   }
 }
 ```
