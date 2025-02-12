@@ -225,22 +225,22 @@ func updateStoragePoliciesInRegionQuota(d *schema.ResourceData, tmClient *VCDCli
 	oldRspsSet := oldRsps.(*schema.Set)
 	newRspsSet := newRsps.(*schema.Set)
 
-	err := searchSetAndApply(oldRspsSet, newRspsSet, "region_storage_policy_id", nil, deleteFunc)
-	if err != nil {
-		return fmt.Errorf("could not delete old Storage Policies during Region Quota '%s' update: %s", regionQuotaId, err)
-	}
-
-	err = searchSetAndApply(newRspsSet, oldRspsSet, "region_storage_policy_id", updateFunc, createFunc)
+	err := searchSetAndApply(newRspsSet, oldRspsSet, "region_storage_policy_id", updateFunc, createFunc)
 	if err != nil {
 		return fmt.Errorf("could not update Storage Policies of Region Quota '%s': %s", regionQuotaId, err)
 	}
-
 	if len(policiesToCreate) > 0 {
 		_, err := tmClient.CreateRegionQuotaStoragePolicies(regionQuotaId, &types.VirtualDatacenterStoragePolicies{Values: policiesToCreate})
 		if err != nil {
 			return fmt.Errorf("could not create Storage Policies during Region Quota '%s' update: %s", regionQuotaId, err)
 		}
 	}
+
+	err = searchSetAndApply(oldRspsSet, newRspsSet, "region_storage_policy_id", nil, deleteFunc)
+	if err != nil {
+		return fmt.Errorf("could not delete old Storage Policies during Region Quota '%s' update: %s", regionQuotaId, err)
+	}
+
 	return nil
 }
 
