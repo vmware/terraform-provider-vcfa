@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vmware/go-vcloud-director/v3/ccitypes"
+	"github.com/vmware/go-vcloud-director/v3/govcd"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -220,6 +221,9 @@ func resourceVcfaSupervisorNamespace() *schema.Resource {
 
 func resourceVcfaSupervisorNamespaceCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cciClient := meta.(ClientContainer).cciClient
+	if cciClient.VCDClient.Client.IsSysAdmin {
+		return diag.Errorf("this resource requires Org user")
+	}
 
 	projectName := d.Get("project_name").(string)
 	supervisorNamespace := getsupervisorNamespaceType(d)
@@ -239,6 +243,9 @@ func resourceVcfaSupervisorNamespaceUpdate(ctx context.Context, d *schema.Resour
 
 func resourceVcfaSupervisorNamespaceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cciClient := meta.(ClientContainer).cciClient
+	if cciClient.VCDClient.Client.IsSysAdmin {
+		return diag.Errorf("this resource requires Org user")
+	}
 
 	projectName, name, err := parseSupervisorNamespaceResourceId(d.Id())
 	if err != nil {
@@ -247,6 +254,11 @@ func resourceVcfaSupervisorNamespaceRead(ctx context.Context, d *schema.Resource
 
 	supervisorNamespace, err := cciClient.GetSupervisorNamespaceByName(projectName, name)
 	if err != nil {
+		if govcd.ContainsNotFound(err) {
+			// entity is no more found - removing from state
+			d.SetId("")
+			return nil
+		}
 		return diag.Errorf("error retrieving %s '%s' in Project '%s': %s", labelSupervisorNamespace, name, projectName, err)
 	}
 
@@ -259,6 +271,9 @@ func resourceVcfaSupervisorNamespaceRead(ctx context.Context, d *schema.Resource
 
 func resourceVcfaSupervisorNamespaceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cciClient := meta.(ClientContainer).cciClient
+	if cciClient.VCDClient.Client.IsSysAdmin {
+		return diag.Errorf("this resource requires Org user")
+	}
 
 	projectName, name, err := parseSupervisorNamespaceResourceId(d.Id())
 	if err != nil {
@@ -282,6 +297,9 @@ func resourceVcfaSupervisorNamespaceDelete(ctx context.Context, d *schema.Resour
 
 func resourceVcfaSupervisorNamespaceImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	cciClient := meta.(ClientContainer).cciClient
+	if cciClient.VCDClient.Client.IsSysAdmin {
+		return nil, fmt.Errorf("this resource requires Org user")
+	}
 	idSlice := strings.Split(d.Id(), ImportSeparator)
 	if len(idSlice) != 2 {
 		return nil, fmt.Errorf("expected import ID to be <project_name>%s<supervisor_namespace_name>", ImportSeparator)

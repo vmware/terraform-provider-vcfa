@@ -69,6 +69,9 @@ func datasourceVcfaKubeConfig() *schema.Resource {
 func datasourceVcfaKubeConfigRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cciClient := meta.(ClientContainer).cciClient
 	tmClient := meta.(ClientContainer).tmClient
+	if cciClient.VCDClient.Client.IsSysAdmin {
+		return diag.Errorf("this data source requires Org user")
+	}
 
 	kubeconfig, kubecfgValues, err := cciClient.GetKubeConfig(tmClient.Org, d.Get("project_name").(string), d.Get("supervisor_namespace_name").(string))
 	if err != nil {

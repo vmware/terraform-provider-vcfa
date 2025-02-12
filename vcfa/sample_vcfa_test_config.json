@@ -1,71 +1,70 @@
 {
-  "//": "Sample test configuration file for VCFA",
-  "//": "Rename this file to vcfa_test_config.json and change the values to suit your system",
-  "//": "You can safely remove the comments or leave them. The parser will ignore them.",
-  "provider": {
-    "//"  : "This section contains credentials related to the VCFA connection of Sys or Org user",
-    "user": "serviceadministrator",
-    "password": "somePassword",
-    "tmVersion": "10.7.0",
-    "tmApiVersion": "40.0",
-    "//": "Access token to be used instead of username/password",
-    "token": "",
-
-    "url": "https://10.13.21.20/tm/api",
-    "sysOrg": "System",
-    "//": "allowInsecure will skip the check on self-signed certificates",
-    "allowInsecure": true,
-    "//": "tfAcceptanceTests is needed to allow the whole test suite to run",
-    "//": "Warning: it may cost time (up to a few hours) and possibly money",
-    "tfAcceptanceTests": true,
-    "//": "If enabled, the test suite will cache the provider connection for up to 20 minutes",
-    "//": "and then renew it automatically. This will save some heavy network traffic.",
-    "//": "Disabled by default if useConnectionCache is not set",
-    "useConnectionCache": true
-  },
-  "tm": {
-    "org": "tf-test",
-    "createRegion": true,
-    "region": "one-region",
-    "storageClass": "vSAN Default Storage Policy",
-    "vdc": "one-vdc",
-    "contentLibrary": "content-library-one",
-    "//": "Library is named 'terraform-provider-vcfa-publisher-cl' in below vCenter instance",
-    "subscriptionContentLibraryUrl": "https://10.43.41.22/cls/vcsp/lib/608ca073-7d94-4544-9d30-bbae455baa4d/lib.json",
-
-    "createVcenter": true,
-    "vcenterUsername": "user@vsphere.local",
-    "vcenterPassword": "",
-    "vcenterUrl": "https://vcenter.my-company.com",
-    "vcenterStorageProfile": "vSAN Default Storage Policy",
-    "vcenterSupervisor": "supervisor1",
-    "vcenterSupervisorZone": "zone1",
-
-    "createNsxManager": true,
-    "nsxManagerUsername": "admin",
-    "nsxManagerPassword": "",
-    "nsxManagerUrl": "https://nsxmanager.my-company.com",
-    "nsxTier0Gateway": "existing-t0-gateway",
-    "nsxEdgeCluster": "existing-edge-cluster",
-    "providerGateway": "test-prov-gw",
-
-    "oidcServer": {
-      "url": "URL-of-test-OIDC-server",
-      "wellKnownEndpoint": "/.well-known/openid-configuration"
+    "//": "You can safely remove the comments or leave them. The parser will ignore them.",
+    "provider": {
+        "//": "Disabled by default if useConnectionCache is not set",
+        "user": "serviceadministrator",
+        "password": "somePassword",
+        "tmVersion": "10.7.0",
+        "tmApiVersion": "40.0",
+        "token": "",
+        "url": "https://10.13.21.20/tm/api",
+        "sysOrg": "System",
+        "allowInsecure": true,
+        "tfAcceptanceTests": true,
+        "useConnectionCache": true
     },
-
-    "certificates": [
-      {
-        "path": "../test-resources/cert.pem",
-        "privateKeyPath": "../test-resources/key.pem",
-        "password": "test"
-      },
-      {
-        "path": "../test-resources/cert2.pem",
-        "privateKeyPath": "../test-resources/key2.pem",
-        "password": "test"
-      }
-    ],
-    "rootCertificatePath": "../test-resources/rootCA.pem"
-  }
+    "org": {
+        "//": "existing org configuration for tenant mode",
+        "name": "demo",
+        "user": "demo",
+        "password": "CHANGE-ME"
+    },
+    "cci": {
+        "//": "existing entity configuration that are available in the above defined Org",
+        "region": "terraform-demo",
+        "vpc": "terraform-demo-Default-VPC",
+        "storagePolicy": "vSAN Default Storage Policy",
+        "supervisorZone": "vcfa-gen-wl-vc08-cl1-zone1"
+    },
+    "tm": {
+        "org": "tf-test",
+        "createRegion": true,
+        "region": "one-region",
+        "storageClass": "vSAN Default Storage Policy",
+        "vdc": "one-vdc",
+        "contentLibrary": "content-library-one",
+        "//": "Library is named 'terraform-provider-vcfa-publisher-cl' in below vCenter instance",
+        "subscriptionContentLibraryUrl": "https://10.43.41.22/cls/vcsp/lib/608ca073-7d94-4544-9d30-bbae455baa4d/lib.json",
+        "createVcenter": true,
+        "vcenterUsername": "user@vsphere.local",
+        "vcenterPassword": "",
+        "vcenterUrl": "https://vcenter.my-company.com",
+        "vcenterStorageProfile": "vSAN Default Storage Policy",
+        "vcenterSupervisor": "supervisor1",
+        "vcenterSupervisorZone": "zone1",
+        "createNsxManager": true,
+        "nsxManagerUsername": "admin",
+        "nsxManagerPassword": "",
+        "nsxManagerUrl": "https://nsxmanager.my-company.com",
+        "nsxTier0Gateway": "existing-t0-gateway",
+        "nsxEdgeCluster": "existing-edge-cluster",
+        "providerGateway": "test-prov-gw",
+        "oidcServer": {
+            "url": "URL-of-test-OIDC-server",
+            "wellKnownEndpoint": "/.well-known/openid-configuration"
+        },
+        "certificates": [
+            {
+                "path": "../test-resources/cert.pem",
+                "privateKeyPath": "../test-resources/key.pem",
+                "password": "test"
+            },
+            {
+                "path": "../test-resources/cert2.pem",
+                "privateKeyPath": "../test-resources/key2.pem",
+                "password": "test"
+            }
+        ],
+        "rootCertificatePath": "../test-resources/rootCA.pem"
+    }
 }

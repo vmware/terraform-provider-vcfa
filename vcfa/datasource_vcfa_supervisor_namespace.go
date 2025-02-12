@@ -95,7 +95,9 @@ func datasourceVcfaSupervisorNamespace() *schema.Resource {
 
 func datasourceVcfaSupervisorNamespaceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cciClient := meta.(ClientContainer).cciClient
-
+	if cciClient.VCDClient.Client.IsSysAdmin {
+		return diag.Errorf("this resource requires Org user")
+	}
 	projectName := d.Get("project_name").(string)
 	name := d.Get("name").(string)
 

@@ -14,6 +14,12 @@ import (
 
 func TestAccVcfaSupervisorNamespace(t *testing.T) {
 	preTestChecks(t)
+	skipIfSysAdmin(t)
+
+	if vcfaShortTest {
+		t.Skip(acceptanceTestsSkipped)
+		return
+	}
 
 	ref, err := url.Parse(testConfig.Provider.Url)
 	if err != nil {
@@ -22,10 +28,10 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 	var params = StringMap{
 		"Testname":           t.Name(),
 		"ProjectName":        "tf-project",
-		"RegionName":         "terraform-demo",
-		"VpcName":            fmt.Sprintf("%s-Default-VPC", "terraform-demo"), // region-name + '-Default-VPC' suffix
-		"StorageClassName":   "vSAN Default Storage Policy",
-		"SupervisorZoneName": "vcfa-gen-wl-vc08-cl1-zone1",
+		"RegionName":         testConfig.Cci.Region,
+		"VpcName":            testConfig.Cci.Vpc,
+		"StorageClassName":   testConfig.Cci.StoragePolicy,
+		"SupervisorZoneName": testConfig.Cci.SupervisorZone,
 
 		"Tags": "cci",
 	}
@@ -40,11 +46,6 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
 	debugPrintf("#[DEBUG] CONFIGURATION step4: %s\n", configText4)
-
-	if vcfaShortTest {
-		t.Skip(acceptanceTestsSkipped)
-		return
-	}
 
 	cachedNamespaceName := &testCachedFieldValue{}
 

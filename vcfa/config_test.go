@@ -89,6 +89,12 @@ type TestConfig struct {
 		User     string `json:"user"`
 		Password string `json:"password"`
 	} `json:"org"`
+	Cci struct {
+		Region         string `json:"region"`
+		Vpc            string `json:"vpc"`
+		StoragePolicy  string `json:"storagePolicy"`
+		SupervisorZone string `json:"supervisorZone"`
+	} `json:"cci"`
 	Tm struct {
 		Org            string `json:"org"` // temporary field to make skipIfNotTm work
 		CreateRegion   bool   `json:"createRegion"`
@@ -263,6 +269,11 @@ func usingSysAdmin() bool {
 func skipIfNotSysAdmin(t *testing.T) {
 	if !usingSysAdmin() {
 		t.Skip(t.Name() + " requires system admin privileges")
+	}
+}
+func skipIfSysAdmin(t *testing.T) {
+	if usingSysAdmin() {
+		t.Skip(t.Name() + " requires org privileges")
 	}
 }
 

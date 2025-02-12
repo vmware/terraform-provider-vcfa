@@ -8,6 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vmware/go-vcloud-director/v3/ccitypes"
+	"github.com/vmware/go-vcloud-director/v3/govcd"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -41,7 +42,9 @@ func resourceVcfaProject() *schema.Resource {
 
 func resourceVcfaProjectCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cciClient := meta.(ClientContainer).cciClient
-
+	if cciClient.VCDClient.Client.IsSysAdmin {
+		return diag.Errorf("this resource requires Org user")
+	}
 	project := getprojectType(d)
 	createdProject, err := cciClient.CreateProject(project)
 	if err != nil {
@@ -55,8 +58,16 @@ func resourceVcfaProjectCreate(ctx context.Context, d *schema.ResourceData, meta
 
 func resourceVcfaProjectRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cciClient := meta.(ClientContainer).cciClient
+	if cciClient.VCDClient.Client.IsSysAdmin {
+		return diag.Errorf("this resource requires Org user")
+	}
 	project, err := cciClient.GetProjectByName(d.Id())
 	if err != nil {
+		if govcd.ContainsNotFound(err) {
+			// entity is no more found - removing from state
+			d.SetId("")
+			return nil
+		}
 		return diag.Errorf("error retrieving %s '%s': %s", labelProject, d.Id(), err)
 	}
 
@@ -69,6 +80,9 @@ func resourceVcfaProjectRead(ctx context.Context, d *schema.ResourceData, meta i
 
 func resourceVcfaProjectDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cciClient := meta.(ClientContainer).cciClient
+	if cciClient.VCDClient.Client.IsSysAdmin {
+		return diag.Errorf("this resource requires Org user")
+	}
 	project, err := cciClient.GetProjectByName(d.Id())
 	if err != nil {
 		return diag.Errorf("error retrieving %s '%s' : %s", labelProject, d.Id(), err)
