@@ -72,7 +72,7 @@ func createTemporaryVCFAConnection(acceptNil bool) *VCDClient {
 
 // createSystemTemporaryVCFAConnection is like createTemporaryVCFAConnection, but it will ignore all conditional
 // configurations like `VCFA_TEST_ORG_USER=1` and will still return a System client instead of user one. This allows to
-// perform System actions (entities which require System rights - Org, Vdc, etc...)
+// perform System actions (entities which require System rights - Org, Region Quotas, etc...)
 func createSystemTemporaryVCFAConnection() *VCDClient {
 	var configStruct TestConfig
 	configFileName := getConfigFileName()

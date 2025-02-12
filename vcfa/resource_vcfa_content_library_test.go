@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-// TODO: TM: Test tenant Content Libraries. For that goal, we need to modify vcfa_org_vdc to support
+// TODO: TM: Test tenant Content Libraries. For that goal, we need to modify vcfa_org_region_quota to support
 //       VM classes and storage classes
 
 // TestAccVcfaContentLibraryProvider tests CRUD of a Content Library of type PROVIDER.

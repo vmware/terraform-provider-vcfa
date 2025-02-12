@@ -74,7 +74,6 @@ resource "vcfa_nsx_manager" "nsx_manager" {
   username               = "` + testConfig.Tm.NsxManagerUsername + `"
   password               = "` + testConfig.Tm.NsxManagerPassword + `"
   url                    = "` + testConfig.Tm.NsxManagerUrl + `"
-  network_provider_scope = ""
   auto_trust_certificate = true
 }
 
@@ -120,6 +119,26 @@ resource "vcfa_region" "region" {
   storage_policy_names = ["` + testConfig.Tm.VcenterStorageProfile + `"]
 }
 `, "vcfa_region.region"
+}
+
+// getRegionVmClassesHcl gets HCL code to fetch Region VM Classes given by the testing config
+func getRegionVmClassesHcl(t *testing.T, regionRef string) (string, []string) {
+	if len(testConfig.Tm.RegionVmClasses) == 0 {
+		t.Fatalf("at least one Region VM Class is needed in the slice tm.regionVmClasses")
+	}
+	hcl := ``
+	refs := make([]string, len(testConfig.Tm.RegionVmClasses))
+	for i, class := range testConfig.Tm.RegionVmClasses {
+		refs[i] = fmt.Sprintf("data.vcfa_region_vm_class.region_vm_class%d", i)
+		hcl += fmt.Sprintf(`
+data "vcfa_region_vm_class" "region_vm_class%d" {
+  region_id = %s.id
+  name      = "%s"
+}
+`, i, regionRef, class)
+	}
+
+	return hcl, refs
 }
 
 // getContentLibraryHcl gets a Content Library data source as first returned parameter and its HCL reference as second one,

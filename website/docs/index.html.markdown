@@ -153,11 +153,6 @@ The following arguments are used to configure the VMware Cloud Foundation Automa
    
 - `url` - (Required) This is the URL for the Tenant Manager API endpoint. e.g.
   https://server.domain.com/tm/api. Can also be specified with the `VCFA_URL` environment variable.
-  
-- `vdc` - (Optional) This is the virtual datacenter within Tenant Manager to run
-  API operations against. If not set the plugin will select the first virtual
-  datacenter available to your Org. Can also be specified with the `VCFA_VDC` environment
-  variable.
 
 - `allow_unverified_ssl` - (Optional) Boolean that can be set to true to
   disable SSL certificate verification. This should be used with care as it

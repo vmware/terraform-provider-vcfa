@@ -139,20 +139,20 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 	}
 
 	// --------------------------------------------------------------
-	// VDCs
+	// Region Quotas
 	// --------------------------------------------------------------
 	if tmClient.Client.IsSysAdmin {
-		vdcs, err := tmClient.GetAllTmVdcs(nil)
+		rqs, err := tmClient.GetAllRegionQuotas(nil)
 		if err != nil {
-			return fmt.Errorf("error retrieving VDCs: %s", err)
+			return fmt.Errorf("error retrieving Region Quotas: %s", err)
 		}
-		for _, vdc := range vdcs {
-			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, vdc.TmVdc.Name, "vcfa_org_vdc", 2, verbose)
+		for _, rq := range rqs {
+			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, rq.TmVdc.Name, "vcfa_org_region_quota", 2, verbose)
 			if toBeDeleted {
-				fmt.Printf("\t REMOVING %s %s\n", labelVcfaOrgVdc, vdc.TmVdc.Name)
-				err := vdc.Delete()
+				fmt.Printf("\t REMOVING %s %s\n", labelVcfaOrgRegionQuota, rq.TmVdc.Name)
+				err := rq.Delete()
 				if err != nil {
-					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaOrgVdc, vdc.TmVdc.Name, err)
+					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaOrgRegionQuota, rq.TmVdc.Name, err)
 				}
 			}
 		}

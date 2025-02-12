@@ -60,10 +60,10 @@ func resourceVcfaOrg() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("%s owner Name", labelVcfaOrg),
 			},
-			"org_vdc_count": {
+			"org_region_quota_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: fmt.Sprintf("Number of VDCs belonging to the %s", labelVcfaOrg),
+				Description: fmt.Sprintf("Number of %ss belonging to the %s", labelVcfaOrgRegionQuota, labelVcfaOrg),
 			},
 			"catalog_count": {
 				Type:        schema.TypeInt,
@@ -229,7 +229,7 @@ func setOrgData(_ *VCDClient, d *schema.ResourceData, org *govcd.TmOrg) error {
 	}
 	dSet(d, "managed_by_id", managedById)
 	dSet(d, "managed_by_name", managedByName)
-	dSet(d, "org_vdc_count", org.TmOrg.OrgVdcCount)
+	dSet(d, "org_region_quota_count", org.TmOrg.OrgVdcCount)
 	dSet(d, "catalog_count", org.TmOrg.CatalogCount)
 	dSet(d, "vapp_count", org.TmOrg.VappCount)
 	dSet(d, "running_vm_count", org.TmOrg.RunningVMCount)

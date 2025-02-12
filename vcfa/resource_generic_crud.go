@@ -32,7 +32,8 @@ type crudConfig[O updateDeleter[O, I], I any] struct {
 	// reference.
 	createAsyncFunc func(config *I) (*govcd.Task, error)
 
-	// resourceReadFunc that will be executed from Create and Update functions
+	// resourceReadFunc that will be executed from Create and Update functions. It is optional, no read will be executed
+	// if it is nil
 	resourceReadFunc func(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics
 
 	// getEntityFunc is a function that retrieves the entity
@@ -130,7 +131,10 @@ func createResource[O updateDeleter[O, I], I any](ctx context.Context, d *schema
 		return diag.Errorf("error storing %s to state during create: %s", c.entityLabel, err)
 	}
 
-	return c.resourceReadFunc(ctx, d, meta)
+	if c.resourceReadFunc != nil {
+		return c.resourceReadFunc(ctx, d, meta)
+	}
+	return nil
 }
 
 func createResourceValidator[O updateDeleter[O, I], I any](c crudConfig[O, I]) error {
@@ -166,7 +170,10 @@ func updateResource[O updateDeleter[O, I], I any](ctx context.Context, d *schema
 		return diag.Errorf("error updating %s with ID: %s", c.entityLabel, err)
 	}
 
-	return c.resourceReadFunc(ctx, d, meta)
+	if c.resourceReadFunc != nil {
+		return c.resourceReadFunc(ctx, d, meta)
+	}
+	return nil
 }
 
 func readResource[O updateDeleter[O, I], I any](_ context.Context, d *schema.ResourceData, meta interface{}, c crudConfig[O, I]) diag.Diagnostics {
