@@ -48,7 +48,7 @@ Tagged tests can also run using make
   make testunit
   make testacc
 `
-	t.Logf(helpText)
+	t.Log(helpText)
 }
 
 // For troubleshooting:

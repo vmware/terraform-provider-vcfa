@@ -116,14 +116,6 @@ func resourceVcfaProjectImport(ctx context.Context, d *schema.ResourceData, meta
 	return []*schema.ResourceData{d}, nil
 }
 
-func parseProjectResourceId(id string) (string, string, error) {
-	idParts := strings.Split(id, ":")
-	if len(idParts) != 2 {
-		return "", "", fmt.Errorf("id %s does not contain two parts", id)
-	}
-	return idParts[0], idParts[1], nil
-}
-
 func getprojectType(d *schema.ResourceData) *ccitypes.Project {
 	project := &ccitypes.Project{
 		TypeMeta: v1.TypeMeta{
