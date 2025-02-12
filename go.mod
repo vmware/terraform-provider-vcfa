@@ -67,4 +67,4 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-replace github.com/vmware/go-vcloud-director/v3 => github.com/adambarreiro/go-vcloud-director/v3 v3.0.0-20250211144540-0853addf16dc
+replace github.com/vmware/go-vcloud-director/v3 => github.com/adambarreiro/go-vcloud-director/v3 v3.0.0-20250212114226-90b366a54914
