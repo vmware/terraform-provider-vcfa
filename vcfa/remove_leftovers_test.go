@@ -58,6 +58,12 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 		fmt.Printf("Start leftovers removal\n")
 	}
 
+	// TODO - improve the skip to avoid cleaning up
+	if testConfig.Tm.VcenterUrl == "" {
+		fmt.Println("Skipping leftover removal as no vCenter configuration is present")
+		return nil
+	}
+
 	// --------------------------------------------------------------
 	// Org Regional Network Configuration
 	// --------------------------------------------------------------
