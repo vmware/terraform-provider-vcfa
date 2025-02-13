@@ -1,4 +1,4 @@
-//go:build api || functional || tm || ALL
+//go:build api || functional || tm || cci || ALL
 
 package vcfa
 
@@ -67,6 +67,37 @@ func (c *testCachedFieldValue) testCheckCachedResourceFieldValue(resource, field
 
 		return nil
 	}
+}
+
+func (c *testCachedFieldValue) testCheckCachedResourceFieldValuePattern(resource, field, pattern string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		rs, ok := s.RootModule().Resources[resource]
+		if !ok {
+			return fmt.Errorf("resource not found: %s", resource)
+		}
+
+		value, exists := rs.Primary.Attributes[field]
+		if !exists {
+			return fmt.Errorf("field %s in resource %s does not exist", field, resource)
+		}
+
+		expectedValue := fmt.Sprintf(pattern, c.fieldValue)
+		if vcfaTestVerbose {
+			fmt.Printf("# Comparing field '%s' '%s==%s' in resource '%s'\n", field, value, expectedValue, resource)
+		}
+
+		if value != expectedValue {
+			return fmt.Errorf("got '%s - %s' field value %s, expected: %s",
+				resource, field, value, expectedValue)
+		}
+
+		return nil
+	}
+}
+
+// String satisfies stringer interface (supports fmt.Printf...)
+func (c *testCachedFieldValue) String() string {
+	return c.fieldValue
 }
 
 // resourceFieldsEqual checks if secondObject has all the fields and their values set as the
