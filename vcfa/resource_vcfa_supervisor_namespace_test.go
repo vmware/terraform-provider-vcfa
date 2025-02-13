@@ -10,6 +10,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/vmware/go-vcloud-director/v3/ccitypes"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func TestAccVcfaSupervisorNamespace(t *testing.T) {
@@ -37,6 +39,10 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 	}
 	testParamsNotEmpty(t, params)
 
+	// Setup project and defer cleanup
+	cleanup := setupProject(t, params["ProjectName"].(string))
+	defer cleanup()
+
 	configText1 := templateFill(testAccVcfaSupervisorNamespaceStep1, params)
 	params["FuncName"] = t.Name() + "-step2"
 	configText2 := templateFill(testAccVcfaSupervisorNamespaceStep2DS, params)
@@ -56,11 +62,7 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 
 				Config: configText1,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("vcfa_project.test", "id", params["ProjectName"].(string)),
-					resource.TestCheckResourceAttr("vcfa_project.test", "name", params["ProjectName"].(string)),
-					resource.TestCheckResourceAttr("vcfa_project.test", "description", "description"),
-
-					resource.TestMatchResourceAttr("vcfa_supervisor_namespace.test", "id", regexp.MustCompile(`^tf-project:terraform-test`)),
+					resource.TestMatchResourceAttr("vcfa_supervisor_namespace.test", "id", regexp.MustCompile(fmt.Sprintf(`^%s:terraform-test`, params["ProjectName"].(string)))),
 					resource.TestMatchResourceAttr("vcfa_supervisor_namespace.test", "name", regexp.MustCompile(`^terraform-test`)),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "description", "Supervisor Namespace created by Terraform"),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "region_name", params["RegionName"].(string)),
@@ -106,14 +108,9 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 }
 
 const testAccVcfaSupervisorNamespaceStep1 = `
-resource "vcfa_project" "test" {
-  name        = "{{.ProjectName}}"
-  description = "description"
-}
-
 resource "vcfa_supervisor_namespace" "test" {
   name_prefix  = "terraform-test"
-  project_name = vcfa_project.test.name
+  project_name = "{{.ProjectName}}"
   class_name   = "small"
   description  = "Supervisor Namespace created by Terraform"
   region_name  = "{{.RegionName}}"
@@ -152,3 +149,45 @@ data "vcfa_kube_config" "test-namespace" {
   supervisor_namespace_name = vcfa_supervisor_namespace.test.name
 }
 `
+
+func setupProject(t *testing.T, projectName string) func() {
+	// setup project
+	tmClient := createTemporaryVCFAConnection(false)
+
+	projectCfg := &ccitypes.Project{
+		TypeMeta: v1.TypeMeta{
+			Kind:       ccitypes.ProjectKind,
+			APIVersion: ccitypes.ProjectCciAPI + "/" + ccitypes.ApiVersion,
+		},
+		ObjectMeta: v1.ObjectMeta{
+			Name: projectName,
+		},
+		Spec: ccitypes.ProjectSpec{
+			Description: fmt.Sprintf("Terraform test project [%s]", projectName),
+		},
+	}
+
+	newProjectAddr, err := tmClient.Client.GetEntityUrl(ccitypes.SupervisorProjectsURL)
+	if err != nil {
+		t.Fatalf("error creating URL for new project")
+	}
+
+	newProject := &ccitypes.Project{}
+	// Create
+	err = tmClient.Client.PostEntity(newProjectAddr, nil, projectCfg, newProject, nil)
+	if err != nil {
+		t.Fatalf("error creating project %s: %s", projectCfg.Name, err)
+	}
+
+	// defer project cleanup
+	return func() {
+		projectAddr, err := tmClient.Client.GetEntityUrl(ccitypes.SupervisorProjectsURL, "/", projectCfg.Name)
+		if err != nil {
+			t.Fatalf("error getting Project url: %s", err)
+		}
+		err = tmClient.Client.DeleteEntity(projectAddr, nil, nil)
+		if err != nil {
+			t.Fatalf("failed removing Project: %s", err)
+		}
+	}
+}

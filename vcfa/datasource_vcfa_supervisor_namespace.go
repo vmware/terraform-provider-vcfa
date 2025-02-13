@@ -6,7 +6,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func datasourceVcfaSupervisorNamespace() *schema.Resource {
@@ -17,17 +16,11 @@ func datasourceVcfaSupervisorNamespace() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: fmt.Sprintf("Name of the %s", labelSupervisorNamespace),
-				ValidateDiagFunc: validation.ToDiagFunc(
-					validation.StringIsNotEmpty,
-				),
 			},
 			"project_name": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: fmt.Sprintf("The name of the Project the %s belongs to", labelSupervisorNamespace),
-				ValidateDiagFunc: validation.ToDiagFunc(
-					validation.StringIsNotEmpty,
-				),
 			},
 			"class_name": {
 				Type:        schema.TypeString,
@@ -94,19 +87,21 @@ func datasourceVcfaSupervisorNamespace() *schema.Resource {
 }
 
 func datasourceVcfaSupervisorNamespaceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cciClient := meta.(ClientContainer).cciClient
-	if cciClient.VCDClient.Client.IsSysAdmin {
-		return diag.Errorf("this resource requires Org user")
+	tmClient := meta.(ClientContainer).tmClient
+	name, okName := d.GetOk("name")
+	if !okName {
+		return diag.Errorf("name not specified")
 	}
-	projectName := d.Get("project_name").(string)
-	name := d.Get("name").(string)
+	projectName, okProjectName := d.GetOk("project_name")
+	if !okProjectName {
+		return diag.Errorf("project_name not specified")
+	}
 
-	supervisorNamespace, err := cciClient.GetSupervisorNamespaceByName(projectName, name)
+	supervisorNamespace, err := readSupervisorNamespace(tmClient, projectName.(string), name.(string))
 	if err != nil {
-		return diag.Errorf("error retrieving %s '%s' in Project '%s': %s", labelSupervisorNamespace, name, projectName, err)
+		return diag.Errorf("error reading %s: %s", labelSupervisorNamespace, err)
 	}
-
-	if err := setsupervisorNamespaceData(d, projectName, name, supervisorNamespace.SupervisorNamespace); err != nil {
+	if err := setSupervisorNamespaceData(tmClient, d, projectName.(string), name.(string), supervisorNamespace); err != nil {
 		return diag.Errorf("error setting %s data: %s", labelSupervisorNamespace, err)
 	}
 

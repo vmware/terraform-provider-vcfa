@@ -1,3 +1,0 @@
-- **New Resource:** `vcfa_supervisor_namespace` to manage Supervisor Namespaces [GH-32]
-- **New Data Source:** `vcfa_supervisor_namespace` to read Supervisor Namespaces [GH-32]
-- **New Data Source:** `vcfa_kube_config` to get Kubeconfig [GH-32]

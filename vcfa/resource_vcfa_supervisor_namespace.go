@@ -3,13 +3,16 @@ package vcfa
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/url"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vmware/go-vcloud-director/v3/ccitypes"
-	"github.com/vmware/go-vcloud-director/v3/govcd"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -131,13 +134,8 @@ func resourceVcfaSupervisorNamespace() *schema.Resource {
 				Required:    true,
 				ForceNew:    true, // Supervisor Namespaces names cannot be changed
 				Description: fmt.Sprintf("Prefix for the %s name", labelSupervisorNamespace),
-				ValidateDiagFunc: validation.AllDiag(
-					validation.ToDiagFunc(
-						validation.StringMatch(rfc1123LabelNameRegex, "Name must match RFC 1123 Label name (lower case alphabet, 0-9 and hyphen -)"),
-					),
-					validation.ToDiagFunc(
-						validation.StringIsNotEmpty,
-					),
+				ValidateDiagFunc: validation.ToDiagFunc(
+					validation.StringMatch(rfc1123LabelNameRegex, "Name must match RFC 1123 Label name (lower case alphabet, 0-9 and hyphen -)"),
 				),
 			},
 			"name": {
@@ -149,9 +147,6 @@ func resourceVcfaSupervisorNamespace() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: fmt.Sprintf("The name of the Project the %s belongs to", labelSupervisorNamespace),
-				ValidateDiagFunc: validation.ToDiagFunc(
-					validation.StringIsNotEmpty,
-				),
 			},
 			"class_name": {
 				Type:        schema.TypeString,
@@ -220,123 +215,24 @@ func resourceVcfaSupervisorNamespace() *schema.Resource {
 }
 
 func resourceVcfaSupervisorNamespaceCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cciClient := meta.(ClientContainer).cciClient
-	if cciClient.VCDClient.Client.IsSysAdmin {
-		return diag.Errorf("this resource requires Org user")
+	tmClient := meta.(ClientContainer).tmClient
+	namePrefix, oknamePrefix := d.GetOk("name_prefix")
+	if !oknamePrefix {
+		return diag.Errorf("name_prefix not specified")
+	}
+	projectName, okProjectName := d.GetOk("project_name")
+	if !okProjectName {
+		return diag.Errorf("project_name not specified")
 	}
 
-	projectName := d.Get("project_name").(string)
-	supervisorNamespace := getsupervisorNamespaceType(d)
-	createdSupervisorNamespace, err := cciClient.CreateSupervisorNamespace(projectName, supervisorNamespace)
-	if err != nil {
-		return diag.Errorf("error creating %s: %s", labelSupervisorNamespace, err)
-	}
-
-	d.SetId(buildSupervisorNamespaceResourceId(d.Get("project_name").(string), createdSupervisorNamespace.SupervisorNamespace.GetName()))
-
-	return resourceVcfaSupervisorNamespaceRead(ctx, d, meta)
-}
-
-func resourceVcfaSupervisorNamespaceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return diag.Errorf("%s updates are not supported", labelSupervisorNamespace)
-}
-
-func resourceVcfaSupervisorNamespaceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cciClient := meta.(ClientContainer).cciClient
-	if cciClient.VCDClient.Client.IsSysAdmin {
-		return diag.Errorf("this resource requires Org user")
-	}
-
-	projectName, name, err := parseSupervisorNamespaceResourceId(d.Id())
-	if err != nil {
-		return diag.Errorf("error parsing %s resource id %s: %s", labelSupervisorNamespace, d.Id(), err)
-	}
-
-	supervisorNamespace, err := cciClient.GetSupervisorNamespaceByName(projectName, name)
-	if err != nil {
-		if govcd.ContainsNotFound(err) {
-			// entity is no more found - removing from state
-			d.SetId("")
-			return nil
-		}
-		return diag.Errorf("error retrieving %s '%s' in Project '%s': %s", labelSupervisorNamespace, name, projectName, err)
-	}
-
-	if err := setsupervisorNamespaceData(d, projectName, name, supervisorNamespace.SupervisorNamespace); err != nil {
-		return diag.Errorf("error setting %s data: %s", labelSupervisorNamespace, err)
-	}
-
-	return nil
-}
-
-func resourceVcfaSupervisorNamespaceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cciClient := meta.(ClientContainer).cciClient
-	if cciClient.VCDClient.Client.IsSysAdmin {
-		return diag.Errorf("this resource requires Org user")
-	}
-
-	projectName, name, err := parseSupervisorNamespaceResourceId(d.Id())
-	if err != nil {
-		return diag.Errorf("error parsing %s resource id %s: %s", labelSupervisorNamespace, d.Id(), err)
-	}
-
-	supervisorNamespace, err := cciClient.GetSupervisorNamespaceByName(projectName, name)
-	if err != nil {
-		return diag.Errorf("error retrieving %s '%s' in Project '%s': %s", labelSupervisorNamespace, name, projectName, err)
-	}
-
-	err = supervisorNamespace.Delete()
-	if err != nil {
-		return diag.Errorf("error removing %s '%s' from Project '%s': %s", labelSupervisorNamespace, name, projectName, err)
-	}
-
-	d.SetId("")
-
-	return nil
-}
-
-func resourceVcfaSupervisorNamespaceImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	cciClient := meta.(ClientContainer).cciClient
-	if cciClient.VCDClient.Client.IsSysAdmin {
-		return nil, fmt.Errorf("this resource requires Org user")
-	}
-	idSlice := strings.Split(d.Id(), ImportSeparator)
-	if len(idSlice) != 2 {
-		return nil, fmt.Errorf("expected import ID to be <project_name>%s<supervisor_namespace_name>", ImportSeparator)
-	}
-	projectName := idSlice[0]
-	name := idSlice[1]
-
-	if _, err := cciClient.GetSupervisorNamespaceByName(projectName, name); err != nil {
-		return nil, fmt.Errorf("error reading %s: %s", labelSupervisorNamespace, err)
-	}
-
-	d.SetId(buildSupervisorNamespaceResourceId(projectName, name))
-
-	return []*schema.ResourceData{d}, nil
-}
-
-func buildSupervisorNamespaceResourceId(projectName string, supervisorNamespaceName string) string {
-	return fmt.Sprintf("%s:%s", projectName, supervisorNamespaceName)
-}
-
-func parseSupervisorNamespaceResourceId(id string) (string, string, error) {
-	idParts := strings.Split(id, ":")
-	if len(idParts) != 2 {
-		return "", "", fmt.Errorf("id %s does not contain two parts", id)
-	}
-	return idParts[0], idParts[1], nil
-}
-
-func getsupervisorNamespaceType(d *schema.ResourceData) *ccitypes.SupervisorNamespace {
-	supervisorNamespace := &ccitypes.SupervisorNamespace{
+	supervisorNamespace := ccitypes.SupervisorNamespace{
 		TypeMeta: v1.TypeMeta{
 			Kind:       ccitypes.SupervisorNamespaceKind,
-			APIVersion: ccitypes.InfrastructureCciAPI + "/" + ccitypes.ApiVersion,
+			APIVersion: ccitypes.SupervisorNamespaceAPI + "/" + ccitypes.SupervisorNamespaceVersion,
 		},
 		ObjectMeta: v1.ObjectMeta{
-			GenerateName: d.Get("name_prefix").(string),
-			Namespace:    d.Get("project_name").(string),
+			GenerateName: namePrefix.(string),
+			Namespace:    projectName.(string),
 		},
 		Spec: ccitypes.SupervisorNamespaceSpec{
 			ClassName:                   d.Get("class_name").(string),
@@ -376,15 +272,181 @@ func getsupervisorNamespaceType(d *schema.ResourceData) *ccitypes.SupervisorName
 		supervisorNamespace.Spec.InitialClassConfigOverrides.Zones = zonesInitialClassConfigOverrides
 	}
 
-	return supervisorNamespace
-}
-
-func setsupervisorNamespaceData(d *schema.ResourceData, projectName string, supervisorNamespaceName string, supervisorNamespace *ccitypes.SupervisorNamespace) error {
-	if supervisorNamespace == nil {
-		return fmt.Errorf("error - provided Supervisor Namespace")
+	supervisorNamespaceOut, err := createSupervisorNamespace(tmClient, projectName.(string), supervisorNamespace)
+	if err != nil {
+		return diag.Errorf("error creating %s: %s", labelSupervisorNamespace, err)
 	}
 
-	d.SetId(buildSupervisorNamespaceResourceId(projectName, supervisorNamespaceName))
+	stateChangeFunc := retry.StateChangeConf{
+		Pending: []string{"CREATING", "WAITING"},
+		Target:  []string{"CREATED"},
+		Refresh: func() (any, string, error) {
+			supervisorNamespace, err := readSupervisorNamespace(tmClient, projectName.(string), supervisorNamespaceOut.GetName())
+			if err != nil {
+				return nil, "", err
+			}
+
+			log.Printf("[DEBUG] %s %s current phase is %s", labelSupervisorNamespace, supervisorNamespaceOut.GetName(), supervisorNamespace.Status.Phase)
+			if strings.ToUpper(supervisorNamespace.Status.Phase) == "ERROR" {
+				return nil, "", fmt.Errorf("%s %s is in an ERROR state", labelSupervisorNamespace, supervisorNamespaceOut.GetName())
+			}
+
+			return supervisorNamespace, strings.ToUpper(supervisorNamespace.Status.Phase), nil
+		},
+		Timeout:    d.Timeout(schema.TimeoutDelete),
+		Delay:      5 * time.Second,
+		MinTimeout: 5 * time.Second,
+	}
+	if _, err = stateChangeFunc.WaitForStateContext(ctx); err != nil {
+		return diag.Errorf("error waiting for %s %s in Project %s to be created: %s", labelSupervisorNamespace, supervisorNamespaceOut.GetName(), projectName, err)
+	}
+
+	d.SetId(buildResourceId(projectName.(string), supervisorNamespaceOut.GetName()))
+
+	return resourceVcfaSupervisorNamespaceRead(ctx, d, meta)
+}
+
+func resourceVcfaSupervisorNamespaceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	return diag.Errorf("%s updates are not supported", labelSupervisorNamespace)
+}
+
+func resourceVcfaSupervisorNamespaceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	tmClient := meta.(ClientContainer).tmClient
+	projectName, name, err := parseResourceId(d.Id())
+	if err != nil {
+		return diag.Errorf("error parsing %s resource id %s: %s", labelSupervisorNamespace, d.Id(), err)
+	}
+
+	supervisorNamespace, err := readSupervisorNamespace(tmClient, projectName, name)
+	if err != nil {
+		return diag.Errorf("error reading %s: %s", labelSupervisorNamespace, err)
+	}
+
+	if err := setSupervisorNamespaceData(tmClient, d, projectName, name, supervisorNamespace); err != nil {
+		return diag.Errorf("error setting %s data: %s", labelSupervisorNamespace, err)
+	}
+
+	return nil
+}
+
+func resourceVcfaSupervisorNamespaceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	tmClient := meta.(ClientContainer).tmClient
+	projectName, name, err := parseResourceId(d.Id())
+	if err != nil {
+		return diag.Errorf("error parsing %s resource id %s: %s", labelSupervisorNamespace, d.Id(), err)
+	}
+
+	if err := deleteSupervisorNamespace(tmClient, projectName, name); err != nil {
+		return diag.Errorf("error deleting %s: %s", labelSupervisorNamespace, err)
+	}
+
+	stateChangeFunc := retry.StateChangeConf{
+		Pending: []string{"DELETING", "WAITING"},
+		Target:  []string{"DELETED"},
+		Refresh: func() (any, string, error) {
+			supervisorNamespace, err := readSupervisorNamespace(tmClient, projectName, name)
+			if err != nil {
+				if strings.Contains(err.Error(), "not found") {
+					return "", "DELETED", nil
+				}
+				return nil, "", err
+			}
+
+			log.Printf("[DEBUG] %s %s current phase is %s", labelSupervisorNamespace, name, supervisorNamespace.Status.Phase)
+			if strings.ToUpper(supervisorNamespace.Status.Phase) == "ERROR" {
+				return nil, "", fmt.Errorf("%s %s is in an ERROR state", labelSupervisorNamespace, name)
+			}
+
+			return supervisorNamespace, strings.ToUpper(supervisorNamespace.Status.Phase), nil
+		},
+		Timeout:    d.Timeout(schema.TimeoutDelete),
+		Delay:      5 * time.Second,
+		MinTimeout: 5 * time.Second,
+	}
+	if _, err = stateChangeFunc.WaitForStateContext(ctx); err != nil {
+		return diag.Errorf("error waiting for %s %s in Project %s to be deleted: %s", labelSupervisorNamespace, name, projectName, err)
+	}
+
+	d.SetId("")
+
+	return nil
+}
+
+func resourceVcfaSupervisorNamespaceImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	tmClient := meta.(ClientContainer).tmClient
+	idSlice := strings.Split(d.Id(), ImportSeparator)
+	if len(idSlice) != 2 {
+		return nil, fmt.Errorf("expected import ID to be <project_name>%s<supervisor_namespace_name>", ImportSeparator)
+	}
+	projectName := idSlice[0]
+	name := idSlice[1]
+	if _, err := readSupervisorNamespace(tmClient, projectName, name); err != nil {
+		return nil, fmt.Errorf("error reading %s: %s", labelSupervisorNamespace, err)
+	}
+
+	d.SetId(buildResourceId(projectName, name))
+
+	return []*schema.ResourceData{d}, nil
+}
+
+func createSupervisorNamespace(tmClient *VCDClient, projectName string, supervisorNamespace ccitypes.SupervisorNamespace) (ccitypes.SupervisorNamespace, error) {
+	var supervisorNamespaceOut ccitypes.SupervisorNamespace
+	supervisorNamespaceURL, err := buildSupervisorNamespaceURL(tmClient, projectName, "")
+	if err != nil {
+		return supervisorNamespace, fmt.Errorf("error building %s URL: %s", labelSupervisorNamespace, err)
+	}
+	if err := tmClient.VCDClient.Client.PostEntity(supervisorNamespaceURL, nil, &supervisorNamespace, &supervisorNamespaceOut, nil); err != nil {
+		return supervisorNamespace, fmt.Errorf("error creating %s in Project %s: %s", labelSupervisorNamespace, projectName, err)
+	}
+	return supervisorNamespaceOut, nil
+}
+
+func readSupervisorNamespace(tmClient *VCDClient, projectName string, supervisorNamespaceName string) (ccitypes.SupervisorNamespace, error) {
+	var supervisorNamespace ccitypes.SupervisorNamespace
+	supervisorNamespaceURL, err := buildSupervisorNamespaceURL(tmClient, projectName, supervisorNamespaceName)
+	if err != nil {
+		return supervisorNamespace, fmt.Errorf("error building %s URL: %s", labelSupervisorNamespace, err)
+	}
+	if err := tmClient.VCDClient.Client.GetEntity(supervisorNamespaceURL, nil, &supervisorNamespace, nil); err != nil {
+		return supervisorNamespace, fmt.Errorf("error reading %s %s in Project %s: %s", labelSupervisorNamespace, supervisorNamespaceName, projectName, err)
+	}
+	return supervisorNamespace, nil
+}
+
+func deleteSupervisorNamespace(tmClient *VCDClient, projectName string, supervisorNamespaceName string) error {
+	supervisorNamespaceURL, err := buildSupervisorNamespaceURL(tmClient, projectName, supervisorNamespaceName)
+	if err != nil {
+		return fmt.Errorf("error building %s URL: %s", labelSupervisorNamespace, err)
+	}
+	if err := tmClient.Client.DeleteEntity(supervisorNamespaceURL, nil, nil); err != nil {
+		return fmt.Errorf("error deleting %s %s in Project %s: %s", labelSupervisorNamespace, supervisorNamespaceName, projectName, err)
+	}
+	return nil
+}
+
+func buildSupervisorNamespaceURL(tmClient *VCDClient, projectName string, supervisorNamespaceName string) (*url.URL, error) {
+	supervisorNamespaceRawURL := fmt.Sprintf(ccitypes.SupervisorNamespacesURL, projectName)
+	if supervisorNamespaceName != "" {
+		supervisorNamespaceRawURL = supervisorNamespaceRawURL + "/" + supervisorNamespaceName
+	}
+
+	return tmClient.Client.GetEntityUrl(supervisorNamespaceRawURL)
+}
+
+func buildResourceId(projectName string, supervisorNamespaceName string) string {
+	return fmt.Sprintf("%s:%s", projectName, supervisorNamespaceName)
+}
+
+func parseResourceId(id string) (string, string, error) {
+	idParts := strings.Split(id, ":")
+	if len(idParts) != 2 {
+		return "", "", fmt.Errorf("id %s does not contain two parts", id)
+	}
+	return idParts[0], idParts[1], nil
+}
+
+func setSupervisorNamespaceData(_ *VCDClient, d *schema.ResourceData, projectName string, supervisorNamespaceName string, supervisorNamespace ccitypes.SupervisorNamespace) error {
+	d.SetId(buildResourceId(projectName, supervisorNamespaceName))
 	dSet(d, "name", supervisorNamespaceName)
 	dSet(d, "project_name", projectName)
 	dSet(d, "class_name", supervisorNamespace.Spec.ClassName)

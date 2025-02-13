@@ -10,7 +10,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"github.com/vmware/go-vcloud-director/v3/util"
 )
 
@@ -89,7 +88,6 @@ var globalResourceMap = map[string]*schema.Resource{
 	"vcfa_certificate":                     resourceVcfaCertificate(),                 // 1.0
 	"vcfa_org_local_user":                  resourceVcfaLocalUser(),                   // 1.0
 	"vcfa_org_ldap":                        resourceVcfaOrgLdap(),                     // 1.0
-	"vcfa_project":                         resourceVcfaProject(),                     // 1.0
 	"vcfa_supervisor_namespace":            resourceVcfaSupervisorNamespace(),         // 1.0
 }
 
@@ -221,8 +219,7 @@ func Provider() *schema.Provider {
 // ClientContainer is a structure that is being passed by Terraform SDK internally into resources via
 // meta `meta interface{}` argument. It is being initialized in providerConfigure method
 type ClientContainer struct {
-	tmClient  *VCDClient
-	cciClient *govcd.CciClient
+	tmClient *VCDClient
 }
 
 func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
@@ -330,8 +327,7 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 	}
 
 	metaContainer := ClientContainer{
-		tmClient:  tmClient,
-		cciClient: tmClient.GetCciClient(),
+		tmClient: tmClient,
 	}
 
 	return metaContainer, providerDiagnostics
