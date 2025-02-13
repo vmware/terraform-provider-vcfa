@@ -90,7 +90,6 @@ resource "vcfa_nsx_manager" "test" {
   username               = "{{.Username}}"
   password               = "{{.Password}}"
   url                    = "{{.Url}}"
-  network_provider_scope = ""
   auto_trust_certificate = true
 }
 `
