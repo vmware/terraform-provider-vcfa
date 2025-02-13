@@ -55,23 +55,6 @@ func resourceVcfaNsxManager() *schema.Resource {
 				ForceNew:    true,
 				Description: fmt.Sprintf("Defines if the %s certificate should automatically be trusted", labelVcfaNsxManager),
 			},
-			"active": {
-				Type:        schema.TypeBool,
-				Computed:    true,
-				Description: fmt.Sprintf("Indicates whether the %s can or cannot be used to manage networking constructs within VCFA", labelVcfaNsxManager),
-			},
-			"cluster_id": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: fmt.Sprintf("Cluster ID of the %s. Each NSX installation has a single cluster. This is not a VCFA URN", labelVcfaNsxManager),
-			},
-			"is_dedicated_for_classic_tenants": {
-				Type:     schema.TypeBool,
-				Computed: true,
-				Description: fmt.Sprintf("Whether this %s is dedicated for legacy VRA-style tenants only and unable to "+
-					"participate in modern constructs such as Regions and Zones. Legacy VRA-style is deprecated and this field exists for "+
-					"the purpose of VRA backwards compatibility only", labelVcfaNsxManager),
-			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -167,9 +150,6 @@ func setNsxManagerData(_ *VCDClient, d *schema.ResourceData, t *govcd.NsxtManage
 	dSet(d, "username", n.Username)
 	// dSet(d, "password", n.Password) // real password is never returned
 	dSet(d, "url", n.Url)
-	dSet(d, "active", n.Active)
-	dSet(d, "cluster_id", n.ClusterId)
-	dSet(d, "is_dedicated_for_classic_tenants", n.IsDedicatedForClassicTenants)
 	dSet(d, "status", n.Status)
 	dSet(d, "href", t.BuildHref())
 

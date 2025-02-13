@@ -10,6 +10,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"github.com/vmware/go-vcloud-director/v3/util"
 )
 
@@ -62,6 +63,8 @@ var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_certificate":                     datasourceVcfaCertificate(),                 // 1.0
 	"vcfa_org_local_user":                  datasourceVcfaLocalUser(),                   // 1.0
 	"vcfa_org_ldap":                        datasourceVcfaOrgLdap(),                     // 1.0
+	"vcfa_kube_config":                     datasourceVcfaKubeConfig(),                  // 1.0
+	"vcfa_supervisor_namespace":            datasourceVcfaSupervisorNamespace(),         // 1.0
 }
 
 var globalResourceMap = map[string]*schema.Resource{
@@ -86,6 +89,8 @@ var globalResourceMap = map[string]*schema.Resource{
 	"vcfa_certificate":                     resourceVcfaCertificate(),                 // 1.0
 	"vcfa_org_local_user":                  resourceVcfaLocalUser(),                   // 1.0
 	"vcfa_org_ldap":                        resourceVcfaOrgLdap(),                     // 1.0
+	"vcfa_project":                         resourceVcfaProject(),                     // 1.0
+	"vcfa_supervisor_namespace":            resourceVcfaSupervisorNamespace(),         // 1.0
 }
 
 // Provider returns a terraform.ResourceProvider.
@@ -216,7 +221,8 @@ func Provider() *schema.Provider {
 // ClientContainer is a structure that is being passed by Terraform SDK internally into resources via
 // meta `meta interface{}` argument. It is being initialized in providerConfigure method
 type ClientContainer struct {
-	tmClient *VCDClient
+	tmClient  *VCDClient
+	cciClient *govcd.CciClient
 }
 
 func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
@@ -324,7 +330,8 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 	}
 
 	metaContainer := ClientContainer{
-		tmClient: tmClient,
+		tmClient:  tmClient,
+		cciClient: tmClient.GetCciClient(),
 	}
 
 	return metaContainer, providerDiagnostics

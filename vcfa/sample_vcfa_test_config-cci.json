@@ -1,0 +1,29 @@
+{
+    "//": "You can safely remove the comments or leave them. The parser will ignore them.",
+    "provider": {
+        "//": "Disabled by default if useConnectionCache is not set",
+        "user": "serviceadministrator",
+        "password": "somePassword",
+        "tmVersion": "10.7.0",
+        "tmApiVersion": "40.0",
+        "token": "",
+        "url": "https://10.13.21.20/tm/api",
+        "sysOrg": "System",
+        "allowInsecure": true,
+        "tfAcceptanceTests": true,
+        "useConnectionCache": true
+    },
+    "org": {
+        "//": "existing org configuration",
+        "name": "demo",
+        "user": "demo",
+        "password": "CHANGE-ME"
+    },
+    "cci": {
+        "//": "existing entity configuration that are available in the above defined Org",
+        "region": "terraform-demo",
+        "vpc": "terraform-demo-Default-VPC",
+        "storagePolicy": "vSAN Default Storage Policy",
+        "supervisorZone": "vcfa-gen-wl-vc08-cl1-zone1"
+    }
+}
