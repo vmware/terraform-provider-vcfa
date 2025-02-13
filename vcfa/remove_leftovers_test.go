@@ -59,7 +59,7 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 	}
 
 	// TODO - improve the skip to avoid cleaning up
-	if vcfaTestOrgUser {
+	if !tmClient.Client.IsSysAdmin {
 		fmt.Println("Skipping leftover removal for Org user mode")
 		return nil
 	}
