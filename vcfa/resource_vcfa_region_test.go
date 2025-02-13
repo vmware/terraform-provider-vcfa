@@ -140,7 +140,6 @@ resource "vcfa_nsx_manager" "test" {
   username               = "{{.NsxManagerUsername}}"
   password               = "{{.NsxManagerPassword}}"
   url                    = "{{.NsxManagerUrl}}"
-  network_provider_scope = ""
   auto_trust_certificate = true
 }
 
