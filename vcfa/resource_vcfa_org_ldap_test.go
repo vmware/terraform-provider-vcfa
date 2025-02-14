@@ -37,8 +37,6 @@ func TestAccVcfaOrgLdapWithSsl(t *testing.T) {
 	params["FuncName"] = t.Name()
 	configText := templateFill(testAccVcfaOrgLdap, params)
 
-	// TODO: TM: Missing System test
-
 	params["FuncName"] = t.Name() + "-DS"
 	configTextDS := templateFill(testAccVcfaOrgLdapDS, params)
 	if vcfaShortTest {

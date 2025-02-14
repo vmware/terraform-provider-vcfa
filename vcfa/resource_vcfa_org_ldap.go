@@ -12,110 +12,124 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
-// resourceLdapUserAttributes defines the elements of types.OrgLdapUserAttributes
-// The field names are the ones used in the GUI, with a comment to indicate which API field each one corresponds to
-var resourceLdapUserAttributes = &schema.Schema{
-	Type:        schema.TypeList,
-	Required:    true,
-	MaxItems:    1,
-	Description: "User settings when `ldap_mode` is CUSTOM",
-	Elem: &schema.Resource{
-		Schema: map[string]*schema.Schema{
-			"object_class": { // ObjectClass
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "LDAP objectClass of which imported users are members. For example, user or person",
-			},
-			"unique_identifier": { // ObjectIdentifier
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "LDAP attribute to use as the unique identifier for a user. For example, objectGuid",
-			},
-			"username": { // Username
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "LDAP attribute to use when looking up a user name to import. For example, userPrincipalName or samAccountName",
-			},
-			"email": { // Email
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "LDAP attribute to use for the user's email address. For example, mail",
-			},
-			"display_name": { // FullName
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "LDAP attribute to use for the user's full name. For example, displayName",
-			},
-			"given_name": { // GivenName
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "LDAP attribute to use for the user's given name. For example, givenName",
-			},
-			"surname": { // Surname
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "LDAP attribute to use for the user's surname. For example, sn",
-			},
-			"telephone": { // Telephone
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "LDAP attribute to use for the user's telephone number. For example, telephoneNumber",
-			},
-			"group_membership_identifier": { // GroupMembershipIdentifier
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "LDAP attribute that identifies a user as a member of a group. For example, dn",
-			},
-			"group_back_link_identifier": { // GroupBackLinkIdentifier
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "LDAP attribute that returns the identifiers of all the groups of which the user is a member",
+var ldapUserAttributes = func(isDatasource bool) *schema.Schema {
+	return &schema.Schema{
+		Type:        schema.TypeList,
+		Required:    true,
+		MaxItems:    1,
+		Description: "LDAP user attributes",
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"object_class": { // ObjectClass
+					Type:        schema.TypeString,
+					Required:    !isDatasource,
+					Computed:    isDatasource,
+					Description: "LDAP objectClass of which imported users are members. For example, user or person",
+				},
+				"unique_identifier": { // ObjectIdentifier
+					Type:        schema.TypeString,
+					Required:    !isDatasource,
+					Computed:    isDatasource,
+					Description: "LDAP attribute to use as the unique identifier for a user. For example, objectGuid",
+				},
+				"username": { // Username
+					Type:        schema.TypeString,
+					Required:    !isDatasource,
+					Computed:    isDatasource,
+					Description: "LDAP attribute to use when looking up a user name to import. For example, userPrincipalName or samAccountName",
+				},
+				"email": { // Email
+					Type:        schema.TypeString,
+					Required:    !isDatasource,
+					Computed:    isDatasource,
+					Description: "LDAP attribute to use for the user's email address. For example, mail",
+				},
+				"display_name": { // FullName
+					Type:        schema.TypeString,
+					Required:    !isDatasource,
+					Computed:    isDatasource,
+					Description: "LDAP attribute to use for the user's full name. For example, displayName",
+				},
+				"given_name": { // GivenName
+					Type:        schema.TypeString,
+					Required:    !isDatasource,
+					Computed:    isDatasource,
+					Description: "LDAP attribute to use for the user's given name. For example, givenName",
+				},
+				"surname": { // Surname
+					Type:        schema.TypeString,
+					Required:    !isDatasource,
+					Computed:    isDatasource,
+					Description: "LDAP attribute to use for the user's surname. For example, sn",
+				},
+				"telephone": { // Telephone
+					Type:        schema.TypeString,
+					Required:    !isDatasource,
+					Computed:    isDatasource,
+					Description: "LDAP attribute to use for the user's telephone number. For example, telephoneNumber",
+				},
+				"group_membership_identifier": { // GroupMembershipIdentifier
+					Type:        schema.TypeString,
+					Required:    !isDatasource,
+					Computed:    isDatasource,
+					Description: "LDAP attribute that identifies a user as a member of a group. For example, dn",
+				},
+				"group_back_link_identifier": { // GroupBackLinkIdentifier
+					Type:        schema.TypeString,
+					Optional:    !isDatasource,
+					Computed:    isDatasource,
+					Description: "LDAP attribute that returns the identifiers of all the groups of which the user is a member",
+				},
 			},
 		},
-	},
+	}
 }
-
-// resourceLdapGroupAttributes defines the elements of types.OrgLdapGroupAttributes
-// The field names are the ones used in the GUI, with a comment to indicate which API field each one corresponds to
-var resourceLdapGroupAttributes = &schema.Schema{
-	Type:        schema.TypeList,
-	Required:    true,
-	MaxItems:    1,
-	Description: "Group settings when `ldap_mode` is CUSTOM",
-	Elem: &schema.Resource{
-		Schema: map[string]*schema.Schema{
-			"object_class": { // ObjectClass
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "LDAP objectClass of which imported groups are members. For example, group",
-			},
-			"unique_identifier": { // ObjectIdentifier
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "LDAP attribute to use as the unique identifier for a group. For example, objectGuid",
-			},
-			"name": { // GroupName
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "LDAP attribute to use for the group name. For example, cn",
-			},
-			"membership": { // Membership
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "LDAP attribute to use when getting the members of a group. For example, member",
-			},
-			"group_membership_identifier": { // MembershipIdentifier
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "LDAP attribute that identifies a group as a member of another group. For example, dn",
-			},
-			"group_back_link_identifier": { // BackLinkIdentifier
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "LDAP group attribute used to identify a group member",
+var ldapGroupAttributes = func(isDatasource bool) *schema.Schema {
+	return &schema.Schema{
+		Type:        schema.TypeList,
+		Required:    true,
+		MaxItems:    1,
+		Description: "Group settings when `ldap_mode` is CUSTOM",
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"object_class": { // ObjectClass
+					Type:        schema.TypeString,
+					Required:    !isDatasource,
+					Computed:    isDatasource,
+					Description: "LDAP objectClass of which imported groups are members. For example, group",
+				},
+				"unique_identifier": { // ObjectIdentifier
+					Type:        schema.TypeString,
+					Required:    !isDatasource,
+					Computed:    isDatasource,
+					Description: "LDAP attribute to use as the unique identifier for a group. For example, objectGuid",
+				},
+				"name": { // GroupName
+					Type:        schema.TypeString,
+					Required:    !isDatasource,
+					Description: "LDAP attribute to use for the group name. For example, cn",
+				},
+				"membership": { // Membership
+					Type:        schema.TypeString,
+					Required:    !isDatasource,
+					Computed:    isDatasource,
+					Description: "LDAP attribute to use when getting the members of a group. For example, member",
+				},
+				"group_membership_identifier": { // MembershipIdentifier
+					Type:        schema.TypeString,
+					Required:    !isDatasource,
+					Computed:    isDatasource,
+					Description: "LDAP attribute that identifies a group as a member of another group. For example, dn",
+				},
+				"group_back_link_identifier": { // BackLinkIdentifier
+					Type:        schema.TypeString,
+					Required:    !isDatasource,
+					Computed:    isDatasource,
+					Description: "LDAP group attribute used to identify a group member",
+				},
 			},
 		},
-	},
+	}
 }
 
 // resourceVcfaOrgLdap defines types.OrgLdapSettingsType
@@ -152,6 +166,11 @@ func resourceVcfaOrgLdap() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "If ldap_mode is SYSTEM, specifies a LDAP attribute=value pair to use for OU (organizational unit)",
+			},
+			"custom_ui_button_label": { // CustomUiButtonLabel
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "If you provide a custom button label, on the login screen, the custom label replaces the default label for this identity provider",
 			},
 			"custom_settings": { // CustomOrgLdapSettings
 				Type:        schema.TypeList,
@@ -206,8 +225,8 @@ func resourceVcfaOrgLdap() *schema.Resource {
 								`It is inspected on create and modify. ` +
 								`On modify, the absence of this element indicates that the password should not be changed`,
 						},
-						"user_attributes":  resourceLdapUserAttributes,  // CustomOrgLdapSettings.UserAttributes
-						"group_attributes": resourceLdapGroupAttributes, // CustomOrgLdapSettings.GroupAttributes
+						"user_attributes":  ldapUserAttributes(false),  // CustomOrgLdapSettings.UserAttributes
+						"group_attributes": ldapGroupAttributes(false), // CustomOrgLdapSettings.GroupAttributes
 					},
 				},
 			},
@@ -227,7 +246,7 @@ func resourceVcfaOrgLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceDa
 		return diag.Errorf("[Org LDAP %s] error searching for Org %s: %s", origin, orgId, err)
 	}
 
-	settings, err := fillLdapSettings(d)
+	settings, err := fillOrgLdapSettings(d)
 	if err != nil {
 		return diag.Errorf("[Org LDAP %s] error collecting settings values: %s", origin, err)
 	}
@@ -337,7 +356,7 @@ func resourceVcfaOrgLdapDelete(_ context.Context, d *schema.ResourceData, meta i
 	return diag.FromErr(tmOrg.LdapDisable())
 }
 
-func fillLdapSettings(d *schema.ResourceData) (*types.OrgLdapSettingsType, error) {
+func fillOrgLdapSettings(d *schema.ResourceData) (*types.OrgLdapSettingsType, error) {
 	settings := types.OrgLdapSettingsType{
 		OrgLdapMode: d.Get("ldap_mode").(string),
 	}
@@ -409,6 +428,10 @@ func fillLdapSettings(d *schema.ResourceData) (*types.OrgLdapSettingsType, error
 		Membership:           groupAttributesMap["membership"].(string),
 		MembershipIdentifier: groupAttributesMap["group_membership_identifier"].(string),
 		BackLinkIdentifier:   groupAttributesMap["group_back_link_identifier"].(string),
+	}
+
+	if uiLabel, ok := customSettingsMap["custom_ui_label"]; ok {
+		settings.CustomOrgLdapSettings.CustomUiButtonLabel = addrOf(uiLabel.(string))
 	}
 
 	return &settings, nil
