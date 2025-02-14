@@ -34,14 +34,14 @@ data "vcfa_vcenter" "vc" {
 	}
 	return `
 resource "vcfa_vcenter" "vc" {
-  name                     = "` + t.Name() + `"
-  url                      = "` + testConfig.Tm.VcenterUrl + `"
-  auto_trust_certificate   = true
-  refresh_vcenter_on_read  = true
-  refresh_policies_on_read = false
-  username                 = "` + testConfig.Tm.VcenterUsername + `"
-  password                 = "` + testConfig.Tm.VcenterPassword + `"
-  is_enabled               = true
+  name                       = "` + t.Name() + `"
+  url                        = "` + testConfig.Tm.VcenterUrl + `"
+  auto_trust_certificate     = true
+  refresh_vcenter_on_create  = true
+  refresh_policies_on_create = false
+  username                   = "` + testConfig.Tm.VcenterUsername + `"
+  password                   = "` + testConfig.Tm.VcenterPassword + `"
+  is_enabled                 = true
 }
 `, "vcfa_vcenter.vc"
 }
