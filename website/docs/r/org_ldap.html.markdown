@@ -11,8 +11,6 @@ description: |-
 Provides a VMware Cloud Foundation Automation Organization LDAP resource.
 This can be used to create, update, and delete LDAP configuration for an organization.
 
--> **Note:** This resource requires system administrator privileges.
-
 ## Example Usage 1 - Custom configuration
 
 ```hcl
@@ -21,8 +19,9 @@ data "vcfa_org" "my-org" {
 }
 
 resource "vcfa_org_ldap" "my-org-ldap" {
-  org_id    = data.vcfa_org.my-org.id
-  ldap_mode = "CUSTOM"
+  org_id                 = data.vcfa_org.my-org.id
+  ldap_mode              = "CUSTOM"
+  auto_trust_certificate = false # Because is_ssl = false
   custom_settings {
     server                  = "192.168.1.172"
     port                    = 389
@@ -78,9 +77,10 @@ data "vcfa_org" "my-org" {
 }
 
 resource "vcfa_org_ldap" "my-org-ldap" {
-  org_id         = data.vcfa_org.my-org.id
-  ldap_mode      = "SYSTEM"
-  custom_user_ou = "ou=Foo,dc=domain,dc=local base DN"
+  org_id                 = data.vcfa_org.my-org.id
+  ldap_mode              = "SYSTEM"
+  auto_trust_certificate = false
+  custom_user_ou         = "ou=Foo,dc=domain,dc=local base DN"
 }
 ```
 
@@ -90,7 +90,8 @@ The following arguments are supported:
 
 * `org_id` - (Required) Org ID: there is only one LDAP configuration available for an organization. Thus, the resource can be identified by the Org.
 * `ldap_mode` - (Required) One of `NONE`, `CUSTOM`, `SYSTEM`. Note that using `NONE` has the effect of removing the LDAP settings
-* `custom_user_ou` - (Optional; *v3.11+*) If `ldap_mode` is `SYSTEM`, specifies an LDAP `attribute=value` pair to use for OU (organizational unit)
+* `auto_trust_certificate` - (Required) Defines if the LDAP certificate should automatically be trusted, only makes sense if `custom_settings.0.is_ssl=true` (see [Custom Settings](#custom-settings))
+* `custom_user_ou` - (Optional) If `ldap_mode` is `SYSTEM`, specifies an LDAP `attribute=value` pair to use for OU (organizational unit)
 * `custom_settings` - (Optional) LDAP server configuration. Becomes mandatory if `ldap_mode` is set to `CUSTOM`. See [Custom Settings](#custom-settings) below for details
 
 <a id="custom-settings"></a>
@@ -103,7 +104,7 @@ The `custom_settings` section contains the configuration for the LDAP server
 * `authentication_method` - (Required) Authentication method: one of `SIMPLE`, `MD5DIGEST`, `NTLM`
 * `connector_type` - (Required) Type of connector: one of `OPEN_LDAP`, `ACTIVE_DIRECTORY`
 * `base_distinguished_name` - (Required) LDAP search base
-* `is_ssl` - (Optional) True if the LDAP service requires an SSL connection
+* `is_ssl` - (Optional) True if the LDAP service requires an SSL connection. If the certificate is not trusted already, `auto_trust_certificate=true` is needed.
 * `username` - (Optional) _Username_ to use when logging in to LDAP, specified using LDAP attribute=value pairs 
   (for example: cn="ldap-admin", c="example", dc="com")
 * `password` - (Optional) _Password_ for the user identified by UserName. This value is never returned by GET. 

@@ -4,29 +4,38 @@ package vcfa
 
 import (
 	"fmt"
-	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVcfaOrgLdap(t *testing.T) {
+// TestAccVcfaOrgLdapWithSsl tests LDAP configuration against an LDAP server with SSL
+func TestAccVcfaOrgLdapWithSsl(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
+	if testConfig.Ldap.Host == "" || testConfig.Ldap.Username == "" || testConfig.Ldap.Password == "" || testConfig.Ldap.Type == "" ||
+		testConfig.Ldap.Port == 0 || testConfig.Ldap.BaseDistinguishedName == "" {
+		t.Skip("LDAP testing configuration is required")
+	}
+
 	var params = StringMap{
-		"Org":        testConfig.Tm.Org,
-		"LdapServer": regexp.MustCompile(`https?://`).ReplaceAllString(testConfig.Tm.VcenterUrl, ""),
-		"Password":   testConfig.Tm.VcenterPassword,
-		"Tags":       "ldap org",
+		"Org":                       testConfig.Tm.Org,
+		"LdapServer":                testConfig.Ldap.Host,
+		"LdapPort":                  testConfig.Ldap.Port,
+		"LdapIsSsl":                 testConfig.Ldap.IsSsl,
+		"LdapUser":                  testConfig.Ldap.Username,
+		"LdapPassword":              testConfig.Ldap.Password,
+		"LdapType":                  testConfig.Ldap.Type,
+		"LdapBaseDistinguishedName": testConfig.Ldap.BaseDistinguishedName,
+		"Password":                  testConfig.Tm.VcenterPassword,
+		"Tags":                      "ldap org",
 	}
 	testParamsNotEmpty(t, params)
 
 	params["FuncName"] = t.Name()
 	configText := templateFill(testAccVcfaOrgLdap, params)
-
-	// TODO: TM: Missing System test
 
 	params["FuncName"] = t.Name() + "-DS"
 	configTextDS := templateFill(testAccVcfaOrgLdapDS, params)
@@ -51,11 +60,29 @@ func TestAccVcfaOrgLdap(t *testing.T) {
 					testAccCheckOrgLdapExists(ldapResourceDef),
 					resource.TestCheckResourceAttr(orgDef, "name", params["Org"].(string)),
 					resource.TestCheckResourceAttr(ldapResourceDef, "ldap_mode", "CUSTOM"),
-					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.server", params["LdapServer"].(string)),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.server", testConfig.Ldap.Host),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.port", fmt.Sprintf("%d", testConfig.Ldap.Port)),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.is_ssl", fmt.Sprintf("%t", testConfig.Ldap.IsSsl)),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.base_distinguished_name", testConfig.Ldap.BaseDistinguishedName),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.connector_type", testConfig.Ldap.Type),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.password", ""), // Password is not returned
 					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.authentication_method", "SIMPLE"),
-					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.connector_type", "OPEN_LDAP"),
-					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.user_attributes.0.object_class", "inetOrgPerson"),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.user_attributes.0.object_class", "user"),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.user_attributes.0.unique_identifier", "objectGuid"),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.user_attributes.0.display_name", "displayName"),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.user_attributes.0.username", "sAMAccountName"),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.user_attributes.0.given_name", "givenName"),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.user_attributes.0.surname", "sn"),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.user_attributes.0.telephone", "telephoneNumber"),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.user_attributes.0.group_membership_identifier", "dn"),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.user_attributes.0.email", "mail"),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.user_attributes.0.group_back_link_identifier", "tokenGroups"),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.group_attributes.0.name", "cn"),
 					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.group_attributes.0.object_class", "group"),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.group_attributes.0.membership", "member"),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.group_attributes.0.unique_identifier", "objectGuid"),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.group_attributes.0.group_membership_identifier", "dn"),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.group_attributes.0.group_back_link_identifier", "objectSid"),
 					resource.TestCheckResourceAttrPair(orgDef, "id", ldapResourceDef, "org_id"),
 				),
 			},
@@ -63,13 +90,7 @@ func TestAccVcfaOrgLdap(t *testing.T) {
 				Config: configTextDS,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckOrgLdapExists(ldapResourceDef),
-					resource.TestCheckResourceAttrPair(ldapResourceDef, "org_id", ldapDatasourceDef, "org_id"),
-					resource.TestCheckResourceAttrPair(ldapResourceDef, "ldap_mode", ldapDatasourceDef, "ldap_mode"),
-					resource.TestCheckResourceAttrPair(ldapResourceDef, "custom_settings.0.server", ldapDatasourceDef, "custom_settings.0.server"),
-					resource.TestCheckResourceAttrPair(ldapResourceDef, "custom_settings.0.authentication_method", ldapDatasourceDef, "custom_settings.0.authentication_method"),
-					resource.TestCheckResourceAttrPair(ldapResourceDef, "custom_settings.0.connector_type", ldapDatasourceDef, "custom_settings.0.connector_type"),
-					resource.TestCheckResourceAttrPair(ldapResourceDef, "custom_settings.0.user_attributes.0.object_class", ldapDatasourceDef, "custom_settings.0.user_attributes.0.object_class"),
-					resource.TestCheckResourceAttrPair(ldapResourceDef, "custom_settings.0.group_attributes.0.object_class", ldapDatasourceDef, "custom_settings.0.group_attributes.0.object_class"),
+					resourceFieldsEqual(ldapResourceDef, ldapDatasourceDef, []string{}),
 				),
 			},
 			{
@@ -123,30 +144,32 @@ resource "vcfa_org_ldap" "ldap" {
   ldap_mode = "CUSTOM"
   custom_settings {
     server                  = "{{.LdapServer}}"
-    port                    = 389
-    is_ssl                  = false
-    username                = "cn=Administrator,cn=Users,dc=vsphere,dc=local"
-    password                = "{{.Password}}"
+    port                    = {{.LdapPort}}
+    is_ssl                  = {{.LdapIsSsl}}
+    username                = "{{.LdapUsername}}"
+    password                = "{{.LdapPassword}}"
     authentication_method   = "SIMPLE"
-    base_distinguished_name = "dc=vsphere,dc=local"
-    connector_type          = "OPEN_LDAP"
+    base_distinguished_name = "{{.LdapBaseDistinguishedName}}"
+    connector_type          = "{{.LdapType}}"
     user_attributes {
-      object_class                = "inetOrgPerson"
-      unique_identifier           = "uid"
-      display_name                = "cn"
-      username                    = "uid"
+      object_class                = "user"
+      unique_identifier           = "objectGuid"
+      display_name                = "displayName"
+      username                    = "sAMAccountName"
       given_name                  = "givenName"
       surname                     = "sn"
       telephone                   = "telephoneNumber"
       group_membership_identifier = "dn"
       email                       = "mail"
+      group_back_link_identifier  = "tokenGroups"
     }
     group_attributes {
       name                        = "cn"
       object_class                = "group"
       membership                  = "member"
-      unique_identifier           = "cn"
+      unique_identifier           = "objectGuid"
       group_membership_identifier = "dn"
+      group_back_link_identifier  = "objectSid"
     }
   }
   lifecycle {
