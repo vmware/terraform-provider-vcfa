@@ -101,3 +101,37 @@ func mustStrToInt(s string) int {
 	}
 	return v
 }
+
+// searchSetAndApply searches whether the value of the attribute with key 'attributeKey' of second set is present in the
+// first set. Executes the actionFound function if found. Executes the actionNotFound function if not found
+func searchSetAndApply(set1, set2 *schema.Set, attributeKey string,
+	actionFound func(foundItem1, foundItem2 map[string]interface{}) error,
+	actionNotFound func(foundItem1 map[string]interface{}) error) error {
+	list1 := set1.List()
+	list2 := set2.List()
+
+	for _, l1 := range list1 {
+		item1 := l1.(map[string]interface{})
+		found := false
+		for _, l2 := range list2 {
+			item2 := l2.(map[string]interface{})
+			if item1[attributeKey] == item2[attributeKey] {
+				found = true
+				if actionFound != nil {
+					err := actionFound(item1, item2)
+					if err != nil {
+						return err
+					}
+				}
+				break
+			}
+		}
+		if !found && actionNotFound != nil {
+			err := actionNotFound(item1)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}

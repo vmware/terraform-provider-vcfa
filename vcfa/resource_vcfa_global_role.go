@@ -3,6 +3,7 @@ package vcfa
 import (
 	"context"
 	"fmt"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
@@ -64,16 +65,16 @@ func resourceVcfaGlobalRole() *schema.Resource {
 }
 
 func resourceVcfaGlobalRoleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
 	globalRoleName := d.Get("name").(string)
 	publishToAllOrgs := d.Get("publish_to_all_orgs").(bool)
 
-	inputRights, err := getRights(vcdClient, nil, fmt.Sprintf("%s create", labelVcfaGlobalRole), d)
+	inputRights, err := getRights(tmClient, nil, fmt.Sprintf("%s create", labelVcfaGlobalRole), d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	globalRole, err := vcdClient.Client.CreateGlobalRole(&types.GlobalRole{
+	globalRole, err := tmClient.Client.CreateGlobalRole(&types.GlobalRole{
 		Name:        globalRoleName,
 		Description: d.Get("description").(string),
 		BundleKey:   types.VcloudUndefinedKey,
@@ -89,7 +90,7 @@ func resourceVcfaGlobalRoleCreate(ctx context.Context, d *schema.ResourceData, m
 		}
 	}
 
-	inputTenants, err := getOrganizations(vcdClient, fmt.Sprintf("%s create", labelVcfaGlobalRole), d)
+	inputTenants, err := getOrganizations(tmClient, fmt.Sprintf("%s create", labelVcfaGlobalRole), d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -114,16 +115,16 @@ func resourceVcfaGlobalRoleRead(ctx context.Context, d *schema.ResourceData, met
 }
 
 func genericGlobalRoleRead(_ context.Context, d *schema.ResourceData, meta interface{}, origin, operation string) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
 	var globalRole *govcd.GlobalRole
 	var err error
 	globalRoleName := d.Get("name").(string)
 	identifier := d.Id()
 	if identifier == "" {
-		globalRole, err = vcdClient.Client.GetGlobalRoleByName(globalRoleName)
+		globalRole, err = tmClient.Client.GetGlobalRoleByName(globalRoleName)
 	} else {
-		globalRole, err = vcdClient.Client.GetGlobalRoleById(identifier)
+		globalRole, err = tmClient.Client.GetGlobalRoleById(identifier)
 	}
 
 	if err != nil {
@@ -183,13 +184,13 @@ func genericGlobalRoleRead(_ context.Context, d *schema.ResourceData, meta inter
 }
 
 func resourceVcfaGlobalRoleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
 	globalRoleName := d.Get("name").(string)
 
 	publishToAllTenants := d.Get("publish_to_all_orgs").(bool)
 
-	globalRole, err := vcdClient.Client.GetGlobalRoleById(d.Id())
+	globalRole, err := tmClient.Client.GetGlobalRoleById(d.Id())
 	if err != nil {
 		return diag.Errorf("[%s update] error retrieving %s '%s': %s", labelVcfaGlobalRole, labelVcfaGlobalRole, globalRoleName, err)
 	}
@@ -200,7 +201,7 @@ func resourceVcfaGlobalRoleUpdate(ctx context.Context, d *schema.ResourceData, m
 	var changedTenants = d.HasChange("org_ids") || d.HasChange("publish_to_all_orgs")
 
 	if changedRights {
-		inputRights, err = getRights(vcdClient, nil, fmt.Sprintf("%s update", labelVcfaGlobalRole), d)
+		inputRights, err = getRights(tmClient, nil, fmt.Sprintf("%s update", labelVcfaGlobalRole), d)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -236,7 +237,7 @@ func resourceVcfaGlobalRoleUpdate(ctx context.Context, d *schema.ResourceData, m
 		}
 	}
 	if changedTenants {
-		inputTenants, err = getOrganizations(vcdClient, fmt.Sprintf("%s create", labelVcfaGlobalRole), d)
+		inputTenants, err = getOrganizations(tmClient, fmt.Sprintf("%s create", labelVcfaGlobalRole), d)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -266,7 +267,7 @@ func resourceVcfaGlobalRoleUpdate(ctx context.Context, d *schema.ResourceData, m
 }
 
 func resourceVcfaGlobalRoleDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
 	globalRoleName := d.Get("name").(string)
 
@@ -274,9 +275,9 @@ func resourceVcfaGlobalRoleDelete(_ context.Context, d *schema.ResourceData, met
 	var err error
 	identifier := d.Id()
 	if identifier == "" {
-		globalRole, err = vcdClient.Client.GetGlobalRoleByName(globalRoleName)
+		globalRole, err = tmClient.Client.GetGlobalRoleByName(globalRoleName)
 	} else {
-		globalRole, err = vcdClient.Client.GetGlobalRoleById(identifier)
+		globalRole, err = tmClient.Client.GetGlobalRoleById(identifier)
 	}
 
 	if err != nil {
@@ -291,8 +292,8 @@ func resourceVcfaGlobalRoleDelete(_ context.Context, d *schema.ResourceData, met
 }
 
 func resourceVcfaGlobalRoleImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(*VCDClient)
-	globalRole, err := vcdClient.Client.GetGlobalRoleByName(d.Id())
+	tmClient := meta.(ClientContainer).tmClient
+	globalRole, err := tmClient.Client.GetGlobalRoleByName(d.Id())
 	if err != nil {
 		return nil, fmt.Errorf("[%s import] error retrieving %s '%s': %s", labelVcfaGlobalRole, labelVcfaGlobalRole, d.Id(), err)
 	}

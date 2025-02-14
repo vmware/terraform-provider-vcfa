@@ -72,7 +72,7 @@ func createTemporaryVCFAConnection(acceptNil bool) *VCDClient {
 
 // createSystemTemporaryVCFAConnection is like createTemporaryVCFAConnection, but it will ignore all conditional
 // configurations like `VCFA_TEST_ORG_USER=1` and will still return a System client instead of user one. This allows to
-// perform System actions (entities which require System rights - Org, Vdc, etc...)
+// perform System actions (entities which require System rights - Org, Region Quotas, etc...)
 func createSystemTemporaryVCFAConnection() *VCDClient {
 	var configStruct TestConfig
 	configFileName := getConfigFileName()
@@ -126,14 +126,14 @@ func TestAccClientUserAgent(t *testing.T) {
 		InsecureFlag: testConfig.Provider.AllowInsecure,
 	}
 
-	vcdClient, err := clientConfig.Client()
+	tmClient, err := clientConfig.Client()
 	if err != nil {
 		t.Fatal("error initializing go-vcloud-director client: " + err.Error())
 	}
 
 	expectedHeaderPrefix := "terraform-provider-vcfa/"
-	if !strings.HasPrefix(vcdClient.VCDClient.Client.UserAgent, expectedHeaderPrefix) {
+	if !strings.HasPrefix(tmClient.VCDClient.Client.UserAgent, expectedHeaderPrefix) {
 		t.Fatalf("Expected User-Agent header in go-vcloud-director to be '%s', got '%s'",
-			expectedHeaderPrefix, vcdClient.VCDClient.Client.UserAgent)
+			expectedHeaderPrefix, tmClient.VCDClient.Client.UserAgent)
 	}
 }

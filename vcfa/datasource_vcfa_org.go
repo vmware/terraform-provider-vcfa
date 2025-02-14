@@ -44,10 +44,10 @@ func datasourceVcfaOrg() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("%s owner Name", labelVcfaOrg),
 			},
-			"org_vdc_count": {
+			"org_region_quota_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: fmt.Sprintf("Number of VDCs belonging to the %s", labelVcfaOrg),
+				Description: fmt.Sprintf("Number of %ss belonging to the %s", labelVcfaOrgRegionQuota, labelVcfaOrg),
 			},
 			"catalog_count": {
 				Type:        schema.TypeInt,
@@ -94,10 +94,10 @@ func datasourceVcfaOrg() *schema.Resource {
 }
 
 func datasourceVcfaRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 	c := dsReadConfig[*govcd.TmOrg, types.TmOrg]{
 		entityLabel:    labelVcfaOrg,
-		getEntityFunc:  vcdClient.GetTmOrgByName,
+		getEntityFunc:  tmClient.GetTmOrgByName,
 		stateStoreFunc: setOrgData,
 	}
 	return readDatasource(ctx, d, meta, c)

@@ -117,7 +117,7 @@ func testAccCheckOrgLdapExists(identifier string) resource.TestCheckFunc {
 			return fmt.Errorf("no %s ID is set", labelVcfaOrg)
 		}
 
-		conn := testAccProvider.Meta().(*VCDClient)
+		conn := testAccProvider.Meta().(ClientContainer).tmClient
 
 		tmOrg, err := conn.GetTmOrgById(rs.Primary.ID)
 		if err != nil {

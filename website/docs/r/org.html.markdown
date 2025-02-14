@@ -44,7 +44,7 @@ The following attributes are exported on this resource:
 
 - `managed_by_id` - ID of Org that owns this Org
 - `managed_by_name` - Name of Org that owns this Org
-- `org_vdc_count` - Number of VDCs belonging to this Organization
+- `org_region_quota_count` - Number of Region Quotas belonging to this Organization
 - `catalog_count` - Number of catalogs belonging to this Organization
 - `vapp_count` - Number of vApps belonging to this Organization
 - `running_vm_count` - Number of running VMs belonging to this Organization

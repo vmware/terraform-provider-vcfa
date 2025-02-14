@@ -20,7 +20,7 @@ type crudConfig[O updateDeleter[O, I], I any] struct {
 	// getTypeFunc is responsible for converting schema fields to inner type
 	getTypeFunc func(*VCDClient, *schema.ResourceData) (*I, error)
 	// stateStoreFunc is responsible for storing state
-	stateStoreFunc func(vcdClient *VCDClient, d *schema.ResourceData, outerType O) error
+	stateStoreFunc func(tmClient *VCDClient, d *schema.ResourceData, outerType O) error
 
 	// createFunc is the function that can create an outer entity based on inner entity config
 	// (which is created by 'getTypeFunc')
@@ -32,7 +32,8 @@ type crudConfig[O updateDeleter[O, I], I any] struct {
 	// reference.
 	createAsyncFunc func(config *I) (*govcd.Task, error)
 
-	// resourceReadFunc that will be executed from Create and Update functions
+	// resourceReadFunc that will be executed from Create and Update functions. It is optional, no read will be executed
+	// if it is nil
 	resourceReadFunc func(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics
 
 	// getEntityFunc is a function that retrieves the entity
@@ -74,13 +75,13 @@ func createResource[O updateDeleter[O, I], I any](ctx context.Context, d *schema
 		return diag.Errorf("validation failed: %s", err)
 	}
 
-	vcdClient := meta.(*VCDClient)
-	t, err := c.getTypeFunc(vcdClient, d)
+	tmClient := meta.(ClientContainer).tmClient
+	t, err := c.getTypeFunc(tmClient, d)
 	if err != nil {
 		return diag.Errorf("error getting %s type on create: %s", c.entityLabel, err)
 	}
 
-	err = execSchemaHook(vcdClient, d, c.preCreateHooks)
+	err = execSchemaHook(tmClient, d, c.preCreateHooks)
 	if err != nil {
 		return diag.Errorf("error executing pre-create %s hooks: %s", c.entityLabel, err)
 	}
@@ -125,12 +126,15 @@ func createResource[O updateDeleter[O, I], I any](ctx context.Context, d *schema
 		}
 	}
 
-	err = c.stateStoreFunc(vcdClient, d, createdEntity)
+	err = c.stateStoreFunc(tmClient, d, createdEntity)
 	if err != nil {
 		return diag.Errorf("error storing %s to state during create: %s", c.entityLabel, err)
 	}
 
-	return c.resourceReadFunc(ctx, d, meta)
+	if c.resourceReadFunc != nil {
+		return c.resourceReadFunc(ctx, d, meta)
+	}
+	return nil
 }
 
 func createResourceValidator[O updateDeleter[O, I], I any](c crudConfig[O, I]) error {
@@ -141,8 +145,8 @@ func createResourceValidator[O updateDeleter[O, I], I any](c crudConfig[O, I]) e
 }
 
 func updateResource[O updateDeleter[O, I], I any](ctx context.Context, d *schema.ResourceData, meta interface{}, c crudConfig[O, I]) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
-	t, err := c.getTypeFunc(vcdClient, d)
+	tmClient := meta.(ClientContainer).tmClient
+	t, err := c.getTypeFunc(tmClient, d)
 	if err != nil {
 		return diag.Errorf("error getting %s type on update: %s", c.entityLabel, err)
 	}
@@ -166,7 +170,10 @@ func updateResource[O updateDeleter[O, I], I any](ctx context.Context, d *schema
 		return diag.Errorf("error updating %s with ID: %s", c.entityLabel, err)
 	}
 
-	return c.resourceReadFunc(ctx, d, meta)
+	if c.resourceReadFunc != nil {
+		return c.resourceReadFunc(ctx, d, meta)
+	}
+	return nil
 }
 
 func readResource[O updateDeleter[O, I], I any](_ context.Context, d *schema.ResourceData, meta interface{}, c crudConfig[O, I]) diag.Diagnostics {
@@ -185,8 +192,8 @@ func readResource[O updateDeleter[O, I], I any](_ context.Context, d *schema.Res
 		return diag.Errorf("error executing read %s hooks: %s", c.entityLabel, err)
 	}
 
-	vcdClient := meta.(*VCDClient)
-	err = c.stateStoreFunc(vcdClient, d, retrievedEntity)
+	tmClient := meta.(ClientContainer).tmClient
+	err = c.stateStoreFunc(tmClient, d, retrievedEntity)
 	if err != nil {
 		return diag.Errorf("error storing %s to state during resource read: %s", c.entityLabel, err)
 	}
@@ -213,7 +220,7 @@ func deleteResource[O updateDeleter[O, I], I any](_ context.Context, d *schema.R
 	return nil
 }
 
-func execSchemaHook(vcdClient *VCDClient, d *schema.ResourceData, runList []schemaHook) error {
+func execSchemaHook(tmClient *VCDClient, d *schema.ResourceData, runList []schemaHook) error {
 	if len(runList) == 0 {
 		util.Logger.Printf("[DEBUG] No hooks to execute")
 		return nil
@@ -221,7 +228,7 @@ func execSchemaHook(vcdClient *VCDClient, d *schema.ResourceData, runList []sche
 
 	var err error
 	for i := range runList {
-		err = runList[i](vcdClient, d)
+		err = runList[i](tmClient, d)
 		if err != nil {
 			return fmt.Errorf("error executing hook: %s", err)
 		}
@@ -276,7 +283,7 @@ type dsReadConfig[O any, I any] struct {
 	entityLabel string
 
 	// stateStoreFunc is responsible for storing state
-	stateStoreFunc func(vcdClient *VCDClient, d *schema.ResourceData, outerType O) error
+	stateStoreFunc func(tmClient *VCDClient, d *schema.ResourceData, outerType O) error
 
 	// getEntityFunc is a function that retrieves the entity
 	// It will use ID for resources and Name for data sources
@@ -292,8 +299,8 @@ type dsReadConfig[O any, I any] struct {
 
 // readDatasource will read a data source by a 'name' field in Terraform schema
 func readDatasource[O any, I any](_ context.Context, d *schema.ResourceData, meta interface{}, c dsReadConfig[O, I]) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
-	err := execSchemaHook(vcdClient, d, c.preReadHooks)
+	tmClient := meta.(ClientContainer).tmClient
+	err := execSchemaHook(tmClient, d, c.preReadHooks)
 	if err != nil {
 		return diag.Errorf("error executing pre-read %s hooks: %s", c.entityLabel, err)
 	}
@@ -309,7 +316,7 @@ func readDatasource[O any, I any](_ context.Context, d *schema.ResourceData, met
 		return diag.Errorf("error getting %s by Name '%s': %s", c.entityLabel, entityName, err)
 	}
 
-	err = c.stateStoreFunc(vcdClient, d, retrievedEntity)
+	err = c.stateStoreFunc(tmClient, d, retrievedEntity)
 	if err != nil {
 		return diag.Errorf("error storing %s to state during data source read: %s", c.entityLabel, err)
 	}

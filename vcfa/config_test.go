@@ -53,7 +53,7 @@ func init() {
 	setBoolFlag(&vcfaShortTest, "vcfa-short", "VCFA_SHORT_TEST", "runs short test")
 	setBoolFlag(&vcfaAddProvider, "vcfa-add-provider", envVcfaAddProvider, "add provider to test scripts")
 	setBoolFlag(&vcfaSkipTemplateWriting, "vcfa-skip-template-write", envVcfaSkipTemplateWriting, "Skip writing templates to file")
-	setBoolFlag(&vcfaRemoveOrgVdcFromTemplate, "vcfa-remove-org-vdc-from-template", envVcfaRemoveOrgVdcFromTemplate, "Remove org and VDC from template")
+	setBoolFlag(&vcfaRemoveOrgFromTemplate, "vcfa-remove-org-from-template", envVcfaRemoveOrgFromTemplate, "Remove org from template")
 	setBoolFlag(&vcfaTestOrgUser, "vcfa-test-org-user", envVcfaTestOrgUser, "Run tests with org user")
 	setStringFlag(&vcfaSkipPattern, "vcfa-skip-pattern", "VCFA_SKIP_PATTERN", "Skip tests that match the pattern (implies vcfa-pre-post-checks")
 	setBoolFlag(&skipLeftoversRemoval, "vcfa-skip-leftovers-removal", "VCFA_SKIP_LEFTOVERS_REMOVAL", "Do not attempt removal of leftovers at the end of the test suite")
@@ -85,12 +85,12 @@ type TestConfig struct {
 		UseConnectionCache       bool   `json:"useConnectionCache"`
 	} `json:"provider"`
 	Tm struct {
-		Org            string `json:"org"` // temporary field to make skipIfNotTm work
-		CreateRegion   bool   `json:"createRegion"`
-		Region         string `json:"region"`
-		StorageClass   string `json:"storageClass"`
-		Vdc            string `json:"vdc"`
-		ContentLibrary string `json:"contentLibrary"`
+		Org             string   `json:"org"`
+		CreateRegion    bool     `json:"createRegion"`
+		Region          string   `json:"region"`
+		StorageClass    string   `json:"storageClass"`
+		RegionVmClasses []string `json:"regionVmClasses"`
+		ContentLibrary  string   `json:"contentLibrary"`
 
 		CreateNsxManager   bool   `json:"createNsxManager"`
 		NsxManagerUsername string `json:"nsxManagerUsername"`
@@ -146,9 +146,9 @@ var (
 	// vcfaSkipTemplateWriting disable the writing of the template to a .tf file
 	vcfaSkipTemplateWriting = false
 
-	// vcfaRemoveOrgVdcFromTemplate removes org and vdc from template, thus tetsing with the
+	// vcfaRemoveOrgFromTemplate removes org from template, thus tetsing with the
 	// variables in provider section
-	vcfaRemoveOrgVdcFromTemplate = false
+	vcfaRemoveOrgFromTemplate = false
 
 	// vcfaTestOrgUser enables testing with the Org User
 	vcfaTestOrgUser = false
@@ -211,11 +211,11 @@ const (
 	providerVcfaSystem2   = "vcfasys2"
 	providerVcfaSys2Alias = "vcfa.sys2"
 
-	testArtifactsDirectory          = "test-artifacts"
-	envVcfaAddProvider              = "VCFA_ADD_PROVIDER"
-	envVcfaSkipTemplateWriting      = "VCFA_SKIP_TEMPLATE_WRITING"
-	envVcfaRemoveOrgVdcFromTemplate = "REMOVE_ORG_VDC_FROM_TEMPLATE"
-	envVcfaTestOrgUser              = "VCFA_TEST_ORG_USER"
+	testArtifactsDirectory       = "test-artifacts"
+	envVcfaAddProvider           = "VCFA_ADD_PROVIDER"
+	envVcfaSkipTemplateWriting   = "VCFA_SKIP_TEMPLATE_WRITING"
+	envVcfaRemoveOrgFromTemplate = "REMOVE_ORG_FROM_TEMPLATE"
+	envVcfaTestOrgUser           = "VCFA_TEST_ORG_USER"
 
 	// Warning message used for all tests
 	acceptanceTestsSkipped = "Acceptance tests skipped unless env 'TF_ACC' set"
@@ -408,15 +408,13 @@ func templateFill(tmpl string, inputData StringMap) string {
 	var populatedStr = buf.Bytes()
 
 	// This is a quick way of enabling an alternate testing mode:
-	// When REMOVE_ORG_VDC_FROM_TEMPLATE is set, the terraform
+	// When REMOVE_ORG_FROM_TEMPLATE is set, the terraform
 	// templates will be changed on-the-fly, to comment out the
-	// definitions of org and vdc. This will force the test to
-	// borrow org and vcfa from the provider.
-	if vcfaRemoveOrgVdcFromTemplate {
+	// definitions of org. This will force the test to
+	// borrow org from the provider.
+	if vcfaRemoveOrgFromTemplate {
 		reOrg := regexp.MustCompile(`\sorg\s*=`)
 		buf2 := reOrg.ReplaceAll(buf.Bytes(), []byte("# org = "))
-		reVdc := regexp.MustCompile(`\svdc\s*=`)
-		buf2 = reVdc.ReplaceAll(buf2, []byte("# vdc = "))
 		populatedStr = buf2
 	}
 	if TemplateWriting {
@@ -605,15 +603,15 @@ func setTestEnv() {
 // To get the version, we establish a new connection with the credentials
 // chosen for the current test.
 func getVcfaVersion(config TestConfig) (string, error) {
-	vcdClient, err := getTestVCFAFromJson(config)
-	if vcdClient == nil || err != nil {
+	tmClient, err := getTestVCFAFromJson(config)
+	if tmClient == nil || err != nil {
 		return "", err
 	}
-	err = ProviderAuthenticate(vcdClient, config.Provider.User, config.Provider.Password, config.Provider.Token, config.Provider.SysOrg, config.Provider.ApiToken, config.Provider.ApiTokenFile, config.Provider.ServiceAccountTokenFile)
+	err = ProviderAuthenticate(tmClient, config.Provider.User, config.Provider.Password, config.Provider.Token, config.Provider.SysOrg, config.Provider.ApiToken, config.Provider.ApiTokenFile, config.Provider.ServiceAccountTokenFile)
 	if err != nil {
 		return "", err
 	}
-	version, _, err := vcdClient.Client.GetVcdVersion()
+	version, _, err := tmClient.Client.GetVcdVersion()
 	if err != nil {
 		return "", err
 	}
@@ -727,17 +725,17 @@ func TestMain(m *testing.M) {
 	if skipLeftoversRemoval || vcfaShortTest {
 		os.Exit(exitCode)
 	}
-	govcdClient, err := getTestVCFAFromJson(testConfig)
+	tmClient, err := getTestVCFAFromJson(testConfig)
 	if err != nil {
 		fmt.Printf("error getting a govcd client: %s\n", err)
 		exitCode = 1
 	} else {
-		err = ProviderAuthenticate(govcdClient, testConfig.Provider.User, testConfig.Provider.Password, testConfig.Provider.Token, testConfig.Provider.SysOrg, testConfig.Provider.ApiToken, testConfig.Provider.ApiTokenFile, testConfig.Provider.ServiceAccountTokenFile)
+		err = ProviderAuthenticate(tmClient, testConfig.Provider.User, testConfig.Provider.Password, testConfig.Provider.Token, testConfig.Provider.SysOrg, testConfig.Provider.ApiToken, testConfig.Provider.ApiTokenFile, testConfig.Provider.ServiceAccountTokenFile)
 		if err != nil {
 			fmt.Printf("error authenticating provider: %s\n", err)
 			exitCode = 1
 		}
-		err := removeLeftovers(govcdClient, !silentLeftoversRemoval)
+		err := removeLeftovers(tmClient, !silentLeftoversRemoval)
 		if err != nil {
 			fmt.Printf("error during leftover removal: %s\n", err)
 			exitCode = 1
@@ -754,11 +752,11 @@ func getTestVCFAFromJson(testConfig TestConfig) (*govcd.VCDClient, error) {
 	if err != nil {
 		return &govcd.VCDClient{}, fmt.Errorf("could not parse Url: %s", err)
 	}
-	vcdClient := govcd.NewVCDClient(*configUrl, true,
+	tmClient := govcd.NewVCDClient(*configUrl, true,
 		govcd.WithHttpUserAgent(buildUserAgent("test", testConfig.Provider.SysOrg)),
 		govcd.WithAPIVersion(minVcfaApiVersion),
 	)
-	return vcdClient, nil
+	return tmClient, nil
 }
 
 // setBoolFlag binds a flag to a boolean variable (passed as pointer)

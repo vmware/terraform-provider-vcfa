@@ -37,13 +37,16 @@ The following arguments are supported:
 * `auto_trust_certificate` - (Required) Defines if the certificate of a given NSX Manager should
   automatically be added to trusted certificate store. **Note:** not having the certificate trusted
   will cause malfunction.
-* `network_provider_scope` - (Optional) The network provider scope is the tenant facing name for the
-  NSX Manager.
 
 ## Attribute Reference
 
 The following attributes are exported on this resource:
 
+* `active` - Indicates whether the NSX Manager can or cannot be used to manage networking constructs within VCFA.
+* `cluster_id` - Cluster ID of the NSX Manager. Each NSX installation has a single cluster.
+* `is_dedicated_for_classic_tenants` - Whether this NSX Manager is dedicated for legacy VRA-style tenants only and unable to
+  participate in modern constructs such as Regions and Zones. Legacy VRA-style is deprecated and this field exists for
+  the purpose of VRA backwards compatibility only
 * `status` - Status of NSX Manager. One of:
  * `PENDING` - Desired entity configuration has been received by system and is pending realization.
  * `CONFIGURING` - The system is in process of realizing the entity.

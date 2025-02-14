@@ -35,10 +35,22 @@ func datasourceVcfaNsxManager() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("URL of %s", labelVcfaNsxManager),
 			},
-			"network_provider_scope": {
+			"active": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: fmt.Sprintf("Indicates whether the %s can or cannot be used to manage networking constructs within VCFA", labelVcfaNsxManager),
+			},
+			"cluster_id": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: fmt.Sprintf("Network Provider Scope for %s", labelVcfaNsxManager),
+				Description: fmt.Sprintf("Cluster ID of the %s. Each NSX installation has a single cluster. This is not a VCFA URN", labelVcfaNsxManager),
+			},
+			"is_dedicated_for_classic_tenants": {
+				Type:     schema.TypeBool,
+				Computed: true,
+				Description: fmt.Sprintf("Whether this %s is dedicated for legacy VRA-style tenants only and unable to "+
+					"participate in modern constructs such as Regions and Zones. Legacy VRA-style is deprecated and this field exists for "+
+					"the purpose of VRA backwards compatibility only", labelVcfaNsxManager),
 			},
 			"status": {
 				Type:        schema.TypeString,
@@ -55,10 +67,10 @@ func datasourceVcfaNsxManager() *schema.Resource {
 }
 
 func datasourceVcfaNsxManagerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 	c := dsReadConfig[*govcd.NsxtManagerOpenApi, types.NsxtManagerOpenApi]{
 		entityLabel:    labelVcfaNsxManager,
-		getEntityFunc:  vcdClient.GetNsxtManagerOpenApiByName,
+		getEntityFunc:  tmClient.GetNsxtManagerOpenApiByName,
 		stateStoreFunc: setNsxManagerData,
 	}
 	return readDatasource(ctx, d, meta, c)

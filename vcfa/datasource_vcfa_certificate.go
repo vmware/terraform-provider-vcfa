@@ -3,6 +3,7 @@ package vcfa
 import (
 	"context"
 	"fmt"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
@@ -49,10 +50,10 @@ func datasourceVcfaCertificate() *schema.Resource {
 }
 
 func datasourceVcfaCertificateRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 	alias := d.Get("alias").(string)
 
-	org, err := vcdClient.GetTmOrgById(d.Get("org_id").(string))
+	org, err := tmClient.GetTmOrgById(d.Get("org_id").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -61,16 +62,16 @@ func datasourceVcfaCertificateRead(_ context.Context, d *schema.ResourceData, me
 	var certificate *govcd.Certificate
 	if isSysOrg(org) {
 		if alias != "" {
-			certificate, err = vcdClient.Client.GetCertificateFromLibraryByName(alias)
+			certificate, err = tmClient.Client.GetCertificateFromLibraryByName(alias)
 		} else if d.Get("id").(string) != "" {
-			certificate, err = vcdClient.Client.GetCertificateFromLibraryById(d.Get("id").(string))
+			certificate, err = tmClient.Client.GetCertificateFromLibraryById(d.Get("id").(string))
 		} else {
 			return diag.Errorf("Id or Alias value is missing %s", err)
 		}
 	} else {
 		// TODO: TM: Implement these methods in TmOrg
 		var adminOrg *govcd.AdminOrg
-		adminOrg, err = vcdClient.GetAdminOrgById(org.TmOrg.ID)
+		adminOrg, err = tmClient.GetAdminOrgById(org.TmOrg.ID)
 		if err != nil {
 			return diag.FromErr(err)
 		}

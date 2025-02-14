@@ -1,0 +1,1 @@
+- **New Data Source:** `vcfa_region_vm_class` to read Region VM Classes [GH-31]

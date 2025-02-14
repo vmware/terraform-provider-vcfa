@@ -60,10 +60,10 @@ func resourceVcfaOrg() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("%s owner Name", labelVcfaOrg),
 			},
-			"org_vdc_count": {
+			"org_region_quota_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: fmt.Sprintf("Number of VDCs belonging to the %s", labelVcfaOrg),
+				Description: fmt.Sprintf("Number of %ss belonging to the %s", labelVcfaOrgRegionQuota, labelVcfaOrg),
 			},
 			"catalog_count": {
 				Type:        schema.TypeInt,
@@ -105,23 +105,23 @@ func resourceVcfaOrg() *schema.Resource {
 }
 
 func resourceVcfaOrgCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.TmOrg, types.TmOrg]{
 		entityLabel:      labelVcfaOrg,
 		getTypeFunc:      getOrgType,
 		stateStoreFunc:   setOrgData,
-		createFunc:       vcdClient.CreateTmOrg,
+		createFunc:       tmClient.CreateTmOrg,
 		resourceReadFunc: resourceVcfaOrgRead,
 	}
 	return createResource(ctx, d, meta, c)
 }
 
 func resourceVcfaOrgUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.TmOrg, types.TmOrg]{
 		entityLabel:      labelVcfaOrg,
 		getTypeFunc:      getOrgType,
-		getEntityFunc:    vcdClient.GetTmOrgById,
+		getEntityFunc:    tmClient.GetTmOrgById,
 		resourceReadFunc: resourceVcfaOrgRead,
 
 		preUpdateHooks: []outerEntityHookInnerEntityType[*govcd.TmOrg, *types.TmOrg]{
@@ -134,21 +134,21 @@ func resourceVcfaOrgUpdate(ctx context.Context, d *schema.ResourceData, meta int
 }
 
 func resourceVcfaOrgRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 	c := crudConfig[*govcd.TmOrg, types.TmOrg]{
 		entityLabel:    labelVcfaOrg,
-		getEntityFunc:  vcdClient.GetTmOrgById,
+		getEntityFunc:  tmClient.GetTmOrgById,
 		stateStoreFunc: setOrgData,
 	}
 	return readResource(ctx, d, meta, c)
 }
 
 func resourceVcfaOrgDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
 	c := crudConfig[*govcd.TmOrg, types.TmOrg]{
 		entityLabel:    labelVcfaOrg,
-		getEntityFunc:  vcdClient.GetTmOrgById,
+		getEntityFunc:  tmClient.GetTmOrgById,
 		preDeleteHooks: []outerEntityHook[*govcd.TmOrg]{disableTmOrg}, // Org must be disabled before deletion
 	}
 
@@ -186,9 +186,9 @@ func validateRenameOrgDisabled(d *schema.ResourceData, oldCfg *govcd.TmOrg, newC
 }
 
 func resourceVcfaOrgImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	vcdClient := meta.(*VCDClient)
+	tmClient := meta.(ClientContainer).tmClient
 
-	o, err := vcdClient.GetTmOrgByName(d.Id())
+	o, err := tmClient.GetTmOrgByName(d.Id())
 	if err != nil {
 		return nil, fmt.Errorf("error getting Org: %s", err)
 	}
@@ -229,7 +229,7 @@ func setOrgData(_ *VCDClient, d *schema.ResourceData, org *govcd.TmOrg) error {
 	}
 	dSet(d, "managed_by_id", managedById)
 	dSet(d, "managed_by_name", managedByName)
-	dSet(d, "org_vdc_count", org.TmOrg.OrgVdcCount)
+	dSet(d, "org_region_quota_count", org.TmOrg.OrgVdcCount)
 	dSet(d, "catalog_count", org.TmOrg.CatalogCount)
 	dSet(d, "vapp_count", org.TmOrg.VappCount)
 	dSet(d, "running_vm_count", org.TmOrg.RunningVMCount)
