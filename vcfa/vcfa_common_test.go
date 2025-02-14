@@ -38,7 +38,7 @@ resource "vcfa_vcenter" "vc" {
   url                        = "` + testConfig.Tm.VcenterUrl + `"
   auto_trust_certificate     = true
   refresh_vcenter_on_create  = true
-  refresh_policies_on_create = false
+  refresh_policies_on_create = true
   username                   = "` + testConfig.Tm.VcenterUsername + `"
   password                   = "` + testConfig.Tm.VcenterPassword + `"
   is_enabled                 = true
