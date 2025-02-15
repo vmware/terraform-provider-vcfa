@@ -240,7 +240,6 @@ func resourceVcfaVcenterRead(ctx context.Context, d *schema.ResourceData, meta i
 
 	shouldRefresh := d.Get("refresh_vcenter_on_read").(bool)
 	shouldRefreshPolicies := d.Get("refresh_policies_on_read").(bool)
-	shouldWaitForListenerStatus := true
 
 	// There is no way to detect if a resource is 'tainted' ('d.State().Tainted' is not reliable),
 	// but if a resource is not connected and is not enabled - there is no point in refreshing
@@ -250,7 +249,6 @@ func resourceVcfaVcenterRead(ctx context.Context, d *schema.ResourceData, meta i
 	if !vc.VSphereVCenter.IsEnabled && !vc.VSphereVCenter.IsConnected {
 		shouldRefresh = false
 		shouldRefreshPolicies = false
-		shouldWaitForListenerStatus = false
 	}
 	c := crudConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
 		entityLabel: labelVcfaVirtualCenter,
@@ -258,12 +256,6 @@ func resourceVcfaVcenterRead(ctx context.Context, d *schema.ResourceData, meta i
 		getEntityFunc:  fakeGetById, // TODO: TM: remove this function
 		stateStoreFunc: setVcenterData,
 		readHooks: []outerEntityHook[*govcd.VCenter]{
-			// TODO: TM ensure that the vCenter listener state is "CONNECTED"  before triggering
-			// refresh as it will fail otherwise. At the moment it has a delay before it becomes
-			// CONNECTED after creation task succeeds. It should not be needed once vCenter creation
-			// task ensures that the listener is connected.
-			shouldWaitForListenerStatusConnected(shouldWaitForListenerStatus),
-
 			refreshVcenter(shouldRefresh),               // vCenter read can optionally trigger "refresh" operation
 			refreshVcenterPolicy(shouldRefreshPolicies), // vCenter read can optionally trigger "refresh policies" operation
 		},

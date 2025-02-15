@@ -124,8 +124,8 @@ resource "vcfa_vcenter" "test" {
   name                     = "{{.Testname}}"
   url                      = "{{.VcenterUrl}}"
   auto_trust_certificate   = true
-  refresh_vcenter_on_read  = true
-  refresh_policies_on_read = true
+  refresh_vcenter_on_read  = false
+  refresh_policies_on_read = false
   username                 = "{{.VcenterUsername}}"
   password                 = "{{.VcenterPassword}}"
   is_enabled               = true

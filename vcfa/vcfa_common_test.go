@@ -37,7 +37,7 @@ resource "vcfa_vcenter" "vc" {
   name                     = "` + t.Name() + `"
   url                      = "` + testConfig.Tm.VcenterUrl + `"
   auto_trust_certificate   = true
-  refresh_vcenter_on_read  = true
+  refresh_vcenter_on_read  = false
   refresh_policies_on_read = false
   username                 = "` + testConfig.Tm.VcenterUsername + `"
   password                 = "` + testConfig.Tm.VcenterPassword + `"
