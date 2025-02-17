@@ -43,6 +43,9 @@ type crudConfig[O updateDeleter[O, I], I any] struct {
 	// preCreateHooks will be executed before the entity is created
 	preCreateHooks []schemaHook
 
+	// postCreateHooks that will be executed after the entity is created, but before it is stored in state
+	postCreateHooks []outerEntityHook[O]
+
 	// preUpdateHooks will be executed before submitting the data for update
 	preUpdateHooks []outerEntityHookInnerEntityType[O, *I]
 
@@ -124,6 +127,11 @@ func createResource[O updateDeleter[O, I], I any](ctx context.Context, d *schema
 		if err != nil {
 			return diag.Errorf("error creating %s: %s", c.entityLabel, err)
 		}
+	}
+
+	err = execEntityHook(createdEntity, c.postCreateHooks)
+	if err != nil {
+		return diag.Errorf("error executing post-create %s hooks: %s", c.entityLabel, err)
 	}
 
 	err = c.stateStoreFunc(tmClient, d, createdEntity)
