@@ -131,7 +131,7 @@ func createResource[O updateDeleter[O, I], I any](ctx context.Context, d *schema
 
 	err = execEntityHook(createdEntity, c.postCreateHooks)
 	if err != nil {
-		return diag.Errorf("error executing read %s hooks: %s", c.entityLabel, err)
+		return diag.Errorf("error executing post-create %s hooks: %s", c.entityLabel, err)
 	}
 
 	err = c.stateStoreFunc(tmClient, d, createdEntity)
