@@ -50,8 +50,6 @@ func TestAccVcfaOrgLdap(t *testing.T) {
 	ldapDatasourceDef := "data.vcfa_org_ldap.ldap-ds"
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
-		// TODO: TM: Check LDAP is destroyed before Organization is
-		// CheckDestroy:      testAccCheckOrgLdapDestroy(ldapResourceDef),cd .
 		Steps: []resource.TestStep{
 			{
 				Config: configText,

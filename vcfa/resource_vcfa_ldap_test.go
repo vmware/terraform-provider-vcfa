@@ -49,8 +49,7 @@ func TestAccVcfaSystemLdap(t *testing.T) {
 	ldapDatasourceDef := "data.vcfa_ldap.ldap-ds"
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
-		// TODO: TM: Check LDAP is destroyed before Organization is
-		// CheckDestroy:      testAccCheckOrgLdapDestroy(ldapResourceDef),
+		CheckDestroy:      testAccCheckLdapDestroy(),
 		Steps: []resource.TestStep{
 			{
 				Config: configText,
@@ -95,6 +94,20 @@ func TestAccVcfaSystemLdap(t *testing.T) {
 		},
 	})
 	postTestChecks(t)
+}
+
+func testAccCheckLdapDestroy() resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		tmClient := testAccProvider.Meta().(ClientContainer).tmClient
+		config, err := tmClient.TmGetLdapConfiguration()
+		if err != nil {
+			return fmt.Errorf("could not retrieve LDAP config: %s", err)
+		}
+		if config.HostName != "" || config.SearchBase != "" {
+			return fmt.Errorf("LDAP config still exists")
+		}
+		return nil
+	}
 }
 
 const testAccVcfaLdap = `
