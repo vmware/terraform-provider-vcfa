@@ -28,7 +28,6 @@ func TestAccVcfaSystemLdap(t *testing.T) {
 		"LdapPassword":              testConfig.Ldap.Password,
 		"LdapType":                  testConfig.Ldap.Type,
 		"LdapBaseDistinguishedName": testConfig.Ldap.BaseDistinguishedName,
-		"Password":                  testConfig.Tm.VcenterPassword,
 		"Tags":                      "ldap",
 	}
 	testParamsNotEmpty(t, params)
