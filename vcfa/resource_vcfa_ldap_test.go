@@ -82,7 +82,7 @@ func TestAccVcfaSystemLdap(t *testing.T) {
 			{
 				Config: configTextDS,
 				Check: resource.ComposeTestCheckFunc(
-					resourceFieldsEqual(ldapResourceDef, ldapDatasourceDef, []string{"%", "auto_trust_certificate"}),
+					resourceFieldsEqual(ldapResourceDef, ldapDatasourceDef, []string{"%", "auto_trust_certificate", "password"}),
 				),
 			},
 			{
