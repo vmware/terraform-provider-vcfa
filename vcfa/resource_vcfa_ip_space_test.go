@@ -3,6 +3,8 @@
 package vcfa
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"testing"
 
@@ -17,10 +19,11 @@ func TestAccVcfaIpSpace(t *testing.T) {
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
 	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
 	var params = StringMap{
-		"Testname":   t.Name(),
-		"VcenterRef": vCenterHclRef,
-		"RegionId":   fmt.Sprintf("%s.id", regionHclRef),
-		"RegionName": t.Name(),
+		"Testname":      t.Name(),
+		"VcenterRef":    vCenterHclRef,
+		"RegionId":      fmt.Sprintf("%s.id", regionHclRef),
+		"RegionName":    t.Name(),
+		"IpScopePrefix": hashAndTakeFirstSix(testConfig.Tm.VcenterUrl),
 
 		"Tags": "tm",
 	}
@@ -69,14 +72,14 @@ func TestAccVcfaIpSpace(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_ip_space.test", "default_quota_max_ip_count", "1"),
 					resource.TestCheckResourceAttr("vcfa_ip_space.test", "internal_scope.#", "3"),
 					resource.TestCheckTypeSetElemNestedAttrs("vcfa_ip_space.test", "internal_scope.*", map[string]string{
-						"name": "scope1",
+						"name": params["IpScopePrefix"].(string) + "-1",
 						"cidr": "10.0.0.0/24",
 					}),
 					resource.TestCheckTypeSetElemNestedAttrs("vcfa_ip_space.test", "internal_scope.*", map[string]string{
 						"cidr": "11.0.0.0/26",
 					}),
 					resource.TestCheckTypeSetElemNestedAttrs("vcfa_ip_space.test", "internal_scope.*", map[string]string{
-						"name": "scope3",
+						"name": params["IpScopePrefix"].(string) + "-3",
 						"cidr": "12.0.0.0/27",
 					}),
 				),
@@ -95,7 +98,7 @@ func TestAccVcfaIpSpace(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_ip_space.test", "default_quota_max_ip_count", "-1"),
 					resource.TestCheckResourceAttr("vcfa_ip_space.test", "internal_scope.#", "1"),
 					resource.TestCheckTypeSetElemNestedAttrs("vcfa_ip_space.test", "internal_scope.*", map[string]string{
-						"name": "scope3",
+						"name": params["IpScopePrefix"].(string) + "-3",
 						"cidr": "12.0.0.0/27",
 					}),
 				),
@@ -129,7 +132,7 @@ resource "vcfa_ip_space" "test" {
   default_quota_max_ip_count    = 1
 
   internal_scope {
-    name = "scope1"
+    name = "{{.IpScopePrefix}}-1"
     cidr = "10.0.0.0/24"
   }
 
@@ -138,7 +141,7 @@ resource "vcfa_ip_space" "test" {
   }
 
   internal_scope {
-    name = "scope3"
+    name = "{{.IpScopePrefix}}-3"
     cidr = "12.0.0.0/27"
   }
 }
@@ -155,7 +158,7 @@ resource "vcfa_ip_space" "test" {
   default_quota_max_ip_count    = -1
 
   internal_scope {
-    name = "scope3"
+    name = "{{.IpScopePrefix}}-3"
     cidr = "12.0.0.0/27"
   }
 }
@@ -169,3 +172,12 @@ data "vcfa_ip_space" "test" {
   depends_on = [ vcfa_ip_space.test ]
 }
 `
+
+func hashAndTakeFirstSix(str string) string {
+	hash := sha256.Sum256([]byte(str))
+	hashStr := hex.EncodeToString(hash[:])
+	if len(hashStr) < 6 {
+		hashStr = fmt.Sprintf("%06s", hashStr)
+	}
+	return hashStr[:6]
+}
