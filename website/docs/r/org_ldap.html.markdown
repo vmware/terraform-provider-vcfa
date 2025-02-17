@@ -10,7 +10,7 @@ description: |-
 # vcfa\_org\_ldap
 
 Provides a VMware Cloud Foundation Automation LDAP resource for Organizations.
-This can be used to create, delete, and update LDAP configuration for an organization.
+This can be used to create, update and delete LDAP configuration for an Organization.
 
 -> To configure LDAP for the Provider (System) organization, please use [`vcfa_ldap` resource](/providers/vmware/vcfa/latest/docs/resources/ldap) instead
 
