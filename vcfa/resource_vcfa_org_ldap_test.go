@@ -13,6 +13,7 @@ import (
 // TestAccVcfaOrgLdap tests LDAP configuration against an LDAP server with the given configuration
 func TestAccVcfaOrgLdap(t *testing.T) {
 	preTestChecks(t)
+	skipIfNotSysAdmin(t)
 
 	if testConfig.Ldap.Host == "" || testConfig.Ldap.Username == "" || testConfig.Ldap.Password == "" || testConfig.Ldap.Type == "" ||
 		testConfig.Ldap.Port == 0 || testConfig.Ldap.BaseDistinguishedName == "" {
