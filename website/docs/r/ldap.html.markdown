@@ -68,7 +68,8 @@ resource "vcfa_ldap" "global-ldap" {
 
 The following arguments are supported:
 
-* `auto_trust_certificate` - (Required) Defines if the LDAP certificate should automatically be trusted, only makes sense if `is_ssl=true`)
+* `auto_trust_certificate` - (Required) Defines if the LDAP certificate should automatically be trusted, only makes sense if `is_ssl=true`).
+  The certificate is not removed by Terraform when this resource is destroyed
 * `server` - (Required) The IP address or host name of the server providing the LDAP service
 * `port` - (Required) Port number of the LDAP server (usually 389 for LDAP, 636 for LDAPS)
 * `connector_type` - (Required) Type of connector: one of `OPEN_LDAP`, `ACTIVE_DIRECTORY`

@@ -235,20 +235,16 @@ func resourceVcfaOrgLdap() *schema.Resource {
 }
 
 func resourceVcfaOrgLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
-	tmClient := meta.(ClientContainer).tmClient
-	if !tmClient.Client.IsSysAdmin {
-		return diag.Errorf("resource vcfa_org_ldap requires System administrator privileges")
-	}
-	orgId := d.Get("org_id").(string)
-
-	org, err := tmClient.GetTmOrgById(orgId)
-	if err != nil {
-		return diag.Errorf("[Org LDAP %s] error searching for Org %s: %s", origin, orgId, err)
-	}
-
 	settings, err := fillOrgLdapSettings(d)
 	if err != nil {
 		return diag.Errorf("[Org LDAP %s] error collecting settings values: %s", origin, err)
+	}
+
+	tmClient := meta.(ClientContainer).tmClient
+	orgId := d.Get("org_id").(string)
+	org, err := tmClient.GetTmOrgById(orgId)
+	if err != nil {
+		return diag.Errorf("[Org LDAP %s] error searching for Org %s: %s", origin, orgId, err)
 	}
 
 	_, err = org.LdapConfigure(settings, d.Get("auto_trust_certificate").(bool))
@@ -267,9 +263,6 @@ func resourceVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta i
 
 func genericVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
-	if !tmClient.Client.IsSysAdmin {
-		return diag.Errorf("resource vcfa_org_ldap requires System administrator privileges")
-	}
 	orgId := d.Get("org_id").(string)
 
 	tmOrg, err := tmClient.GetTmOrgById(orgId)
@@ -344,9 +337,6 @@ func resourceVcfaOrgLdapUpdate(ctx context.Context, d *schema.ResourceData, meta
 
 func resourceVcfaOrgLdapDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
-	if !tmClient.Client.IsSysAdmin {
-		return diag.Errorf("resource vcfa_org_ldap requires System administrator privileges")
-	}
 	orgId := d.Get("org_id").(string)
 
 	tmOrg, err := tmClient.GetTmOrgById(orgId)
