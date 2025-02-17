@@ -157,7 +157,7 @@ func setupProject(t *testing.T, projectName string) func() {
 	projectCfg := &ccitypes.Project{
 		TypeMeta: v1.TypeMeta{
 			Kind:       ccitypes.ProjectKind,
-			APIVersion: ccitypes.ProjectCciAPI + "/" + ccitypes.ApiVersion,
+			APIVersion: ccitypes.ProjectAPI + "/" + ccitypes.ProjectVersion,
 		},
 		ObjectMeta: v1.ObjectMeta{
 			Name: projectName,
@@ -167,7 +167,7 @@ func setupProject(t *testing.T, projectName string) func() {
 		},
 	}
 
-	newProjectAddr, err := tmClient.Client.GetEntityUrl(ccitypes.SupervisorProjectsURL)
+	newProjectAddr, err := tmClient.Client.GetEntityUrl(ccitypes.ProjectsURL)
 	if err != nil {
 		t.Fatalf("error creating URL for new project")
 	}
@@ -181,7 +181,7 @@ func setupProject(t *testing.T, projectName string) func() {
 
 	// defer project cleanup
 	return func() {
-		projectAddr, err := tmClient.Client.GetEntityUrl(ccitypes.SupervisorProjectsURL, "/", projectCfg.Name)
+		projectAddr, err := tmClient.Client.GetEntityUrl(ccitypes.ProjectsURL, "/", projectCfg.Name)
 		if err != nil {
 			t.Fatalf("error getting Project url: %s", err)
 		}
