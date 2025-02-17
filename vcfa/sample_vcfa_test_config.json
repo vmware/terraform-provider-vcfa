@@ -23,12 +23,25 @@
     "//": "Disabled by default if useConnectionCache is not set",
     "useConnectionCache": true
   },
+  "org": {
+    "//": "existing org configuration for tenant mode",
+    "name": "demo",
+    "user": "demo",
+    "password": "CHANGE-ME"
+},
+"cci": {
+    "//": "existing entity configuration that are available in the above defined Org",
+    "region": "terraform-demo",
+    "vpc": "terraform-demo-Default-VPC",
+    "storagePolicy": "vSAN Default Storage Policy",
+    "supervisorZone": "vcfa-gen-wl-vc08-cl1-zone1"
+},
   "tm": {
     "org": "tf-test",
     "createRegion": true,
     "region": "one-region",
     "storageClass": "vSAN Default Storage Policy",
-    "regionVmClasses": ["best-effort-2xlarge", "best-effort-4xlarge"],
+    "vdc": "one-vdc",
     "contentLibrary": "content-library-one",
     "//": "Library is named 'terraform-provider-vcfa-publisher-cl' in below vCenter instance",
     "subscriptionContentLibraryUrl": "https://10.43.41.22/cls/vcsp/lib/608ca073-7d94-4544-9d30-bbae455baa4d/lib.json",
