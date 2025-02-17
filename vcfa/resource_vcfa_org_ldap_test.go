@@ -51,7 +51,7 @@ func TestAccVcfaOrgLdap(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
 		// TODO: TM: Check LDAP is destroyed before Organization is
-		// CheckDestroy:      testAccCheckOrgLdapDestroy(ldapResourceDef),
+		// CheckDestroy:      testAccCheckOrgLdapDestroy(ldapResourceDef),cd .
 		Steps: []resource.TestStep{
 			{
 				Config: configText,
@@ -88,14 +88,15 @@ func TestAccVcfaOrgLdap(t *testing.T) {
 				Config: configTextDS,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckOrgLdapExists(ldapResourceDef),
-					resourceFieldsEqual(ldapResourceDef, ldapDatasourceDef, []string{}),
+					resourceFieldsEqual(ldapResourceDef, ldapDatasourceDef, []string{"%", "auto_trust_certificate"}),
 				),
 			},
 			{
-				ResourceName:      ldapResourceDef,
-				ImportState:       true,
-				ImportStateVerify: true,
-				ImportStateIdFunc: func(state *terraform.State) (string, error) { return testConfig.Tm.Org, nil },
+				ResourceName:            ldapResourceDef,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateIdFunc:       func(state *terraform.State) (string, error) { return testConfig.Tm.Org, nil },
+				ImportStateVerifyIgnore: []string{"auto_trust_certificate"},
 			},
 		},
 	})

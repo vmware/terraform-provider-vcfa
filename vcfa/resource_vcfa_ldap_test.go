@@ -82,15 +82,15 @@ func TestAccVcfaSystemLdap(t *testing.T) {
 			{
 				Config: configTextDS,
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckOrgLdapExists(ldapResourceDef),
-					resourceFieldsEqual(ldapResourceDef, ldapDatasourceDef, []string{}),
+					resourceFieldsEqual(ldapResourceDef, ldapDatasourceDef, []string{"%", "auto_trust_certificate"}),
 				),
 			},
 			{
-				ResourceName:      ldapResourceDef,
-				ImportState:       true,
-				ImportStateVerify: true,
-				ImportStateIdFunc: func(state *terraform.State) (string, error) { return testConfig.Tm.Org, nil },
+				ResourceName:            ldapResourceDef,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateIdFunc:       func(state *terraform.State) (string, error) { return testConfig.Tm.Org, nil },
+				ImportStateVerifyIgnore: []string{"auto_trust_certificate"},
 			},
 		},
 	})
@@ -132,12 +132,12 @@ resource "vcfa_ldap" "ldap" {
   
   lifecycle {
     # password value does not get returned by GET
-    ignore_changes = [custom_settings[0].password]
+    ignore_changes = [password]
   }
 }
 `
 
-const testAccVcfaLdapDS = testAccVcfaOrgLdap + `
+const testAccVcfaLdapDS = testAccVcfaLdap + `
 data "vcfa_ldap" "ldap-ds" {
   depends_on = [vcfa_ldap.ldap]
 }

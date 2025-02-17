@@ -94,14 +94,19 @@ func resourceVcfaLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceData,
 func resourceVcfaLdapCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	return resourceVcfaLdapCreateOrUpdate(ctx, d, meta)
 }
-func resourceVcfaLdapRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+
+func resourceVcfaLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	return genericVcfaLdapRead(ctx, d, meta, "resource")
+}
+
+func genericVcfaLdapRead(_ context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 	config, err := tmClient.TmGetLdapConfiguration()
 	if err != nil {
 		return diag.Errorf("error getting LDAP settings: %s", err)
 	}
 
-	err = saveTmLdapSettingsInState(d, config)
+	err = saveTmLdapSettingsInState(d, config, origin)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -138,6 +143,11 @@ func getTmLdapSettingsType(d *schema.ResourceData) (*types.TmLdapSettings, error
 		Password:                d.Get("password").(string),
 		AuthenticationMechanism: "SIMPLE", // Only SIMPLE is allowed in UI
 		ConnectorType:           d.Get("connector_type").(string),
+
+		// Same values as UI:
+		PageSize:      200,
+		MaxResults:    200,
+		MaxUserGroups: 1015,
 	}
 
 	rawUserAttributes := d.Get("user_attributes").([]interface{})[0].(map[string]interface{}) // Guaranteed as it's Required
@@ -170,7 +180,7 @@ func getTmLdapSettingsType(d *schema.ResourceData) (*types.TmLdapSettings, error
 	return settings, nil
 }
 
-func saveTmLdapSettingsInState(d *schema.ResourceData, config *types.TmLdapSettings) error {
+func saveTmLdapSettingsInState(d *schema.ResourceData, config *types.TmLdapSettings, origin string) error {
 	d.SetId(systemLdapId) // We don't need an ID
 	dSet(d, "server", config.HostName)
 	dSet(d, "port", config.Port)
@@ -178,7 +188,11 @@ func saveTmLdapSettingsInState(d *schema.ResourceData, config *types.TmLdapSetti
 	dSet(d, "connector_type", config.ConnectorType)
 	dSet(d, "is_ssl", config.IsSsl)
 	dSet(d, "username", config.UserName)
-	// dSet(d, "password", config.Password) // Password is never returned
+	if origin == "resource" {
+		// The password field does not exist in data source as it's never returned.
+		// Here we set it explicitly to be reminded of that fact, but only in the resource.
+		dSet(d, "password", "")
+	}
 	if config.CustomUiButtonLabel != nil {
 		dSet(d, "custom_ui_button_label", *config.CustomUiButtonLabel)
 	}

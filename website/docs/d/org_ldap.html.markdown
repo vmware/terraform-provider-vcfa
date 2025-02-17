@@ -33,4 +33,4 @@ The following arguments are supported:
 ## Attribute Reference
 
 All the arguments and attributes defined in
-[`vcfa_org_ldap`](/providers/vmware/vcfa/latest/docs/resources/org_ldap) resource are available.
+[`vcfa_org_ldap`](/providers/vmware/vcfa/latest/docs/resources/org_ldap) resource are available, except `password`.

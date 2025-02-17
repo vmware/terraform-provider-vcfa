@@ -26,4 +26,4 @@ No arguments are required as the System LDAP configuration is unique per VCFA.
 ## Attribute Reference
 
 All the arguments and attributes defined in
-[`vcfa_ldap`](/providers/vmware/vcfa/latest/docs/resources/ldap) resource are available.
+[`vcfa_ldap`](/providers/vmware/vcfa/latest/docs/resources/ldap) resource are available, except `password`.

@@ -1,13 +1,14 @@
 package vcfa
 
 import (
+	"context"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func datasourceVcfaLdap() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: resourceVcfaLdapRead,
+		ReadContext: datasourceVcfaLdapRead,
 		Schema: map[string]*schema.Schema{
 			"server": { // HostName
 				Type:        schema.TypeString,
@@ -25,10 +26,9 @@ func datasourceVcfaLdap() *schema.Resource {
 				Description: "LDAP search base",
 			},
 			"connector_type": { // ConnectorType
-				Type:         schema.TypeString,
-				Computed:     true,
-				Description:  "Type of connector: one of OPEN_LDAP, ACTIVE_DIRECTORY",
-				ValidateFunc: validation.StringInSlice([]string{"OPEN_LDAP", "ACTIVE_DIRECTORY"}, false),
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Type of connector: one of OPEN_LDAP, ACTIVE_DIRECTORY",
 			},
 			"is_ssl": { // IsSsl
 				Type:        schema.TypeBool,
@@ -50,4 +50,8 @@ func datasourceVcfaLdap() *schema.Resource {
 			},
 		},
 	}
+}
+
+func datasourceVcfaLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	return genericVcfaLdapRead(ctx, d, meta, "datasource")
 }

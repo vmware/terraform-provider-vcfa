@@ -14,9 +14,15 @@ import (
 
 var ldapUserAttributes = func(isDatasource bool) *schema.Schema {
 	return &schema.Schema{
-		Type:        schema.TypeList,
-		Required:    true,
-		MaxItems:    1,
+		Type:     schema.TypeList,
+		Required: !isDatasource,
+		Computed: isDatasource,
+		MaxItems: func() int {
+			if isDatasource {
+				return 0
+			}
+			return 1
+		}(),
 		Description: "LDAP user attributes",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
@@ -86,9 +92,15 @@ var ldapUserAttributes = func(isDatasource bool) *schema.Schema {
 }
 var ldapGroupAttributes = func(isDatasource bool) *schema.Schema {
 	return &schema.Schema{
-		Type:        schema.TypeList,
-		Required:    true,
-		MaxItems:    1,
+		Type:     schema.TypeList,
+		Required: !isDatasource,
+		Computed: isDatasource,
+		MaxItems: func() int {
+			if isDatasource {
+				return 0
+			}
+			return 1
+		}(),
 		Description: "Group settings when `ldap_mode` is CUSTOM",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
@@ -107,6 +119,7 @@ var ldapGroupAttributes = func(isDatasource bool) *schema.Schema {
 				"name": { // GroupName
 					Type:        schema.TypeString,
 					Required:    !isDatasource,
+					Computed:    isDatasource,
 					Description: "LDAP attribute to use for the group name. For example, cn",
 				},
 				"membership": { // Membership
@@ -289,8 +302,6 @@ func genericVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta in
 			"base_distinguished_name": config.CustomOrgLdapSettings.SearchBase,
 			"is_ssl":                  config.CustomOrgLdapSettings.IsSsl,
 			"username":                config.CustomOrgLdapSettings.Username,
-			// the password field is never returned by GET. Here we set it explicitly to be reminded of that fact
-			"password": "",
 			"user_attributes": []map[string]interface{}{
 				{
 					"object_class":                config.CustomOrgLdapSettings.UserAttributes.ObjectClass,
@@ -315,6 +326,12 @@ func genericVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta in
 					"group_back_link_identifier":  config.CustomOrgLdapSettings.GroupAttributes.BackLinkIdentifier,
 				},
 			},
+		}
+
+		if origin == "resource" {
+			// The password field does not exist in data source as it's never returned.
+			// Here we set it explicitly to be reminded of that fact, only for the resource.
+			customSettings["password"] = ""
 		}
 		err = d.Set("custom_settings", []map[string]interface{}{customSettings})
 		if err != nil {
