@@ -1,2 +1,4 @@
-- **New Resource:** `vcfa_org_ldap` to manage LDAP settings of Organizations [GH-26]
-- **New Data Source:** `vcfa_org_ldap` to read LDAP settings of Organizations [GH-26]
+- **New Resource:** `vcfa_org_ldap` to manage LDAP settings of Organizations [GH-26, GH-28]
+- **New Data Source:** `vcfa_org_ldap` to read LDAP settings of Organizations [GH-26, GH-28]
+- **New Resource:** `vcfa_ldap` to manage global System LDAP settings [GH-28]
+- **New Data Source:** `vcfa_ldap` to read global System LDAP settings [GH-28]

@@ -146,11 +146,6 @@ func datasourceVcfaOrgLdap() *schema.Resource {
 							Computed:    true,
 							Description: "Port number for LDAP service",
 						},
-						"authentication_method": { // AuthenticationMechanism
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: "authentication method: one of SIMPLE, MD5DIGEST, NTLM",
-						},
 						"connector_type": { // ConnectorType
 							Type:        schema.TypeString,
 							Computed:    true,
@@ -170,11 +165,6 @@ func datasourceVcfaOrgLdap() *schema.Resource {
 							Type:        schema.TypeString,
 							Computed:    true,
 							Description: `Username to use when logging in to LDAP, specified using LDAP attribute=value pairs (for example: cn="ldap-admin", c="example", dc="com")`,
-						},
-						"password": { // Password
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: `Password for the user identified by UserName. This value is never returned by GET. It is inspected on create and modify. On modify, the absence of this element indicates that the password should not be changed`,
 						},
 						"user_attributes":  datasourceLdapUserAttributes,
 						"group_attributes": datasourceLdapGroupAttributes,
