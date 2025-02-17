@@ -121,7 +121,7 @@ resource "vcfa_ldap" "ldap" {
   connector_type          = "{{.LdapType}}"
 
   user_attributes {
-    object_class                = "user"
+	object_class                = "user"
 	unique_identifier           = "objectGuid"
 	display_name                = "displayName"
 	username                    = "sAMAccountName"
