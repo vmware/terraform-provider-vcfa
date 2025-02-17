@@ -6,7 +6,7 @@ require (
 	github.com/hashicorp/go-cty v1.4.1-0.20200414143053-d3edf31b6320
 	github.com/hashicorp/go-version v1.7.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.35.0
-	github.com/vmware/go-vcloud-director/v3 v3.0.0-alpha.27
+	github.com/vmware/go-vcloud-director/v3 v3.0.0-alpha.28
 )
 
 require (
@@ -67,4 +67,4 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-replace github.com/vmware/go-vcloud-director/v3 => /Users/abarreiro/Documents/Development/go-vcloud-director
+replace github.com/vmware/go-vcloud-director/v3 => github.com/adambarreiro/go-vcloud-director/v3 v3.0.0-20250217090256-f018f79b2ce9
