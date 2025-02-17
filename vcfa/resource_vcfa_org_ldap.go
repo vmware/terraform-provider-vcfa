@@ -189,12 +189,6 @@ func resourceVcfaOrgLdap() *schema.Resource {
 							Required:    true,
 							Description: "Port number for LDAP service",
 						},
-						"authentication_method": { // AuthenticationMechanism
-							Type:         schema.TypeString,
-							Required:     true,
-							Description:  "authentication method: one of SIMPLE, MD5DIGEST, NTLM",
-							ValidateFunc: validation.StringInSlice([]string{"SIMPLE", "MD5DIGEST", "NTLM"}, false),
-						},
 						"connector_type": { // ConnectorType
 							Type:         schema.TypeString,
 							Required:     true,
@@ -291,7 +285,6 @@ func genericVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta in
 		customSettings := map[string]interface{}{
 			"server":                  config.CustomOrgLdapSettings.HostName,
 			"port":                    config.CustomOrgLdapSettings.Port,
-			"authentication_method":   config.CustomOrgLdapSettings.AuthenticationMechanism,
 			"connector_type":          config.CustomOrgLdapSettings.ConnectorType,
 			"base_distinguished_name": config.CustomOrgLdapSettings.SearchBase,
 			"is_ssl":                  config.CustomOrgLdapSettings.IsSsl,
@@ -379,7 +372,7 @@ func fillOrgLdapSettings(d *schema.ResourceData) (*types.OrgLdapSettingsType, er
 		SearchBase:              customSettingsMap["base_distinguished_name"].(string),
 		Username:                customSettingsMap["username"].(string),
 		Password:                customSettingsMap["password"].(string),
-		AuthenticationMechanism: customSettingsMap["authentication_method"].(string),
+		AuthenticationMechanism: "SIMPLE", // Only SIMPLE is allowed in UI
 		ConnectorType:           customSettingsMap["connector_type"].(string),
 	}
 

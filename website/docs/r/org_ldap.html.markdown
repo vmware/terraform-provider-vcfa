@@ -105,7 +105,6 @@ The `custom_settings` section contains the configuration for the LDAP server
 
 * `server` - (Required) The IP address or host name of the server providing the LDAP service
 * `port` - (Required) Port number of the LDAP server (usually 389 for LDAP, 636 for LDAPS)
-* `authentication_method` - (Required) Authentication method: one of `SIMPLE`, `MD5DIGEST`, `NTLM`
 * `connector_type` - (Required) Type of connector: one of `OPEN_LDAP`, `ACTIVE_DIRECTORY`
 * `base_distinguished_name` - (Required) LDAP search base
 * `is_ssl` - (Optional) True if the LDAP service requires an SSL connection. If the certificate is not trusted already, `auto_trust_certificate=true` is needed.

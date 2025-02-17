@@ -10,10 +10,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-// TestAccVcfaOrgLdapWithSsl tests LDAP configuration against an LDAP server with SSL
-func TestAccVcfaOrgLdapWithSsl(t *testing.T) {
+// TestAccVcfaOrgLdap tests LDAP configuration against an LDAP server with the given configuration
+func TestAccVcfaOrgLdap(t *testing.T) {
 	preTestChecks(t)
-	skipIfNotSysAdmin(t)
 
 	if testConfig.Ldap.Host == "" || testConfig.Ldap.Username == "" || testConfig.Ldap.Password == "" || testConfig.Ldap.Type == "" ||
 		testConfig.Ldap.Port == 0 || testConfig.Ldap.BaseDistinguishedName == "" {
@@ -66,7 +65,6 @@ func TestAccVcfaOrgLdapWithSsl(t *testing.T) {
 					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.base_distinguished_name", testConfig.Ldap.BaseDistinguishedName),
 					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.connector_type", testConfig.Ldap.Type),
 					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.password", ""), // Password is not returned
-					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.authentication_method", "SIMPLE"),
 					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.user_attributes.0.object_class", "user"),
 					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.user_attributes.0.unique_identifier", "objectGuid"),
 					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.user_attributes.0.display_name", "displayName"),
@@ -140,17 +138,19 @@ resource "vcfa_org" "org1" {
 }
 
 resource "vcfa_org_ldap" "ldap" {
-  org_id    = vcfa_org.org1.id
-  ldap_mode = "CUSTOM"
+  org_id                 = vcfa_org.org1.id
+  ldap_mode              = "CUSTOM"
+  auto_trust_certificate = true
+
   custom_settings {
     server                  = "{{.LdapServer}}"
     port                    = {{.LdapPort}}
     is_ssl                  = {{.LdapIsSsl}}
     username                = "{{.LdapUsername}}"
     password                = "{{.LdapPassword}}"
-    authentication_method   = "SIMPLE"
     base_distinguished_name = "{{.LdapBaseDistinguishedName}}"
     connector_type          = "{{.LdapType}}"
+
     user_attributes {
       object_class                = "user"
       unique_identifier           = "objectGuid"
@@ -163,6 +163,7 @@ resource "vcfa_org_ldap" "ldap" {
       email                       = "mail"
       group_back_link_identifier  = "tokenGroups"
     }
+
     group_attributes {
       name                        = "cn"
       object_class                = "group"
