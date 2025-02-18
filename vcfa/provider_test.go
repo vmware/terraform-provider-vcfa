@@ -3,8 +3,10 @@
 package vcfa
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"os"
 	"path/filepath"
 	"strings"
@@ -104,6 +106,30 @@ func createSystemTemporaryVCFAConnection() *VCDClient {
 		panic("unable to initialize VCFA connection :" + err.Error())
 	}
 	return conn
+}
+
+func testOrgProvider(orgName, username, password string) *schema.Provider {
+	newProvider := Provider()
+	newProvider.ConfigureContextFunc = func(ctx context.Context, data *schema.ResourceData) (interface{}, diag.Diagnostics) {
+		config := Config{
+			User:         username,
+			Password:     password,
+			SysOrg:       orgName,
+			Org:          orgName,
+			Href:         testConfig.Provider.Url,
+			InsecureFlag: testConfig.Provider.AllowInsecure,
+		}
+		tmClient, err := config.Client()
+		if err != nil {
+			panic("unable to initialize VCFA connection:" + err.Error())
+		}
+		metaContainer := ClientContainer{
+			tmClient: tmClient,
+		}
+
+		return metaContainer, nil
+	}
+	return newProvider
 }
 
 // TestAccClientUserAgent ensures that client initialization config.Client() used by provider initializes

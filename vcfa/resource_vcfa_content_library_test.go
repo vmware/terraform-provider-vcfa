@@ -4,6 +4,7 @@ package vcfa
 
 import (
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"regexp"
 	"strings"
 	"testing"
@@ -171,6 +172,8 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 
 	var params = StringMap{
 		"Org":                 testConfig.Tm.Org,
+		"Username":            "test-user",
+		"Password":            "long-change-ME1",
 		"Name":                t.Name(),
 		"Name2":               t.Name() + "2",
 		"Name3":               t.Name() + "3",
@@ -218,15 +221,26 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 	cl3 := "vcfa_content_library.cl3"
 
 	cachedId := &testCachedFieldValue{}
+	multipleFactories := func() map[string]func() (*schema.Provider, error) {
+		return map[string]func() (*schema.Provider, error){
+			"vcfa": func() (*schema.Provider, error) {
+				return testAccProvider, nil
+			},
+			"vcfatenant": func() (*schema.Provider, error) {
+				return testOrgProvider(testConfig.Tm.Org, params["Username"].(string), params["Password"].(string)), nil
+			},
+		}
+	}
 
 	resource.Test(t, resource.TestCase{
-		ProviderFactories: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: configText0,
+				ProviderFactories: testAccProviders,
+				Config:            configText0,
 			},
 			{
-				Config: configText1,
+				ProviderFactories: testAccProviders,
+				Config:            configText1,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					// First content library
 					cachedId.cacheTestResourceFieldValue(cl1, "id"),
@@ -257,7 +271,8 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 				),
 			},
 			{
-				Config: configText2,
+				ProviderFactories: testAccProviders,
+				Config:            configText2,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					cachedId.testCheckCachedResourceFieldValue(cl1, "id"),
 					resource.TestCheckResourceAttr(cl1, "name", t.Name()+"Updated"),
@@ -265,7 +280,8 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 				),
 			},
 			{
-				Config: configText3,
+				ProviderFactories: multipleFactories(),
+				Config:            configText3,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					// Tenant content library
 					resource.TestCheckResourceAttr(cl3, "name", t.Name()+"3"),
@@ -282,7 +298,8 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 				),
 			},
 			{
-				Config: configText4,
+				ProviderFactories: multipleFactories(),
+				Config:            configText4,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resourceFieldsEqual(cl1, "data.vcfa_content_library.cl_ds1", []string{
 						"%", // Does not have delete_recursive, delete_force
@@ -307,6 +324,7 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 				),
 			},
 			{
+				ProviderFactories: multipleFactories(),
 				ResourceName:      cl1,
 				ImportState:       true,
 				ImportStateVerify: true,
@@ -350,8 +368,8 @@ provider   = vcfa
 
   org_id   = vcfa_org.test.id
   role_ids = [data.vcfa_role.org-admin.id, data.vcfa_role.org-user.id]
-  username = "test-user"
-  password = "long-change-ME1"
+  username = "{{.Username}}"
+  password = "{{.Password}}"
 }
 
 data "vcfa_supervisor" "test" {
@@ -439,25 +457,15 @@ provider   = vcfa
 `
 
 const testAccVcfaContentLibraryTenantStep3 = testAccVcfaContentLibraryTenantStep1 + `
-# skip-binary-test: Requires an existing user
-provider "vcfa" {
-  alias                = "tenant"
-  user                 = "test-user"
-  password             = "long-change-ME1"
-  url                  = "{{.VcfaUrl}}"
-  sysorg               = "{{.Org}}"
-  org                  = "{{.Org}}"
-  allow_unverified_ssl = "true"
-}
-
+# skip-binary-test: Requires an extra provider configuration with a tenant user
 data "vcfa_storage_class" "sc-tenant" {
-  provider  = vcfa.tenant
+  provider  = vcfatenant
   region_id = data.vcfa_region.region.id
   name      = data.vcfa_region_storage_policy.sp.name
 }
 
 resource "vcfa_content_library" "cl3" {
-  provider    = vcfa.tenant
+  provider    = vcfatenant
   org_id      = vcfa_org.test.id
   name        = "{{.Name3}}"
   description = "{{.Name3}}"
@@ -489,7 +497,7 @@ provider   = vcfa
 }
 
 data "vcfa_content_library" "cl_ds3tenant" {
-  provider = vcfa.tenant
+  provider = vcfatenant
   org_id   = vcfa_org.test.id
   name     = vcfa_content_library.cl3.name
 }
