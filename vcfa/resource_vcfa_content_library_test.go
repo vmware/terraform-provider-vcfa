@@ -324,22 +324,30 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 
 const testAccVcfaContentLibraryTenantPrerequisites = `
 resource "vcfa_org" "test" {
+provider   = vcfa
+
   name         = "{{.Org}}"
   display_name = "{{.Org}}"
   description  = "{{.Org}}"
 }
 
 data "vcfa_role" "org-admin" {
+provider   = vcfa
+
   org_id = vcfa_org.test.id
   name   = "Organization Administrator"
 }
 
 data "vcfa_role" "org-user" {
+provider   = vcfa
+
   org_id = vcfa_org.test.id
   name   = "Organization User"
 }
 
 resource "vcfa_org_local_user" "user" {
+provider   = vcfa
+
   org_id   = vcfa_org.test.id
   role_ids = [data.vcfa_role.org-admin.id, data.vcfa_role.org-user.id]
   username = "test-user"
@@ -347,22 +355,29 @@ resource "vcfa_org_local_user" "user" {
 }
 
 data "vcfa_supervisor" "test" {
+  provider   = vcfa
   name       = "{{.SupervisorName}}"
   vcenter_id = {{.VcenterRef}}.id
   depends_on = [{{.VcenterRef}}]
 }
 
 data "vcfa_region_zone" "test" {
+provider   = vcfa
+
   region_id = {{.RegionId}}
   name      = "{{.SupervisorZoneName}}"
 }
 
 data "vcfa_region_storage_policy" "sp" {
+provider   = vcfa
+
   name      = "{{.StorageClass}}"
   region_id = {{.RegionId}}
 }
 
 resource "vcfa_org_region_quota" "test" {
+provider   = vcfa
+
   org_id         = vcfa_org.test.id
   region_id      = {{.RegionId}}
   supervisor_ids = [data.vcfa_supervisor.test.id]
@@ -383,6 +398,8 @@ resource "vcfa_org_region_quota" "test" {
 }
 
 data "vcfa_storage_class" "sc" {
+provider   = vcfa
+
   region_id = {{.RegionId}}
   name      = data.vcfa_region_storage_policy.sp.name
 }
@@ -390,6 +407,8 @@ data "vcfa_storage_class" "sc" {
 
 const testAccVcfaContentLibraryTenantStep1 = testAccVcfaContentLibraryTenantPrerequisites + `
 resource "vcfa_content_library" "cl1" {
+provider   = vcfa
+
   org_id      = vcfa_org.test.id
   name        = "{{.Name}}"
   description = "{{.Name}}"
@@ -403,6 +422,8 @@ resource "vcfa_content_library" "cl1" {
 }
 
 resource "vcfa_content_library" "cl2" {
+provider   = vcfa
+
   org_id      = vcfa_org.test.id
   name        = "{{.Name2}}"
   description = "{{.Name2}}"
@@ -424,8 +445,8 @@ provider "vcfa" {
   user                 = "test-user"
   password             = "long-change-ME1"
   url                  = "{{.VcfaUrl}}"
-  sysorg               = vcfa_org.test.name
-  org                  = vcfa_org.test.name
+  sysorg               = "{{.Org}}"
+  org                  = "{{.Org}}"
   allow_unverified_ssl = "true"
 }
 
@@ -450,16 +471,19 @@ resource "vcfa_content_library" "cl3" {
 
 const testAccVcfaContentLibraryTenantStep4 = testAccVcfaContentLibraryTenantStep3 + `
 data "vcfa_content_library" "cl_ds1" {
+provider   = vcfa
   org_id = vcfa_org.test.id
   name   = vcfa_content_library.cl1.name
 }
 
 data "vcfa_content_library" "cl_ds2" {
+provider   = vcfa
   org_id = vcfa_org.test.id
   name   = vcfa_content_library.cl2.name
 }
 
 data "vcfa_content_library" "cl_ds3" {
+provider   = vcfa
   org_id = vcfa_org.test.id
   name   = vcfa_content_library.cl3.name
 }

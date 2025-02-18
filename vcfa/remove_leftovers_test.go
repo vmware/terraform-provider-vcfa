@@ -203,6 +203,30 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 	}
 
 	// --------------------------------------------------------------
+	// Organizations
+	// --------------------------------------------------------------
+	if tmClient.Client.IsSysAdmin {
+		orgs, err := tmClient.GetAllTmOrgs(nil)
+		if err != nil {
+			return fmt.Errorf("error retrieving Organizations: %s", err)
+		}
+		for _, org := range orgs {
+			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, org.TmOrg.Name, "vcfa_org", 0, verbose)
+			if toBeDeleted {
+				fmt.Printf("\t REMOVING Organization %s\n", org.TmOrg.Name)
+				err = org.Disable()
+				if err != nil {
+					return fmt.Errorf("error disabling %s '%s': %s", labelVcfaOrg, org.TmOrg.Name, err)
+				}
+				err := org.Delete()
+				if err != nil {
+					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaOrg, org.TmOrg.Name, err)
+				}
+			}
+		}
+	}
+
+	// --------------------------------------------------------------
 	// NSX Managers
 	// --------------------------------------------------------------
 	if tmClient.Client.IsSysAdmin {
@@ -241,30 +265,6 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 				err := vc.Delete()
 				if err != nil {
 					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaVirtualCenter, vc.VSphereVCenter.Name, err)
-				}
-			}
-		}
-	}
-
-	// --------------------------------------------------------------
-	// Organizations
-	// --------------------------------------------------------------
-	if tmClient.Client.IsSysAdmin {
-		orgs, err := tmClient.GetAllTmOrgs(nil)
-		if err != nil {
-			return fmt.Errorf("error retrieving Organizations: %s", err)
-		}
-		for _, org := range orgs {
-			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, org.TmOrg.Name, "vcfa_org", 0, verbose)
-			if toBeDeleted {
-				fmt.Printf("\t REMOVING Organization %s\n", org.TmOrg.Name)
-				err = org.Disable()
-				if err != nil {
-					return fmt.Errorf("error disabling %s '%s': %s", labelVcfaOrg, org.TmOrg.Name, err)
-				}
-				err := org.Delete()
-				if err != nil {
-					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaOrg, org.TmOrg.Name, err)
 				}
 			}
 		}
