@@ -24,7 +24,7 @@ func TestAccVcfaSystemLdap(t *testing.T) {
 		"LdapServer":                testConfig.Ldap.Host,
 		"LdapPort":                  testConfig.Ldap.Port,
 		"LdapIsSsl":                 testConfig.Ldap.IsSsl,
-		"LdapUser":                  testConfig.Ldap.Username,
+		"LdapUsername":              testConfig.Ldap.Username,
 		"LdapPassword":              testConfig.Ldap.Password,
 		"LdapType":                  testConfig.Ldap.Type,
 		"LdapBaseDistinguishedName": testConfig.Ldap.BaseDistinguishedName,
