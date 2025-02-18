@@ -34,14 +34,14 @@ data "vcfa_vcenter" "vc" {
 	}
 	return `
 resource "vcfa_vcenter" "vc" {
-  name                     = "` + t.Name() + `"
-  url                      = "` + testConfig.Tm.VcenterUrl + `"
-  auto_trust_certificate   = true
-  refresh_vcenter_on_read  = true
-  refresh_policies_on_read = false
-  username                 = "` + testConfig.Tm.VcenterUsername + `"
-  password                 = "` + testConfig.Tm.VcenterPassword + `"
-  is_enabled               = true
+  name                       = "` + t.Name() + `"
+  url                        = "` + testConfig.Tm.VcenterUrl + `"
+  auto_trust_certificate     = true
+  refresh_vcenter_on_create  = true
+  refresh_policies_on_create = true
+  username                   = "` + testConfig.Tm.VcenterUsername + `"
+  password                   = "` + testConfig.Tm.VcenterPassword + `"
+  is_enabled                 = true
 }
 `, "vcfa_vcenter.vc"
 }
@@ -191,7 +191,6 @@ resource "vcfa_ip_space" "test-` + nameSuffix + `" {
   default_quota_max_cidr_count  = 1
   default_quota_max_ip_count    = 1
   internal_scope {
-    name = "scope3"
     cidr = "32.0.` + octet3 + `.0/24"
   }
 }
