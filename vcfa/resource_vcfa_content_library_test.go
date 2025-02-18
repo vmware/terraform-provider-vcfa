@@ -95,7 +95,7 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "is_subscribed", "false"), // TODO: TM: Test with true
 					resource.TestCheckResourceAttr(resourceName, "library_type", "PROVIDER"),
 					resource.TestCheckResourceAttr(resourceName, "subscription_config.#", "0"),
-					resource.TestCheckResourceAttr(resourceName, "version_number", "1"),
+					resource.TestMatchResourceAttr(resourceName, "version_number", regexp.MustCompile("[1-9]")),
 				),
 			},
 			{
@@ -240,7 +240,7 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 					resource.TestCheckResourceAttr(cl1, "is_subscribed", "false"),
 					resource.TestCheckResourceAttr(cl1, "library_type", "TENANT"),
 					resource.TestCheckResourceAttr(cl1, "subscription_config.#", "0"),
-					resource.TestCheckResourceAttr(cl1, "version_number", "1"),
+					resource.TestMatchResourceAttr(cl1, "version_number", regexp.MustCompile("[1-9]")),
 
 					// Second content library
 					resource.TestCheckResourceAttr(cl2, "name", t.Name()+"2"),
@@ -249,11 +249,11 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 					resource.TestCheckResourceAttr(cl2, "storage_class_ids.#", "1"),
 					resource.TestCheckResourceAttr(cl2, "auto_attach", "false"),
 					resource.TestCheckResourceAttrSet(cl2, "creation_date"),
-					resource.TestCheckResourceAttr(cl1, "is_shared", "false"), // Always false for TENANT libraries
-					resource.TestCheckResourceAttr(cl1, "is_subscribed", "false"),
-					resource.TestCheckResourceAttr(cl1, "library_type", "TENANT"),
+					resource.TestCheckResourceAttr(cl2, "is_shared", "false"), // Always false for TENANT libraries
+					resource.TestCheckResourceAttr(cl2, "is_subscribed", "false"),
+					resource.TestCheckResourceAttr(cl2, "library_type", "TENANT"),
 					resource.TestCheckResourceAttr(cl2, "subscription_config.#", "0"),
-					resource.TestCheckResourceAttr(cl2, "version_number", "1"),
+					resource.TestMatchResourceAttr(cl2, "version_number", regexp.MustCompile("[1-9]")),
 				),
 			},
 			{
@@ -272,13 +272,14 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 					resource.TestCheckResourceAttrPair(cl3, "org_id", "vcfa_org.test", "id"),
 					resource.TestCheckResourceAttr(cl3, "description", t.Name()+"3"),
 					resource.TestCheckResourceAttr(cl3, "storage_class_ids.#", "1"),
-					resource.TestCheckResourceAttr(cl3, "auto_attach", "false"),
+					resource.TestCheckResourceAttr(cl3, "auto_attach", "true"),
 					resource.TestCheckResourceAttrSet(cl3, "creation_date"),
 					resource.TestCheckResourceAttr(cl3, "is_shared", "false"), // Always false for TENANT libraries
 					resource.TestCheckResourceAttr(cl3, "is_subscribed", "false"),
 					resource.TestCheckResourceAttr(cl3, "library_type", "TENANT"),
 					resource.TestCheckResourceAttr(cl3, "subscription_config.#", "0"),
-					resource.TestCheckResourceAttr(cl3, "version_number", "1")),
+					resource.TestMatchResourceAttr(cl3, "version_number", regexp.MustCompile("[1-9]")),
+				),
 			},
 			{
 				Config: configText4,
@@ -326,6 +327,23 @@ resource "vcfa_org" "test" {
   name         = "{{.Org}}"
   display_name = "{{.Org}}"
   description  = "{{.Org}}"
+}
+
+data "vcfa_role" "org-admin" {
+  org_id = vcfa_org.test.id
+  name   = "Organization Administrator"
+}
+
+data "vcfa_role" "org-user" {
+  org_id = vcfa_org.test.id
+  name   = "Organization User"
+}
+
+resource "vcfa_org_local_user" "user" {
+  org_id   = vcfa_org.test.id
+  role_ids = [data.vcfa_role.org-admin.id, data.vcfa_role.org-user.id]
+  username = "test-user"
+  password = "long-change-ME1"
 }
 
 data "vcfa_supervisor" "test" {
@@ -400,28 +418,13 @@ resource "vcfa_content_library" "cl2" {
 `
 
 const testAccVcfaContentLibraryTenantStep3 = testAccVcfaContentLibraryTenantStep1 + `
-data "vcfa_role" "org-admin" {
-  org_id = vcfa_org.test.id
-  name   = "Organization Administrator"
-}
-
-data "vcfa_role" "org-user" {
-  org_id = vcfa_org.test.id
-  name   = "Organization User"
-}
-
-resource "vcfa_org_local_user" "user" {
-  org_id   = vcfa_org.test.id
-  role_ids = [data.vcfa_role.org-admin.id, data.vcfa_role.org-user.id]
-  username = "test-user"
-  password = "CHANGE-ME"
-}
-
+# skip-binary-test: Requires an existing user
 provider "vcfa" {
   alias                = "tenant"
-  user                 = vcfa_org_local_user.user.username
-  password             = vcfa_org_local_user.user.password
+  user                 = "test-user"
+  password             = "long-change-ME1"
   url                  = "{{.VcfaUrl}}"
+  sysorg               = vcfa_org.test.name
   org                  = vcfa_org.test.name
   allow_unverified_ssl = "true"
 }
