@@ -5,13 +5,11 @@ package vcfa
 import (
 	"fmt"
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
-
-// TODO: TM: Test tenant Content Libraries. For that goal, we need to modify vcfa_org_region_quota to support
-//       VM classes and storage classes
 
 // TestAccVcfaContentLibraryProvider tests CRUD of a Content Library of type PROVIDER.
 // It also tests vcfa_storage_class and vcfa_region_storage_policy data sources
@@ -91,11 +89,11 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 					resource.TestMatchResourceAttr(resourceName, "org_id", regexp.MustCompile("urn:vcloud:org:")),
 					resource.TestCheckResourceAttr(resourceName, "description", t.Name()),
 					resource.TestCheckResourceAttr(resourceName, "storage_class_ids.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "auto_attach", "true"), // TODO: TM: Test with false
+					resource.TestCheckResourceAttr(resourceName, "auto_attach", "true"), // Always true for PROVIDER libraries
 					resource.TestCheckResourceAttrSet(resourceName, "creation_date"),
-					resource.TestCheckResourceAttr(resourceName, "is_shared", "true"),        // TODO: TM: Test with false
-					resource.TestCheckResourceAttr(resourceName, "is_subscribed", "false"),   // TODO: TM: Test with true
-					resource.TestCheckResourceAttr(resourceName, "library_type", "PROVIDER"), // TODO: TM: Test with tenant catalog
+					resource.TestCheckResourceAttr(resourceName, "is_shared", "true"),      // Always true for PROVIDER libraries
+					resource.TestCheckResourceAttr(resourceName, "is_subscribed", "false"), // TODO: TM: Test with true
+					resource.TestCheckResourceAttr(resourceName, "library_type", "PROVIDER"),
 					resource.TestCheckResourceAttr(resourceName, "subscription_config.#", "0"),
 					resource.TestCheckResourceAttr(resourceName, "version_number", "1"),
 				),
@@ -145,7 +143,7 @@ data "vcfa_storage_class" "sc" {
 }
 
 resource "vcfa_content_library" "cl" {
-  name = "{{.Name}}"
+  name        = "{{.Name}}"
   description = "{{.Name}}"
   storage_class_ids = [
     data.vcfa_storage_class.sc.id
@@ -158,5 +156,314 @@ resource "vcfa_content_library" "cl" {
 const testAccVcfaContentLibraryProviderStep3 = testAccVcfaContentLibraryProviderStep1 + `
 data "vcfa_content_library" "cl_ds" {
   name = vcfa_content_library.cl.name
+}
+`
+
+// TestAccVcfaContentLibraryTenant tests CRUD of a Content Library of type TENANT.
+func TestAccVcfaContentLibraryTenant(t *testing.T) {
+	preTestChecks(t)
+	skipIfNotSysAdmin(t)
+
+	vCenterHcl, vCenterHclRef := getVCenterHcl(t)
+	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
+	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
+	vmClassesHcl, vmClassesRefs := getRegionVmClassesHcl(t, regionHclRef)
+
+	var params = StringMap{
+		"Org":                 testConfig.Tm.Org,
+		"Name":                t.Name(),
+		"Name2":               t.Name() + "2",
+		"Name3":               t.Name() + "3",
+		"RegionId":            fmt.Sprintf("%s.id", regionHclRef),
+		"SupervisorName":      testConfig.Tm.VcenterSupervisor,
+		"SupervisorZoneName":  testConfig.Tm.VcenterSupervisorZone,
+		"StorageClass":        testConfig.Tm.StorageClass,
+		"VcenterRef":          vCenterHclRef,
+		"RegionStoragePolicy": testConfig.Tm.StorageClass,
+		"RegionVmClassRefs":   strings.Join(vmClassesRefs, ".id,\n    ") + ".id",
+		"VcfaUrl":             testConfig.Provider.Url,
+		"Tags":                "tm contentlibrary",
+	}
+	testParamsNotEmpty(t, params)
+
+	preRequisites := vCenterHcl + nsxManagerHcl + regionHcl + vmClassesHcl
+
+	// TODO: TM: There shouldn't be a need to create `preRequisites` separately, but region
+	// creation fails if it is spawned instantly after adding vCenter, therefore this extra step
+	// give time (with additional 'refresh' and 'refresh storage policies' operations on vCenter)
+	skipBinaryTest := "# skip-binary-test: prerequisite buildup for acceptance tests"
+	configText0 := templateFill(vCenterHcl+nsxManagerHcl+skipBinaryTest, params)
+	params["FuncName"] = t.Name() + "-step0"
+
+	configText1 := templateFill(preRequisites+testAccVcfaContentLibraryTenantStep1, params)
+	params["FuncName"] = t.Name() + "-step2"
+	params["Name"] = t.Name() + "Updated"
+	params["Name2"] = t.Name() + "2Updated"
+	configText2 := templateFill(preRequisites+testAccVcfaContentLibraryTenantStep1, params)
+	params["FuncName"] = t.Name() + "-step3"
+	configText3 := templateFill(preRequisites+testAccVcfaContentLibraryTenantStep3, params)
+	params["FuncName"] = t.Name() + "-step4"
+	configText4 := templateFill(preRequisites+testAccVcfaContentLibraryTenantStep4, params)
+
+	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
+	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
+	debugPrintf("#[DEBUG] CONFIGURATION step3: %s\n", configText3)
+	if vcfaShortTest {
+		t.Skip(acceptanceTestsSkipped)
+		return
+	}
+
+	cl1 := "vcfa_content_library.cl1"
+	cl2 := "vcfa_content_library.cl2"
+	cl3 := "vcfa_content_library.cl3"
+
+	cachedId := &testCachedFieldValue{}
+
+	resource.Test(t, resource.TestCase{
+		ProviderFactories: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: configText0,
+			},
+			{
+				Config: configText1,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					// First content library
+					cachedId.cacheTestResourceFieldValue(cl1, "id"),
+					resource.TestCheckResourceAttr(cl1, "name", t.Name()),
+					resource.TestCheckResourceAttrPair(cl1, "org_id", "vcfa_org.test", "id"),
+					resource.TestCheckResourceAttr(cl1, "description", t.Name()),
+					resource.TestCheckResourceAttr(cl1, "storage_class_ids.#", "1"),
+					resource.TestCheckResourceAttr(cl1, "auto_attach", "true"), // Defaults to true for TENANT libraries
+					resource.TestCheckResourceAttrSet(cl1, "creation_date"),
+					resource.TestCheckResourceAttr(cl1, "is_shared", "false"), // Always false for TENANT libraries
+					resource.TestCheckResourceAttr(cl1, "is_subscribed", "false"),
+					resource.TestCheckResourceAttr(cl1, "library_type", "TENANT"),
+					resource.TestCheckResourceAttr(cl1, "subscription_config.#", "0"),
+					resource.TestCheckResourceAttr(cl1, "version_number", "1"),
+
+					// Second content library
+					resource.TestCheckResourceAttr(cl2, "name", t.Name()+"2"),
+					resource.TestCheckResourceAttrPair(cl2, "org_id", "vcfa_org.test", "id"),
+					resource.TestCheckResourceAttr(cl2, "description", t.Name()+"2"),
+					resource.TestCheckResourceAttr(cl2, "storage_class_ids.#", "1"),
+					resource.TestCheckResourceAttr(cl2, "auto_attach", "false"),
+					resource.TestCheckResourceAttrSet(cl2, "creation_date"),
+					resource.TestCheckResourceAttr(cl1, "is_shared", "false"), // Always false for TENANT libraries
+					resource.TestCheckResourceAttr(cl1, "is_subscribed", "false"),
+					resource.TestCheckResourceAttr(cl1, "library_type", "TENANT"),
+					resource.TestCheckResourceAttr(cl2, "subscription_config.#", "0"),
+					resource.TestCheckResourceAttr(cl2, "version_number", "1"),
+				),
+			},
+			{
+				Config: configText2,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					cachedId.testCheckCachedResourceFieldValue(cl1, "id"),
+					resource.TestCheckResourceAttr(cl1, "name", t.Name()+"Updated"),
+					resource.TestCheckResourceAttr(cl2, "name", t.Name()+"2Updated"),
+				),
+			},
+			{
+				Config: configText3,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					// Tenant content library
+					resource.TestCheckResourceAttr(cl3, "name", t.Name()+"3"),
+					resource.TestCheckResourceAttrPair(cl3, "org_id", "vcfa_org.test", "id"),
+					resource.TestCheckResourceAttr(cl3, "description", t.Name()+"3"),
+					resource.TestCheckResourceAttr(cl3, "storage_class_ids.#", "1"),
+					resource.TestCheckResourceAttr(cl3, "auto_attach", "false"),
+					resource.TestCheckResourceAttrSet(cl3, "creation_date"),
+					resource.TestCheckResourceAttr(cl3, "is_shared", "false"), // Always false for TENANT libraries
+					resource.TestCheckResourceAttr(cl3, "is_subscribed", "false"),
+					resource.TestCheckResourceAttr(cl3, "library_type", "TENANT"),
+					resource.TestCheckResourceAttr(cl3, "subscription_config.#", "0"),
+					resource.TestCheckResourceAttr(cl3, "version_number", "1")),
+			},
+			{
+				Config: configText4,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resourceFieldsEqual(cl1, "data.vcfa_content_library.cl_ds1", []string{
+						"%", // Does not have delete_recursive, delete_force
+						"delete_recursive",
+						"delete_force",
+					}),
+					resourceFieldsEqual(cl2, "data.vcfa_content_library.cl_ds2", []string{
+						"%",
+						"delete_recursive",
+						"delete_force",
+					}),
+					resourceFieldsEqual(cl3, "data.vcfa_content_library.cl_ds3", []string{
+						"%",
+						"delete_recursive",
+						"delete_force",
+					}),
+					resourceFieldsEqual(cl3, "data.vcfa_content_library.cl_ds3tenant", []string{
+						"%",
+						"delete_recursive",
+						"delete_force",
+					}),
+				),
+			},
+			{
+				ResourceName:      cl1,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateId:     params["Name"].(string),
+				ImportStateVerifyIgnore: []string{
+					"delete_recursive",
+					"delete_force",
+				},
+			},
+		},
+	})
+
+	postTestChecks(t)
+}
+
+const testAccVcfaContentLibraryTenantPrerequisites = `
+resource "vcfa_org" "test" {
+  name         = "{{.Org}}"
+  display_name = "{{.Org}}"
+  description  = "{{.Org}}"
+}
+
+data "vcfa_supervisor" "test" {
+  name       = "{{.SupervisorName}}"
+  vcenter_id = {{.VcenterRef}}.id
+  depends_on = [{{.VcenterRef}}]
+}
+
+data "vcfa_region_zone" "test" {
+  region_id = {{.RegionId}}
+  name      = "{{.SupervisorZoneName}}"
+}
+
+data "vcfa_region_storage_policy" "sp" {
+  name      = "{{.StorageClass}}"
+  region_id = {{.RegionId}}
+}
+
+resource "vcfa_org_region_quota" "test" {
+  org_id         = vcfa_org.test.id
+  region_id      = {{.RegionId}}
+  supervisor_ids = [data.vcfa_supervisor.test.id]
+  zone_resource_allocations {
+    region_zone_id         = data.vcfa_region_zone.test.id
+    cpu_limit_mhz          = 1900
+    cpu_reservation_mhz    = 90
+    memory_limit_mib       = 500
+    memory_reservation_mib = 200
+  }
+  region_vm_class_ids = [
+    {{.RegionVmClassRefs}}
+  ]
+  region_storage_policy {
+    region_storage_policy_id = data.vcfa_region_storage_policy.sp.id
+    storage_limit_mib        = 1024
+  }
+}
+
+data "vcfa_storage_class" "sc" {
+  region_id = {{.RegionId}}
+  name      = data.vcfa_region_storage_policy.sp.name
+}
+`
+
+const testAccVcfaContentLibraryTenantStep1 = testAccVcfaContentLibraryTenantPrerequisites + `
+resource "vcfa_content_library" "cl1" {
+  org_id      = vcfa_org.test.id
+  name        = "{{.Name}}"
+  description = "{{.Name}}"
+  storage_class_ids = [
+    data.vcfa_storage_class.sc.id
+  ]
+  delete_force = true
+  delete_recursive = true
+
+  depends_on = [ vcfa_org_region_quota.test]
+}
+
+resource "vcfa_content_library" "cl2" {
+  org_id      = vcfa_org.test.id
+  name        = "{{.Name2}}"
+  description = "{{.Name2}}"
+  auto_attach = false
+  storage_class_ids = [
+    data.vcfa_storage_class.sc.id
+  ]
+  delete_force = true
+  delete_recursive = true
+
+  depends_on = [ vcfa_org_region_quota.test]
+}
+`
+
+const testAccVcfaContentLibraryTenantStep3 = testAccVcfaContentLibraryTenantStep1 + `
+data "vcfa_role" "org-admin" {
+  org_id = vcfa_org.test.id
+  name   = "Organization Administrator"
+}
+
+data "vcfa_role" "org-user" {
+  org_id = vcfa_org.test.id
+  name   = "Organization User"
+}
+
+resource "vcfa_org_local_user" "user" {
+  org_id   = vcfa_org.test.id
+  role_ids = [data.vcfa_role.org-admin.id, data.vcfa_role.org-user.id]
+  username = "test-user"
+  password = "CHANGE-ME"
+}
+
+provider "vcfa" {
+  alias                = "tenant"
+  user                 = vcfa_org_local_user.user.username
+  password             = vcfa_org_local_user.user.password
+  url                  = "{{.VcfaUrl}}"
+  org                  = vcfa_org.test.name
+  allow_unverified_ssl = "true"
+}
+
+data "vcfa_storage_class" "sc-tenant" {
+  provider  = vcfa.tenant
+  region_id = data.vcfa_region.region.id
+  name      = data.vcfa_region_storage_policy.sp.name
+}
+
+resource "vcfa_content_library" "cl3" {
+  provider    = vcfa.tenant
+  org_id      = vcfa_org.test.id
+  name        = "{{.Name3}}"
+  description = "{{.Name3}}"
+  storage_class_ids = [
+    data.vcfa_storage_class.sc-tenant.id
+  ]
+  delete_force = true
+  delete_recursive = true
+}
+`
+
+const testAccVcfaContentLibraryTenantStep4 = testAccVcfaContentLibraryTenantStep3 + `
+data "vcfa_content_library" "cl_ds1" {
+  org_id = vcfa_org.test.id
+  name   = vcfa_content_library.cl1.name
+}
+
+data "vcfa_content_library" "cl_ds2" {
+  org_id = vcfa_org.test.id
+  name   = vcfa_content_library.cl2.name
+}
+
+data "vcfa_content_library" "cl_ds3" {
+  org_id = vcfa_org.test.id
+  name   = vcfa_content_library.cl3.name
+}
+
+data "vcfa_content_library" "cl_ds3tenant" {
+  provider = vcfa.tenant
+  org_id   = vcfa_org.test.id
+  name     = vcfa_content_library.cl3.name
 }
 `

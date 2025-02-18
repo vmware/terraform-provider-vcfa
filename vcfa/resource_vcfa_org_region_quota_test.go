@@ -27,7 +27,6 @@ func TestAccVcfaOrgRegionQuota(t *testing.T) {
 		"RegionId":           fmt.Sprintf("%s.id", regionHclRef),
 		"RegionVmClassRefs":  strings.Join(vmClassesRefs, ".id,\n    ") + ".id",
 		"StorageClass":       testConfig.Tm.StorageClass,
-		"StorageLimitMib":    "100",
 		"Tags":               "tm org regionQuota",
 	}
 	testParamsNotEmpty(t, params)
