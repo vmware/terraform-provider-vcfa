@@ -166,6 +166,11 @@ func datasourceVcfaOrgLdap() *schema.Resource {
 							Computed:    true,
 							Description: `Username to use when logging in to LDAP, specified using LDAP attribute=value pairs (for example: cn="ldap-admin", c="example", dc="com")`,
 						},
+						"custom_ui_button_label": { // CustomUiButtonLabel
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "On the login screen, the custom label replaces the default label for this identity provider",
+						},
 						"user_attributes":  datasourceLdapUserAttributes,
 						"group_attributes": datasourceLdapGroupAttributes,
 					},

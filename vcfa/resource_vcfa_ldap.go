@@ -173,7 +173,7 @@ func getTmLdapSettingsType(d *schema.ResourceData) (*types.TmLdapSettings, error
 		BackLinkIdentifier:   rawGroupAttributes["group_back_link_identifier"].(string),
 	}
 
-	if uiLabel, ok := d.GetOk("custom_ui_label"); ok {
+	if uiLabel, ok := d.GetOk("custom_ui_button_label"); ok {
 		settings.CustomUiButtonLabel = addrOf(uiLabel.(string))
 	}
 

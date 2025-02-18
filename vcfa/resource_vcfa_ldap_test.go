@@ -58,6 +58,7 @@ func TestAccVcfaSystemLdap(t *testing.T) {
 					resource.TestCheckResourceAttr(ldapResourceDef, "is_ssl", fmt.Sprintf("%t", testConfig.Ldap.IsSsl)),
 					resource.TestCheckResourceAttr(ldapResourceDef, "base_distinguished_name", testConfig.Ldap.BaseDistinguishedName),
 					resource.TestCheckResourceAttr(ldapResourceDef, "connector_type", testConfig.Ldap.Type),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_ui_button_label", "Hello there"),
 					resource.TestCheckResourceAttr(ldapResourceDef, "password", ""), // Password is not returned
 					resource.TestCheckResourceAttr(ldapResourceDef, "user_attributes.0.object_class", "user"),
 					resource.TestCheckResourceAttr(ldapResourceDef, "user_attributes.0.unique_identifier", "objectGuid"),
@@ -119,6 +120,7 @@ resource "vcfa_ldap" "ldap" {
   password                = "{{.LdapPassword}}"
   base_distinguished_name = "{{.LdapBaseDistinguishedName}}"
   connector_type          = "{{.LdapType}}"
+  custom_ui_button_label  = "Hello there"
 
   user_attributes {
 	object_class                = "user"

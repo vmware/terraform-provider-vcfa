@@ -180,11 +180,6 @@ func resourceVcfaOrgLdap() *schema.Resource {
 				Optional:    true,
 				Description: "If ldap_mode is SYSTEM, specifies a LDAP attribute=value pair to use for OU (organizational unit)",
 			},
-			"custom_ui_button_label": { // CustomUiButtonLabel
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "If you provide a custom button label, on the login screen, the custom label replaces the default label for this identity provider",
-			},
 			"custom_settings": { // CustomOrgLdapSettings
 				Type:        schema.TypeList,
 				Optional:    true,
@@ -231,6 +226,11 @@ func resourceVcfaOrgLdap() *schema.Resource {
 							Description: `Password for the user identified by UserName. This value is never returned by GET. ` +
 								`It is inspected on create and modify. ` +
 								`On modify, the absence of this element indicates that the password should not be changed`,
+						},
+						"custom_ui_button_label": { // CustomUiButtonLabel
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "If you provide a custom button label, on the login screen, the custom label replaces the default label for this identity provider",
 						},
 						"user_attributes":  ldapUserAttributes(false),  // CustomOrgLdapSettings.UserAttributes
 						"group_attributes": ldapGroupAttributes(false), // CustomOrgLdapSettings.GroupAttributes
@@ -326,6 +326,10 @@ func genericVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta in
 					"group_back_link_identifier":  config.CustomOrgLdapSettings.GroupAttributes.BackLinkIdentifier,
 				},
 			},
+		}
+
+		if config.CustomOrgLdapSettings.CustomUiButtonLabel != nil {
+			customSettings["custom_ui_button_label"] = *config.CustomOrgLdapSettings.CustomUiButtonLabel
 		}
 
 		if origin == "resource" {
@@ -430,7 +434,7 @@ func fillOrgLdapSettings(d *schema.ResourceData) (*types.OrgLdapSettingsType, er
 		BackLinkIdentifier:   groupAttributesMap["group_back_link_identifier"].(string),
 	}
 
-	if uiLabel, ok := customSettingsMap["custom_ui_label"]; ok {
+	if uiLabel, ok := customSettingsMap["custom_ui_button_label"]; ok {
 		settings.CustomOrgLdapSettings.CustomUiButtonLabel = addrOf(uiLabel.(string))
 	}
 
