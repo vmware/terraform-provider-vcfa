@@ -34,6 +34,16 @@ The following arguments are supported:
 * `description` - (Optional) An optional description for vCenter server
 * `username` - (Required) A username for authenticating to vCenter server
 * `password` - (Required) A password for authenticating to vCenter server
+* `refresh_vcenter_on_create` - (Optional) An optional flag to trigger refresh operation on the
+  underlying vCenter once after creation. This might take some time, but can help to load up new
+  artifacts from vCenter (e.g. Supervisors). This operation is visible as a new task in UI. Update
+  is a no-op. It may be useful after adding vCenter or if new infrastructure is added to vCenter.
+  Default `false`.
+* `refresh_policies_on_create` - (Optional) An optional flag to trigger policy refresh operation on
+  the underlying vCenter once after creation. This might take some time, but can help to load up new
+  artifacts from vCenter (e.g. Storage Policies). Update is a no-op. This operation is visible as a
+  new task in UI. It may be useful after adding vCenter or if new infrastructure is added to
+  vCenter. Default `false`. 
 * `refresh_vcenter_on_read` - (Optional) An optional flag to trigger refresh operation on the
   underlying vCenter on every read. This might take some time, but can help to load up new artifacts
   from vCenter (e.g. Supervisors). This operation is visible as a new task in UI. Update is a no-op.

@@ -105,7 +105,7 @@ func TestAccVcfaVcenter(t *testing.T) {
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateId:           params["Testname"].(string),
-				ImportStateVerifyIgnore: []string{"password", "auto_trust_certificate", "refresh_vcenter_on_read", "refresh_policies_on_read"},
+				ImportStateVerifyIgnore: []string{"password", "auto_trust_certificate", "refresh_vcenter_on_read", "refresh_policies_on_read", "refresh_vcenter_on_create", "refresh_policies_on_create"},
 			},
 			{
 				Config: configText4,

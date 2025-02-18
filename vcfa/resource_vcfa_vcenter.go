@@ -49,6 +49,16 @@ func resourceVcfaVcenter() *schema.Resource {
 				ForceNew:    true,
 				Description: fmt.Sprintf("Defines if the %s certificate should automatically be trusted", labelVcfaVirtualCenter),
 			},
+			"refresh_vcenter_on_create": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: fmt.Sprintf("Defines if the %s should be refreshed after creation", labelVcfaVirtualCenter),
+			},
+			"refresh_policies_on_create": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: fmt.Sprintf("Defines if the %s should refresh Policies after creation", labelVcfaVirtualCenter),
+			},
 			"refresh_vcenter_on_read": {
 				Type:        schema.TypeBool,
 				Optional:    true,
@@ -187,6 +197,9 @@ func setVcenterData(_ *VCDClient, d *schema.ResourceData, v *govcd.VCenter) erro
 func resourceVcfaVcenterCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 
+	shouldRefresh := d.Get("refresh_vcenter_on_create").(bool)
+	shouldRefreshPolicies := d.Get("refresh_policies_on_create").(bool)
+	shouldWaitForListenerStatus := true
 	c := crudConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
 		entityLabel:      labelVcfaVirtualCenter,
 		getTypeFunc:      getVcenterType,
@@ -196,6 +209,16 @@ func resourceVcfaVcenterCreate(ctx context.Context, d *schema.ResourceData, meta
 		resourceReadFunc: resourceVcfaVcenterRead,
 		// certificate should be trusted for the vCenter to work
 		preCreateHooks: []schemaHook{autoTrustHostCertificate("url", "auto_trust_certificate")},
+		postCreateHooks: []outerEntityHook[*govcd.VCenter]{
+			// TODO: TM ensure that the vCenter listener state is "CONNECTED"  before triggering
+			// refresh as it will fail otherwise. At the moment it has a delay before it becomes
+			// CONNECTED after creation task succeeds. It should not be needed once vCenter creation
+			// task ensures that the listener is connected.
+			shouldWaitForListenerStatusConnected(shouldWaitForListenerStatus),
+
+			refreshVcenter(shouldRefresh),               // vCenter read can optionally trigger "refresh" operation
+			refreshVcenterPolicy(shouldRefreshPolicies), // vCenter read can optionally trigger "refresh policies" operation
+		},
 	}
 	return createResource(ctx, d, meta, c)
 }
