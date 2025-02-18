@@ -133,7 +133,7 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 				fmt.Printf("\t REMOVING %s %s\n", labelVcfaProviderGateway, pg.TmProviderGateway.Name)
 				err := pg.Delete()
 				if err != nil {
-					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaIpSpace, pg.TmProviderGateway.Name, err)
+					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaProviderGateway, pg.TmProviderGateway.Name, err)
 				}
 			}
 		}
