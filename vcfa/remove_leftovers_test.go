@@ -123,12 +123,12 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 	}
 
 	// --------------------------------------------------------------
-	// Content Libraries
+	// Provider Content Libraries
 	// --------------------------------------------------------------
 	if tmClient.Client.IsSysAdmin {
 		cls, err := tmClient.GetAllContentLibraries(nil, nil)
 		if err != nil {
-			return fmt.Errorf("error retrieving Content Libraries: %s", err)
+			return fmt.Errorf("error retrieving Provider Content Libraries: %s", err)
 		}
 		for _, cl := range cls {
 			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, cl.ContentLibrary.Name, "vcfa_content_library", 0, verbose)
