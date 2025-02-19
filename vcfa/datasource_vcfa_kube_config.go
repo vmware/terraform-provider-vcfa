@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vmware/go-vcloud-director/v3/ccitypes"
-	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
+	clientcmdapi "k8s.io/client-go/tools/clientcmd/api/v1"
 )
 
 func datasourceVcfaKubeConfig() *schema.Resource {
@@ -117,27 +117,34 @@ func datasourceVcfaKubeConfigRead(ctx context.Context, d *schema.ResourceData, m
 	kubeconfig := &clientcmdapi.Config{
 		Kind:       "Config",
 		APIVersion: clientcmdapi.SchemeGroupVersion.Version,
-		Clusters: map[string]*clientcmdapi.Cluster{
-			clusterName: {
+		Clusters: []clientcmdapi.NamedCluster{{
+			Name: clusterName,
+			Cluster: clientcmdapi.Cluster{
 				InsecureSkipTLSVerify: tmClient.InsecureFlag,
 				Server:                clusterServer,
 			},
-		},
-		Contexts: map[string]*clientcmdapi.Context{
-			contextName: {
-				Cluster:  clusterName,
-				AuthInfo: username,
+		}},
+		Contexts: []clientcmdapi.NamedContext{
+			{
+				Name: contextName,
+				Context: clientcmdapi.Context{
+					Cluster:  clusterName,
+					AuthInfo: username,
+				},
 			},
 		},
-		AuthInfos: map[string]*clientcmdapi.AuthInfo{
-			username: {
-				Token: token.Raw,
+		AuthInfos: []clientcmdapi.NamedAuthInfo{
+			{
+				Name: username,
+				AuthInfo: clientcmdapi.AuthInfo{
+					Token: token.Raw,
+				},
 			},
 		},
 		CurrentContext: contextName,
 	}
 	if okProjectName && okSupervisorNamespace {
-		kubeconfig.Contexts[contextName].Namespace = supervisorNamespaceName.(string)
+		kubeconfig.Contexts[0].Context.Namespace = supervisorNamespaceName.(string)
 	}
 
 	kubeconfigBytes, err := json.MarshalIndent(kubeconfig, "", "  ")
