@@ -42,7 +42,7 @@ func TestAccVcfaOrgLocalUser(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("vcfa_org.test", "name", t.Name()),
 					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "username", "new-"+params["Username"].(string)),
-					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "password", "CHANGE-ME"),
+					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "password", "long-change-ME1"),
 					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "role_ids.#", "1"),
 					resource.TestCheckResourceAttrPair("vcfa_org_local_user.test", "org_id", "vcfa_org.test", "id"),
 				),
@@ -51,7 +51,7 @@ func TestAccVcfaOrgLocalUser(t *testing.T) {
 				Config: configText2,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "username", params["Username"].(string)),
-					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "password", "CHANGE-ME-MORE"),
+					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "password", "long-change-ME1-MORE"),
 					resource.TestCheckResourceAttr("vcfa_org_local_user.test", "role_ids.#", "2"),
 					resource.TestCheckResourceAttrPair("vcfa_org_local_user.test", "org_id", "vcfa_org.test", "id"),
 				),
@@ -99,7 +99,7 @@ resource "vcfa_org_local_user" "test" {
   org_id    = vcfa_org.test.id
   role_ids  = [data.vcfa_role.org-admin.id]
   username  = "new-{{.Username}}"
-  password  = "CHANGE-ME"
+  password  = "long-change-ME1"
 }
 `
 
@@ -108,7 +108,7 @@ resource "vcfa_org_local_user" "test" {
   org_id    = vcfa_org.test.id
   role_ids  = [data.vcfa_role.org-user.id, data.vcfa_role.org-admin.id]
   username  = "{{.Username}}"
-  password  = "CHANGE-ME-MORE"
+  password  = "long-change-ME1-MORE"
 }
 `
 

@@ -46,6 +46,7 @@ var alwaysShow = []string{
 	"vcfa_vcenter",
 	"vcfa_org",
 	"vcfa_ip_space",
+	"vcfa_provider_gateway",
 	"vcfa_org_regional_networking",
 	"vcfa_edge_cluster_qos",
 	"vcfa_content_library",
@@ -119,6 +120,26 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 				err := cl.Delete(true, true)
 				if err != nil {
 					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaContentLibrary, cl.ContentLibrary.Name, err)
+				}
+			}
+		}
+	}
+
+	// --------------------------------------------------------------
+	// Provider Gateways
+	// --------------------------------------------------------------
+	if tmClient.Client.IsSysAdmin {
+		pgs, err := tmClient.GetAllTmProviderGateways(nil)
+		if err != nil {
+			return fmt.Errorf("error retrieving IP Spaces: %s", err)
+		}
+		for _, pg := range pgs {
+			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, pg.TmProviderGateway.Name, "vcfa_provider_gateway", 2, verbose)
+			if toBeDeleted {
+				fmt.Printf("\t REMOVING %s %s\n", labelVcfaProviderGateway, pg.TmProviderGateway.Name)
+				err := pg.Delete()
+				if err != nil {
+					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaProviderGateway, pg.TmProviderGateway.Name, err)
 				}
 			}
 		}
