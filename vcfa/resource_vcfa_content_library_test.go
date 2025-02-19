@@ -68,12 +68,12 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 			},
 			{
 				Config: configText1,
-				Check: resource.ComposeTestCheckFunc(
+				Check: resource.ComposeAggregateTestCheckFunc(
 					// Region Storage Policy
 					resource.TestCheckResourceAttr(dsRegionStoragePolicy, "name", testConfig.Tm.StorageClass),
 					resource.TestCheckResourceAttrPair(dsRegionStoragePolicy, "region_id", regionHclRef, "id"),
 					resource.TestMatchResourceAttr(dsRegionStoragePolicy, "description", regexp.MustCompile(`.*`)),
-					resource.TestCheckResourceAttr(dsRegionStoragePolicy, "status", ""),
+					resource.TestCheckResourceAttr(dsRegionStoragePolicy, "status", "READY"),
 					resource.TestCheckResourceAttrSet(dsRegionStoragePolicy, "storage_capacity_mb"),
 					resource.TestCheckResourceAttrSet(dsRegionStoragePolicy, "storage_consumed_mb"),
 
@@ -101,14 +101,14 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 			},
 			{
 				Config: configText2,
-				Check: resource.ComposeTestCheckFunc(
+				Check: resource.ComposeAggregateTestCheckFunc(
 					cachedId.testCheckCachedResourceFieldValue(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "name", t.Name()+"Updated"),
 				),
 			},
 			{
 				Config: configText3,
-				Check: resource.ComposeTestCheckFunc(
+				Check: resource.ComposeAggregateTestCheckFunc(
 					resourceFieldsEqual(resourceName, "data.vcfa_content_library.cl_ds", []string{
 						"%", // Does not have delete_recursive, delete_force
 						"delete_recursive",
