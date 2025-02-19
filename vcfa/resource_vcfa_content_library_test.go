@@ -422,7 +422,7 @@ data "vcfa_storage_class" "sc" {
 const testAccVcfaContentLibraryTenantStep1 = testAccVcfaContentLibraryTenantPrerequisites + `
 resource "vcfa_content_library" "cl1" {
   provider    = vcfa
-  org_id      = vcfa_org.test.id
+  org_id      = vcfa_org_region_quota.test.org_id # Explicit dependency on Region Quota
   name        = "{{.Name}}"
   description = "{{.Name}}"
   storage_class_ids = [
@@ -430,13 +430,11 @@ resource "vcfa_content_library" "cl1" {
   ]
   delete_force = true
   delete_recursive = true
-
-  depends_on = [ vcfa_org_region_quota.test]
 }
 
 resource "vcfa_content_library" "cl2" {
   provider    = vcfa
-  org_id      = vcfa_org.test.id
+  org_id      = vcfa_org_region_quota.test.org_id # Explicit dependency on Region Quota
   name        = "{{.Name2}}"
   description = "{{.Name2}}"
   auto_attach = false
@@ -445,13 +443,12 @@ resource "vcfa_content_library" "cl2" {
   ]
   delete_force = true
   delete_recursive = true
-
-  depends_on = [vcfa_org_region_quota.test]
 }
 `
 
 const testAccVcfaContentLibraryTenantStep3 = testAccVcfaContentLibraryTenantStep1 + `
-# skip-binary-test: Requires an extra provider configuration with a tenant user
+# skip-binary-test: Requires an extra provider configuration block with a tenant user
+
 data "vcfa_storage_class" "sc-tenant" {
   provider  = vcfatenant
   region_id = data.vcfa_region.region.id
@@ -459,8 +456,13 @@ data "vcfa_storage_class" "sc-tenant" {
 }
 
 resource "vcfa_content_library" "cl3" {
-  provider    = vcfatenant
-  org_id      = vcfa_org.test.id
+  provider = vcfatenant
+
+  # Explicit dependency on Region Quota.
+  # A real tenant user should not need to do something like this (a Region Quota should be already provisioned),
+  # but as we created the Region Quota at same time, we need to guarantee dependencies
+  # so they are removed correctly afterwards.
+  org_id      = vcfa_org_region_quota.test.org_id
   name        = "{{.Name3}}"
   description = "{{.Name3}}"
   storage_class_ids = [
@@ -468,15 +470,12 @@ resource "vcfa_content_library" "cl3" {
   ]
   delete_force = true
   delete_recursive = true
-
-  # A real tenant user should not need this depends_on, but as we
-  # created the Region Quota at same time, we need to guarantee dependencies
-  # so they are removed correctly afterwards
-  depends_on = [vcfa_org_region_quota.test]
 }
 `
 
 const testAccVcfaContentLibraryTenantStep4 = testAccVcfaContentLibraryTenantStep3 + `
+# skip-binary-test: Requires an extra provider configuration block with a tenant user
+
 data "vcfa_content_library" "cl_ds1" {
   provider = vcfa
   org_id   = vcfa_org.test.id
