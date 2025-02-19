@@ -428,7 +428,6 @@ resource "vcfa_content_library" "cl1" {
   storage_class_ids = [
     data.vcfa_storage_class.sc.id
   ]
-  delete_force = true
   delete_recursive = true
 }
 
@@ -441,7 +440,7 @@ resource "vcfa_content_library" "cl2" {
   storage_class_ids = [
     data.vcfa_storage_class.sc.id
   ]
-  delete_force = true
+  delete_force     = true # Should be ignored, otherwise it would fail
   delete_recursive = true
 }
 `
@@ -456,20 +455,22 @@ data "vcfa_storage_class" "sc-tenant" {
 }
 
 resource "vcfa_content_library" "cl3" {
-  provider = vcfatenant
-
-  # Explicit dependency on Region Quota.
-  # A real tenant user should not need to do something like this (a Region Quota should be already provisioned),
-  # but as we created the Region Quota at same time, we need to guarantee dependencies
-  # so they are removed correctly afterwards.
-  org_id      = vcfa_org_region_quota.test.org_id
+  provider    = vcfatenant
+  org_id      = vcfa_org.test.id
   name        = "{{.Name3}}"
   description = "{{.Name3}}"
   storage_class_ids = [
     data.vcfa_storage_class.sc-tenant.id
   ]
-  delete_force = true
+  delete_force     = true # Should be ignored, otherwise it would fail
   delete_recursive = true
+
+  # Explicit dependency on Region Quota.
+  # A real tenant user should not need to do something like this (a Region Quota should be already provisioned),
+  # but as we created the Region Quota at same time, we need to guarantee dependencies
+  # so they are removed correctly afterwards.
+  # Also depends on the logged in user.
+  depends_on = [vcfa_org_region_quota.test, vcfa_org_local_user.user]
 }
 `
 

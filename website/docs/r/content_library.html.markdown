@@ -107,7 +107,6 @@ resource "vcfa_content_library" "cl1" {
   storage_class_ids = [
     data.vcfa_storage_class.sc.id
   ]
-  delete_force = true
   delete_recursive = true
 
   # We need an available Region Quota
@@ -115,7 +114,7 @@ resource "vcfa_content_library" "cl1" {
 }
 ```
 
-## Example Usage for a Tenant Content Library as an Tenant User
+## Example Usage for a Tenant Content Library as a Tenant User
 
 ```hcl
 data "vcfa_region" "region" {
@@ -135,7 +134,6 @@ resource "vcfa_content_library" "cl1" {
   storage_class_ids = [
     data.vcfa_storage_class.sc.id
   ]
-  delete_force = true
   delete_recursive = true
 }
 ```
@@ -147,7 +145,8 @@ The following arguments are supported:
 * `name` - (Required) The name of the Content Library
 * `org_id` - (Optional) The reference to the Organization that the Content Library belongs to. If it is not set, assumes the
   Content Library is of type `PROVIDER`
-* `delete_force` - (Optional) Defaults to `false`. On deletion, forcefully deletes the Content Library and its Content Library items
+* `delete_force` - (Optional) Defaults to `false`. On deletion, forcefully deletes the Content Library and its Content Library items. Only considered with
+  `PROVIDER` Content Libraries, ignored otherwise.
 * `delete_recursive` - (Optional) Defaults to `false`. On deletion, deletes the Content Library, including its Content Library items, in a single operation
 * `storage_class_ids` - (Required) A set of [Storage Class IDs](/providers/vmware/vcfa/latest/docs/data-sources/storage_class) used by this Content Library
 * `auto_attach` - (Optional) Defaults to `true`. For Tenant Content Libraries this field represents whether this Content Library should be
