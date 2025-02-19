@@ -221,6 +221,10 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 	cl3 := "vcfa_content_library.cl3"
 
 	cachedId := &testCachedFieldValue{}
+
+	// This test uses also a provider config block logged in as a Tenant user, so we can not only test that administrators
+	// can create tenant libraries, but also tenant users can. This is a function and not a map to be lazy evaluated, as
+	// the given user is created after some testing steps.
 	multipleFactories := func() map[string]func() (*schema.Provider, error) {
 		return map[string]func() (*schema.Provider, error){
 			"vcfa": func() (*schema.Provider, error) {
@@ -328,7 +332,7 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 				ResourceName:      cl1,
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateId:     params["Name"].(string),
+				ImportStateId:     fmt.Sprintf("%s%s%s", params["Org"].(string), ImportSeparator, params["Name"].(string)),
 				ImportStateVerifyIgnore: []string{
 					"delete_recursive",
 					"delete_force",
@@ -342,30 +346,26 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 
 const testAccVcfaContentLibraryTenantPrerequisites = `
 resource "vcfa_org" "test" {
-provider   = vcfa
-
+  provider     = vcfa
   name         = "{{.Org}}"
   display_name = "{{.Org}}"
   description  = "{{.Org}}"
 }
 
 data "vcfa_role" "org-admin" {
-provider   = vcfa
-
-  org_id = vcfa_org.test.id
-  name   = "Organization Administrator"
+  provider = vcfa
+  org_id   = vcfa_org.test.id
+  name     = "Organization Administrator"
 }
 
 data "vcfa_role" "org-user" {
-provider   = vcfa
-
-  org_id = vcfa_org.test.id
-  name   = "Organization User"
+  provider = vcfa
+  org_id   = vcfa_org.test.id
+  name     = "Organization User"
 }
 
 resource "vcfa_org_local_user" "user" {
-provider   = vcfa
-
+  provider = vcfa
   org_id   = vcfa_org.test.id
   role_ids = [data.vcfa_role.org-admin.id, data.vcfa_role.org-user.id]
   username = "{{.Username}}"
@@ -380,22 +380,19 @@ data "vcfa_supervisor" "test" {
 }
 
 data "vcfa_region_zone" "test" {
-provider   = vcfa
-
+  provider  = vcfa
   region_id = {{.RegionId}}
   name      = "{{.SupervisorZoneName}}"
 }
 
 data "vcfa_region_storage_policy" "sp" {
-provider   = vcfa
-
+  provider  = vcfa
   name      = "{{.StorageClass}}"
   region_id = {{.RegionId}}
 }
 
 resource "vcfa_org_region_quota" "test" {
-provider   = vcfa
-
+  provider       = vcfa
   org_id         = vcfa_org.test.id
   region_id      = {{.RegionId}}
   supervisor_ids = [data.vcfa_supervisor.test.id]
@@ -416,8 +413,7 @@ provider   = vcfa
 }
 
 data "vcfa_storage_class" "sc" {
-provider   = vcfa
-
+  provider  = vcfa
   region_id = {{.RegionId}}
   name      = data.vcfa_region_storage_policy.sp.name
 }
@@ -425,8 +421,7 @@ provider   = vcfa
 
 const testAccVcfaContentLibraryTenantStep1 = testAccVcfaContentLibraryTenantPrerequisites + `
 resource "vcfa_content_library" "cl1" {
-provider   = vcfa
-
+  provider    = vcfa
   org_id      = vcfa_org.test.id
   name        = "{{.Name}}"
   description = "{{.Name}}"
@@ -440,8 +435,7 @@ provider   = vcfa
 }
 
 resource "vcfa_content_library" "cl2" {
-provider   = vcfa
-
+  provider    = vcfa
   org_id      = vcfa_org.test.id
   name        = "{{.Name2}}"
   description = "{{.Name2}}"
@@ -452,7 +446,7 @@ provider   = vcfa
   delete_force = true
   delete_recursive = true
 
-  depends_on = [ vcfa_org_region_quota.test]
+  depends_on = [vcfa_org_region_quota.test]
 }
 `
 
@@ -474,26 +468,31 @@ resource "vcfa_content_library" "cl3" {
   ]
   delete_force = true
   delete_recursive = true
+
+  # A real tenant user should not need this depends_on, but as we
+  # created the Region Quota at same time, we need to guarantee dependencies
+  # so they are removed correctly afterwards
+  depends_on = [vcfa_org_region_quota.test]
 }
 `
 
 const testAccVcfaContentLibraryTenantStep4 = testAccVcfaContentLibraryTenantStep3 + `
 data "vcfa_content_library" "cl_ds1" {
-provider   = vcfa
-  org_id = vcfa_org.test.id
-  name   = vcfa_content_library.cl1.name
+  provider = vcfa
+  org_id   = vcfa_org.test.id
+  name     = vcfa_content_library.cl1.name
 }
 
 data "vcfa_content_library" "cl_ds2" {
-provider   = vcfa
-  org_id = vcfa_org.test.id
-  name   = vcfa_content_library.cl2.name
+  provider = vcfa
+  org_id   = vcfa_org.test.id
+  name     = vcfa_content_library.cl2.name
 }
 
 data "vcfa_content_library" "cl_ds3" {
-provider   = vcfa
-  org_id = vcfa_org.test.id
-  name   = vcfa_content_library.cl3.name
+  provider = vcfa
+  org_id   = vcfa_org.test.id
+  name     = vcfa_content_library.cl3.name
 }
 
 data "vcfa_content_library" "cl_ds3tenant" {
