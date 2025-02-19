@@ -450,7 +450,7 @@ const testAccVcfaContentLibraryTenantStep3 = testAccVcfaContentLibraryTenantStep
 
 data "vcfa_storage_class" "sc-tenant" {
   provider  = vcfatenant
-  region_id = data.vcfa_region.region.id
+  region_id = {{.RegionId}}
   name      = data.vcfa_region_storage_policy.sp.name
 }
 

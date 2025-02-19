@@ -108,6 +108,8 @@ func createSystemTemporaryVCFAConnection() *VCDClient {
 	return conn
 }
 
+// testOrgProvider configures a VCFA Terraform Provider with the credentials of a tenant (Organization) user, to login
+// as a tenant in VCFA.
 func testOrgProvider(orgName, username, password string) *schema.Provider {
 	newProvider := Provider()
 	newProvider.ConfigureContextFunc = func(ctx context.Context, data *schema.ResourceData) (interface{}, diag.Diagnostics) {
