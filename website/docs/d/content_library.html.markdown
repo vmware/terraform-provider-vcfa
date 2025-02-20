@@ -10,7 +10,7 @@ description: |-
 
 Provides a VMware Cloud Foundation Automation Content Library data source. This can be used to read Content Libraries.
 
-## Example Usage
+## Example Usage for Provider libraries
 
 ```hcl
 data "vcfa_content_library" "cl" {
@@ -22,6 +22,23 @@ output "is_shared" {
 }
 output "owner_org" {
   value = data.vcfa_content_library.cl.org_id
+}
+```
+
+## Example Usage for Tenant libraries
+
+```hcl
+data "vcfa_org" "my-org" {
+  name = "my-org"
+}
+
+data "vcfa_content_library" "cl" {
+  org_id = data.vcfa_org.my-org.id
+  name   = "My Library"
+}
+
+output "is_shared" {
+  value = data.vcfa_content_library.cl.is_shared
 }
 ```
 
