@@ -3,12 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_supervisor_namespace"
 sidebar_current: "docs-vcfa-resource-supervisor-namespace"
 description: |-
- Provides a VMware Cloud Foundation Automation Supervisor Namespace. This can be used to create, modify, and delete Roles.
+ Provides a VMware Cloud Foundation Automation Supervisor Namespace. This can be used to create, modify, and delete Supervisor namespaces.
 ---
 
 # vcfa\_supervisor\_namespace
 
-Provides a VMware Cloud Foundation Automation Supervisor Namespace. This can be used to create, modify, and delete Roles.
+Provides a VMware Cloud Foundation Automation Supervisor Namespace. This can be used to create, modify, and delete Supervisor namespaces.
 
 ## Example Usage
 
@@ -110,8 +110,8 @@ The `zones_initial_class_config_overrides` is a set of metadata entries that hav
 state. It does not generate configuration. However, an experimental feature in Terraform 1.5+ allows
 also code generation. See [Importing resources][importing-resources] for more information.
 
-An existing Role can be [imported][docs-import] into this resource via supplying the full dot separated path for a Role.
-For example, using this structure, representing an existing Role that was **not** created using Terraform:
+An existing Supervisor Namespace can be [imported][docs-import] into this resource via supplying the full dot separated path for a Supervisor Namespace.
+For example, using this structure, representing an existing Supervisor Namespace that was **not** created using Terraform:
 
 ```hcl
 resource "vcfa_supervisor_namespace" "existing_supervisor_namespace" {
