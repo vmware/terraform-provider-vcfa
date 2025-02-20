@@ -68,6 +68,9 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 			return fmt.Errorf("error retrieving Organizations: %s", err)
 		}
 		for _, org := range orgs {
+			if org.TmOrg.IsClassicTenant {
+				continue
+			}
 			// --------------------------------------------------------------
 			// Tenant Content Libraries
 			// --------------------------------------------------------------
