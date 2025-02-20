@@ -66,6 +66,30 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 	}
 
 	// --------------------------------------------------------------
+	// Remove all children from existing Tenants
+	// --------------------------------------------------------------
+	if tmClient.Client.IsSysAdmin {
+		orgs, err := tmClient.GetAllTmOrgs(nil)
+		if err != nil {
+			return fmt.Errorf("error retrieving Organizations: %s", err)
+		}
+		for _, org := range orgs {
+			// --------------------------------------------------------------
+			// Tenant Content Libraries
+			// --------------------------------------------------------------
+			var cls []*govcd.ContentLibrary
+			cls, err = org.GetAllContentLibraries(nil)
+			if err != nil {
+				return fmt.Errorf("error retrieving Tenant '%s' Content Libraries: %s", org.TmOrg.Name, err)
+			}
+			err = removeLeftoverContentLibraries(cls, 1, verbose)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	// --------------------------------------------------------------
 	// Org Regional Network Configuration
 	// --------------------------------------------------------------
 	if tmClient.Client.IsSysAdmin {
@@ -106,12 +130,12 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 	}
 
 	// --------------------------------------------------------------
-	// Content Libraries
+	// Provider Content Libraries
 	// --------------------------------------------------------------
 	if tmClient.Client.IsSysAdmin {
 		cls, err := tmClient.GetAllContentLibraries(nil, nil)
 		if err != nil {
-			return fmt.Errorf("error retrieving Content Libraries: %s", err)
+			return fmt.Errorf("error retrieving Provider Content Libraries: %s", err)
 		}
 		for _, cl := range cls {
 			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, cl.ContentLibrary.Name, "vcfa_content_library", 0, verbose)
@@ -206,6 +230,30 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 	}
 
 	// --------------------------------------------------------------
+	// Organizations
+	// --------------------------------------------------------------
+	if tmClient.Client.IsSysAdmin {
+		orgs, err := tmClient.GetAllTmOrgs(nil)
+		if err != nil {
+			return fmt.Errorf("error retrieving Organizations: %s", err)
+		}
+		for _, org := range orgs {
+			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, org.TmOrg.Name, "vcfa_org", 0, verbose)
+			if toBeDeleted {
+				fmt.Printf("\t REMOVING Organization %s\n", org.TmOrg.Name)
+				err = org.Disable()
+				if err != nil {
+					return fmt.Errorf("error disabling %s '%s': %s", labelVcfaOrg, org.TmOrg.Name, err)
+				}
+				err := org.Delete()
+				if err != nil {
+					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaOrg, org.TmOrg.Name, err)
+				}
+			}
+		}
+	}
+
+	// --------------------------------------------------------------
 	// NSX Managers
 	// --------------------------------------------------------------
 	if tmClient.Client.IsSysAdmin {
@@ -244,30 +292,6 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 				err := vc.Delete()
 				if err != nil {
 					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaVirtualCenter, vc.VSphereVCenter.Name, err)
-				}
-			}
-		}
-	}
-
-	// --------------------------------------------------------------
-	// Organizations
-	// --------------------------------------------------------------
-	if tmClient.Client.IsSysAdmin {
-		orgs, err := tmClient.GetAllTmOrgs(nil)
-		if err != nil {
-			return fmt.Errorf("error retrieving Organizations: %s", err)
-		}
-		for _, org := range orgs {
-			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, org.TmOrg.Name, "vcfa_org", 0, verbose)
-			if toBeDeleted {
-				fmt.Printf("\t REMOVING Organization %s\n", org.TmOrg.Name)
-				err = org.Disable()
-				if err != nil {
-					return fmt.Errorf("error disabling %s '%s': %s", labelVcfaOrg, org.TmOrg.Name, err)
-				}
-				err := org.Delete()
-				if err != nil {
-					return fmt.Errorf("error deleting %s '%s': %s", labelVcfaOrg, org.TmOrg.Name, err)
 				}
 			}
 		}
@@ -330,4 +354,19 @@ func inList(list entityList, name, entityType string) bool {
 		}
 	}
 	return false
+}
+
+// removeLeftoverContentLibraries deletes the given Content Libraries
+func removeLeftoverContentLibraries(cls []*govcd.ContentLibrary, level int, verbose bool) error {
+	for _, cl := range cls {
+		toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, cl.ContentLibrary.Name, "vcfa_content_library", level, verbose)
+		if toBeDeleted {
+			fmt.Printf("\t REMOVING %s %s\n", labelVcfaContentLibrary, cl.ContentLibrary.Name)
+			err := cl.Delete(true, true)
+			if err != nil {
+				return fmt.Errorf("error deleting %s '%s': %s", labelVcfaContentLibrary, cl.ContentLibrary.Name, err)
+			}
+		}
+	}
+	return nil
 }

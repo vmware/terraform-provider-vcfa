@@ -39,7 +39,7 @@ func resourceVcfaContentLibrary() *schema.Resource {
 			"delete_force": {
 				Type:        schema.TypeBool,
 				Optional:    true,
-				Description: fmt.Sprintf("On deletion, forcefully deletes the %s and its %ss", labelVcfaContentLibrary, labelVcfaContentLibraryItem),
+				Description: fmt.Sprintf("On deletion, forcefully deletes the %s and its %ss. Only for PROVIDER Content Libraries", labelVcfaContentLibrary, labelVcfaContentLibraryItem),
 			},
 			"delete_recursive": {
 				Type:        schema.TypeBool,
@@ -202,7 +202,12 @@ func resourceVcfaContentLibraryDelete(ctx context.Context, d *schema.ResourceDat
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	cl.Delete(d.Get("delete_force").(bool), d.Get("delete_recursive").(bool))
+
+	deleteForce := d.Get("delete_force").(bool)
+	if cl.ContentLibrary.LibraryType != "PROVIDER" {
+		deleteForce = false // Forcefully deletion is not available for non-PROVIDER Content Libraries
+	}
+	err = cl.Delete(deleteForce, d.Get("delete_recursive").(bool))
 	if err != nil {
 		return diag.FromErr(err)
 	}

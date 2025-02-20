@@ -31,6 +31,113 @@ resource "vcfa_content_library" "cl" {
 }
 ```
 
+## Example Usage for a Tenant Content Library as an Administrator
+
+```hcl
+data "vcfa_vcenter" "vc" {
+  name = "my-vcenter"
+}
+
+data "vcfa_nsx_manager" "nsx_manager" {
+  name = "my-nsx-manager"
+}
+
+data "vcfa_region" "region" {
+  name = "my-region"
+}
+
+data "vcfa_region_vm_class" "region_vm_class0" {
+  region_id = data.vcfa_region.region.id
+  name      = "best-effort-2xlarge"
+}
+
+resource "vcfa_org" "test" {
+  name         = "my-org"
+  display_name = "my-org"
+  description  = "my-org"
+}
+
+data "vcfa_supervisor" "test" {
+  name       = "supervisor"
+  vcenter_id = data.vcfa_vcenter.vc.id
+  depends_on = [data.vcfa_vcenter.vc]
+}
+
+data "vcfa_region_zone" "test" {
+  region_id = data.vcfa_region.region.id
+  name      = "region-zone"
+}
+
+data "vcfa_region_storage_policy" "sp" {
+  name      = "default_storage_policy"
+  region_id = data.vcfa_region.region.id
+}
+
+resource "vcfa_org_region_quota" "test" {
+  org_id         = vcfa_org.test.id
+  region_id      = data.vcfa_region.region.id
+  supervisor_ids = [data.vcfa_supervisor.test.id]
+  zone_resource_allocations {
+    region_zone_id         = data.vcfa_region_zone.test.id
+    cpu_limit_mhz          = 1900
+    cpu_reservation_mhz    = 90
+    memory_limit_mib       = 500
+    memory_reservation_mib = 200
+  }
+  region_vm_class_ids = [
+    data.vcfa_region_vm_class.region_vm_class0.id,
+    data.vcfa_region_vm_class.region_vm_class1.id
+  ]
+  region_storage_policy {
+    region_storage_policy_id = data.vcfa_region_storage_policy.sp.id
+    storage_limit_mib        = 1024
+  }
+}
+
+data "vcfa_storage_class" "sc" {
+  region_id = data.vcfa_region.region.id
+  name      = data.vcfa_region_storage_policy.sp.name
+}
+
+resource "vcfa_content_library" "cl1" {
+  org_id      = vcfa_org.test.id
+  name        = "my-content-library"
+  description = "Example ibrary"
+  auto_attach = false # Defaults to true
+  storage_class_ids = [
+    data.vcfa_storage_class.sc.id
+  ]
+  delete_recursive = true
+
+  # We need an available Region Quota
+  depends_on = [vcfa_org_region_quota.test]
+}
+```
+
+## Example Usage for a Tenant Content Library as a Tenant User
+
+```hcl
+data "vcfa_region" "region" {
+  name = "my-region"
+}
+
+data "vcfa_storage_class" "sc" {
+  region_id = data.vcfa_region.region.id
+  name      = "My storage class"
+}
+
+resource "vcfa_content_library" "cl1" {
+  org_id      = vcfa_org.test.id
+  name        = "my-content-library"
+  description = "Example ibrary"
+  auto_attach = false # Defaults to true
+  storage_class_ids = [
+    data.vcfa_storage_class.sc.id
+  ]
+  delete_recursive = true
+}
+```
+
 ## Argument Reference
 
 The following arguments are supported:
@@ -38,7 +145,8 @@ The following arguments are supported:
 * `name` - (Required) The name of the Content Library
 * `org_id` - (Optional) The reference to the Organization that the Content Library belongs to. If it is not set, assumes the
   Content Library is of type `PROVIDER`
-* `delete_force` - (Optional) Defaults to `false`. On deletion, forcefully deletes the Content Library and its Content Library items
+* `delete_force` - (Optional) Defaults to `false`. On deletion, forcefully deletes the Content Library and its Content Library items. Only considered with
+  `PROVIDER` Content Libraries, ignored otherwise.
 * `delete_recursive` - (Optional) Defaults to `false`. On deletion, deletes the Content Library, including its Content Library items, in a single operation
 * `storage_class_ids` - (Required) A set of [Storage Class IDs](/providers/vmware/vcfa/latest/docs/data-sources/storage_class) used by this Content Library
 * `auto_attach` - (Optional) Defaults to `true`. For Tenant Content Libraries this field represents whether this Content Library should be
