@@ -6,7 +6,7 @@ require (
 	github.com/hashicorp/go-cty v1.4.1-0.20200414143053-d3edf31b6320
 	github.com/hashicorp/go-version v1.7.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.35.0
-	github.com/vmware/go-vcloud-director/v3 v3.0.0-alpha.30
+	github.com/vmware/go-vcloud-director/v3 v3.0.0-alpha.31
 )
 
 require (
