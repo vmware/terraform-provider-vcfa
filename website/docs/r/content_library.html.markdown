@@ -110,7 +110,7 @@ resource "vcfa_content_library" "cl1" {
   delete_recursive = true
 
   # We need an available Region Quota
-  depends_on = [ vcfa_org_region_quota.test]
+  depends_on = [vcfa_org_region_quota.test]
 }
 ```
 
