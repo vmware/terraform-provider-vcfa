@@ -62,7 +62,7 @@ var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_certificate":                     datasourceVcfaCertificate(),                 // 1.0
 	"vcfa_org_local_user":                  datasourceVcfaLocalUser(),                   // 1.0
 	"vcfa_org_ldap":                        datasourceVcfaOrgLdap(),                     // 1.0
-	"vcfa_kube_config":                     datasourceVcfaKubeConfig(),                  // 1.0
+	"vcfa_kubeconfig":                      datasourceVcfaKubeConfig(),                  // 1.0
 	"vcfa_supervisor_namespace":            datasourceVcfaSupervisorNamespace(),         // 1.0
 }
 

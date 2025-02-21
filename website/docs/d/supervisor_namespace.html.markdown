@@ -43,7 +43,7 @@ The following arguments are supported:
 <a id="storage-classes"></a>
 ## Storage Classes
 
-The `storage_classes` is a set of metadata entries that have the following structure:
+The `storage_classes` is a set of entries that have the following structure:
 
 * `limit_mib` - Limit in MiB
 * `name` - Name of the Storage Class
@@ -51,7 +51,7 @@ The `storage_classes` is a set of metadata entries that have the following struc
 <a id="storage-classes-initial-class-config-overrides"></a>
 ## Storage Classes Initial Class Config Overrides
 
-The `storage_classes_initial_class_config_overrides` is a set of metadata entries that have the following structure:
+The `storage_classes_initial_class_config_overrides` is a set of entries that have the following structure:
 
 * `limit_mib` - Limit in MiB
 * `name` - Name of the Storage Class
@@ -59,14 +59,14 @@ The `storage_classes_initial_class_config_overrides` is a set of metadata entrie
 <a id="vm-classes"></a>
 ## VM Classes
 
-The `vm_classes` is a set of metadata entries that have the following structure:
+The `vm_classes` is a set of entries that have the following structure:
 
 * `name` - Name of the VM Class
 
 <a id="zones"></a>
 ## Zones
 
-The `zones` is a set of metadata entries that have the following structure:
+The `zones` is a set of entries that have the following structure:
 
 * `cpu_limit_mhz` - CPU limit in MHz
 * `cpu_reservation_mhz` - CPU reservation in MHz
@@ -77,7 +77,7 @@ The `zones` is a set of metadata entries that have the following structure:
 <a id="zones-initial-class-config-overrides"></a>
 ## Zones Initial Class Config Overrides
 
-The `zones_initial_class_config_overrides` is a set of metadata entries that have the following structure:
+The `zones_initial_class_config_overrides` is a set of entries that have the following structure:
 
 * `cpu_limit_mhz` - CPU limit in MHz
 * `cpu_reservation_mhz` - CPU reservation in MHz

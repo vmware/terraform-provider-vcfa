@@ -93,12 +93,12 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 
 				Config: configText4,
 				Check: resource.ComposeTestCheckFunc(
-					cachedNamespaceName.testCheckCachedResourceFieldValuePattern("data.vcfa_kube_config.test-namespace", "id", fmt.Sprintf("%s:%%s:%s", testConfig.Org.Name, params["ProjectName"].(string))),
-					cachedNamespaceName.testCheckCachedResourceFieldValuePattern("data.vcfa_kube_config.test-namespace", "context_name", fmt.Sprintf("%s:%%s:%s", testConfig.Org.Name, params["ProjectName"].(string))),
-					resource.TestCheckResourceAttr("data.vcfa_kube_config.test-namespace", "insecure_skip_tls_verify", fmt.Sprintf("%t", testConfig.Provider.AllowInsecure)),
-					resource.TestCheckResourceAttr("data.vcfa_kube_config.test-namespace", "user", fmt.Sprintf("%s:%s@%s", testConfig.Org.Name, testConfig.Org.User, ref.Host)),
-					resource.TestCheckResourceAttrSet("data.vcfa_kube_config.test-namespace", "token"),
-					resource.TestCheckResourceAttrSet("data.vcfa_kube_config.test-namespace", "kube_config_raw"),
+					cachedNamespaceName.testCheckCachedResourceFieldValuePattern("data.vcfa_kubeconfig.test-namespace", "id", fmt.Sprintf("%s:%%s:%s", testConfig.Org.Name, params["ProjectName"].(string))),
+					cachedNamespaceName.testCheckCachedResourceFieldValuePattern("data.vcfa_kubeconfig.test-namespace", "context_name", fmt.Sprintf("%s:%%s:%s", testConfig.Org.Name, params["ProjectName"].(string))),
+					resource.TestCheckResourceAttr("data.vcfa_kubeconfig.test-namespace", "insecure_skip_tls_verify", fmt.Sprintf("%t", testConfig.Provider.AllowInsecure)),
+					resource.TestCheckResourceAttr("data.vcfa_kubeconfig.test-namespace", "user", fmt.Sprintf("%s:%s@%s", testConfig.Org.Name, testConfig.Org.User, ref.Host)),
+					resource.TestCheckResourceAttrSet("data.vcfa_kubeconfig.test-namespace", "token"),
+					resource.TestCheckResourceAttrSet("data.vcfa_kubeconfig.test-namespace", "kube_config_raw"),
 				),
 			},
 		},
@@ -144,7 +144,7 @@ data "vcfa_supervisor_namespace" "test" {
   project_name = vcfa_supervisor_namespace.test.project_name
 }
 
-data "vcfa_kube_config" "test-namespace" {
+data "vcfa_kubeconfig" "test-namespace" {
   project_name              = vcfa_supervisor_namespace.test.project_name
   supervisor_namespace_name = vcfa_supervisor_namespace.test.name
 }

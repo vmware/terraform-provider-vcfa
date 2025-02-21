@@ -40,12 +40,12 @@ func TestAccVcfaKubeConfig(t *testing.T) {
 
 				Config: configText1,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcfa_kube_config.test", "id", testConfig.Org.Name),
-					resource.TestCheckResourceAttr("data.vcfa_kube_config.test", "context_name", testConfig.Org.Name),
-					resource.TestCheckResourceAttr("data.vcfa_kube_config.test", "insecure_skip_tls_verify", fmt.Sprintf("%t", testConfig.Provider.AllowInsecure)),
-					resource.TestCheckResourceAttr("data.vcfa_kube_config.test", "user", fmt.Sprintf("%s:%s@%s", testConfig.Org.Name, testConfig.Org.User, ref.Host)),
-					resource.TestCheckResourceAttrSet("data.vcfa_kube_config.test", "token"),
-					resource.TestCheckResourceAttrSet("data.vcfa_kube_config.test", "kube_config_raw"),
+					resource.TestCheckResourceAttr("data.vcfa_kubeconfig.test", "id", testConfig.Org.Name),
+					resource.TestCheckResourceAttr("data.vcfa_kubeconfig.test", "context_name", testConfig.Org.Name),
+					resource.TestCheckResourceAttr("data.vcfa_kubeconfig.test", "insecure_skip_tls_verify", fmt.Sprintf("%t", testConfig.Provider.AllowInsecure)),
+					resource.TestCheckResourceAttr("data.vcfa_kubeconfig.test", "user", fmt.Sprintf("%s:%s@%s", testConfig.Org.Name, testConfig.Org.User, ref.Host)),
+					resource.TestCheckResourceAttrSet("data.vcfa_kubeconfig.test", "token"),
+					resource.TestCheckResourceAttrSet("data.vcfa_kubeconfig.test", "kube_config_raw"),
 				),
 			},
 		},
@@ -55,5 +55,5 @@ func TestAccVcfaKubeConfig(t *testing.T) {
 }
 
 const testAccVcfaKubeConfigStep1 = `
-data "vcfa_kube_config" "test" {}
+data "vcfa_kubeconfig" "test" {}
 `
