@@ -59,6 +59,12 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 		fmt.Printf("Start leftovers removal\n")
 	}
 
+	// TODO - improve the skip to avoid cleaning up
+	if !tmClient.Client.IsSysAdmin {
+		fmt.Println("Skipping leftover removal for Org user mode")
+		return nil
+	}
+
 	// --------------------------------------------------------------
 	// Remove all children from existing Tenants
 	// --------------------------------------------------------------

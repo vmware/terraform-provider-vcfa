@@ -80,6 +80,10 @@ testunit: fmtcheck
 test: testunit tagverify
 	@sh -c "'$(CURDIR)/scripts/runtest.sh' short"
 
+# Runs the cci acceptance test as Org user
+testacc-cci:
+	@sh -c "'$(CURDIR)/scripts/runtest.sh' acceptance-cci"
+
 # Runs the full acceptance test as Org user
 testacc-orguser: testunit
 	@sh -c "'$(CURDIR)/scripts/runtest.sh' acceptance-orguser"
