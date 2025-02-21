@@ -142,6 +142,8 @@ func addMandatoryParams(dataSourceName string, mandatoryFields []string, t *test
 		switch mandatoryFields[fieldIndex] {
 		case "name":
 			templateFields = templateFields + `name = "does-not-exist"` + "\n"
+		case "project_name":
+			templateFields = templateFields + `project_name = "does-not-exist"` + "\n"
 		case "supervisor_id":
 			templateFields = templateFields + `supervisor_id = "urn:vcloud:supervisor:12345678-1234-1234-1234-123456789012"` + "\n"
 		case "vcenter_id":
