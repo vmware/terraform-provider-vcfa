@@ -40,6 +40,7 @@ The following arguments are supported:
 ## Attribute Reference
 
 * `creation_date` - The ISO-8601 timestamp representing when this Content Library Item was created
+* `item_type` - The type of Content Library Item
 * `image_identifier` - Virtual Machine Identifier (VMI) of the Content Library Item. This is a ReadOnly field
 * `is_published` - Whether this Content Library Item is published
 * `is_subscribed` - Whether this Content Library Item is subscribed

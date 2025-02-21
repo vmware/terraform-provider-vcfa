@@ -23,7 +23,7 @@ func TestAccVcfaContentLibraryItem(t *testing.T) {
 		"Name":              t.Name(),
 		"ContentLibraryRef": fmt.Sprintf("%s.id", contentLibraryHclRef),
 		"OvaPath":           "../test-resources/test_vapp_template.ova",
-		"Tags":              "tm",
+		"Tags":              "tm contentlibrary",
 	}
 	testParamsNotEmpty(t, params)
 
@@ -31,10 +31,14 @@ func TestAccVcfaContentLibraryItem(t *testing.T) {
 
 	configText1 := templateFill(preRequisites+testAccVcfaContentLibraryItemStep1, params)
 	params["FuncName"] = t.Name() + "-step2"
-	configText2 := templateFill(preRequisites+testAccVcfaContentLibraryItemStep2, params)
+	params["Name"] = t.Name() + "Updated"
+	configText2 := templateFill(preRequisites+testAccVcfaContentLibraryItemStep1, params)
+	params["FuncName"] = t.Name() + "-step3"
+	configText3 := templateFill(preRequisites+testAccVcfaContentLibraryItemStep3, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
+	debugPrintf("#[DEBUG] CONFIGURATION step3: %s\n", configText3)
 	if vcfaShortTest {
 		t.Skip(acceptanceTestsSkipped)
 		return
@@ -47,14 +51,15 @@ func TestAccVcfaContentLibraryItem(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: configText1,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr(resourceName, "name", params["Name"].(string)),
-					resource.TestCheckResourceAttr(resourceName, "description", params["Name"].(string)),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", t.Name()),
+					resource.TestCheckResourceAttr(resourceName, "description", t.Name()),
 					resource.TestCheckResourceAttrPair(resourceName, "content_library_id", contentLibraryHclRef, "id"),
 					resource.TestCheckResourceAttrSet(resourceName, "creation_date"),
 					resource.TestCheckResourceAttr(resourceName, "is_subscribed", "false"),
 					resource.TestCheckResourceAttr(resourceName, "is_published", "false"),
 					resource.TestCheckResourceAttrSet(resourceName, "image_identifier"),
+					resource.TestCheckResourceAttr(resourceName, "item_type", "TEMPLATE"),
 					resource.TestMatchResourceAttr(resourceName, "owner_org_id", regexp.MustCompile("urn:vcloud:org:")),
 					resource.TestCheckResourceAttr(resourceName, "status", "READY"),
 					resource.TestCheckResourceAttr(resourceName, "last_successful_sync", ""),
@@ -63,13 +68,30 @@ func TestAccVcfaContentLibraryItem(t *testing.T) {
 			},
 			{
 				Config: configText2,
-				Check: resource.ComposeTestCheckFunc(
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", t.Name()+"Updated"),
+					resource.TestCheckResourceAttr(resourceName, "description", t.Name()+"Updated"),
+					resource.TestCheckResourceAttrPair(resourceName, "content_library_id", contentLibraryHclRef, "id"),
+					resource.TestCheckResourceAttrSet(resourceName, "creation_date"),
+					resource.TestCheckResourceAttr(resourceName, "is_subscribed", "false"),
+					resource.TestCheckResourceAttr(resourceName, "is_published", "false"),
+					resource.TestCheckResourceAttrSet(resourceName, "image_identifier"),
+					resource.TestCheckResourceAttr(resourceName, "item_type", "TEMPLATE"),
+					resource.TestMatchResourceAttr(resourceName, "owner_org_id", regexp.MustCompile("urn:vcloud:org:")),
+					resource.TestCheckResourceAttr(resourceName, "status", "READY"),
+					resource.TestCheckResourceAttr(resourceName, "last_successful_sync", ""),
+					resource.TestCheckResourceAttr(resourceName, "version", "1"),
+				),
+			},
+			{
+				Config: configText3,
+				Check: resource.ComposeAggregateTestCheckFunc(
 					// file_path and upload_piece_size cannot be obtained during reads, that's why it does not appear in data source schema
 					resourceFieldsEqual(resourceName, "data.vcfa_content_library_item.cli_ds", []string{"file_path", "upload_piece_size", "%"}),
 				),
 			},
 			{
-				ResourceName:            "vcfa_content_library_item.cli",
+				ResourceName:            resourceName,
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateId:           fmt.Sprintf("%s%s%s", testConfig.Tm.ContentLibrary, ImportSeparator, params["Name"].(string)),
@@ -90,7 +112,7 @@ resource "vcfa_content_library_item" "cli" {
 }
 `
 
-const testAccVcfaContentLibraryItemStep2 = testAccVcfaContentLibraryItemStep1 + `
+const testAccVcfaContentLibraryItemStep3 = testAccVcfaContentLibraryItemStep1 + `
 data "vcfa_content_library_item" "cli_ds" {
   name               = vcfa_content_library_item.cli.name
   content_library_id = vcfa_content_library_item.cli.content_library_id
