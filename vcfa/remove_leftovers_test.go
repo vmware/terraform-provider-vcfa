@@ -39,7 +39,7 @@ var alsoDelete = entityList{
 }
 
 // isTest is a regular expression that tells if an entity needs to be deleted
-var isTest = regexp.MustCompile(`^[Tt]est|terraform`)
+var isTest = regexp.MustCompile(`^[Tt]est`)
 
 // alwaysShow lists the resources that will always be shown
 var alwaysShow = []string{
