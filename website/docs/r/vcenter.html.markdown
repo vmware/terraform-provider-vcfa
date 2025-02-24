@@ -15,7 +15,11 @@ Provides a resource to manage vCenters in VMware Cloud Foundation Automation.
 ## Example Usage
 
 ```hcl
-resource "vcfa_vcenter" "test" {
+data "vcfa_nsx_manager" "demo" {
+  name = "nsx-manager-one"
+}
+
+resource "vcfa_vcenter" "demo" {
   name                    = "my-vCenter"
   url                     = "https://host"
   auto_trust_certificate  = true
@@ -23,6 +27,7 @@ resource "vcfa_vcenter" "test" {
   username                = "admin@vsphere.local"
   password                = "CHANGE-ME"
   is_enabled              = true
+  nsx_manager_id          = data.vcfa_nsx_manager.demo.id
 }
 ```
 
@@ -30,6 +35,7 @@ resource "vcfa_vcenter" "test" {
 
 The following arguments are supported:
 
+* `nsx_manager_id` - (Required) ID of existing NSX Manager that this vCenter server uses
 * `name` - (Required) A name for vCenter server
 * `description` - (Optional) An optional description for vCenter server
 * `username` - (Required) A username for authenticating to vCenter server

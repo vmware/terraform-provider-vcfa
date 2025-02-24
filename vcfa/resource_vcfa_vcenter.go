@@ -49,6 +49,12 @@ func resourceVcfaVcenter() *schema.Resource {
 				ForceNew:    true,
 				Description: fmt.Sprintf("Defines if the %s certificate should automatically be trusted", labelVcfaVirtualCenter),
 			},
+			"nsx_manager_id": {
+				Type:        schema.TypeString,
+				Required:    true,
+				ForceNew:    true,
+				Description: fmt.Sprintf("%s ID that this %s uses", labelVcfaNsxManager, labelVcfaVirtualCenter),
+			},
 			"refresh_vcenter_on_create": {
 				Type:        schema.TypeBool,
 				Optional:    true,
