@@ -152,6 +152,7 @@ resource "vcfa_vcenter" "test" {
   username                 = "{{.VcenterUsername}}"
   password                 = "{{.VcenterPassword}}"
   is_enabled               = true
+  nsx_manager_id           = vcfa_nsx_manager.test.id
 }
 
 data "vcfa_supervisor" "test" {
