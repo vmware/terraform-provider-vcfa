@@ -24,18 +24,6 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"org_id": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				ForceNew:    true,
-				Description: fmt.Sprintf("The reference to the %s that the %s belongs to", labelVcfaOrg, labelVcfaContentLibraryItem),
-			},
-			"content_library_id": {
-				Type:        schema.TypeString,
-				Required:    true,
-				ForceNew:    true,
-				Description: fmt.Sprintf("ID of the %s that this %s belongs to", labelVcfaContentLibrary, labelVcfaContentLibraryItem),
-			},
 			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
@@ -45,6 +33,12 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: fmt.Sprintf("The description of the %s", labelVcfaContentLibraryItem),
+			},
+			"content_library_id": {
+				Type:        schema.TypeString,
+				Required:    true,
+				ForceNew:    true,
+				Description: fmt.Sprintf("ID of the %s that this %s belongs to", labelVcfaContentLibrary, labelVcfaContentLibraryItem),
 			},
 			"file_path": {
 				Type:        schema.TypeString,
@@ -88,6 +82,11 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("The ISO-8601 timestamp representing when this %s was last synced if subscribed", labelVcfaContentLibraryItem),
 			},
+			"owner_org_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("The reference to the %s that the %s belongs to", labelVcfaOrg, labelVcfaContentLibraryItem),
+			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -106,7 +105,7 @@ func resourceVcfaContentLibraryItemCreate(ctx context.Context, d *schema.Resourc
 	tmClient := meta.(ClientContainer).tmClient
 
 	clId := d.Get("content_library_id").(string)
-	cl, err := tmClient.GetContentLibraryById(clId, &govcd.TenantContext{OrgId: d.Get("org_id").(string)})
+	cl, err := tmClient.GetContentLibraryById(clId, nil)
 	if err != nil {
 		return diag.Errorf("could not retrieve %s with ID '%s': %s", labelVcfaContentLibrary, clId, err)
 	}
@@ -133,7 +132,7 @@ func resourceVcfaContentLibraryItemUpdate(ctx context.Context, d *schema.Resourc
 	tmClient := meta.(ClientContainer).tmClient
 
 	clId := d.Get("content_library_id").(string)
-	cl, err := tmClient.GetContentLibraryById(clId, &govcd.TenantContext{OrgId: d.Get("org_id").(string)})
+	cl, err := tmClient.GetContentLibraryById(clId, nil)
 	if err != nil {
 		return diag.Errorf("could not retrieve Content Library with ID '%s': %s", clId, err)
 	}
@@ -152,7 +151,7 @@ func resourceVcfaContentLibraryItemRead(ctx context.Context, d *schema.ResourceD
 	tmClient := meta.(ClientContainer).tmClient
 
 	clId := d.Get("content_library_id").(string)
-	cl, err := tmClient.GetContentLibraryById(clId, &govcd.TenantContext{OrgId: d.Get("org_id").(string)})
+	cl, err := tmClient.GetContentLibraryById(clId, nil)
 	if err != nil {
 		return diag.Errorf("could not retrieve %s with ID '%s': %s", labelVcfaContentLibrary, clId, err)
 	}
@@ -169,7 +168,7 @@ func resourceVcfaContentLibraryItemDelete(ctx context.Context, d *schema.Resourc
 	tmClient := meta.(ClientContainer).tmClient
 
 	clId := d.Get("content_library_id").(string)
-	cl, err := tmClient.GetContentLibraryById(clId, &govcd.TenantContext{OrgId: d.Get("org_id").(string)})
+	cl, err := tmClient.GetContentLibraryById(clId, nil)
 	if err != nil {
 		return diag.Errorf("could not retrieve %s with ID '%s': %s", labelVcfaContentLibrary, clId, err)
 	}
@@ -189,14 +188,15 @@ func resourceVcfaContentLibraryItemImport(_ context.Context, d *schema.ResourceD
 	if len(id) != 3 {
 		return nil, fmt.Errorf("ID syntax should be <%s name>%s<%s name>%s<%s name>", labelVcfaOrg, ImportSeparator, labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibraryItem)
 	}
-	org, err := tmClient.GetOrgByName(id[0])
+
+	org, err := tmClient.GetTmOrgByName(id[0])
 	if err != nil {
 		return nil, fmt.Errorf("error getting %s with name '%s' for import: %s", labelVcfaOrg, id[0], err)
 	}
 
 	cl, err := tmClient.GetContentLibraryByName(id[1], &govcd.TenantContext{
-		OrgId:   org.Org.ID,
-		OrgName: org.Org.Name,
+		OrgId:   org.TmOrg.ID,
+		OrgName: org.TmOrg.Name,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error getting %s with name '%s' for import: %s", labelVcfaContentLibrary, id[1], err)
