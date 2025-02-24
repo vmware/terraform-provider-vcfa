@@ -18,32 +18,32 @@ This can be used to create, delete, and update the Provider (System) LDAP config
 
 ```hcl
 resource "vcfa_ldap" "global-ldap" {
-    auto_trust_certificate = false # Because is_ssl = false
-    server                  = "192.168.1.172"
-    port                    = 389
-    is_ssl                  = false
-    username                = "cn=admin,dc=foo,dc=com"
-    password                = "StrongPassword"
-    base_distinguished_name = "dc=foo,dc=com"
-    connector_type          = "OPEN_LDAP"
-    user_attributes {
-      object_class                = "inetOrgPerson"
-      unique_identifier           = "uid"
-      display_name                = "cn"
-      username                    = "uid"
-      given_name                  = "givenName"
-      surname                     = "sn"
-      telephone                   = "telephoneNumber"
-      group_membership_identifier = "dn"
-      email                       = "mail"
-    }
-    group_attributes {
-      name                        = "cn"
-      object_class                = "group"
-      membership                  = "member"
-      unique_identifier           = "cn"
-      group_membership_identifier = "dn"
-    }
+  auto_trust_certificate  = false # Because is_ssl = false
+  server                  = "192.168.1.172"
+  port                    = 389
+  is_ssl                  = false
+  username                = "cn=admin,dc=foo,dc=com"
+  password                = "StrongPassword"
+  base_distinguished_name = "dc=foo,dc=com"
+  connector_type          = "OPEN_LDAP"
+  user_attributes {
+    object_class                = "inetOrgPerson"
+    unique_identifier           = "uid"
+    display_name                = "cn"
+    username                    = "uid"
+    given_name                  = "givenName"
+    surname                     = "sn"
+    telephone                   = "telephoneNumber"
+    group_membership_identifier = "dn"
+    email                       = "mail"
+  }
+  group_attributes {
+    name                        = "cn"
+    object_class                = "group"
+    membership                  = "member"
+    unique_identifier           = "cn"
+    group_membership_identifier = "dn"
+  }
 }
 ```
 
