@@ -359,16 +359,10 @@ data "vcfa_role" "org-admin" {
   name     = "Organization Administrator"
 }
 
-data "vcfa_role" "org-user" {
-  provider = vcfa
-  org_id   = vcfa_org.test.id
-  name     = "Organization User"
-}
-
 resource "vcfa_org_local_user" "user" {
   provider = vcfa
   org_id   = vcfa_org.test.id
-  role_ids = [data.vcfa_role.org-admin.id, data.vcfa_role.org-user.id]
+  role_ids = [data.vcfa_role.org-admin.id]
   username = "{{.Username}}"
   password = "{{.Password}}"
 }
@@ -412,15 +406,15 @@ resource "vcfa_org_region_quota" "test" {
     storage_limit_mib        = 1024
   }
 }
+`
 
+const testAccVcfaContentLibraryTenantStep1 = testAccVcfaContentLibraryTenantPrerequisites + `
 data "vcfa_storage_class" "sc" {
   provider  = vcfa
   region_id = {{.RegionId}}
   name      = data.vcfa_region_storage_policy.sp.name
 }
-`
 
-const testAccVcfaContentLibraryTenantStep1 = testAccVcfaContentLibraryTenantPrerequisites + `
 resource "vcfa_content_library" "cl1" {
   provider    = vcfa
   org_id      = vcfa_org_region_quota.test.org_id # Explicit dependency on Region Quota

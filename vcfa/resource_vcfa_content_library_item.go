@@ -185,26 +185,35 @@ func resourceVcfaContentLibraryItemImport(_ context.Context, d *schema.ResourceD
 	tmClient := meta.(ClientContainer).tmClient
 
 	id := strings.Split(d.Id(), ImportSeparator)
-	if len(id) != 3 {
-		return nil, fmt.Errorf("ID syntax should be <%s name>%s<%s name>%s<%s name>", labelVcfaOrg, ImportSeparator, labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibraryItem)
+	var tenantContext *govcd.TenantContext
+	clName, cliName := "", ""
+	switch len(id) {
+	case 3:
+		org, err := tmClient.GetTmOrgByName(id[0])
+		if err != nil {
+			return nil, fmt.Errorf("error getting %s with name '%s' for import: %s", labelVcfaOrg, id[0], err)
+		}
+		tenantContext = &govcd.TenantContext{
+			OrgId:   org.TmOrg.ID,
+			OrgName: org.TmOrg.Name,
+		}
+		clName = id[1]
+		cliName = id[2]
+	case 2:
+		clName = id[0]
+		cliName = id[1]
+	default:
+		return nil, fmt.Errorf("ID syntax should be <%s name>%s<%s name>%s<%s name> or <%s name>%s<%s name>", labelVcfaOrg, ImportSeparator, labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibraryItem, labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibraryItem)
 	}
 
-	org, err := tmClient.GetTmOrgByName(id[0])
+	cl, err := tmClient.GetContentLibraryByName(clName, tenantContext)
 	if err != nil {
-		return nil, fmt.Errorf("error getting %s with name '%s' for import: %s", labelVcfaOrg, id[0], err)
+		return nil, fmt.Errorf("error getting %s with name '%s' for import: %s", labelVcfaContentLibrary, clName, err)
 	}
 
-	cl, err := tmClient.GetContentLibraryByName(id[1], &govcd.TenantContext{
-		OrgId:   org.TmOrg.ID,
-		OrgName: org.TmOrg.Name,
-	})
+	cli, err := cl.GetContentLibraryItemByName(cliName)
 	if err != nil {
-		return nil, fmt.Errorf("error getting %s with name '%s' for import: %s", labelVcfaContentLibrary, id[1], err)
-	}
-
-	cli, err := cl.GetContentLibraryItemByName(id[2])
-	if err != nil {
-		return nil, fmt.Errorf("error getting %s with name '%s': %s", labelVcfaContentLibraryItem, id[2], err)
+		return nil, fmt.Errorf("error getting %s with name '%s': %s", labelVcfaContentLibraryItem, cliName, err)
 	}
 
 	d.SetId(cli.ContentLibraryItem.ID)
