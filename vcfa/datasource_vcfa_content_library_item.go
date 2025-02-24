@@ -32,6 +32,11 @@ func datasourceVcfaContentLibraryItem() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("The description of the %s", labelVcfaContentLibraryItem),
 			},
+			"item_type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("The type of %s", labelVcfaContentLibraryItem),
+			},
 			"image_identifier": {
 				Type:        schema.TypeString,
 				Computed:    true,

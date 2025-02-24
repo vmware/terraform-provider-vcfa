@@ -263,7 +263,7 @@ func setTmOrgRegionalNetworkingVpcQosData(_ *VCDClient, d *schema.ResourceData, 
 
 	dSet(d, "ingress_committed_bandwidth_mbps", nil)
 	dSet(d, "ingress_burst_size_bytes", nil)
-	if t.QosConfig.IngressProfile != nil {
+	if t.QosConfig != nil && t.QosConfig.IngressProfile != nil {
 		strValue := strconv.Itoa(t.QosConfig.IngressProfile.BurstSizeBytes)
 		dSet(d, "ingress_burst_size_bytes", strValue)
 
@@ -273,7 +273,7 @@ func setTmOrgRegionalNetworkingVpcQosData(_ *VCDClient, d *schema.ResourceData, 
 
 	dSet(d, "egress_committed_bandwidth_mbps", nil)
 	dSet(d, "egress_burst_size_bytes", nil)
-	if t.QosConfig.EgressProfile != nil {
+	if t.QosConfig != nil && t.QosConfig.EgressProfile != nil {
 		strValueCommitted := strconv.Itoa(t.QosConfig.EgressProfile.CommittedBandwidthMbps)
 		dSet(d, "egress_committed_bandwidth_mbps", strValueCommitted)
 

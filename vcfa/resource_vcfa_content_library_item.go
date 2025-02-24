@@ -17,8 +17,7 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVcfaContentLibraryItemCreate,
 		ReadContext:   resourceVcfaContentLibraryItemRead,
-		// TODO: TM: Update not supported yet
-		// UpdateContext: resourceVcfaContentLibraryItemUpdate,
+		UpdateContext: resourceVcfaContentLibraryItemUpdate,
 		DeleteContext: resourceVcfaContentLibraryItemDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: resourceVcfaContentLibraryItemImport,
@@ -28,13 +27,11 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				ForceNew:    true, // TODO: TM: Update not supported yet
 				Description: fmt.Sprintf("Name of the %s", labelVcfaContentLibraryItem),
 			},
 			"description": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				ForceNew:    true, // TODO: TM: Update not supported yet
 				Description: fmt.Sprintf("The description of the %s", labelVcfaContentLibraryItem),
 			},
 			"content_library_id": {
@@ -46,13 +43,12 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 			"file_path": {
 				Type:        schema.TypeString,
 				Optional:    true, // Not needed when Importing
-				ForceNew:    true, // TODO: TM: Update not supported yet
+				ForceNew:    true,
 				Description: fmt.Sprintf("Path to the OVA/ISO to create the %s", labelVcfaContentLibraryItem),
 			},
 			"upload_piece_size": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				ForceNew:    true, // TODO: TM: Update not supported yet
 				Default:     1,
 				Description: fmt.Sprintf("When uploading the %s, this argument defines the size of the file chunks in which it is split on every upload request. It can possibly impact upload performance. Default 1 MB", labelVcfaContentLibraryItem),
 			},
@@ -60,6 +56,11 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Description: fmt.Sprintf("The ISO-8601 timestamp representing when this %s was created", labelVcfaContentLibraryItem),
+			},
+			"item_type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("The type of %s", labelVcfaContentLibraryItem),
 			},
 			"image_identifier": {
 				Type:        schema.TypeString,
@@ -128,26 +129,24 @@ func resourceVcfaContentLibraryItemCreate(ctx context.Context, d *schema.Resourc
 	return createResource(ctx, d, meta, c)
 }
 
-//func resourceVcfaContentLibraryItemUpdate(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
-//	// TODO: TM: Update is not supported yet
-//	return diag.Errorf("update not supported")
-//	tmClient := meta.(MetaContainer).VcfaClient
-//
-//	clId := d.Get("content_library_id").(string)
-//	cl, err := tmClient.GetContentLibraryById(clId)
-//	if err != nil {
-//		return diag.Errorf("could not retrieve Content Library with ID '%s': %s", clId, err)
-//	}
-//
-//	c := crudConfig[*govcd.ContentLibraryItem, types.ContentLibraryItem]{
-//		entityLabel:      labelVcfaContentLibraryItem,
-//		getTypeFunc:      getContentLibraryItemType,
-//		getEntityFunc:    cl.GetContentLibraryItemById,
-//		resourceReadFunc: resourceVcfaContentLibraryItemRead,
-//	}
-//
-//	return updateResource(ctx, d, meta, c)
-//}
+func resourceVcfaContentLibraryItemUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	tmClient := meta.(ClientContainer).tmClient
+
+	clId := d.Get("content_library_id").(string)
+	cl, err := tmClient.GetContentLibraryById(clId, nil)
+	if err != nil {
+		return diag.Errorf("could not retrieve Content Library with ID '%s': %s", clId, err)
+	}
+
+	c := crudConfig[*govcd.ContentLibraryItem, types.ContentLibraryItem]{
+		entityLabel:      labelVcfaContentLibraryItem,
+		getTypeFunc:      getContentLibraryItemType,
+		getEntityFunc:    cl.GetContentLibraryItemById,
+		resourceReadFunc: resourceVcfaContentLibraryItemRead,
+	}
+
+	return updateResource(ctx, d, meta, c)
+}
 
 func resourceVcfaContentLibraryItemRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
@@ -215,6 +214,11 @@ func getContentLibraryItemType(_ *VCDClient, d *schema.ResourceData) (*types.Con
 		Description: d.Get("description").(string),
 	}
 
+	// This happens during updates. We need to send this value, otherwise the operation fails
+	if itemType := d.Get("item_type"); itemType != nil {
+		t.ItemType = itemType.(string)
+	}
+
 	return t, nil
 }
 
@@ -226,6 +230,7 @@ func setContentLibraryItemData(_ *VCDClient, d *schema.ResourceData, cli *govcd.
 	dSet(d, "content_library_id", cli.ContentLibraryItem.ContentLibrary.ID)
 	dSet(d, "name", cli.ContentLibraryItem.Name)
 	dSet(d, "description", cli.ContentLibraryItem.Description)
+	dSet(d, "item_type", cli.ContentLibraryItem.ItemType)
 	dSet(d, "creation_date", cli.ContentLibraryItem.CreationDate)
 	dSet(d, "image_identifier", cli.ContentLibraryItem.ImageIdentifier)
 	dSet(d, "is_published", cli.ContentLibraryItem.IsPublished)

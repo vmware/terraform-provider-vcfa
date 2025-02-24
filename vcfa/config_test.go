@@ -1,4 +1,4 @@
-//go:build api || functional || tm || ALL
+//go:build api || functional || tm || cci || ALL
 
 package vcfa
 
@@ -84,6 +84,17 @@ type TestConfig struct {
 		TerraformAcceptanceTests bool   `json:"tfAcceptanceTests"`
 		UseConnectionCache       bool   `json:"useConnectionCache"`
 	} `json:"provider"`
+	Org struct {
+		Name     string `json:"name"`
+		User     string `json:"user"`
+		Password string `json:"password"`
+	} `json:"org"`
+	Cci struct {
+		Region         string `json:"region"`
+		Vpc            string `json:"vpc"`
+		StoragePolicy  string `json:"storagePolicy"`
+		SupervisorZone string `json:"supervisorZone"`
+	} `json:"cci"`
 	Tm struct {
 		Org             string   `json:"org"`
 		CreateRegion    bool     `json:"createRegion"`
@@ -267,6 +278,11 @@ func usingSysAdmin() bool {
 func skipIfNotSysAdmin(t *testing.T) {
 	if !usingSysAdmin() {
 		t.Skip(t.Name() + " requires system admin privileges")
+	}
+}
+func skipIfSysAdmin(t *testing.T) {
+	if usingSysAdmin() {
+		t.Skip(t.Name() + " requires org privileges")
 	}
 }
 
@@ -529,6 +545,20 @@ func getConfigStruct(config string) TestConfig {
 		// defined in vendor/github.com/hashicorp/terraform/helper/resource/testing.go
 		_ = os.Setenv("TF_ACC", "1")
 	}
+
+	if vcfaTestOrgUser {
+		orgname := configStruct.Org.Name
+		user := configStruct.Org.User
+		password := configStruct.Org.Password
+		if user == "" || password == "" {
+			panic(fmt.Sprintf("%s was enabled, but org user credentials were not found in the configuration file", envVcfaTestOrgUser))
+		}
+		configStruct.Provider.User = user
+		configStruct.Provider.Password = password
+		configStruct.Provider.SysOrg = orgname
+		fmt.Println("VCFA_TEST_ORG_USER was enabled. Using Org User credentials from configuration file")
+	}
+
 	if configStruct.Provider.Token != "" && configStruct.Provider.Password == "" {
 		configStruct.Provider.Password = "TOKEN"
 	}

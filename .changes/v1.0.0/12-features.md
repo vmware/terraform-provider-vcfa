@@ -1,4 +1,4 @@
-- **New Resource:** `vcfa_content_library` to manage Content Libraries [GH-12]
-- **New Data Source:** `vcfa_content_library` to read Content Libraries [GH-12]
+- **New Resource:** `vcfa_content_library` to manage Content Libraries [GH-12, GH-42, GH-43]
+- **New Data Source:** `vcfa_content_library` to read Content Libraries [GH-12, GH-42]
 - **New Data Source:** `vcfa_region_storage_policy` to read Region Storage Policies [GH-12]
 - **New Data Source:** `vcfa_storage_class` to read Storage Classes [GH-12]

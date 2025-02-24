@@ -45,6 +45,10 @@ func testSpecificDataSourceNotFound(dataSourceName string, tmClient *VCDClient) 
 				reason:         "Data source vcfa_tm_version always returns data, it is not possible to get ENF",
 			},
 			{
+				dataSourceName: "vcfa_kubeconfig",
+				reason:         "Data source vcfa_kubeconfig always returns data, it is not possible to get ENF",
+			},
+			{
 				// TODO: TM: Retrieving non-existent Supervisor by ID returns 400 and not ENF
 				dataSourceName: "vcfa_supervisor_zone",
 				reason:         "TODO: TM: Retrieving non-existent Supervisor by ID returns 400 and not ENF",
@@ -142,6 +146,8 @@ func addMandatoryParams(dataSourceName string, mandatoryFields []string, t *test
 		switch mandatoryFields[fieldIndex] {
 		case "name":
 			templateFields = templateFields + `name = "does-not-exist"` + "\n"
+		case "project_name":
+			templateFields = templateFields + `project_name = "does-not-exist"` + "\n"
 		case "supervisor_id":
 			templateFields = templateFields + `supervisor_id = "urn:vcloud:supervisor:12345678-1234-1234-1234-123456789012"` + "\n"
 		case "vcenter_id":
