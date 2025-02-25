@@ -22,7 +22,7 @@ resource "vcfa_content_library_item" "cli" {
   description        = "My uploaded OVA"
   content_library_id = data.vcfa_content_library.cl.id
   upload_piece_size  = 10
-  file_path          = "./photon.ova"
+  file_paths         = ["./photon.ova"]
 }
 ```
 
@@ -34,7 +34,7 @@ The following arguments are supported:
   is of `PROVIDER` type.
 * `name` - (Required) The name of the Content Library Item
 * `content_library_id` - (Required) ID of the [Content Library]() that this Content Library Item belongs to
-* `file_path` - (Required) Path to the OVA/ISO to create the Content Library Item
+* `file_paths` - (Required) A single path to an OVA/ISO, or multiple paths for an OVF and its referenced files, to create the Content Library Item
 * `upload_piece_size` - (Optional) - When uploading the Content Library Item, this argument defines the size of the file chunks
   in which it is split on every upload request. It can possibly impact upload performance. Default 1 MB.
 * `description` - (Optional) The description of the Content Library Item

@@ -3,6 +3,7 @@ package vcfa
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -40,11 +41,11 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 				ForceNew:    true,
 				Description: fmt.Sprintf("ID of the %s that this %s belongs to", labelVcfaContentLibrary, labelVcfaContentLibraryItem),
 			},
-			"file_path": {
-				Type:        schema.TypeString,
+			"file_paths": {
+				Type:        schema.TypeSet,
 				Optional:    true, // Not needed when Importing
 				ForceNew:    true,
-				Description: fmt.Sprintf("Path to the OVA/ISO to create the %s", labelVcfaContentLibraryItem),
+				Description: fmt.Sprintf("A single path to an OVA/ISO, or multiple paths for an OVF and its referenced files, to create the %s", labelVcfaContentLibraryItem),
 			},
 			"upload_piece_size": {
 				Type:        schema.TypeInt,
@@ -110,18 +111,35 @@ func resourceVcfaContentLibraryItemCreate(ctx context.Context, d *schema.Resourc
 		return diag.Errorf("could not retrieve %s with ID '%s': %s", labelVcfaContentLibrary, clId, err)
 	}
 
-	filePath := d.Get("file_path").(string)
-	uploadPieceSize := d.Get("upload_piece_size").(int)
+	if _, ok := d.GetOk("file_paths"); !ok {
+		return diag.Errorf("the argument 'file_paths' is required during creation")
+	}
+
+	uploadArgs := govcd.ContentLibraryItemUploadArguments{
+		UploadPieceSize: int64(d.Get("upload_piece_size").(int)) * 1024 * 1024,
+	}
+
+	filePaths := d.Get("file_paths").(*schema.Set).List()
+	if len(filePaths) == 1 {
+		// ISO/OVA
+		uploadArgs.FilePath = filePaths[0].(string)
+	} else {
+		// OVF
+		for _, p := range filePaths {
+			if filepath.Ext(p.(string)) == ".ovf" {
+				uploadArgs.FilePath = p.(string)
+			} else {
+				uploadArgs.OvfFilesPaths = append(uploadArgs.OvfFilesPaths, p.(string))
+			}
+		}
+	}
 
 	c := crudConfig[*govcd.ContentLibraryItem, types.ContentLibraryItem]{
 		entityLabel:    labelVcfaContentLibraryItem,
 		getTypeFunc:    getContentLibraryItemType,
 		stateStoreFunc: setContentLibraryItemData,
 		createFunc: func(config *types.ContentLibraryItem) (*govcd.ContentLibraryItem, error) {
-			return cl.CreateContentLibraryItem(config, govcd.ContentLibraryItemUploadArguments{
-				FilePath:        filePath,
-				UploadPieceSize: int64(uploadPieceSize) * 1024 * 1024,
-			})
+			return cl.CreateContentLibraryItem(config, uploadArgs)
 		},
 		resourceReadFunc: resourceVcfaContentLibraryItemRead,
 	}
