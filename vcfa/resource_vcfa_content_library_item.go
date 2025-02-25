@@ -46,6 +46,9 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 				Optional:    true, // Not needed when Importing
 				ForceNew:    true,
 				Description: fmt.Sprintf("A single path to an OVA/ISO, or multiple paths for an OVF and its referenced files, to create the %s", labelVcfaContentLibraryItem),
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 			"upload_piece_size": {
 				Type:        schema.TypeInt,
