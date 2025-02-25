@@ -1,12 +1,12 @@
 ---
 layout: "vcfa"
-page_title: "VMware Cloud Foundation Automation: vcfa_ldap"
+page_title: "VMware Cloud Foundation Automation: vcfa_provider_ldap"
 sidebar_current: "docs-vcfa-data-source-ldap"
 description: |-
   Provides a data source to read LDAP configuration of the Provider (System).
 ---
 
-# vcfa\_ldap
+# vcfa\_provider\_ldap
 
 Provides a data source to read LDAP configuration of the Provider (System).
 
@@ -15,7 +15,7 @@ Provides a data source to read LDAP configuration of the Provider (System).
 ## Example Usage
 
 ```hcl
-data "vcfa_ldap" "system-ldap" {
+data "vcfa_provider_ldap" "system-ldap" {
 }
 ```
 
@@ -26,4 +26,4 @@ No arguments are required as the System LDAP configuration is unique per VCFA.
 ## Attribute Reference
 
 All the arguments and attributes defined in
-[`vcfa_ldap`](/providers/vmware/vcfa/latest/docs/resources/ldap) resource are available, except `password`.
+[`vcfa_provider_ldap`](/providers/vmware/vcfa/latest/docs/resources/provider_ldap) resource are available, except `password`.

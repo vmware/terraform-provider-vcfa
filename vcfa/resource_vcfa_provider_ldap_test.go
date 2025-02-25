@@ -10,8 +10,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-// TestAccVcfaSystemLdap tests Provider (System) LDAP configuration against an LDAP server with the given configuration
-func TestAccVcfaSystemLdap(t *testing.T) {
+// TestAccVcfaProviderLdap tests Provider (System) LDAP configuration against an LDAP server with the given configuration
+func TestAccVcfaProviderLdap(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
@@ -44,8 +44,8 @@ func TestAccVcfaSystemLdap(t *testing.T) {
 	debugPrintf("#[DEBUG] CONFIGURATION Resource for LDAP: %s\n", configText)
 	debugPrintf("#[DEBUG] CONFIGURATION Data source: %s\n", configTextDS)
 
-	ldapResourceDef := "vcfa_ldap.ldap"
-	ldapDatasourceDef := "data.vcfa_ldap.ldap-ds"
+	ldapResourceDef := "vcfa_provider_ldap.ldap"
+	ldapDatasourceDef := "data.vcfa_provider_ldap.ldap-ds"
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
 		CheckDestroy:      testAccCheckLdapDestroy(),
@@ -111,7 +111,7 @@ func testAccCheckLdapDestroy() resource.TestCheckFunc {
 }
 
 const testAccVcfaLdap = `
-resource "vcfa_ldap" "ldap" {
+resource "vcfa_provider_ldap" "ldap" {
   auto_trust_certificate  = true
   server                  = "{{.LdapServer}}"
   port                    = {{.LdapPort}}
@@ -152,7 +152,7 @@ resource "vcfa_ldap" "ldap" {
 `
 
 const testAccVcfaLdapDS = testAccVcfaLdap + `
-data "vcfa_ldap" "ldap-ds" {
-  depends_on = [vcfa_ldap.ldap]
+data "vcfa_provider_ldap" "ldap-ds" {
+  depends_on = [vcfa_provider_ldap.ldap]
 }
 `

@@ -1,13 +1,13 @@
 ---
 layout: "vcfa"
-page_title: "VMware Cloud Foundation Automation: vcfa_ldap"
+page_title: "VMware Cloud Foundation Automation: vcfa_provider_ldap"
 sidebar_current: "docs-vcfa-resource-ldap"
 description: |-
   Provides a VMware Cloud Foundation Automation LDAP resource for the Provider (System). This can be used to create, delete, and 
   update the Provider (System) LDAP configuration.
 ---
 
-# vcfa\_ldap
+# vcfa\_provider\_ldap
 
 Provides a VMware Cloud Foundation Automation LDAP resource for the Provider (System).
 This can be used to create, delete, and update the Provider (System) LDAP configuration.
@@ -17,7 +17,7 @@ This can be used to create, delete, and update the Provider (System) LDAP config
 ## Example Usage
 
 ```hcl
-resource "vcfa_ldap" "global-ldap" {
+resource "vcfa_provider_ldap" "global-ldap" {
   auto_trust_certificate  = false # Because is_ssl = false
   server                  = "192.168.1.172"
   port                    = 389
@@ -53,7 +53,7 @@ to add a `lifecycle` block at the end of the resource definition, after creating
 And we need to remove the `lifecycle` block _if we want to change the password_.
 
 ```hcl
-resource "vcfa_ldap" "global-ldap" {
+resource "vcfa_provider_ldap" "global-ldap" {
   # all other fields
   # ...
   lifecycle {
@@ -117,7 +117,7 @@ An existing System LDAP configuration can be [imported][docs-import] into this r
 For example, using this structure, representing an existing LDAP configuration that was **not** created using Terraform:
 
 ```hcl
-resource "vcfa_ldap" "existing-ldap" {
+resource "vcfa_provider_ldap" "existing-ldap" {
 }
 ```
 

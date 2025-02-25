@@ -9,16 +9,16 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
-const systemLdapId = "System LDAP"
+const providerLdapId = "Provider LDAP"
 
-func resourceVcfaLdap() *schema.Resource {
+func resourceVcfaProviderLdap() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceVcfaLdapCreate,
-		ReadContext:   resourceVcfaLdapRead,
-		UpdateContext: resourceVcfaLdapUpdate,
-		DeleteContext: resourceVcfaLdapDelete,
+		CreateContext: resourceVcfaProviderLdapCreate,
+		ReadContext:   resourceVcfaProviderLdapRead,
+		UpdateContext: resourceVcfaProviderLdapUpdate,
+		DeleteContext: resourceVcfaProviderLdapDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: resourceVcfaLdapImport,
+			StateContext: resourceVcfaProviderLdapImport,
 		},
 		Schema: map[string]*schema.Schema{
 			"server": { // HostName
@@ -77,7 +77,7 @@ func resourceVcfaLdap() *schema.Resource {
 	}
 }
 
-func resourceVcfaLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVcfaProviderLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 	settings, err := getTmLdapSettingsType(d)
 	if err != nil {
@@ -88,14 +88,14 @@ func resourceVcfaLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceData,
 	if err != nil {
 		return diag.Errorf("error configuring LDAP: %s", err)
 	}
-	return resourceVcfaLdapRead(ctx, d, meta)
+	return resourceVcfaProviderLdapRead(ctx, d, meta)
 }
 
-func resourceVcfaLdapCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return resourceVcfaLdapCreateOrUpdate(ctx, d, meta)
+func resourceVcfaProviderLdapCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	return resourceVcfaProviderLdapCreateOrUpdate(ctx, d, meta)
 }
 
-func resourceVcfaLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVcfaProviderLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	return genericVcfaLdapRead(ctx, d, meta, "resource")
 }
 
@@ -114,11 +114,11 @@ func genericVcfaLdapRead(_ context.Context, d *schema.ResourceData, meta interfa
 	return nil
 }
 
-func resourceVcfaLdapUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return resourceVcfaLdapCreateOrUpdate(ctx, d, meta)
+func resourceVcfaProviderLdapUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	return resourceVcfaProviderLdapCreateOrUpdate(ctx, d, meta)
 }
 
-func resourceVcfaLdapDelete(_ context.Context, _ *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVcfaProviderLdapDelete(_ context.Context, _ *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 	err := tmClient.TmLdapDisable()
 	if err != nil {
@@ -127,9 +127,9 @@ func resourceVcfaLdapDelete(_ context.Context, _ *schema.ResourceData, meta inte
 	return nil
 }
 
-func resourceVcfaLdapImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceVcfaProviderLdapImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	// This is a no-op as read comes after and nothing is needed
-	d.SetId(systemLdapId)
+	d.SetId(providerLdapId)
 	return []*schema.ResourceData{d}, nil
 }
 
@@ -181,7 +181,7 @@ func getTmLdapSettingsType(d *schema.ResourceData) (*types.TmLdapSettings, error
 }
 
 func saveTmLdapSettingsInState(d *schema.ResourceData, config *types.TmLdapSettings, origin string) error {
-	d.SetId(systemLdapId) // We don't need an ID
+	d.SetId(providerLdapId) // We don't need an ID
 	dSet(d, "server", config.HostName)
 	dSet(d, "port", config.Port)
 	dSet(d, "base_distinguished_name", config.SearchBase)

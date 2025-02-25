@@ -10,7 +10,7 @@ description: |-
 
 Provides a data source to read LDAP configuration for an Organization.
 
--> To read LDAP of the Provider (System) organization, please use [`vcfa_ldap` data source](/providers/vmware/vcfa/latest/docs/data-sources/ldap) instead
+-> To read LDAP of the Provider (System) organization, please use [`vcfa_provider_ldap` data source](/providers/vmware/vcfa/latest/docs/data-sources/provider_ldap) instead
 
 ## Example Usage
 
