@@ -120,17 +120,17 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 			{
 				Config: configText3,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					// file_paths and upload_piece_size cannot be obtained during reads, that's why it does not appear in data source schema
-					resourceFieldsEqual(cli1, "data.vcfa_content_library_item.cli1_ds", []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}),
-					resourceFieldsEqual(cli2, "data.vcfa_content_library_item.cli2_ds", []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}),
-					resourceFieldsEqual(cli3, "data.vcfa_content_library_item.cli3_ds", []string{"file_paths.#", "file_paths.0", "file_paths.1", "upload_piece_size", "%"}),
+					// files_paths and upload_piece_size cannot be obtained during reads, that's why it does not appear in data source schema
+					resourceFieldsEqual(cli1, "data.vcfa_content_library_item.cli1_ds", []string{"files_paths.#", "files_paths.0", "upload_piece_size", "%"}),
+					resourceFieldsEqual(cli2, "data.vcfa_content_library_item.cli2_ds", []string{"files_paths.#", "files_paths.0", "upload_piece_size", "%"}),
+					resourceFieldsEqual(cli3, "data.vcfa_content_library_item.cli3_ds", []string{"files_paths.#", "files_paths.0", "files_paths.1", "upload_piece_size", "%"}),
 				),
 			},
 			{
 				ResourceName:            cli1,
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateId:           fmt.Sprintf("%s%s%s", testConfig.Tm.ContentLibrary, ImportSeparator, params["Name"].(string)),
+				ImportStateId:           fmt.Sprintf("%s%s%s", testConfig.Tm.ContentLibrary, ImportSeparator, params["Name"].(string)+"1"),
 				ImportStateVerifyIgnore: []string{"file_path", "upload_piece_size"}, // file_path and upload_piece_size cannot be obtained during imports, that's why it's Optional
 			},
 		},
@@ -144,21 +144,21 @@ resource "vcfa_content_library_item" "cli1" {
   name               = "{{.Name}}1"
   description        = "{{.Name}}1"
   content_library_id = {{.ContentLibraryRef}}
-  file_paths         = ["{{.OvaPath}}"]
+  files_paths         = ["{{.OvaPath}}"]
 }
 
 resource "vcfa_content_library_item" "cli2" {
   name               = "{{.Name}}2"
   description        = "{{.Name}}2"
   content_library_id = {{.ContentLibraryRef}}
-  file_paths         = ["{{.IsoPath}}"]
+  files_paths         = ["{{.IsoPath}}"]
 }
 
 resource "vcfa_content_library_item" "cli3" {
   name               = "{{.Name}}3"
   description        = "{{.Name}}3"
   content_library_id = {{.ContentLibraryRef}}
-  file_paths         = [{{.OvfPaths}}]
+  files_paths         = [{{.OvfPaths}}]
 }
 `
 
@@ -268,7 +268,7 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 				ResourceName:            cli1,
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateId:           fmt.Sprintf("%s%s%s%s%s", testConfig.Tm.Org, ImportSeparator, testConfig.Tm.ContentLibrary, ImportSeparator, params["Name"].(string)),
+				ImportStateId:           fmt.Sprintf("%s%s%s%s%s", testConfig.Tm.Org, ImportSeparator, testConfig.Tm.ContentLibrary, ImportSeparator, params["Name"].(string)+"1"),
 				ImportStateVerifyIgnore: []string{"file_path", "upload_piece_size"}, // file_path and upload_piece_size cannot be obtained during imports, that's why it's Optional
 			},
 		},
@@ -282,21 +282,21 @@ resource "vcfa_content_library_item" "cli1" {
   name               = "{{.Name}}1"
   description        = "{{.Name}}1"
   content_library_id = {{.ContentLibraryRef}}
-  file_paths         = ["{{.OvaPath}}"]
+  files_paths        = ["{{.OvaPath}}"]
 }
 
 resource "vcfa_content_library_item" "cli2" {
   name               = "{{.Name}}2"
   description        = "{{.Name}}2"
   content_library_id = {{.ContentLibraryRef}}
-  file_paths         = ["{{.IsoPath}}"]
+  files_paths        = ["{{.IsoPath}}"]
 }
 
 resource "vcfa_content_library_item" "cli3" {
   name               = "{{.Name}}3"
   description        = "{{.Name}}3"
   content_library_id = {{.ContentLibraryRef}}
-  file_paths         = [{{.OvfPaths}}]
+  files_paths        = [{{.OvfPaths}}]
 }
 `
 

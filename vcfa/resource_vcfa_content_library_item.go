@@ -41,7 +41,7 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 				ForceNew:    true,
 				Description: fmt.Sprintf("ID of the %s that this %s belongs to", labelVcfaContentLibrary, labelVcfaContentLibraryItem),
 			},
-			"file_paths": {
+			"files_paths": {
 				Type:        schema.TypeSet,
 				Optional:    true, // Not needed when Importing
 				ForceNew:    true,
@@ -114,15 +114,15 @@ func resourceVcfaContentLibraryItemCreate(ctx context.Context, d *schema.Resourc
 		return diag.Errorf("could not retrieve %s with ID '%s': %s", labelVcfaContentLibrary, clId, err)
 	}
 
-	if _, ok := d.GetOk("file_paths"); !ok {
-		return diag.Errorf("the argument 'file_paths' is required during creation")
+	if _, ok := d.GetOk("files_paths"); !ok {
+		return diag.Errorf("the argument 'files_paths' is required during creation")
 	}
 
 	uploadArgs := govcd.ContentLibraryItemUploadArguments{
 		UploadPieceSize: int64(d.Get("upload_piece_size").(int)) * 1024 * 1024,
 	}
 
-	filePaths := d.Get("file_paths").(*schema.Set).List()
+	filePaths := d.Get("files_paths").(*schema.Set).List()
 	if len(filePaths) == 1 {
 		p := filepath.Clean(filePaths[0].(string))
 		if filepath.Ext(p) != ".iso" && filepath.Ext(p) != ".ova" {
