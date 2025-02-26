@@ -398,7 +398,7 @@ func autoTrustHostCertificate(urlSchemaFieldName, trustSchemaFieldName string) s
 			return fmt.Errorf("error parsing provided url '%s': %s", schemaUrl, err)
 		}
 
-		_, err = tmClient.AutoTrustCertificate(parsedUrl)
+		_, err = tmClient.AutoTrustHttpsCertificate(parsedUrl, nil)
 		if err != nil {
 			return fmt.Errorf("error trusting '%s' certificate: %s", schemaUrl, err)
 		}

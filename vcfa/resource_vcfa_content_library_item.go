@@ -124,16 +124,26 @@ func resourceVcfaContentLibraryItemCreate(ctx context.Context, d *schema.Resourc
 
 	filePaths := d.Get("file_paths").(*schema.Set).List()
 	if len(filePaths) == 1 {
+		p := filepath.Clean(filePaths[0].(string))
+		if filepath.Ext(p) != ".iso" && filepath.Ext(p) != ".ova" {
+			return diag.Errorf("when uploading a single file, only ISO/OVA is supported. OVF requires multiple files")
+		}
 		// ISO/OVA
-		uploadArgs.FilePath = filePaths[0].(string)
+		uploadArgs.FilePath = p
 	} else {
-		// OVF
+		// OVF. We have to search for the descriptor.ovf inside the TypeSet.
+		ovfFound := false
 		for _, p := range filePaths {
-			if filepath.Ext(p.(string)) == ".ovf" {
-				uploadArgs.FilePath = p.(string)
+			cleanedPath := filepath.Clean(p.(string))
+			if filepath.Ext(cleanedPath) == ".ovf" {
+				uploadArgs.FilePath = cleanedPath
+				ovfFound = true
 			} else {
-				uploadArgs.OvfFilesPaths = append(uploadArgs.OvfFilesPaths, p.(string))
+				uploadArgs.OvfFilesPaths = append(uploadArgs.OvfFilesPaths, cleanedPath)
 			}
+		}
+		if !ovfFound {
+			return diag.Errorf("could not find the 'descriptor.ovf' file in any of the provided paths: %v", filePaths)
 		}
 	}
 
