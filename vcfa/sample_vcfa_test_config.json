@@ -11,7 +11,7 @@
     "//": "Access token to be used instead of username/password",
     "token": "",
 
-    "url": "https://10.13.21.20/tm/api",
+    "url": "https://myhostname.nonexistent",
     "sysOrg": "System",
     "//": "allowInsecure will skip the check on self-signed certificates",
     "allowInsecure": true,

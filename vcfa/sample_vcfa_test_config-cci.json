@@ -7,7 +7,7 @@
         "tmVersion": "10.7.0",
         "tmApiVersion": "40.0",
         "token": "",
-        "url": "https://10.13.21.20/tm/api",
+        "url": "https://10.13.21.20",
         "sysOrg": "System",
         "allowInsecure": true,
         "tfAcceptanceTests": true,
@@ -24,6 +24,6 @@
         "region": "terraform-demo",
         "vpc": "terraform-demo-Default-VPC",
         "storagePolicy": "vSAN Default Storage Policy",
-        "supervisorZone": "vcfa-gen-wl-vc08-cl1-zone1"
+        "supervisorZone": "terraform-demo"
     }
 }
