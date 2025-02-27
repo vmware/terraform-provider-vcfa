@@ -139,20 +139,15 @@ The following arguments are used to configure the VMware Cloud Foundation Automa
   if set to `true`, will suppress a warning to the user about the service account token file containing *sensitive information*.
   Can also be set with `VCFA_ALLOW_SA_TOKEN_FILE`.
 
-- `org` - (Required) This is the Tenant Manager Org on which to run API
+- `org` - (Required) This is the VCFA Org on which to run API
   operations. Can also be specified with the `VCFA_ORG` environment
   variable.  
   `org` may be set to "System" when connection as Sys Admin is desired
   (set `user` to "administrator" in this case).  
   Note: `org` value is case sensitive.
-  
-- `sysorg` - (Optional) - Organization for user authentication. Can also be
-   specified with the `VCFA_SYS_ORG` environment variable. Set `sysorg` to "System" and
-   `user` to "administrator" to free up `org` argument for setting a default organization
-   for resources to use.
-   
-- `url` - (Required) This is the URL for the Tenant Manager API endpoint. e.g.
-  https://server.domain.com/tm/api. Can also be specified with the `VCFA_URL` environment variable.
+
+- `url` - (Required) This is the URL for the VCFA endpoint hostname e.g.
+  https://server.domain.com. Can also be specified with the `VCFA_URL` environment variable.
 
 - `allow_unverified_ssl` - (Optional) Boolean that can be set to true to
   disable SSL certificate verification. This should be used with care as it
