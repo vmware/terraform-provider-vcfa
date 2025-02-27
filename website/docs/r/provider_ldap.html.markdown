@@ -86,25 +86,25 @@ The following arguments are supported:
 <a id="user-attributes"></a>
 ### User Attributes
 
-* `object_class` - (Required)  LDAP _objectClass_ of which imported users are members. For example, _user_ or _person_
-* `unique_identifier` - (Required) LDAP attribute to use as the unique identifier for a user. For example, _objectGuid_
-* `username` - (Required) LDAP attribute to use when looking up a username to import. For example, _userPrincipalName_ or _samAccountName_
-* `email` - (Required) LDAP attribute to use for the user's email address. For example, _mail_
-* `display_name` - (Required) LDAP attribute to use for the user's full name. For example, _displayName_
-* `given_name` - (Required) LDAP attribute to use for the user's given name. For example, _givenName_
-* `surname` - (Required) LDAP attribute to use for the user's surname. For example, _sn_
-* `telephone` - (Required) LDAP attribute to use for the user's telephone number. For example, _telephoneNumber_
-* `group_membership_identifier` - (Required) LDAP attribute that identifies a user as a member of a group. For example, _dn_
+* `object_class` - (Required)  LDAP _objectClass_ of which imported users are members. For example, _"user"_ or _"person"_ attributes
+* `unique_identifier` - (Required) LDAP attribute to use as the unique identifier for a user. For example, the _"objectGuid"_ attribute
+* `username` - (Required) LDAP attribute to use when looking up a username to import. For example, _"userPrincipalName"_ or _"samAccountName"_ attributes
+* `email` - (Required) LDAP attribute to use for the user's email address. For example, the _"mail"_ attribute
+* `display_name` - (Required) LDAP attribute to use for the user's full name. For example, the _"displayName"_ attribute
+* `given_name` - (Required) LDAP attribute to use for the user's given name. For example, the _"givenName"_ attribute
+* `surname` - (Required) LDAP attribute to use for the user's surname. For example, the _"sn"_ attribute
+* `telephone` - (Required) LDAP attribute to use for the user's telephone number. For example, the _"telephoneNumber"_ attribute
+* `group_membership_identifier` - (Required) LDAP attribute that identifies a user as a member of a group. For example, the _"dn"_ attribute
 * `group_back_link_identifier` - (Optional) LDAP attribute that returns the identifiers of all the groups of which the user is a member
 
 <a id="group-attributes"></a>
 ### Group Attributes
 
-* `object_class` - (Required) LDAP _objectClass_ of which imported groups are members. For example, _group_
-* `unique_identifier` - (Required) LDAP attribute to use as the unique identifier for a group. For example, _objectGuid_
-* `name` - (Required) LDAP attribute to use for the group name. For example, _cn_
-* `membership` - (Required) LDAP attribute to use when getting the members of a group. For example, _member_
-* `group_membership_identifier` - (Required) LDAP attribute that identifies a group as a member of another group. For example, _dn_
+* `object_class` - (Required) LDAP _objectClass_ of which imported groups are members. For example, the _"group"_ attribute
+* `unique_identifier` - (Required) LDAP attribute to use as the unique identifier for a group. For example, the _"objectGuid"_ attribute
+* `name` - (Required) LDAP attribute to use for the group name. For example, the _"cn"_ attribute
+* `membership` - (Required) LDAP attribute to use when getting the members of a group. For example, the _"member"_ attribute
+* `group_membership_identifier` - (Required) LDAP attribute that identifies a group as a member of another group. For example, the _"dn"_ attribute
 * `group_back_link_identifier` - (Optional) LDAP group attribute used to identify a group member
 
 ## Importing
