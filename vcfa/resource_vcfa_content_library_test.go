@@ -405,6 +405,10 @@ resource "vcfa_org_region_quota" "test" {
     region_storage_policy_id = data.vcfa_region_storage_policy.sp.id
     storage_limit_mib        = 1024
   }
+
+  # This explicit dependency avoids that the user from the org is deleted
+  # before any child object from the Region Quota
+  depends_on = [vcfa_org_local_user.user]
 }
 `
 

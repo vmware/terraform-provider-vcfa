@@ -222,12 +222,19 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 	configText3 := templateFill(preRequisites+testAccVcfaContentLibraryTenantPrerequisites+testAccVcfaContentLibraryItemProviderStep3, params)
 	params["FuncName"] = t.Name() + "-step4"
 	params["Name"] = t.Name()
-	configText4 := templateFill(preRequisites+testAccVcfaContentLibraryTenantPrerequisites+testAccVcfaContentLibraryItemTenantStep1, params)
+	configText4 := templateFill(preRequisites+testAccVcfaContentLibraryTenantPrerequisites+testAccVcfaContentLibraryItemTenantStep4, params)
+	params["FuncName"] = t.Name() + "-step5"
+	params["Name"] = t.Name() + "Updated"
+	configText5 := templateFill(preRequisites+testAccVcfaContentLibraryTenantPrerequisites+testAccVcfaContentLibraryItemTenantStep4, params)
+	params["FuncName"] = t.Name() + "-step6"
+	configText6 := templateFill(preRequisites+testAccVcfaContentLibraryTenantPrerequisites+testAccVcfaContentLibraryItemTenantStep6, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
 	debugPrintf("#[DEBUG] CONFIGURATION step3: %s\n", configText3)
 	debugPrintf("#[DEBUG] CONFIGURATION step4: %s\n", configText4)
+	debugPrintf("#[DEBUG] CONFIGURATION step5: %s\n", configText5)
+	debugPrintf("#[DEBUG] CONFIGURATION step6: %s\n", configText6)
 	if vcfaShortTest {
 		t.Skip(acceptanceTestsSkipped)
 		return
@@ -307,15 +314,10 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 				ProviderFactories: testAccProviders,
 				Config:            configText2,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					// CLI 1: OVA
 					resource.TestCheckResourceAttr(cli1, "name", t.Name()+"Updated1"),
 					resource.TestCheckResourceAttr(cli1, "description", t.Name()+"Updated1"),
-
-					// CLI 2: ISO
 					resource.TestCheckResourceAttr(cli2, "name", t.Name()+"Updated2"),
 					resource.TestCheckResourceAttr(cli2, "description", t.Name()+"Updated2"),
-
-					// CLI 3: OVF
 					resource.TestCheckResourceAttr(cli3, "name", t.Name()+"Updated3"),
 					resource.TestCheckResourceAttr(cli3, "description", t.Name()+"Updated3"),
 				),
@@ -385,13 +387,35 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 					resource.TestCheckResourceAttr(cli6, "version", "1"),
 				),
 			},
+			{
+				ProviderFactories: multipleFactories(),
+				Config:            configText5,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(cli4, "name", t.Name()+"Updated4"),
+					resource.TestCheckResourceAttr(cli4, "description", t.Name()+"Updated4"),
+					resource.TestCheckResourceAttr(cli5, "name", t.Name()+"Updated5"),
+					resource.TestCheckResourceAttr(cli5, "description", t.Name()+"Updated5"),
+					resource.TestCheckResourceAttr(cli6, "name", t.Name()+"Updated6"),
+					resource.TestCheckResourceAttr(cli6, "description", t.Name()+"Updated6"),
+				),
+			},
+			{
+				ProviderFactories: multipleFactories(),
+				Config:            configText6,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					// files_paths and upload_piece_size cannot be obtained during reads, that's why it does not appear in data source schema
+					resourceFieldsEqual(cli4, "data.vcfa_content_library_item.cli4_ds", []string{"files_paths.#", "files_paths.0", "upload_piece_size", "%"}),
+					resourceFieldsEqual(cli5, "data.vcfa_content_library_item.cli5_ds", []string{"files_paths.#", "files_paths.0", "upload_piece_size", "%"}),
+					resourceFieldsEqual(cli6, "data.vcfa_content_library_item.cli6_ds", []string{"files_paths.#", "files_paths.0", "files_paths.1", "upload_piece_size", "%"}),
+				),
+			},
 		},
 	})
 
 	postTestChecks(t)
 }
 
-const testAccVcfaContentLibraryItemTenantStep1 = `
+const testAccVcfaContentLibraryItemTenantStep4 = `
 # skip-binary-test: Requires an extra provider configuration block with a tenant user
 
 resource "vcfa_content_library_item" "cli4" {
@@ -400,8 +424,6 @@ resource "vcfa_content_library_item" "cli4" {
   description        = "{{.Name}}4"
   content_library_id = {{.ContentLibraryRef}}
   files_paths        = ["{{.OvaPath}}"]
-
-  depends_on = [vcfa_org_local_user.user]
 }
 
 resource "vcfa_content_library_item" "cli5" {
@@ -410,8 +432,6 @@ resource "vcfa_content_library_item" "cli5" {
   description        = "{{.Name}}5"
   content_library_id = {{.ContentLibraryRef}}
   files_paths        = ["{{.IsoPath}}"]
-
-  depends_on = [vcfa_org_local_user.user]
 }
 
 resource "vcfa_content_library_item" "cli6" {
@@ -420,7 +440,25 @@ resource "vcfa_content_library_item" "cli6" {
   description        = "{{.Name}}6"
   content_library_id = {{.ContentLibraryRef}}
   files_paths        = [{{.OvfPaths}}]
+}
+`
 
-  depends_on = [vcfa_org_local_user.user]
+const testAccVcfaContentLibraryItemTenantStep6 = testAccVcfaContentLibraryItemTenantStep4 + `
+# skip-binary-test: Requires an extra provider configuration block with a tenant user
+
+data "vcfa_content_library_item" "cli4_ds" {
+  provider           = vcfatenant
+  name               = vcfa_content_library_item.cli4.name
+  content_library_id = vcfa_content_library_item.cli4.content_library_id
+}
+data "vcfa_content_library_item" "cli5_ds" {
+  provider           = vcfatenant
+  name               = vcfa_content_library_item.cli5.name
+  content_library_id = vcfa_content_library_item.cli5.content_library_id
+}
+data "vcfa_content_library_item" "cli6_ds" {
+  provider           = vcfatenant
+  name               = vcfa_content_library_item.cli6.name
+  content_library_id = vcfa_content_library_item.cli6.content_library_id
 }
 `
