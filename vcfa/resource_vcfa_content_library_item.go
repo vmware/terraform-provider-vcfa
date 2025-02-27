@@ -220,7 +220,7 @@ func resourceVcfaContentLibraryItemImport(_ context.Context, d *schema.ResourceD
 	clName, cliName := "", ""
 	switch len(id) {
 	case 3:
-		// Tenant Content Library Item: Org + Content Library + Content Library Item
+		// Tenant Content Library Item: Organization + Content Library + Content Library Item
 		org, err := tmClient.GetTmOrgByName(id[0])
 		if err != nil {
 			return nil, fmt.Errorf("error getting %s with name '%s' for import: %s", labelVcfaOrg, id[0], err)
