@@ -10,6 +10,8 @@ description: |-
 
 Provides a data source to read LDAP configuration for an Organization.
 
+-> To read LDAP of the Provider (System) organization, please use [`vcfa_provider_ldap` data source](/providers/vmware/vcfa/latest/docs/data-sources/provider_ldap) instead
+
 ## Example Usage
 
 ```hcl
@@ -31,4 +33,4 @@ The following arguments are supported:
 ## Attribute Reference
 
 All the arguments and attributes defined in
-[`vcfa_org_ldap`](/providers/vmware/vcfa/latest/docs/resources/org_ldap) resource are available.
+[`vcfa_org_ldap`](/providers/vmware/vcfa/latest/docs/resources/org_ldap) resource are available, except `password`.
