@@ -80,5 +80,14 @@
       }
     ],
     "rootCertificatePath": "../test-resources/rootCA.pem"
+  },
+  "ldap": {
+    "host": "my.ldap.server.net",
+    "port": 636,
+    "isSsl": true,
+    "username": "admin",
+    "password": "StrongPassword",
+    "baseDistinguishedName": "OU=demo,DC=foo,DC=bar,DC=test,DC=net",
+    "type": "ACTIVE_DIRECTORY"
   }
 }

@@ -13,8 +13,8 @@ func TestAccVcfaOrgRegionalNetworking(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
-	vCenterHcl, vCenterHclRef := getVCenterHcl(t)
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
+	vCenterHcl, vCenterHclRef := getVCenterHcl(t, nsxManagerHclRef)
 	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
 	ipSpaceHcl, ipSpaceHclRef := getIpSpaceHcl(t, regionHclRef, "1", "1")
 	providerGatewayHcl, providerGatewayHclRef := getProviderGatewayHcl(t, regionHclRef, ipSpaceHclRef)

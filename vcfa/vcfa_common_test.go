@@ -14,7 +14,7 @@ import (
 // getVCenterHcl gets a vCenter data source as first returned parameter and its HCL reference as second one,
 // only if a vCenter is already configured in VCFA. Otherwise, it returns a vCenter resource HCL as first returned parameter
 // and its HCL reference as second one, only if "createVCenter=true" in the testing configuration
-func getVCenterHcl(t *testing.T) (string, string) {
+func getVCenterHcl(t *testing.T, nsxManagerHclRef string) (string, string) {
 	tmClient := createTemporaryVCFAConnection(false)
 	vc, err := tmClient.GetVCenterByUrl(testConfig.Tm.VcenterUrl)
 	if err == nil {
@@ -42,6 +42,7 @@ resource "vcfa_vcenter" "vc" {
   username                   = "` + testConfig.Tm.VcenterUsername + `"
   password                   = "` + testConfig.Tm.VcenterPassword + `"
   is_enabled                 = true
+  nsx_manager_id             = ` + nsxManagerHclRef + `.id
 }
 `, "vcfa_vcenter.vc"
 }

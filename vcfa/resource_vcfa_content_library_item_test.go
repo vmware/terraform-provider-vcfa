@@ -17,8 +17,8 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
-	vCenterHcl, vCenterHclRef := getVCenterHcl(t)
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
+	vCenterHcl, vCenterHclRef := getVCenterHcl(t, nsxManagerHclRef)
 	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
 	contentLibraryHcl, contentLibraryHclRef := getContentLibraryHcl(t, regionHclRef, "")
 
@@ -183,8 +183,8 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
-	vCenterHcl, vCenterHclRef := getVCenterHcl(t)
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
+	vCenterHcl, vCenterHclRef := getVCenterHcl(t, nsxManagerHclRef)
 	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
 	vmClassesHcl, vmClassesRefs := getRegionVmClassesHcl(t, regionHclRef)
 	// The Content Library for tenants must depend on the Region Quota, as it contains the Storage Policies required

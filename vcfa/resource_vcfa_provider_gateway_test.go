@@ -13,8 +13,8 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)
 
-	vCenterHcl, vCenterHclRef := getVCenterHcl(t)
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
+	vCenterHcl, vCenterHclRef := getVCenterHcl(t, nsxManagerHclRef)
 	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
 	ipSpace1Hcl, ipSpace1HclRef := getIpSpaceHcl(t, regionHclRef, "1", "1")
 	ipSpace2Hcl, ipSpace2HclRef := getIpSpaceHcl(t, regionHclRef, "2", "2")

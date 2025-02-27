@@ -131,6 +131,15 @@ type TestConfig struct {
 		} `json:"certificates"`
 		RootCertificatePath string `json:"rootCertificatePath"`
 	} `json:"tm,omitempty"`
+	Ldap struct {
+		Host                  string `json:"host"`
+		Port                  int    `json:"port"`
+		IsSsl                 bool   `json:"isSsl"`
+		Username              string `json:"username"`
+		Password              string `json:"password"`
+		BaseDistinguishedName string `json:"baseDistinguishedName"`
+		Type                  string `json:"type"`
+	} `json:"ldap,omitempty"`
 	Logging struct {
 		Enabled         bool   `json:"enabled,omitempty"`
 		LogFileName     string `json:"logFileName,omitempty"`
