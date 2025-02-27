@@ -27,7 +27,7 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 		"ContentLibraryRef": fmt.Sprintf("%s.id", contentLibraryHclRef),
 		"OvaPath":           "../test-resources/test_vapp_template.ova",
 		"IsoPath":           "../test-resources/test.iso",
-		"OvfPaths":          "\"../test-resources/test_vapp_template_ovf/descriptor.ovf\", \"../test-resources/test_vapp_template_ovf/yVMFromVcd-disk1.vmdk\", ",
+		"OvfPaths":          "\"../test-resources/test_vapp_template_ovf/descriptor.ovf\", \"../test-resources/test_vapp_template_ovf/disk1.vmdk\", ",
 		"Tags":              "tm contentlibrary",
 	}
 	testParamsNotEmpty(t, params)
@@ -207,7 +207,7 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 		"ContentLibraryRef":   fmt.Sprintf("%s.id", contentLibraryHclRef),
 		"OvaPath":             "../test-resources/test_vapp_template.ova",
 		"IsoPath":             "../test-resources/test.iso",
-		"OvfPaths":            "\"../test-resources/test_vapp_template_ovf/descriptor.ovf\", \"../test-resources/test_vapp_template_ovf/yVMFromVcd-disk1.vmdk\", ",
+		"OvfPaths":            "\"../test-resources/test_vapp_template_ovf/descriptor.ovf\", \"../test-resources/test_vapp_template_ovf/disk1.vmdk\", ",
 		"Tags":                "tm contentlibrary",
 	}
 	testParamsNotEmpty(t, params)
