@@ -34,7 +34,7 @@ output "image_identifier" {
 
 The following arguments are supported:
 
-* `name` - (Required) The name of the Content Library to read
+* `name` - (Required) The name of the Content Library Item to read
 * `content_library_id` - (Required) ID of the Content Library that this item belongs to. Can be obtained with [a data source](/providers/vmware/vcfa/latest/docs/data-sources/content_library)
 
 ## Attribute reference

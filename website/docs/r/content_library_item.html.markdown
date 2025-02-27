@@ -44,10 +44,8 @@ resource "vcfa_content_library_item" "ovf" {
 
 The following arguments are supported:
 
-* `org_id` - (Optional) The reference to the Organization that the Content Library Item belongs to. Not needed if the Content Library
-  is of `PROVIDER` type.
 * `name` - (Required) The name of the Content Library Item
-* `content_library_id` - (Required) ID of the [Content Library]() that this Content Library Item belongs to
+* `content_library_id` - (Required) ID of the [Content Library](/providers/vmware/vcfa/latest/docs/resources/content_library) that this Content Library Item belongs to
 * `files_paths` - (Required) A single path to an OVA/ISO, or multiple paths for an OVF and its referenced files, to create the Content Library Item
 * `upload_piece_size` - (Optional) - When uploading the Content Library Item, this argument defines the size of the file chunks
   in which it is split on every upload request. It can possibly impact upload performance. Default 1 MB.
@@ -61,6 +59,7 @@ The following arguments are supported:
 * `is_published` - Whether this Content Library Item is published
 * `is_subscribed` - Whether this Content Library Item is subscribed
 * `last_successful_sync` - The ISO-8601 timestamp representing when this Content Library Item was last synced if subscribed
+* `owner_org_id` - The reference to the organization that the Content Library Item belongs to
 * `status` - Status of this Content Library Item
 * `version` - The version of this Content Library Item. For a subscribed library, this version is same as in publisher library 
 
