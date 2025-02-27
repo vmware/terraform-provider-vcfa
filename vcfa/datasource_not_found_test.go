@@ -53,6 +53,10 @@ func testSpecificDataSourceNotFound(dataSourceName string, tmClient *VCDClient) 
 				dataSourceName: "vcfa_supervisor_zone",
 				reason:         "TODO: TM: Retrieving non-existent Supervisor by ID returns 400 and not ENF",
 			},
+			{
+				dataSourceName: "vcfa_provider_ldap",
+				reason:         "Data source vcfa_provider_ldap always returns data, it is not possible to get ENF",
+			},
 		}
 		for _, skip := range skipAlwaysSlice {
 			if dataSourceName == skip.dataSourceName {
