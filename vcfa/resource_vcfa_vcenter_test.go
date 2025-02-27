@@ -22,6 +22,9 @@ func TestAccVcfaVcenter(t *testing.T) {
 		"VcenterUsername": testConfig.Tm.VcenterUsername,
 		"VcenterPassword": testConfig.Tm.VcenterPassword,
 		"VcenterUrl":      testConfig.Tm.VcenterUrl,
+		"NsxUsername":     testConfig.Tm.NsxManagerUsername,
+		"NsxPassword":     testConfig.Tm.NsxManagerPassword,
+		"NsxUrl":          testConfig.Tm.NsxManagerUrl,
 
 		"Testname": t.Name(),
 
@@ -105,12 +108,12 @@ func TestAccVcfaVcenter(t *testing.T) {
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateId:           params["Testname"].(string),
-				ImportStateVerifyIgnore: []string{"password", "auto_trust_certificate", "refresh_vcenter_on_read", "refresh_policies_on_read", "refresh_vcenter_on_create", "refresh_policies_on_create"},
+				ImportStateVerifyIgnore: []string{"password", "auto_trust_certificate", "refresh_vcenter_on_read", "refresh_policies_on_read", "refresh_vcenter_on_create", "refresh_policies_on_create", "nsx_manager_id"},
 			},
 			{
 				Config: configText4,
 				Check: resource.ComposeTestCheckFunc(
-					resourceFieldsEqual("data.vcfa_vcenter.test", "vcfa_vcenter.test", []string{"%"}),
+					resourceFieldsEqual("data.vcfa_vcenter.test", "vcfa_vcenter.test", []string{"%", "nsx_manager_id"}),
 				),
 			},
 		},
@@ -119,7 +122,18 @@ func TestAccVcfaVcenter(t *testing.T) {
 	postTestChecks(t)
 }
 
-const testAccVcfaVcenterStep1 = `
+const testAccVcfaVcenterPrerequisites = `
+resource "vcfa_nsx_manager" "test" {
+  name                   = "{{.Testname}}"
+  description            = "terraform test"
+  username               = "{{.NsxUsername}}"
+  password               = "{{.NsxPassword}}"
+  url                    = "{{.NsxUrl}}"
+  auto_trust_certificate = true
+}
+`
+
+const testAccVcfaVcenterStep1 = testAccVcfaVcenterPrerequisites + `
 resource "vcfa_vcenter" "test" {
   name                     = "{{.Testname}}"
   url                      = "{{.VcenterUrl}}"
@@ -129,10 +143,11 @@ resource "vcfa_vcenter" "test" {
   username                 = "{{.VcenterUsername}}"
   password                 = "{{.VcenterPassword}}"
   is_enabled               = true
+  nsx_manager_id           = vcfa_nsx_manager.test.id
 }
 `
 
-const testAccVcfaVcenterStep2 = `
+const testAccVcfaVcenterStep2 = testAccVcfaVcenterPrerequisites + `
 resource "vcfa_vcenter" "test" {
   name                   = "{{.Testname}}-rename"
   description            = "description from Terraform"
@@ -141,10 +156,11 @@ resource "vcfa_vcenter" "test" {
   username               = "{{.VcenterUsername}}"
   password               = "{{.VcenterPassword}}"
   is_enabled             = false
+  nsx_manager_id         = vcfa_nsx_manager.test.id
 }
 `
 
-const testAccVcfaVcenterStep3 = `
+const testAccVcfaVcenterStep3 = testAccVcfaVcenterPrerequisites + `
 resource "vcfa_vcenter" "test" {
   name                   = "{{.Testname}}"
   url                    = "{{.VcenterUrl}}"
@@ -152,6 +168,7 @@ resource "vcfa_vcenter" "test" {
   username               = "{{.VcenterUsername}}"
   password               = "{{.VcenterPassword}}"
   is_enabled             = true
+  nsx_manager_id         = vcfa_nsx_manager.test.id
 }
 `
 
@@ -176,6 +193,9 @@ func TestAccVcfaVcenterInvalid(t *testing.T) {
 		"VcenterUsername": testConfig.Tm.VcenterUsername,
 		"VcenterPassword": "invalid",
 		"VcenterUrl":      testConfig.Tm.VcenterUrl,
+		"NsxUsername":     testConfig.Tm.NsxManagerUsername,
+		"NsxPassword":     testConfig.Tm.NsxManagerPassword,
+		"NsxUrl":          testConfig.Tm.NsxManagerUrl,
 
 		"Testname": t.Name(),
 
