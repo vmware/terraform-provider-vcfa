@@ -220,6 +220,7 @@ func resourceVcfaContentLibraryItemImport(_ context.Context, d *schema.ResourceD
 	clName, cliName := "", ""
 	switch len(id) {
 	case 3:
+		// Tenant Content Library Item: Org + Content Library + Content Library Item
 		org, err := tmClient.GetTmOrgByName(id[0])
 		if err != nil {
 			return nil, fmt.Errorf("error getting %s with name '%s' for import: %s", labelVcfaOrg, id[0], err)
@@ -231,6 +232,7 @@ func resourceVcfaContentLibraryItemImport(_ context.Context, d *schema.ResourceD
 		clName = id[1]
 		cliName = id[2]
 	case 2:
+		// Provider Content Library Item: Organization is not needed
 		clName = id[0]
 		cliName = id[1]
 	default:
