@@ -84,3 +84,6 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.2 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
+
+//replace github.com/vmware/go-vcloud-director/v3 => github.com/Didainius/go-vcloud-director/v3 v2.12.1-0.20211018060826-c7f8ab32330e
+replace github.com/vmware/go-vcloud-director/v3 => github.com/Didainius/go-vcloud-director/v3 v3.0.0-alpha.4.0.20250302082823-1735cb0a69b9
