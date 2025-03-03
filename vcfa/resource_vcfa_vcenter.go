@@ -207,12 +207,11 @@ func resourceVcfaVcenterCreate(ctx context.Context, d *schema.ResourceData, meta
 	shouldRefreshPolicies := d.Get("refresh_policies_on_create").(bool)
 	shouldWaitForListenerStatus := true
 	c := crudConfig[*govcd.VCenter, types.VSphereVirtualCenter]{
-		entityLabel:    labelVcfaVirtualCenter,
-		getTypeFunc:    getVcenterType,
-		stateStoreFunc: setVcenterData,
-		// createAsyncFunc:  tmClient.CreateVcenterAsync,
-		createFunc: tmClient.CreateVcenter,
-		// getEntityFunc:    tmClient.GetVCenterById,
+		entityLabel:      labelVcfaVirtualCenter,
+		getTypeFunc:      getVcenterType,
+		stateStoreFunc:   setVcenterData,
+		createAsyncFunc:  tmClient.CreateVcenterAsync,
+		getEntityFunc:    tmClient.GetVCenterById,
 		resourceReadFunc: resourceVcfaVcenterRead,
 		// certificate should be trusted for the vCenter to work
 		preCreateHooks: []schemaHook{autoTrustHostCertificate("url", "auto_trust_certificate")},
