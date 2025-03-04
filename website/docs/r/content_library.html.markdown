@@ -32,7 +32,7 @@ resource "vcfa_content_library" "cl" {
 
 resource "vcfa_content_library" "cl2" {
   name        = "My Subscribed Library"
-  # Subscribed libraries don't have descriptions
+  # Subscribed libraries inherit description from publisher
   storage_class_ids = [
     data.vcfa_storage_class.sc.id
   ]
