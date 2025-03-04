@@ -420,6 +420,12 @@ resource "vcfa_org" "test" {
   description  = "{{.Org}}"
 }
 
+resource "vcfa_org_settings" "allow" {
+  org_id                           = vcfa_org.test.id
+  can_create_subscribed_libraries  = true
+  quarantine_content_library_items = true
+}
+
 data "vcfa_role" "org-admin" {
   provider = vcfa
   org_id   = vcfa_org.test.id
