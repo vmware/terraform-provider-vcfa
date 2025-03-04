@@ -9,7 +9,7 @@ require (
 	github.com/hashicorp/go-cty v1.4.1-0.20200414143053-d3edf31b6320
 	github.com/hashicorp/go-version v1.7.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.36.0
-	github.com/vmware/go-vcloud-director/v3 v3.0.0-alpha.35
+	github.com/vmware/go-vcloud-director/v3 v3.0.0-alpha.37
 	k8s.io/apimachinery v0.32.1
 	k8s.io/client-go v0.32.1
 )

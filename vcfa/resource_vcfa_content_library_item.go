@@ -3,6 +3,7 @@ package vcfa
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -40,11 +41,14 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 				ForceNew:    true,
 				Description: fmt.Sprintf("ID of the %s that this %s belongs to", labelVcfaContentLibrary, labelVcfaContentLibraryItem),
 			},
-			"file_path": {
-				Type:        schema.TypeString,
+			"files_paths": {
+				Type:        schema.TypeSet,
 				Optional:    true, // Not needed when Importing
 				ForceNew:    true,
-				Description: fmt.Sprintf("Path to the OVA/ISO to create the %s", labelVcfaContentLibraryItem),
+				Description: fmt.Sprintf("A single path to an OVA/ISO, or multiple paths for an OVF and its referenced files, to create the %s", labelVcfaContentLibraryItem),
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 			"upload_piece_size": {
 				Type:        schema.TypeInt,
@@ -105,24 +109,50 @@ func resourceVcfaContentLibraryItemCreate(ctx context.Context, d *schema.Resourc
 	tmClient := meta.(ClientContainer).tmClient
 
 	clId := d.Get("content_library_id").(string)
-	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
 	cl, err := tmClient.GetContentLibraryById(clId, nil)
 	if err != nil {
 		return diag.Errorf("could not retrieve %s with ID '%s': %s", labelVcfaContentLibrary, clId, err)
 	}
 
-	filePath := d.Get("file_path").(string)
-	uploadPieceSize := d.Get("upload_piece_size").(int)
+	if _, ok := d.GetOk("files_paths"); !ok {
+		return diag.Errorf("the argument 'files_paths' is required during creation")
+	}
+
+	uploadArgs := govcd.ContentLibraryItemUploadArguments{
+		UploadPieceSize: int64(d.Get("upload_piece_size").(int)) * 1024 * 1024,
+	}
+
+	filePaths := d.Get("files_paths").(*schema.Set).List()
+	if len(filePaths) == 1 {
+		p := filepath.Clean(filePaths[0].(string))
+		if filepath.Ext(p) != ".iso" && filepath.Ext(p) != ".ova" {
+			return diag.Errorf("when uploading a single file, only ISO/OVA is supported. OVF requires multiple files")
+		}
+		// ISO/OVA
+		uploadArgs.FilePath = p
+	} else {
+		// OVF. We have to search for the descriptor.ovf inside the TypeSet.
+		ovfFound := false
+		for _, p := range filePaths {
+			cleanedPath := filepath.Clean(p.(string))
+			if filepath.Ext(cleanedPath) == ".ovf" {
+				uploadArgs.FilePath = cleanedPath
+				ovfFound = true
+			} else {
+				uploadArgs.OvfFilesPaths = append(uploadArgs.OvfFilesPaths, cleanedPath)
+			}
+		}
+		if !ovfFound {
+			return diag.Errorf("could not find the 'descriptor.ovf' file in any of the provided paths: %v", filePaths)
+		}
+	}
 
 	c := crudConfig[*govcd.ContentLibraryItem, types.ContentLibraryItem]{
 		entityLabel:    labelVcfaContentLibraryItem,
 		getTypeFunc:    getContentLibraryItemType,
 		stateStoreFunc: setContentLibraryItemData,
 		createFunc: func(config *types.ContentLibraryItem) (*govcd.ContentLibraryItem, error) {
-			return cl.CreateContentLibraryItem(config, govcd.ContentLibraryItemUploadArguments{
-				FilePath:        filePath,
-				UploadPieceSize: int64(uploadPieceSize) * 1024 * 1024,
-			})
+			return cl.CreateContentLibraryItem(config, uploadArgs)
 		},
 		resourceReadFunc: resourceVcfaContentLibraryItemRead,
 	}
@@ -152,7 +182,6 @@ func resourceVcfaContentLibraryItemRead(ctx context.Context, d *schema.ResourceD
 	tmClient := meta.(ClientContainer).tmClient
 
 	clId := d.Get("content_library_id").(string)
-	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
 	cl, err := tmClient.GetContentLibraryById(clId, nil)
 	if err != nil {
 		return diag.Errorf("could not retrieve %s with ID '%s': %s", labelVcfaContentLibrary, clId, err)
@@ -170,7 +199,6 @@ func resourceVcfaContentLibraryItemDelete(ctx context.Context, d *schema.Resourc
 	tmClient := meta.(ClientContainer).tmClient
 
 	clId := d.Get("content_library_id").(string)
-	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
 	cl, err := tmClient.GetContentLibraryById(clId, nil)
 	if err != nil {
 		return diag.Errorf("could not retrieve %s with ID '%s': %s", labelVcfaContentLibrary, clId, err)
@@ -188,19 +216,37 @@ func resourceVcfaContentLibraryItemImport(_ context.Context, d *schema.ResourceD
 	tmClient := meta.(ClientContainer).tmClient
 
 	id := strings.Split(d.Id(), ImportSeparator)
-	if len(id) != 2 {
-		return nil, fmt.Errorf("ID syntax should be <%s name>%s<%s name>", labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibraryItem)
+	var tenantContext *govcd.TenantContext
+	clName, cliName := "", ""
+	switch len(id) {
+	case 3:
+		// Tenant Content Library Item: Organization + Content Library + Content Library Item
+		org, err := tmClient.GetTmOrgByName(id[0])
+		if err != nil {
+			return nil, fmt.Errorf("error getting %s with name '%s' for import: %s", labelVcfaOrg, id[0], err)
+		}
+		tenantContext = &govcd.TenantContext{
+			OrgId:   org.TmOrg.ID,
+			OrgName: org.TmOrg.Name,
+		}
+		clName = id[1]
+		cliName = id[2]
+	case 2:
+		// Provider Content Library Item: Organization is not needed
+		clName = id[0]
+		cliName = id[1]
+	default:
+		return nil, fmt.Errorf("ID syntax should be <%s name>%s<%s name>%s<%s name> or <%s name>%s<%s name>", labelVcfaOrg, ImportSeparator, labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibraryItem, labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibraryItem)
 	}
 
-	// TODO: TM: Tenant Context should not be nil and depend on the configured owner_org_id
-	cl, err := tmClient.GetContentLibraryByName(id[0], nil)
+	cl, err := tmClient.GetContentLibraryByName(clName, tenantContext)
 	if err != nil {
-		return nil, fmt.Errorf("error getting %s with name '%s' for import: %s", labelVcfaContentLibrary, id[0], err)
+		return nil, fmt.Errorf("error getting %s with name '%s' for import: %s", labelVcfaContentLibrary, clName, err)
 	}
 
-	cli, err := cl.GetContentLibraryItemByName(id[1])
+	cli, err := cl.GetContentLibraryItemByName(cliName)
 	if err != nil {
-		return nil, fmt.Errorf("error getting %s with name '%s': %s", labelVcfaContentLibraryItem, id[1], err)
+		return nil, fmt.Errorf("error getting %s with name '%s': %s", labelVcfaContentLibraryItem, cliName, err)
 	}
 
 	d.SetId(cli.ContentLibraryItem.ID)
