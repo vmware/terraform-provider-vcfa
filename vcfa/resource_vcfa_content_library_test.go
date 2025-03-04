@@ -104,7 +104,7 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 					// Subscribed Content Library
 					resource.TestCheckResourceAttr(resourceNameSubscribed, "name", t.Name()+"Subscribed"),
 					resource.TestMatchResourceAttr(resourceNameSubscribed, "org_id", regexp.MustCompile("urn:vcloud:org:")),
-					resource.TestCheckResourceAttrSet(resourceNameSubscribed, "description"), // Description is taken from publisher library
+					resource.TestMatchResourceAttr(resourceNameSubscribed, "description", regexp.MustCompile(".*")), // Description is taken from publisher library
 					resource.TestCheckResourceAttr(resourceNameSubscribed, "storage_class_ids.#", "1"),
 					resource.TestCheckResourceAttr(resourceNameSubscribed, "auto_attach", "true"), // Always true for PROVIDER libraries
 					resource.TestCheckResourceAttrSet(resourceNameSubscribed, "creation_date"),
@@ -321,8 +321,8 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 
 					// Subscribed Content Library
 					resource.TestCheckResourceAttr(clSubscribed, "name", t.Name()+"Subscribed"),
-					resource.TestCheckResourceAttrPair(cl2, "org_id", "vcfa_org.test", "id"),
-					resource.TestCheckResourceAttrSet(clSubscribed, "description"), // Description is taken from publisher library
+					resource.TestCheckResourceAttrPair(clSubscribed, "org_id", "vcfa_org.test", "id"),
+					resource.TestMatchResourceAttr(clSubscribed, "description", regexp.MustCompile(".*")), // Description is taken from publisher library
 					resource.TestCheckResourceAttr(clSubscribed, "storage_class_ids.#", "1"),
 					resource.TestCheckResourceAttr(clSubscribed, "auto_attach", "true"), // Always true for PROVIDER libraries
 					resource.TestCheckResourceAttrSet(clSubscribed, "creation_date"),
@@ -589,6 +589,8 @@ data "vcfa_content_library" "cl_ds3tenant" {
 }
 
 data "vcfa_content_library" "cl_subscribed_ds" {
-  name = vcfa_content_library.cl_subscribed.name
+  provider = vcfa
+  org_id   = vcfa_org.test.id
+  name     = vcfa_content_library.cl_subscribed.name
 }
 `
