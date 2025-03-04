@@ -10,6 +10,8 @@ description: |-
 
 Provides a resource to manage VMware Cloud Foundation Automation Organization Networking Settings.
 
+-> For general Organization settings, see [`vcfa_org_settings`](/providers/vmware/vcfa/latest/docs/resources/org_settings) resource
+
 ## Example Usage
 
 ```hcl

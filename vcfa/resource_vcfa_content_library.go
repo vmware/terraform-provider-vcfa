@@ -74,6 +74,7 @@ func resourceVcfaContentLibrary() *schema.Resource {
 			"description": {
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true, // Subscribed libraries inherit publisher's description
 				Description: fmt.Sprintf("The description of the %s", labelVcfaContentLibrary),
 			},
 			"is_shared": {
