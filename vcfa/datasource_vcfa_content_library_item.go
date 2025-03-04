@@ -58,8 +58,7 @@ func datasourceVcfaContentLibraryItem() *schema.Resource {
 				Description: fmt.Sprintf("The ISO-8601 timestamp representing when this %s was last synced if subscribed", labelVcfaContentLibraryItem),
 			},
 			"owner_org_id": {
-				Type: schema.TypeString,
-				// TODO: TM: This should be optional: Either Provider or Tenant can create CLs
+				Type:        schema.TypeString,
 				Computed:    true,
 				Description: fmt.Sprintf("The reference to the %s that the %s belongs to", labelVcfaOrg, labelVcfaContentLibraryItem),
 			},

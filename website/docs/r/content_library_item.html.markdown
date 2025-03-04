@@ -17,13 +17,27 @@ data "vcfa_content_library" "cl" {
   name = "My Library"
 }
 
-resource "vcfa_content_library_item" "cli" {
-  name               = "My OVA"
-  description        = "My uploaded OVA"
-  content_library_id = data.vcfa_content_library.cl.id
-  upload_piece_size  = 10
-  file_path          = "./photon.ova"
+resource "vcfa_content_library_item" "ova" {
+  name               = "my-ova"
+  description        = "Description of my-ova"
+  content_library_id = vcfa_content_library.cl.id
+  files_paths        = ["./my_ova.ova"]
 }
+
+resource "vcfa_content_library_item" "iso" {
+  name               = "iso1"
+  description        = "Description of iso1"
+  content_library_id = vcfa_content_library.cl.id
+  files_paths        = ["./linux.iso"]
+}
+
+resource "vcfa_content_library_item" "ovf" {
+  name               = "ovf"
+  description        = "Description of OVF"
+  content_library_id = vcfa_content_library.cl.id
+  files_paths        = ["./my-ovf/descriptor.ovf", "./my-ovf/disk1.vmdk"]
+}
+
 ```
 
 ## Argument Reference
@@ -31,8 +45,8 @@ resource "vcfa_content_library_item" "cli" {
 The following arguments are supported:
 
 * `name` - (Required) The name of the Content Library Item
-* `content_library_id` - (Required) ID of the Content Library that this Content Library Item belongs to
-* `file_path` - (Required) Path to the OVA/ISO to create the Content Library Item
+* `content_library_id` - (Required) ID of the [Content Library](/providers/vmware/vcfa/latest/docs/resources/content_library) that this Content Library Item belongs to
+* `files_paths` - (Required) A single path to an OVA/ISO, or multiple paths for an OVF and its referenced files, to create the Content Library Item
 * `upload_piece_size` - (Optional) - When uploading the Content Library Item, this argument defines the size of the file chunks
   in which it is split on every upload request. It can possibly impact upload performance. Default 1 MB.
 * `description` - (Optional) The description of the Content Library Item
@@ -64,7 +78,14 @@ resource "vcfa_content_library" "cl" {
 }
 ```
 
-You can import such Content Library Item into terraform state using the **Content Library name** and the **Item name**, with this command
+You can import such Content Library Item into terraform state using two ways:
+- With the **Owner Organization name**, the **Content Library name** and the **Item name** for Tenant libraries:
+
+```
+terraform import vcfa_content_library_item.cli "My existing Org"."My Already Existing Library"."My Already Existing Item"
+```
+
+- With the **Content Library name** and the **Item name** for Provider libraries:
 
 ```
 terraform import vcfa_content_library_item.cli "My Already Existing Library"."My Already Existing Item"
