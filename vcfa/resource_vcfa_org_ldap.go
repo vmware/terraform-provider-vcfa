@@ -136,7 +136,7 @@ var ldapGroupAttributes = func(isDatasource bool) *schema.Schema {
 				},
 				"group_back_link_identifier": { // BackLinkIdentifier
 					Type:        schema.TypeString,
-					Required:    !isDatasource,
+					Optional:    !isDatasource,
 					Computed:    isDatasource,
 					Description: "LDAP group attribute used to identify a group member",
 				},
