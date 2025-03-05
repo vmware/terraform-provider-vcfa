@@ -71,6 +71,10 @@ func resourceVcfaOrgSettingsRead(ctx context.Context, d *schema.ResourceData, me
 	tmClient := meta.(ClientContainer).tmClient
 	org, err := tmClient.GetTmOrgById(d.Get("org_id").(string))
 	if err != nil {
+		if govcd.ContainsNotFound(err) { // Org no longer present, removing from state
+			d.SetId("")
+			return nil
+		}
 		return diag.Errorf("error retrieving %s: %s", labelVcfaOrg, err)
 	}
 
@@ -79,11 +83,7 @@ func resourceVcfaOrgSettingsRead(ctx context.Context, d *schema.ResourceData, me
 
 	orgSettings, err := org.GetSettings()
 	if err != nil {
-		if govcd.ContainsNotFound(err) { // Org no longer present, removing from state
-			d.SetId("")
-			return nil
-		}
-		return diag.Errorf("error retrieving %s for %s:%s", labelVcfaOrgSettings, labelVcfaOrg, err)
+		return diag.Errorf("error retrieving %s for %s: %s", labelVcfaOrgSettings, labelVcfaOrg, err)
 	}
 
 	err = setOrgSettingsData(tmClient, d, orgSettings)
