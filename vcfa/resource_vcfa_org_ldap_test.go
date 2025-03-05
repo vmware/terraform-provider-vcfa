@@ -29,12 +29,17 @@ func TestAccVcfaOrgLdap(t *testing.T) {
 		"LdapPassword":              testConfig.Ldap.Password,
 		"LdapType":                  testConfig.Ldap.Type,
 		"LdapBaseDistinguishedName": testConfig.Ldap.BaseDistinguishedName,
+		"CustomUiLabel":             "custom_ui_button_label  = \"Hello there\"",
 		"Tags":                      "ldap org",
 	}
 	testParamsNotEmpty(t, params)
 
-	params["FuncName"] = t.Name()
-	configText := templateFill(testAccVcfaOrgLdap, params)
+	params["FuncName"] = t.Name() + "-step1"
+	configText1 := templateFill(testAccVcfaOrgLdap, params)
+
+	params["FuncName"] = t.Name() + "-step2"
+	params["CustomUiLabel"] = " "
+	configText2 := templateFill(testAccVcfaOrgLdap, params)
 
 	params["FuncName"] = t.Name() + "-DS"
 	configTextDS := templateFill(testAccVcfaOrgLdapDS, params)
@@ -42,7 +47,8 @@ func TestAccVcfaOrgLdap(t *testing.T) {
 		t.Skip(acceptanceTestsSkipped)
 		return
 	}
-	debugPrintf("#[DEBUG] CONFIGURATION Resource for Organization LDAP (Custom): %s\n", configText)
+	debugPrintf("#[DEBUG] CONFIGURATION Resource for Organization LDAP Step 1: %s\n", configText1)
+	debugPrintf("#[DEBUG] CONFIGURATION Resource for Organization LDAP Step 2: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION Data source: %s\n", configTextDS)
 
 	orgDef := "vcfa_org.org1"
@@ -52,7 +58,7 @@ func TestAccVcfaOrgLdap(t *testing.T) {
 		ProviderFactories: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: configText,
+				Config: configText1,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckOrgLdapExists(ldapResourceDef),
 					resource.TestCheckResourceAttr(orgDef, "name", params["Org"].(string)),
@@ -80,6 +86,14 @@ func TestAccVcfaOrgLdap(t *testing.T) {
 					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.group_attributes.0.unique_identifier", "objectGuid"),
 					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.group_attributes.0.group_membership_identifier", "dn"),
 					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.group_attributes.0.group_back_link_identifier", "objectSid"),
+					resource.TestCheckResourceAttrPair(orgDef, "id", ldapResourceDef, "org_id"),
+				),
+			},
+			{
+				Config: configText2,
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckOrgLdapExists(ldapResourceDef),
+					resource.TestCheckResourceAttr(ldapResourceDef, "custom_settings.0.custom_ui_button_label", ""),
 					resource.TestCheckResourceAttrPair(orgDef, "id", ldapResourceDef, "org_id"),
 				),
 			},
@@ -150,7 +164,7 @@ resource "vcfa_org_ldap" "ldap" {
     password                = "{{.LdapPassword}}"
     base_distinguished_name = "{{.LdapBaseDistinguishedName}}"
     connector_type          = "{{.LdapType}}"
-    custom_ui_button_label  = "Hello there"
+    {{.CustomUiLabel}}
 
     user_attributes {
       object_class                = "user"
