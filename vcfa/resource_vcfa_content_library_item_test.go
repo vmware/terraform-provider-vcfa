@@ -121,10 +121,10 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 			{
 				Config: configText3,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					// files_paths and upload_piece_size cannot be obtained during reads, that's why it does not appear in data source schema
-					resourceFieldsEqual(cli1, "data.vcfa_content_library_item.cli1_ds", []string{"files_paths.#", "files_paths.0", "upload_piece_size", "%"}),
-					resourceFieldsEqual(cli2, "data.vcfa_content_library_item.cli2_ds", []string{"files_paths.#", "files_paths.0", "upload_piece_size", "%"}),
-					resourceFieldsEqual(cli3, "data.vcfa_content_library_item.cli3_ds", []string{"files_paths.#", "files_paths.0", "files_paths.1", "upload_piece_size", "%"}),
+					// file_paths and upload_piece_size cannot be obtained during reads, that's why it does not appear in data source schema
+					resourceFieldsEqual(cli1, "data.vcfa_content_library_item.cli1_ds", []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}),
+					resourceFieldsEqual(cli2, "data.vcfa_content_library_item.cli2_ds", []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}),
+					resourceFieldsEqual(cli3, "data.vcfa_content_library_item.cli3_ds", []string{"file_paths.#", "file_paths.0", "file_paths.1", "upload_piece_size", "%"}),
 				),
 			},
 			{
@@ -132,7 +132,7 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateId:           fmt.Sprintf("%s%s%s", testConfig.Tm.ContentLibrary, ImportSeparator, params["Name"].(string)+"1"),
-				ImportStateVerifyIgnore: []string{"files_paths.#", "files_paths.0", "upload_piece_size", "%"}, // file_path and upload_piece_size cannot be obtained during imports, that's why it's Optional
+				ImportStateVerifyIgnore: []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}, // file_path and upload_piece_size cannot be obtained during imports, that's why it's Optional
 			},
 		},
 	})
@@ -145,21 +145,21 @@ resource "vcfa_content_library_item" "cli1" {
   name               = "{{.Name}}1"
   description        = "{{.Name}}1"
   content_library_id = {{.ContentLibraryRef}}
-  files_paths         = ["{{.OvaPath}}"]
+  file_paths         = ["{{.OvaPath}}"]
 }
 
 resource "vcfa_content_library_item" "cli2" {
   name               = "{{.Name}}2"
   description        = "{{.Name}}2"
   content_library_id = {{.ContentLibraryRef}}
-  files_paths         = ["{{.IsoPath}}"]
+  file_paths         = ["{{.IsoPath}}"]
 }
 
 resource "vcfa_content_library_item" "cli3" {
   name               = "{{.Name}}3"
   description        = "{{.Name}}3"
   content_library_id = {{.ContentLibraryRef}}
-  files_paths         = [{{.OvfPaths}}]
+  file_paths         = [{{.OvfPaths}}]
 }
 `
 
@@ -326,10 +326,10 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 				ProviderFactories: testAccProviders,
 				Config:            configText3,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					// files_paths and upload_piece_size cannot be obtained during reads, that's why it does not appear in data source schema
-					resourceFieldsEqual(cli1, "data.vcfa_content_library_item.cli1_ds", []string{"files_paths.#", "files_paths.0", "upload_piece_size", "%"}),
-					resourceFieldsEqual(cli2, "data.vcfa_content_library_item.cli2_ds", []string{"files_paths.#", "files_paths.0", "upload_piece_size", "%"}),
-					resourceFieldsEqual(cli3, "data.vcfa_content_library_item.cli3_ds", []string{"files_paths.#", "files_paths.0", "files_paths.1", "upload_piece_size", "%"}),
+					// file_paths and upload_piece_size cannot be obtained during reads, that's why it does not appear in data source schema
+					resourceFieldsEqual(cli1, "data.vcfa_content_library_item.cli1_ds", []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}),
+					resourceFieldsEqual(cli2, "data.vcfa_content_library_item.cli2_ds", []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}),
+					resourceFieldsEqual(cli3, "data.vcfa_content_library_item.cli3_ds", []string{"file_paths.#", "file_paths.0", "file_paths.1", "upload_piece_size", "%"}),
 				),
 			},
 			{
@@ -338,7 +338,7 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateId:           fmt.Sprintf("%s%s%s%s%s", testConfig.Tm.Org, ImportSeparator, testConfig.Tm.ContentLibrary, ImportSeparator, t.Name()+"Updated1"),
-				ImportStateVerifyIgnore: []string{"files_paths.#", "files_paths.0", "upload_piece_size", "%"}, // file_path and upload_piece_size cannot be obtained during imports, that's why it's Optional
+				ImportStateVerifyIgnore: []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}, // file_path and upload_piece_size cannot be obtained during imports, that's why it's Optional
 			},
 			{
 				ProviderFactories: multipleFactories(),
@@ -403,10 +403,10 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 				ProviderFactories: multipleFactories(),
 				Config:            configText6,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					// files_paths and upload_piece_size cannot be obtained during reads, that's why it does not appear in data source schema
-					resourceFieldsEqual(cli4, "data.vcfa_content_library_item.cli4_ds", []string{"files_paths.#", "files_paths.0", "upload_piece_size", "%"}),
-					resourceFieldsEqual(cli5, "data.vcfa_content_library_item.cli5_ds", []string{"files_paths.#", "files_paths.0", "upload_piece_size", "%"}),
-					resourceFieldsEqual(cli6, "data.vcfa_content_library_item.cli6_ds", []string{"files_paths.#", "files_paths.0", "files_paths.1", "upload_piece_size", "%"}),
+					// file_paths and upload_piece_size cannot be obtained during reads, that's why it does not appear in data source schema
+					resourceFieldsEqual(cli4, "data.vcfa_content_library_item.cli4_ds", []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}),
+					resourceFieldsEqual(cli5, "data.vcfa_content_library_item.cli5_ds", []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}),
+					resourceFieldsEqual(cli6, "data.vcfa_content_library_item.cli6_ds", []string{"file_paths.#", "file_paths.0", "file_paths.1", "upload_piece_size", "%"}),
 				),
 			},
 		},
@@ -423,7 +423,7 @@ resource "vcfa_content_library_item" "cli4" {
   name               = "{{.Name}}4"
   description        = "{{.Name}}4"
   content_library_id = {{.ContentLibraryRef}}
-  files_paths        = ["{{.OvaPath}}"]
+  file_paths         = ["{{.OvaPath}}"]
 }
 
 resource "vcfa_content_library_item" "cli5" {
@@ -431,7 +431,7 @@ resource "vcfa_content_library_item" "cli5" {
   name               = "{{.Name}}5"
   description        = "{{.Name}}5"
   content_library_id = {{.ContentLibraryRef}}
-  files_paths        = ["{{.IsoPath}}"]
+  file_paths         = ["{{.IsoPath}}"]
 }
 
 resource "vcfa_content_library_item" "cli6" {
@@ -439,7 +439,7 @@ resource "vcfa_content_library_item" "cli6" {
   name               = "{{.Name}}6"
   description        = "{{.Name}}6"
   content_library_id = {{.ContentLibraryRef}}
-  files_paths        = [{{.OvfPaths}}]
+  file_paths         = [{{.OvfPaths}}]
 }
 `
 
