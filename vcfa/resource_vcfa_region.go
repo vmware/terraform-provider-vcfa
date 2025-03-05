@@ -101,7 +101,8 @@ func resourceVcfaRegionCreate(ctx context.Context, d *schema.ResourceData, meta 
 		entityLabel:      labelVcfaRegion,
 		getTypeFunc:      getRegionType,
 		stateStoreFunc:   setRegionData,
-		createFunc:       tmClient.CreateRegion,
+		createAsyncFunc:  tmClient.CreateRegionAsync,
+		getEntityFunc:    tmClient.GetRegionById,
 		resourceReadFunc: resourceVcfaRegionRead,
 	}
 	return createResource(ctx, d, meta, c)
