@@ -31,7 +31,6 @@ resource "vcfa_org_ldap" "my-org-ldap" {
     is_ssl                  = false
     username                = "cn=admin,dc=foo,dc=com"
     password                = "StrongPassword"
-    authentication_method   = "SIMPLE"
     base_distinguished_name = "dc=foo,dc=com"
     connector_type          = "OPEN_LDAP"
     user_attributes {
