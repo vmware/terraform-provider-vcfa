@@ -132,7 +132,7 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateId:           fmt.Sprintf("%s%s%s", testConfig.Tm.ContentLibrary, ImportSeparator, params["Name"].(string)+"1"),
-				ImportStateVerifyIgnore: []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}, // file_path and upload_piece_size cannot be obtained during imports, that's why it's Optional
+				ImportStateVerifyIgnore: []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}, // file_paths and upload_piece_size cannot be obtained during imports, that's why it's Optional
 			},
 		},
 	})
@@ -338,7 +338,7 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateId:           fmt.Sprintf("%s%s%s%s%s", testConfig.Tm.Org, ImportSeparator, testConfig.Tm.ContentLibrary, ImportSeparator, t.Name()+"Updated1"),
-				ImportStateVerifyIgnore: []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}, // file_path and upload_piece_size cannot be obtained during imports, that's why it's Optional
+				ImportStateVerifyIgnore: []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}, // file_paths and upload_piece_size cannot be obtained during imports, that's why it's Optional
 			},
 			{
 				ProviderFactories: multipleFactories(),
