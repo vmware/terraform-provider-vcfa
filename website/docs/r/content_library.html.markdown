@@ -31,7 +31,7 @@ resource "vcfa_content_library" "cl" {
 }
 
 resource "vcfa_content_library" "cl2" {
-  name        = "My Subscribed Library"
+  name = "My Subscribed Library"
   # Subscribed libraries inherit description from publisher
   storage_class_ids = [
     data.vcfa_storage_class.sc.id
