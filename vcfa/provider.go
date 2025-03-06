@@ -52,6 +52,7 @@ var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_edge_cluster":                    datasourceVcfaEdgeCluster(),                 // 1.0
 	"vcfa_edge_cluster_qos":                datasourceVcfaEdgeClusterQos(),              // 1.0
 	"vcfa_org_networking":                  datasourceVcfaOrgNetworking(),               // 1.0
+	"vcfa_org_settings":                    datasourceVcfaOrgSettings(),                 // 1.0
 	"vcfa_org_regional_networking":         datasourceVcfaOrgRegionalNetworking(),       // 1.0
 	"vcfa_org_regional_networking_vpc_qos": datasourceVcfaOrgRegionalNetworkingVpcQos(), // 1.0
 	"vcfa_org_oidc":                        datasourceVcfaOrgOidc(),                     // 1.0
@@ -79,6 +80,7 @@ var globalResourceMap = map[string]*schema.Resource{
 	"vcfa_provider_gateway":                resourceVcfaProviderGateway(),             // 1.0
 	"vcfa_edge_cluster_qos":                resourceVcfaEdgeClusterQos(),              // 1.0
 	"vcfa_org_networking":                  resourceVcfaOrgNetworking(),               // 1.0
+	"vcfa_org_settings":                    resourceVcfaOrgSettings(),                 // 1.0
 	"vcfa_org_regional_networking":         resourceVcfaOrgRegionalNetworking(),       // 1.0
 	"vcfa_org_regional_networking_vpc_qos": resourceVcfaOrgRegionalNetworkingVpcQos(), // 1.0
 	"vcfa_org_oidc":                        resourceVcfaOrgOidc(),                     // 1.0

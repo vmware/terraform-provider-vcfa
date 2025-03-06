@@ -110,7 +110,8 @@ func resourceVcfaIpSpaceCreate(ctx context.Context, d *schema.ResourceData, meta
 		entityLabel:      labelVcfaIpSpace,
 		getTypeFunc:      getIpSpaceType,
 		stateStoreFunc:   setIpSpaceData,
-		createFunc:       tmClient.CreateTmIpSpace,
+		createAsyncFunc:  tmClient.CreateTmIpSpaceAsync,
+		getEntityFunc:    tmClient.GetTmIpSpaceById,
 		resourceReadFunc: resourceVcfaIpSpaceRead,
 	}
 	return createResource(ctx, d, meta, c)

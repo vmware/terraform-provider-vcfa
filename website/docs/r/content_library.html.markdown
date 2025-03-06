@@ -29,6 +29,18 @@ resource "vcfa_content_library" "cl" {
     data.vcfa_storage_class.sc.id
   ]
 }
+
+resource "vcfa_content_library" "cl2" {
+  name = "My Subscribed Library"
+  # Subscribed libraries inherit description from publisher
+  storage_class_ids = [
+    data.vcfa_storage_class.sc.id
+  ]
+  subscription_config {
+    subscription_url = "https://my-vcenter.com/cls/vcsp/lib/41eb97db-e1b4-47e6-b0f3-5e02aa3830f7/lib.json"
+    need_local_copy  = true
+  }
+}
 ```
 
 ## Example Usage for a Tenant Content Library as an Administrator
@@ -153,7 +165,8 @@ The following arguments are supported:
   automatically attached to all current and future namespaces in the tenant organization. If a value of `false` is supplied, then this
   Tenant Content Library will only be attached to namespaces that explicitly request it. For Provider Content Libraries this field is not needed
   for creation and will always be returned as true. This field cannot be updated after Content Library creation
-* `description` - (Optional) The description of the Content Library
+* `description` - (Optional) The description of the Content Library. Not used if the library is subscribed to another one (see `subscription_config` below), as
+  the value will be the one from publisher library
 * `subscription_config` - (Optional) A block representing subscription settings of a Content Library:
   *  `subscription_url` - Subscription url of this Content Library
   *  `password` - Password to use to authenticate with the publisher
