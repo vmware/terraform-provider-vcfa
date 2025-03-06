@@ -96,12 +96,13 @@ type TestConfig struct {
 		SupervisorZone string `json:"supervisorZone"`
 	} `json:"cci"`
 	Tm struct {
-		Org             string   `json:"org"`
-		CreateRegion    bool     `json:"createRegion"`
-		Region          string   `json:"region"`
-		StorageClass    string   `json:"storageClass"`
-		RegionVmClasses []string `json:"regionVmClasses"`
-		ContentLibrary  string   `json:"contentLibrary"`
+		Org                           string   `json:"org"`
+		CreateRegion                  bool     `json:"createRegion"`
+		Region                        string   `json:"region"`
+		StorageClass                  string   `json:"storageClass"`
+		RegionVmClasses               []string `json:"regionVmClasses"`
+		ContentLibrary                string   `json:"contentLibrary"`
+		SubscriptionContentLibraryUrl string   `json:"subscriptionContentLibraryUrl"`
 
 		CreateNsxManager   bool   `json:"createNsxManager"`
 		NsxManagerUsername string `json:"nsxManagerUsername"`

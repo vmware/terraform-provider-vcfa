@@ -21,21 +21,21 @@ resource "vcfa_content_library_item" "ova" {
   name               = "my-ova"
   description        = "Description of my-ova"
   content_library_id = vcfa_content_library.cl.id
-  files_paths        = ["./my_ova.ova"]
+  file_paths         = ["./my_ova.ova"]
 }
 
 resource "vcfa_content_library_item" "iso" {
   name               = "iso1"
   description        = "Description of iso1"
   content_library_id = vcfa_content_library.cl.id
-  files_paths        = ["./linux.iso"]
+  file_paths         = ["./linux.iso"]
 }
 
 resource "vcfa_content_library_item" "ovf" {
   name               = "ovf"
   description        = "Description of OVF"
   content_library_id = vcfa_content_library.cl.id
-  files_paths        = ["./my-ovf/descriptor.ovf", "./my-ovf/disk1.vmdk"]
+  file_paths         = ["./my-ovf/descriptor.ovf", "./my-ovf/disk1.vmdk"]
 }
 
 ```
@@ -46,7 +46,7 @@ The following arguments are supported:
 
 * `name` - (Required) The name of the Content Library Item
 * `content_library_id` - (Required) ID of the [Content Library](/providers/vmware/vcfa/latest/docs/resources/content_library) that this Content Library Item belongs to
-* `files_paths` - (Required) A single path to an OVA/ISO, or multiple paths for an OVF and its referenced files, to create the Content Library Item
+* `file_paths` - (Required) A single path to an OVA/ISO, or multiple paths for an OVF and its referenced files, to create the Content Library Item
 * `upload_piece_size` - (Optional) - When uploading the Content Library Item, this argument defines the size of the file chunks
   in which it is split on every upload request. It can possibly impact upload performance. Default 1 MB.
 * `description` - (Optional) The description of the Content Library Item

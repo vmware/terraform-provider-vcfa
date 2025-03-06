@@ -1,0 +1,2 @@
+- **New Resource:** `vcfa_org_settings` to manage Organization general settings [GH-50]
+- **New Data Source:** `vcfa_org_settings` to read Organization general settings [GH-50]

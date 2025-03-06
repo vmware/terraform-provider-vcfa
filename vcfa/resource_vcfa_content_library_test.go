@@ -27,6 +27,7 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 		"Name":                t.Name(),
 		"RegionId":            fmt.Sprintf("%s.id", regionHclRef),
 		"RegionStoragePolicy": testConfig.Tm.StorageClass,
+		"SubscriptionUrl":     testConfig.Tm.SubscriptionContentLibraryUrl,
 		"Tags":                "tm contentlibrary",
 	}
 	testParamsNotEmpty(t, params)
@@ -56,6 +57,7 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 	}
 
 	resourceName := "vcfa_content_library.cl"
+	resourceNameSubscribed := "vcfa_content_library.cl_subscribed"
 	dsRegionStoragePolicy := "data.vcfa_region_storage_policy.sp"
 	dsStorageClass := "data.vcfa_storage_class.sc"
 
@@ -93,11 +95,27 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "storage_class_ids.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "auto_attach", "true"), // Always true for PROVIDER libraries
 					resource.TestCheckResourceAttrSet(resourceName, "creation_date"),
-					resource.TestCheckResourceAttr(resourceName, "is_shared", "true"),      // Always true for PROVIDER libraries
-					resource.TestCheckResourceAttr(resourceName, "is_subscribed", "false"), // TODO: TM: Test with true
+					resource.TestCheckResourceAttr(resourceName, "is_shared", "true"), // Always true for PROVIDER libraries
+					resource.TestCheckResourceAttr(resourceName, "is_subscribed", "false"),
 					resource.TestCheckResourceAttr(resourceName, "library_type", "PROVIDER"),
 					resource.TestCheckResourceAttr(resourceName, "subscription_config.#", "0"),
-					resource.TestMatchResourceAttr(resourceName, "version_number", regexp.MustCompile("[1-9]")),
+					resource.TestMatchResourceAttr(resourceName, "version_number", regexp.MustCompile("[0-9]")),
+
+					// Subscribed Content Library
+					resource.TestCheckResourceAttr(resourceNameSubscribed, "name", t.Name()+"Subscribed"),
+					resource.TestMatchResourceAttr(resourceNameSubscribed, "org_id", regexp.MustCompile("urn:vcloud:org:")),
+					resource.TestMatchResourceAttr(resourceNameSubscribed, "description", regexp.MustCompile(".*")), // Description is taken from publisher library
+					resource.TestCheckResourceAttr(resourceNameSubscribed, "storage_class_ids.#", "1"),
+					resource.TestCheckResourceAttr(resourceNameSubscribed, "auto_attach", "true"), // Always true for PROVIDER libraries
+					resource.TestCheckResourceAttrSet(resourceNameSubscribed, "creation_date"),
+					resource.TestCheckResourceAttr(resourceNameSubscribed, "is_shared", "true"), // Always true for PROVIDER libraries
+					resource.TestCheckResourceAttr(resourceNameSubscribed, "is_subscribed", "true"),
+					resource.TestCheckResourceAttr(resourceNameSubscribed, "library_type", "PROVIDER"),
+					resource.TestCheckResourceAttr(resourceNameSubscribed, "subscription_config.#", "1"),
+					resource.TestCheckResourceAttr(resourceNameSubscribed, "subscription_config.0.subscription_url", params["SubscriptionUrl"].(string)),
+					resource.TestCheckResourceAttr(resourceNameSubscribed, "subscription_config.0.password", "******"),
+					resource.TestCheckResourceAttr(resourceNameSubscribed, "subscription_config.0.need_local_copy", "true"),
+					resource.TestMatchResourceAttr(resourceNameSubscribed, "version_number", regexp.MustCompile("[0-9]")),
 				),
 			},
 			{
@@ -105,12 +123,19 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					cachedId.testCheckCachedResourceFieldValue(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "name", t.Name()+"Updated"),
+					resource.TestCheckResourceAttr(resourceName, "description", t.Name()+"Updated"),
+					resource.TestCheckResourceAttr(resourceNameSubscribed, "name", t.Name()+"UpdatedSubscribed"),
 				),
 			},
 			{
 				Config: configText3,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resourceFieldsEqual(resourceName, "data.vcfa_content_library.cl_ds", []string{
+						"%", // Does not have delete_recursive, delete_force
+						"delete_recursive",
+						"delete_force",
+					}),
+					resourceFieldsEqual(resourceNameSubscribed, "data.vcfa_content_library.cl_subscribed_ds", []string{
 						"%", // Does not have delete_recursive, delete_force
 						"delete_recursive",
 						"delete_force",
@@ -153,11 +178,28 @@ resource "vcfa_content_library" "cl" {
   delete_force = true
   delete_recursive = true
 }
+
+resource "vcfa_content_library" "cl_subscribed" {
+  name        = "{{.Name}}Subscribed"
+  storage_class_ids = [
+    data.vcfa_storage_class.sc.id
+  ]
+  subscription_config {
+    subscription_url = "{{.SubscriptionUrl}}"
+    need_local_copy  = true
+  }
+  delete_force = true
+  delete_recursive = true
+}
 `
 
 const testAccVcfaContentLibraryProviderStep3 = testAccVcfaContentLibraryProviderStep1 + `
 data "vcfa_content_library" "cl_ds" {
   name = vcfa_content_library.cl.name
+}
+
+data "vcfa_content_library" "cl_subscribed_ds" {
+  name = vcfa_content_library.cl_subscribed.name
 }
 `
 
@@ -186,6 +228,7 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 		"RegionStoragePolicy": testConfig.Tm.StorageClass,
 		"RegionVmClassRefs":   strings.Join(vmClassesRefs, ".id,\n    ") + ".id",
 		"VcfaUrl":             testConfig.Provider.Url,
+		"SubscriptionUrl":     testConfig.Tm.SubscriptionContentLibraryUrl,
 		"Tags":                "tm contentlibrary",
 	}
 	testParamsNotEmpty(t, params)
@@ -221,6 +264,7 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 	cl1 := "vcfa_content_library.cl1"
 	cl2 := "vcfa_content_library.cl2"
 	cl3 := "vcfa_content_library.cl3"
+	clSubscribed := "vcfa_content_library.cl_subscribed"
 
 	cachedId := &testCachedFieldValue{}
 
@@ -274,6 +318,22 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 					resource.TestCheckResourceAttr(cl2, "library_type", "TENANT"),
 					resource.TestCheckResourceAttr(cl2, "subscription_config.#", "0"),
 					resource.TestMatchResourceAttr(cl2, "version_number", regexp.MustCompile("[1-9]")),
+
+					// Subscribed Content Library
+					resource.TestCheckResourceAttr(clSubscribed, "name", t.Name()+"Subscribed"),
+					resource.TestCheckResourceAttrPair(clSubscribed, "org_id", "vcfa_org.test", "id"),
+					resource.TestMatchResourceAttr(clSubscribed, "description", regexp.MustCompile(".*")), // Description is taken from publisher library
+					resource.TestCheckResourceAttr(clSubscribed, "storage_class_ids.#", "1"),
+					resource.TestCheckResourceAttr(clSubscribed, "auto_attach", "true"), // Always true for PROVIDER libraries
+					resource.TestCheckResourceAttrSet(clSubscribed, "creation_date"),
+					resource.TestCheckResourceAttr(clSubscribed, "is_shared", "false"), // Always false for TENANT libraries
+					resource.TestCheckResourceAttr(clSubscribed, "is_subscribed", "true"),
+					resource.TestCheckResourceAttr(clSubscribed, "library_type", "TENANT"),
+					resource.TestCheckResourceAttr(clSubscribed, "subscription_config.#", "1"),
+					resource.TestCheckResourceAttr(clSubscribed, "subscription_config.0.subscription_url", params["SubscriptionUrl"].(string)),
+					resource.TestCheckResourceAttr(clSubscribed, "subscription_config.0.password", "******"),
+					resource.TestCheckResourceAttr(clSubscribed, "subscription_config.0.need_local_copy", "true"),
+					resource.TestMatchResourceAttr(clSubscribed, "version_number", regexp.MustCompile("[0-9]")),
 				),
 			},
 			{
@@ -283,6 +343,7 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 					cachedId.testCheckCachedResourceFieldValue(cl1, "id"),
 					resource.TestCheckResourceAttr(cl1, "name", t.Name()+"Updated"),
 					resource.TestCheckResourceAttr(cl2, "name", t.Name()+"2Updated"),
+					resource.TestCheckResourceAttr(clSubscribed, "name", t.Name()+"UpdatedSubscribed"),
 				),
 			},
 			{
@@ -327,6 +388,11 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 						"delete_recursive",
 						"delete_force",
 					}),
+					resourceFieldsEqual(clSubscribed, "data.vcfa_content_library.cl_subscribed_ds", []string{
+						"%",
+						"delete_recursive",
+						"delete_force",
+					}),
 				),
 			},
 			{
@@ -352,6 +418,12 @@ resource "vcfa_org" "test" {
   name         = "{{.Org}}"
   display_name = "{{.Org}}"
   description  = "{{.Org}}"
+}
+
+resource "vcfa_org_settings" "allow" {
+  org_id                           = vcfa_org.test.id
+  can_create_subscribed_libraries  = true
+  quarantine_content_library_items = true
 }
 
 data "vcfa_role" "org-admin" {
@@ -443,6 +515,21 @@ resource "vcfa_content_library" "cl2" {
   delete_force     = true # Should be ignored, otherwise it would fail
   delete_recursive = true
 }
+
+resource "vcfa_content_library" "cl_subscribed" {
+  provider    = vcfa
+  org_id      = vcfa_org_region_quota.test.org_id # Explicit dependency on Region Quota
+  name        = "{{.Name}}Subscribed"
+  storage_class_ids = [
+    data.vcfa_storage_class.sc.id
+  ]
+  subscription_config {
+    subscription_url = "{{.SubscriptionUrl}}"
+    need_local_copy  = true
+  }
+  delete_force = true
+  delete_recursive = true
+}
 `
 
 const testAccVcfaContentLibraryTenantStep3 = testAccVcfaContentLibraryTenantStep1 + `
@@ -499,5 +586,11 @@ data "vcfa_content_library" "cl_ds3tenant" {
   provider = vcfatenant
   org_id   = vcfa_org.test.id
   name     = vcfa_content_library.cl3.name
+}
+
+data "vcfa_content_library" "cl_subscribed_ds" {
+  provider = vcfa
+  org_id   = vcfa_org.test.id
+  name     = vcfa_content_library.cl_subscribed.name
 }
 `

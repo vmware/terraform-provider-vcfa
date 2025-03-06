@@ -136,7 +136,7 @@ var ldapGroupAttributes = func(isDatasource bool) *schema.Schema {
 				},
 				"group_back_link_identifier": { // BackLinkIdentifier
 					Type:        schema.TypeString,
-					Required:    !isDatasource,
+					Optional:    !isDatasource,
 					Computed:    isDatasource,
 					Description: "LDAP group attribute used to identify a group member",
 				},
@@ -328,7 +328,7 @@ func genericVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta in
 			},
 		}
 
-		if config.CustomOrgLdapSettings.CustomUiButtonLabel != nil {
+		if config.CustomOrgLdapSettings.CustomUiButtonLabel != nil && *config.CustomOrgLdapSettings.CustomUiButtonLabel != "" {
 			customSettings["custom_ui_button_label"] = *config.CustomOrgLdapSettings.CustomUiButtonLabel
 		}
 
@@ -434,7 +434,7 @@ func fillOrgLdapSettings(d *schema.ResourceData) (*types.OrgLdapSettingsType, er
 		BackLinkIdentifier:   groupAttributesMap["group_back_link_identifier"].(string),
 	}
 
-	if uiLabel, ok := customSettingsMap["custom_ui_button_label"]; ok {
+	if uiLabel, ok := customSettingsMap["custom_ui_button_label"]; ok && uiLabel != "" {
 		settings.CustomOrgLdapSettings.CustomUiButtonLabel = addrOf(uiLabel.(string))
 	}
 
