@@ -1,4 +1,4 @@
-- **New Resource:** `vcfa_region` to manage Regions [GH-5, GH-11, GH-34]
+- **New Resource:** `vcfa_region` to manage Regions [GH-5, GH-11, GH-34, GH-51]
 - **New Data Source:** `vcfa_region` to read Regions [GH-5]
 - **New Data Source:** `vcfa_supervisor` to read Supervisors [GH-5]
 - **New Data Source:** `vcfa_supervisor_zone` to read Supervisor Zones [GH-5]
