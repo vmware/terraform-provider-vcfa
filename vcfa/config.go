@@ -72,6 +72,14 @@ type cacheStorage struct {
 	sync.Mutex
 }
 
+// reset clears cache to force re-authentication
+func (c *cacheStorage) reset() {
+	c.Lock()
+	defer c.Unlock()
+	c.cacheClientServedCount = 0
+	c.conMap = make(map[string]cachedConnection)
+}
+
 var (
 	// Enables the caching of authenticated connections
 	enableConnectionCache = os.Getenv("VCFA_CACHE") != ""

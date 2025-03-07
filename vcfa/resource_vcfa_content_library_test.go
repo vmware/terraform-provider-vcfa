@@ -282,6 +282,11 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 		}
 	}
 
+	// Before this test ends we need to clean up the clients cache, because we create an Org user
+	// and use it to login with the provider. Using same credentials and org name could lead to errors if this user
+	// remains cached.
+	defer cachedVCDClients.reset()
+
 	resource.Test(t, resource.TestCase{
 		Steps: []resource.TestStep{
 			{
