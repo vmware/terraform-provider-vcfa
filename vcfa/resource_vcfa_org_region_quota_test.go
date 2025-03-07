@@ -13,6 +13,7 @@ import (
 // TODO: TM: Improve this test so it has more than 1 Region Storage Policy
 func TestAccVcfaOrgRegionQuota(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
@@ -126,8 +127,6 @@ func TestAccVcfaOrgRegionQuota(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaOrgRegionQuotaStep1 = `

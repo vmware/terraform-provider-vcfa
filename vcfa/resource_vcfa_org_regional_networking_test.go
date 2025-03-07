@@ -11,6 +11,7 @@ import (
 
 func TestAccVcfaOrgRegionalNetworking(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
@@ -147,8 +148,6 @@ func TestAccVcfaOrgRegionalNetworking(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaOrgRegionalNetworkingPrerequisites = `

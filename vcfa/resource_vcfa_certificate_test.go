@@ -3,9 +3,10 @@
 package vcfa
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"regexp"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
@@ -14,6 +15,8 @@ import (
 // testing configuration
 func TestAccVcfaCertificateResource(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
+
 	skipIfNotSysAdmin(t)
 
 	if len(testConfig.Tm.Certificates) < 2 {
@@ -121,7 +124,6 @@ func TestAccVcfaCertificateResource(t *testing.T) {
 			},
 		},
 	})
-	postTestChecks(t)
 }
 
 const testAccVcfaLibraryCertificateResource = `

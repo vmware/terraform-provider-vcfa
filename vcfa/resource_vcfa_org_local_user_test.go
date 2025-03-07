@@ -10,6 +10,7 @@ import (
 
 func TestAccVcfaOrgLocalUser(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	var params = StringMap{
@@ -71,8 +72,6 @@ func TestAccVcfaOrgLocalUser(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaLocalUserPrerequisites = `

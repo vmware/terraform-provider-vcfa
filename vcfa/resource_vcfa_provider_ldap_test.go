@@ -13,6 +13,7 @@ import (
 // TestAccVcfaProviderLdap tests Provider (System) LDAP configuration against an LDAP server with the given configuration
 func TestAccVcfaProviderLdap(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	if testConfig.Ldap.Host == "" || testConfig.Ldap.Username == "" || testConfig.Ldap.Password == "" || testConfig.Ldap.Type == "" ||
@@ -93,7 +94,6 @@ func TestAccVcfaProviderLdap(t *testing.T) {
 			},
 		},
 	})
-	postTestChecks(t)
 }
 
 func testAccCheckLdapDestroy() resource.TestCheckFunc {

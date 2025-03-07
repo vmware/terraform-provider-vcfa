@@ -16,6 +16,7 @@ import (
 // is provided instead of user + password, in test configuration
 func TestAccVcfaRole(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	var roleName = t.Name()
 	var roleUpdateName = t.Name() + "-update"
 	var roleDescription = "A long description containing some text."
@@ -78,7 +79,6 @@ func TestAccVcfaRole(t *testing.T) {
 			},
 		},
 	})
-	postTestChecks(t)
 }
 
 func testAccCheckRoleExists(orgId, roleId string) resource.TestCheckFunc {

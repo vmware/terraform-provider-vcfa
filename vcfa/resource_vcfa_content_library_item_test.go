@@ -4,10 +4,11 @@ package vcfa
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
@@ -15,6 +16,7 @@ import (
 // TestAccVcfaContentLibraryItemProvider tests Content Library Items in a "PROVIDER" type Content Library
 func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
@@ -136,8 +138,6 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaContentLibraryItemProviderStep1 = `
@@ -181,6 +181,7 @@ data "vcfa_content_library_item" "cli3_ds" {
 // TestAccVcfaContentLibraryItemTenant tests Content Library Items in a "TENANT" type Content Library
 func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
@@ -411,8 +412,6 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaContentLibraryItemTenantStep4 = `

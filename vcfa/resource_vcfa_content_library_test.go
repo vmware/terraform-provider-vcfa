@@ -17,6 +17,7 @@ import (
 // It also tests vcfa_storage_class and vcfa_region_storage_policy data sources
 func TestAccVcfaContentLibraryProvider(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
@@ -154,8 +155,6 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaContentLibraryProviderStep1 = `
@@ -206,6 +205,7 @@ data "vcfa_content_library" "cl_subscribed_ds" {
 // TestAccVcfaContentLibraryTenant tests CRUD of a Content Library of type TENANT.
 func TestAccVcfaContentLibraryTenant(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
@@ -408,8 +408,6 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaContentLibraryTenantPrerequisites = `
