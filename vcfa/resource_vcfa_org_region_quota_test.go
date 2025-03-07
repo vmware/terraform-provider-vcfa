@@ -221,7 +221,7 @@ resource "vcfa_org_region_quota" "test" {
 
 const testAccVcfaOrgRegionQuotaStep3DS = testAccVcfaOrgRegionQuotaStep2 + `
 data "vcfa_org_region_quota" "test" {
-  org_id    = vcfa_org.test.id
-  region_id = {{.RegionId}}
+  org_id    = vcfa_org_region_quota.test.org_id
+  region_id = vcfa_org_region_quota.test.region_id
 }
 `

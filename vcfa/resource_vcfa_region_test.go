@@ -10,8 +10,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-// TODO: TM: the test has an update, but it just recreates the resource behind the scenes now
-// as the API does not support update yet
 func TestAccVcfaRegion(t *testing.T) {
 	preTestChecks(t)
 	skipIfNotSysAdmin(t)

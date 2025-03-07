@@ -5,12 +5,32 @@ package vcfa
 import (
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
+
+// getContentLibraryItemResourcesAbsolutePaths returns the absolute paths to the testing resources
+// required to test Content Library Items. Absolute paths are required when running binary tests.
+func getContentLibraryItemResourcesAbsolutePaths(t *testing.T) []string {
+	paths := []string{
+		"../test-resources/test_vapp_template.ova",
+		"../test-resources/test.iso",
+		"../test-resources/test_vapp_template_ovf/descriptor.ovf",
+		"../test-resources/test_vapp_template_ovf/disk1.vmdk"}
+	absPaths := make([]string, len(paths))
+	for i, s := range paths {
+		absPath, err := filepath.Abs(s)
+		if err != nil {
+			t.Fatal(err)
+		}
+		absPaths[i] = absPath
+	}
+	return absPaths
+}
 
 // TestAccVcfaContentLibraryItemProvider tests Content Library Items in a "PROVIDER" type Content Library
 func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
@@ -22,12 +42,13 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
 	contentLibraryHcl, contentLibraryHclRef := getContentLibraryHcl(t, regionHclRef, "")
 
+	itemPaths := getContentLibraryItemResourcesAbsolutePaths(t)
 	var params = StringMap{
 		"Name":              t.Name(),
 		"ContentLibraryRef": fmt.Sprintf("%s.id", contentLibraryHclRef),
-		"OvaPath":           "../test-resources/test_vapp_template.ova",
-		"IsoPath":           "../test-resources/test.iso",
-		"OvfPaths":          "\"../test-resources/test_vapp_template_ovf/descriptor.ovf\", \"../test-resources/test_vapp_template_ovf/disk1.vmdk\", ",
+		"OvaPath":           itemPaths[0],
+		"IsoPath":           itemPaths[1],
+		"OvfPaths":          fmt.Sprintf("\"%s\", \"%s\"", itemPaths[2], itemPaths[3]),
 		"Tags":              "tm contentlibrary",
 	}
 	testParamsNotEmpty(t, params)
@@ -191,6 +212,7 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 	// to create libraries in the Organization
 	contentLibraryHcl, contentLibraryHclRef := getContentLibraryHcl(t, regionHclRef, "vcfa_org_region_quota.test.org_id")
 
+	itemPaths := getContentLibraryItemResourcesAbsolutePaths(t)
 	var params = StringMap{
 		"Org":                 testConfig.Tm.Org,
 		"Username":            "test-user",
@@ -205,9 +227,9 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 		"RegionVmClassRefs":   strings.Join(vmClassesRefs, ".id,\n    ") + ".id",
 		"VcfaUrl":             testConfig.Provider.Url,
 		"ContentLibraryRef":   fmt.Sprintf("%s.id", contentLibraryHclRef),
-		"OvaPath":             "../test-resources/test_vapp_template.ova",
-		"IsoPath":             "../test-resources/test.iso",
-		"OvfPaths":            "\"../test-resources/test_vapp_template_ovf/descriptor.ovf\", \"../test-resources/test_vapp_template_ovf/disk1.vmdk\", ",
+		"OvaPath":             itemPaths[0],
+		"IsoPath":             itemPaths[1],
+		"OvfPaths":            fmt.Sprintf("\"%s\", \"%s\"", itemPaths[2], itemPaths[3]),
 		"Tags":                "tm contentlibrary",
 	}
 	testParamsNotEmpty(t, params)
