@@ -11,6 +11,7 @@ import (
 
 func TestAccVcfaRight(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	var params = StringMap{
@@ -46,8 +47,6 @@ func TestAccVcfaRight(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaRight = `

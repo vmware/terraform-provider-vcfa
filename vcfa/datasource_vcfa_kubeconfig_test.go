@@ -12,6 +12,7 @@ import (
 
 func TestAccVcfaKubeConfig(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 
 	ref, err := url.Parse(testConfig.Provider.Url)
 	if err != nil {
@@ -50,8 +51,6 @@ func TestAccVcfaKubeConfig(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaKubeConfigStep1 = `

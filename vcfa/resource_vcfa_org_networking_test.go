@@ -10,6 +10,7 @@ import (
 
 func TestAccVcfaOrgNetworking(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	var params = StringMap{
@@ -76,8 +77,6 @@ func TestAccVcfaOrgNetworking(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaOrgNetworkingStep1 = `

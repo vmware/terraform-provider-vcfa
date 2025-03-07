@@ -13,6 +13,7 @@ import (
 
 func TestAccVcfaTmVersion(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	tmClient := createSystemTemporaryVCFAConnection()
@@ -124,7 +125,6 @@ func TestAccVcfaTmVersion(t *testing.T) {
 			},
 		},
 	})
-	postTestChecks(t)
 }
 
 const testAccVcfaTmVersion = `

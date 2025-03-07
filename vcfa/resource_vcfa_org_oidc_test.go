@@ -5,16 +5,18 @@ package vcfa
 import (
 	_ "embed"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"net/url"
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccVcfaOrgOidc(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	oidcServerUrl := validateAndGetOidcServerUrl(t, testConfig)
 
 	orgName1 := t.Name() + "1"
@@ -134,8 +136,6 @@ func TestAccVcfaOrgOidc(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 // TODO: TM: vcfa_org_oidc oidc1 should not override claims_mapping so it tests that the resource is able to set them
