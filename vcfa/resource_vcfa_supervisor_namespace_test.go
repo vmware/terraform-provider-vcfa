@@ -116,16 +116,16 @@ resource "vcfa_supervisor_namespace" "test" {
   vpc_name     = "{{.VpcName}}"
 
   storage_classes_initial_class_config_overrides {
-    limit_mib = 200
+    limit     = "200Mi"
     name      = "{{.StorageClassName}}"
   }
 
   zones_initial_class_config_overrides {
-    cpu_limit_mhz          = 100
-    cpu_reservation_mhz    = 1
-    memory_limit_mib       = 200
-    memory_reservation_mib = 2
-    name                   = "{{.SupervisorZoneName}}"
+    cpu_limit          = "100M"
+    cpu_reservation    = "1M"
+    memory_limit       = "200Mi"
+    memory_reservation = "2Mi"
+    name               = "{{.SupervisorZoneName}}"
   }
 }
 `

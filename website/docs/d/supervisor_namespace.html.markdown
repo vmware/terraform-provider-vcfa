@@ -45,7 +45,7 @@ The following arguments are supported:
 
 The `storage_classes` is a set of entries that have the following structure:
 
-* `limit_mib` - Limit in MiB
+* `limi` - Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 * `name` - Name of the Storage Class
 
 <a id="storage-classes-initial-class-config-overrides"></a>
@@ -53,7 +53,7 @@ The `storage_classes` is a set of entries that have the following structure:
 
 The `storage_classes_initial_class_config_overrides` is a set of entries that have the following structure:
 
-* `limit_mib` - Limit in MiB
+* `limit` - Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 * `name` - Name of the Storage Class
 
 <a id="vm-classes"></a>
@@ -68,10 +68,10 @@ The `vm_classes` is a set of entries that have the following structure:
 
 The `zones` is a set of entries that have the following structure:
 
-* `cpu_limit_mhz` - CPU limit in MHz
-* `cpu_reservation_mhz` - CPU reservation in MHz
-* `memory_limit_mib` - Memory limit in MiB
-* `memory_reservation_mib` - Memory reservation in MiB
+* `cpu_limit` - CPU limit (format: `<number><unit>`, where `<unit>` can be `M` or `G`)
+* `cpu_reservation` - CPU reservation (format: `<number><unit>`, where `<unit>` can be `M` or `G`)
+* `memory_limit` - Memory limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
+* `memory_reservation` - Memory reservation (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 * `name` - Name of the Zone
 
 <a id="zones-initial-class-config-overrides"></a>
@@ -79,8 +79,8 @@ The `zones` is a set of entries that have the following structure:
 
 The `zones_initial_class_config_overrides` is a set of entries that have the following structure:
 
-* `cpu_limit_mhz` - CPU limit in MHz
-* `cpu_reservation_mhz` - CPU reservation in MHz
-* `memory_limit_mib` - Memory limit in MiB
-* `memory_reservation_mib` - Memory reservation in MiB
+* `cpu_limit` - CPU limit (format: `<number><unit>`, where `<unit>` can be `M` or `G`)
+* `cpu_reservation` - CPU reservation (format: `<number><unit>`, where `<unit>` can be `M` or `G`)
+* `memory_limit` - Memory limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
+* `memory_reservation` - Memory reservation (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 * `name` - Name of the Zone
