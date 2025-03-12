@@ -14,6 +14,7 @@ import (
 // is provided instead of user + password, in test configuration
 func TestAccVcfaGlobalRole(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	var globalRoleName = t.Name()
@@ -78,7 +79,6 @@ func TestAccVcfaGlobalRole(t *testing.T) {
 			},
 		},
 	})
-	postTestChecks(t)
 }
 
 func testAccCheckGlobalRoleExists(identifier string) resource.TestCheckFunc {

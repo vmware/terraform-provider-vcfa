@@ -13,6 +13,7 @@ import (
 
 func TestAccVcfaIpSpace(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
@@ -117,8 +118,6 @@ func TestAccVcfaIpSpace(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaIpSpaceStep1 = `

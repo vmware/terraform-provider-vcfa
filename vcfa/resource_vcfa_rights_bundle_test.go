@@ -14,6 +14,7 @@ import (
 // is provided instead of user + password, in test configuration
 func TestAccVcfaRightsBundle(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	var rightsBundleName = t.Name()
@@ -78,7 +79,6 @@ func TestAccVcfaRightsBundle(t *testing.T) {
 			},
 		},
 	})
-	postTestChecks(t)
 }
 
 func testAccCheckRightsBundleExists(identifier string) resource.TestCheckFunc {

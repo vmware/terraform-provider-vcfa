@@ -16,6 +16,7 @@ import (
 // is provided instead of user + password, in test configuration
 func TestAccVcfaApiToken(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 
 	var params = StringMap{
 		"TokenName": t.Name(),
@@ -47,7 +48,6 @@ func TestAccVcfaApiToken(t *testing.T) {
 			},
 		},
 	})
-	postTestChecks(t)
 }
 
 // #nosec G101 -- No hardcoded credentials here

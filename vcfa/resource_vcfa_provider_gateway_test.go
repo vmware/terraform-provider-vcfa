@@ -11,6 +11,7 @@ import (
 
 func TestAccVcfaProviderGateway(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
@@ -114,8 +115,6 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaProviderGatewayPrereqs = `

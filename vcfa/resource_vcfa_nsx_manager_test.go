@@ -11,6 +11,7 @@ import (
 
 func TestAccVcfaNsxManager(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	if !testConfig.Tm.CreateNsxManager {
@@ -79,8 +80,6 @@ func TestAccVcfaNsxManager(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaNsxManagerStep1 = `

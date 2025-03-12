@@ -16,6 +16,8 @@ import (
 // is not found.
 func TestAccDataSourceNotFound(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
+
 	// Exit the test early
 	if vcfaShortTest {
 		t.Skip(acceptanceTestsSkipped)
@@ -29,7 +31,6 @@ func TestAccDataSourceNotFound(t *testing.T) {
 	for _, dataSource := range Provider().DataSources() {
 		t.Run(dataSource.Name, testSpecificDataSourceNotFound(dataSource.Name, tmClient))
 	}
-	postTestChecks(t)
 }
 
 func testSpecificDataSourceNotFound(dataSourceName string, tmClient *VCDClient) func(*testing.T) {

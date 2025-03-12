@@ -16,6 +16,7 @@ import (
 
 func TestAccVcfaSupervisorNamespace(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfSysAdmin(t)
 
 	if vcfaShortTest {
@@ -103,8 +104,6 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaSupervisorNamespaceStep1 = `

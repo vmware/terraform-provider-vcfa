@@ -11,6 +11,7 @@ import (
 
 func TestAccVcfaEdgeCluster(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
@@ -154,8 +155,6 @@ func TestAccVcfaEdgeCluster(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaEdgeClusterQosStep1 = `

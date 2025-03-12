@@ -4,13 +4,13 @@ package vcfa
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 // getContentLibraryItemResourcesAbsolutePaths returns the absolute paths to the testing resources
@@ -35,6 +35,7 @@ func getContentLibraryItemResourcesAbsolutePaths(t *testing.T) []string {
 // TestAccVcfaContentLibraryItemProvider tests Content Library Items in a "PROVIDER" type Content Library
 func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
@@ -157,8 +158,6 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaContentLibraryItemProviderStep1 = `
@@ -202,6 +201,7 @@ data "vcfa_content_library_item" "cli3_ds" {
 // TestAccVcfaContentLibraryItemTenant tests Content Library Items in a "TENANT" type Content Library
 func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
@@ -282,6 +282,11 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 			},
 		}
 	}
+
+	// Before this test ends we need to clean up the clients cache, because we create an Org user
+	// and use it to login with the provider. Using same credentials and org name could lead to errors if this user
+	// remains cached.
+	defer cachedVCDClients.reset()
 
 	resource.Test(t, resource.TestCase{
 		Steps: []resource.TestStep{
@@ -433,8 +438,6 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaContentLibraryItemTenantStep4 = `

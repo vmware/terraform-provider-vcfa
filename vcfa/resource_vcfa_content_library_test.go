@@ -17,6 +17,7 @@ import (
 // It also tests vcfa_storage_class and vcfa_region_storage_policy data sources
 func TestAccVcfaContentLibraryProvider(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
@@ -154,8 +155,6 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaContentLibraryProviderStep1 = `
@@ -206,6 +205,7 @@ data "vcfa_content_library" "cl_subscribed_ds" {
 // TestAccVcfaContentLibraryTenant tests CRUD of a Content Library of type TENANT.
 func TestAccVcfaContentLibraryTenant(t *testing.T) {
 	preTestChecks(t)
+	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
@@ -281,6 +281,11 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 			},
 		}
 	}
+
+	// Before this test ends we need to clean up the clients cache, because we create an Org user
+	// and use it to login with the provider. Using same credentials and org name could lead to errors if this user
+	// remains cached.
+	defer cachedVCDClients.reset()
 
 	resource.Test(t, resource.TestCase{
 		Steps: []resource.TestStep{
@@ -408,8 +413,6 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 			},
 		},
 	})
-
-	postTestChecks(t)
 }
 
 const testAccVcfaContentLibraryTenantPrerequisites = `
@@ -423,7 +426,7 @@ resource "vcfa_org" "test" {
 resource "vcfa_org_settings" "allow" {
   org_id                           = vcfa_org.test.id
   can_create_subscribed_libraries  = true
-  quarantine_content_library_items = true
+  quarantine_content_library_items = false
 }
 
 data "vcfa_role" "org-admin" {
