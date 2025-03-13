@@ -99,7 +99,12 @@ Error: something went wrong during authentication: error authorizing: received r
 ```
 
 Verify that the `user` and `password` arguments in the VCFA provider configuration are correct and try again.
+Also, verify that `org` is correctly set and the provided user has enough permissions to access that Organization.
 
 If you are using an API Token, verify that it is valid and not expired. Set a valid token in `api_token`.
 
 If you are using an API Token from `vcfa_api_token`(https://github.com/vmware/terraform-provider-vcfa/blob/main/providers/vmware/vcfa/latest/docs/resources/api_token), verify that it is valid, not expired and the syntax is correct. Set a valid token file in `api_token_file`.
+
+### 403 Forbidden
+
+In VCFA, some entities return 
