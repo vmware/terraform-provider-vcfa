@@ -1,5 +1,10 @@
 # Troubleshooting Terraform VMware Cloud Foundation Automation Provider
 
+## Table of contents
+
+- [How to enable logging](#how-to-enable-logging)
+- [Common errors](#common-errors)
+
 ## How to enable logging
 
 The VCFA provider can be configured to write logs into a specific file located in a customised path:
@@ -78,3 +83,4 @@ the file path.
 To disable HTTP **request** logging, one can set the environment variable `GOVCD_LOG_SKIP_HTTP_REQ=1`.
 To disable HTTP **response** logging, one can set the environment variable `GOVCD_LOG_SKIP_HTTP_RESP=1`.
 
+## Common errors
