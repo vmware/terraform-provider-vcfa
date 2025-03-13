@@ -107,7 +107,7 @@ If you are using an API Token from `vcfa_api_token`(https://github.com/vmware/te
 
 ### Entity Not Found
 
-```json
+```
 Error: error getting Organization by Name 'not-exist': [ENF] entity not found: got zero entities by name 'not-exist'
 ```
 
