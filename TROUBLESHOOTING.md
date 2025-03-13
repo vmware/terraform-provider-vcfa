@@ -7,21 +7,23 @@ The VCFA provider can be configured to write logs into a specific file located i
 ```hcl
 provider "vcfa" {
   # ... omitted arguments
-  logging              = true
-  logging_file         = "my-log-file.log"
+  logging      = true              # Enables logging
+  logging_file = "my-log-file.log" # Specifies in which file to write logs
 }
 ```
 
-When logs are enabled, all the requests to VCFA and its responses are written into the specified file. Each request registers
+When logs are enabled, all the requests to VCFA and its responses are written into the specified file. Each log entry registers
 the following:
 
-- Method call sequence (who called who) to perform the request. This helps to trace the methods that triggered the request to VCFA.
-- HTTP method and request URL that was sent to VCFA.
+- Method call sequence (who called who) to perform the request. This helps to trace the methods that triggered the request to VCFA. 
+  - If the method is from `vcfa` package, the call is present in the VCFA Provider source code.
+  - If the method is from `govcd` package, the source code is in [go-vcloud-director SDK](https://github.com/vmware/go-vcloud-director).
+- HTTP method, request URL and query parameters that were sent to VCFA.
 - HTTP request headers. Sensitive information is obfuscated by default. To enable logging of passwords, tokens and other sensitive information,
-  users can enable the `GOVCD_LOG_PASSWORDS=1` environment variable.
+  users can enable the `GOVCD_LOG_PASSWORDS=1` environment variable right before running Terraform operations.
   - The `X-Vmware-Vcloud-Client-Request-Id` header can be used to improve readability of the requests and responses in big log files, as it tracks
     the request number with a timestamp.
-- Method call sequence (who called who) to perform the response. This helps to trace the methods that parsed and unmarshalled the response.
+- Method call sequence (who called who) to read the response. This helps to trace the methods that parsed and unmarshalled the response.
 - HTTP response headers. Sensitive information is obfuscated by default. To enable logging of passwords, tokens and other sensitive information,
   users can enable the `GOVCD_LOG_PASSWORDS=1` environment variable.
 - The response itself in raw JSON/XML.
@@ -70,4 +72,10 @@ Example taken from a real log:
 
 In this log, the reader would see that there was an attempt to fetch a Region by using its name, `test-region`, but
 VCFA returned no results, meaning that this Region does not exist.
+
+Logs can also be enabled with environment variables `GOVCD_LOG=1` to enable logs and `GOVCD_LOG_FILE=my-log-file.log` to specify
+the file path.
+
+To disable HTTP request logging, one can set the environment variable `GOVCD_LOG_SKIP_HTTP_REQ=1`.
+To disable HTTP response logging, one can set the environment variable `GOVCD_LOG_SKIP_HTTP_RESP=1`.
 
