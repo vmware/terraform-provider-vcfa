@@ -72,9 +72,9 @@ Example taken from a real log:
 In this log, the reader would see that there was an attempt to fetch a Region by using its name, `test-region`, but
 VCFA returned no results, meaning that this Region does not exist.
 
-Logs can also be enabled with environment variables `GOVCD_LOG=1` to enable logs and `GOVCD_LOG_FILE=my-log-file.log` to specify
+Logging can also be configured with environment variables `GOVCD_LOG=1` to enable logs and `GOVCD_LOG_FILE=my-log-file.log` to specify
 the file path.
 
-To disable HTTP request logging, one can set the environment variable `GOVCD_LOG_SKIP_HTTP_REQ=1`.
-To disable HTTP response logging, one can set the environment variable `GOVCD_LOG_SKIP_HTTP_RESP=1`.
+To disable HTTP **request** logging, one can set the environment variable `GOVCD_LOG_SKIP_HTTP_REQ=1`.
+To disable HTTP **response** logging, one can set the environment variable `GOVCD_LOG_SKIP_HTTP_RESP=1`.
 
