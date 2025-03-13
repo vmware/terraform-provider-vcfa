@@ -113,3 +113,8 @@ replace github.com/vmware/go-vcloud-director/v3 v3.1.0-alpha.2 => ../go-vcloud-d
 ```
 
 See [CODING_GUIDELINES.md](./CODING_GUIDELINES.md) for more advice on how to write code for this project.
+
+## Troubleshooting the Provider
+
+Read [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) to learn how to configure and understand logs and how to
+diagnose common errors.
