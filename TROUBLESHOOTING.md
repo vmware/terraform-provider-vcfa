@@ -3,10 +3,10 @@
 ## Table of contents
 
 - [How to enable logging](#how-to-enable-logging)
+- [Common errors](#common-errors)
   - [Login does not work](#login-does-not-work)
   - [Entity Not Found error](#entity-not-found-error)
   - [vcfa_content_library_item creation never finishes (it's stuck)](#vcfa_content_library_item-creation-never-finishes-its-stuck)
-- [Common errors](#common-errors)
 
 ## How to enable logging
 
