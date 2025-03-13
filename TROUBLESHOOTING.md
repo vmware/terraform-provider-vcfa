@@ -3,6 +3,9 @@
 ## Table of contents
 
 - [How to enable logging](#how-to-enable-logging)
+  - [Login does not work](#login-does-not-work)
+  - [Entity Not Found error](#entity-not-found-error)
+  - [vcfa_content_library_item creation never finishes (it's stuck)](#vcfa_content_library_item-creation-never-finishes-its-stuck)
 - [Common errors](#common-errors)
 
 ## How to enable logging
@@ -105,7 +108,7 @@ If you are using an API Token, verify that it is valid and not expired. Set a va
 
 If you are using an API Token from `vcfa_api_token`(https://github.com/vmware/terraform-provider-vcfa/blob/main/providers/vmware/vcfa/latest/docs/resources/api_token), verify that it is valid, not expired and the syntax is correct. Set a valid token file in `api_token_file`.
 
-### Entity Not Found
+### Entity Not Found error
 
 ```
 Error: error getting Organization by Name 'not-exist': [ENF] entity not found: got zero entities by name 'not-exist'
