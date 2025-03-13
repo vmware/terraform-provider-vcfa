@@ -84,3 +84,22 @@ To disable HTTP **request** logging, one can set the environment variable `GOVCD
 To disable HTTP **response** logging, one can set the environment variable `GOVCD_LOG_SKIP_HTTP_RESP=1`.
 
 ## Common errors
+
+### Login does not work
+
+```
+Error: something went wrong during authentication: error finding LoginUrl: could not find valid version for login: could not retrieve supported versions: error fetching versions: Get "https://my-vcfa-url.com/api/versions": dial tcp: lookup my-vcfa-url.com: no such host
+```
+
+This error is thrown when the VCFA URL is incorrect or can't be reached. Verify that the `url` argument in the VCFA provider
+configuration is correct and try again.
+
+```
+Error: something went wrong during authentication: error authorizing: received response HTTP 401 (Unauthorized). Please check if your credentials are valid
+```
+
+Verify that the `user` and `password` arguments in the VCFA provider configuration are correct and try again.
+
+If you are using an API Token, verify that it is valid and not expired. Set a valid token in `api_token`.
+
+If you are using an API Token from `vcfa_api_token`(https://github.com/vmware/terraform-provider-vcfa/blob/main/providers/vmware/vcfa/latest/docs/resources/api_token), verify that it is valid, not expired and the syntax is correct. Set a valid token file in `api_token_file`.
