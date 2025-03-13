@@ -24,9 +24,8 @@ the following:
   - The `X-Vmware-Vcloud-Client-Request-Id` header can be used to improve readability of the requests and responses in big log files, as it tracks
     the request number with a timestamp.
 - Method call sequence (who called who) to read the response. This helps to trace the methods that parsed and unmarshalled the response.
-- HTTP response headers. Sensitive information is obfuscated by default. To enable logging of passwords, tokens and other sensitive information,
-  users can enable the `GOVCD_LOG_PASSWORDS=1` environment variable.
-- The response itself in raw JSON/XML.
+- HTTP response headers. The `X-Vmware-Vcloud-Request-Id` header is modified with the VCFA request ID.
+- The response itself in raw plain text (JSON/XML).
 
 Example taken from a real log:
 
