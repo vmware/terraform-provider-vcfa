@@ -34,6 +34,8 @@ The following arguments are supported:
 - `can_create_subscribed_libraries` - (Required) Whether the Organization can create content libraries that are subscribed to external sources
 - `quarantine_content_library_items` - (Required) Whether to quarantine new Content Library Items for file inspection
 
+~> Be careful as `quarantine_content_library_items=true` will make all the `vcfa_content_library_item` uploads for that
+Organization to be blocked, waiting for manual upload approval
 
 ## Importing
 

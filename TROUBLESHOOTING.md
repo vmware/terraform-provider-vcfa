@@ -114,3 +114,15 @@ Error: error getting Organization by Name 'not-exist': [ENF] entity not found: g
 While the error looks trivial (the object does not exist), it may also mean that the user configured in the VCFA Provider
 does not have enough Rights to fetch the object. When you are sure that the object exists and the error persists, check
 that you are logged in with a user with enough Rights.
+
+### vcfa_content_library_item creation never finishes (it's stuck)
+
+If `vcfa_content_library_item` creation never ends, it could be that `quarantine_content_library_items` setting is enabled
+for the Organization in which the Content Library Item is being uploaded
+(see [`vcfa_org_settings`](https://registry.terraform.io/providers/vmware/vcfa/latest/docs/resources/org_settings)).
+
+The property `quarantine_content_library_items` can be set by Providers when configuring the Organization, and it makes uploads
+to be blocked until they are approved (or rejected) by an authorized user. If you need to upload Content Library Items with Terraform, you
+may need to ask that the Organization has `quarantine_content_library_items` disabled, or that someone approves or denies the
+upload when the Terraform script is applied.
+
