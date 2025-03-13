@@ -116,5 +116,5 @@ See [CODING_GUIDELINES.md](./CODING_GUIDELINES.md) for more advice on how to wri
 
 ## Troubleshooting the Provider
 
-Read [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) to learn how to configure and understand logs and how to
+Read [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) to learn how to configure and understand logs, and how to
 diagnose common errors.
