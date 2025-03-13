@@ -6,7 +6,7 @@ The VCFA provider can be configured to write logs into a specific file located i
 
 ```hcl
 provider "vcfa" {
-  # ... omitted
+  # ... omitted arguments
   logging              = true
   logging_file         = "my-log-file.log"
 }
