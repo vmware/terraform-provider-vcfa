@@ -105,6 +105,12 @@ If you are using an API Token, verify that it is valid and not expired. Set a va
 
 If you are using an API Token from `vcfa_api_token`(https://github.com/vmware/terraform-provider-vcfa/blob/main/providers/vmware/vcfa/latest/docs/resources/api_token), verify that it is valid, not expired and the syntax is correct. Set a valid token file in `api_token_file`.
 
-### 403 Forbidden
+### Entity Not Found
 
-In VCFA, some entities return 
+```json
+Error: error getting Organization by Name 'not-exist': [ENF] entity not found: got zero entities by name 'not-exist'
+```
+
+While the error looks trivial (the object does not exist), it may also mean that the user configured in the VCFA Provider
+does not have enough Rights to fetch the object. When you are sure that the object exists and the error persists, check
+that you are logged in with a user with enough Rights.
