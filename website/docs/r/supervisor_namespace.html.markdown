@@ -22,16 +22,16 @@ resource "vcfa_supervisor_namespace" "supervisor_namespace" {
   vpc_name     = "default-vpc"
 
   storage_classes_initial_class_config_overrides {
-    limit_mib = 10000
-    name      = "vSAN Default Storage Policy"
+    limit = "10000Mi"
+    name  = "vSAN Default Storage Policy"
   }
 
   zones_initial_class_config_overrides {
-    cpu_limit_mhz          = 1000
-    cpu_reservation_mhz    = 0
-    memory_limit_mib       = 1000
-    memory_reservation_mib = 0
-    name                   = "default-zone"
+    cpu_limit          = "1000M"
+    cpu_reservation    = "0M"
+    memory_limit       = "1000Mi"
+    memory_reservation = "0Mi"
+    name               = "default-zone"
   }
 }
 ```
@@ -64,7 +64,7 @@ The following arguments are supported:
 
 The `storage_classes` is a set of entries that have the following structure:
 
-* `limit_mib` - Limit in MiB
+* `limit` - Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 * `name` - Name of the Storage Class
 
 <a id="storage-classes-initial-class-config-overrides"></a>
@@ -72,7 +72,7 @@ The `storage_classes` is a set of entries that have the following structure:
 
 The `storage_classes_initial_class_config_overrides` is a set of entries that have the following structure:
 
-* `limit_mib` - Limit in MiB
+* `limit` - Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 * `name` - Name of the Storage Class
 
 <a id="vm-classes"></a>
@@ -87,10 +87,10 @@ The `vm_classes` is a set of entries that have the following structure:
 
 The `zones` is a set of entries that have the following structure:
 
-* `cpu_limit_mhz` - CPU limit in MHz
-* `cpu_reservation_mhz` - CPU reservation in MHz
-* `memory_limit_mib` - Memory limit in MiB
-* `memory_reservation_mib` - Memory reservation in MiB
+* `cpu_limit` - CPU limit (format: `<number><unit>`, where `<unit>` can be `M` or `G`)
+* `cpu_reservation` - CPU reservation (format: `<number><unit>`, where `<unit>` can be `M` or `G`)
+* `memory_limit` - Memory limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
+* `memory_reservation` - Memory reservation (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 * `name` - Name of the Zone
 
 <a id="zones-initial-class-config-overrides"></a>
@@ -98,10 +98,10 @@ The `zones` is a set of entries that have the following structure:
 
 The `zones_initial_class_config_overrides` is a set of entries that have the following structure:
 
-* `cpu_limit_mhz` - CPU limit in MHz
-* `cpu_reservation_mhz` - CPU reservation in MHz
-* `memory_limit_mib` - Memory limit in MiB
-* `memory_reservation_mib` - Memory reservation in MiB
+* `cpu_limit` - CPU limit (format: `<number><unit>`, where `<unit>` can be `M` or `G`)
+* `cpu_reservation` - CPU reservation (format: `<number><unit>`, where `<unit>` can be `M` or `G`)
+* `memory_limit` - Memory limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
+* `memory_reservation` - Memory reservation (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 * `name` - Name of the Zone
 
 ## Importing
@@ -123,16 +123,16 @@ resource "vcfa_supervisor_namespace" "existing_supervisor_namespace" {
   vpc_name     = "default-vpc"
 
   storage_classes_initial_class_config_overrides {
-    limit_mib = 10000
-    name      = "vSAN Default Storage Policy"
+    limit = "10000Mi"
+    name  = "vSAN Default Storage Policy"
   }
 
   zones_initial_class_config_overrides {
-    cpu_limit_mhz          = 1000
-    cpu_reservation_mhz    = 0
-    memory_limit_mib       = 1000
-    memory_reservation_mib = 0
-    name                   = "default-zone"
+    cpu_limit          = "1000M"
+    cpu_reservation    = "0M"
+    memory_limit       = "1000Mi"
+    memory_reservation = "0Mi"
+    name               = "default-zone"
   }
 }
 ```

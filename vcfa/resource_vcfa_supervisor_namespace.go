@@ -20,10 +20,10 @@ const labelSupervisorNamespace = "Supervisor Namespace"
 
 var supervisorNamespaceStorageClassesSchema = &schema.Resource{
 	Schema: map[string]*schema.Schema{
-		"limit_mib": {
-			Type:        schema.TypeInt,
+		"limit": {
+			Type:        schema.TypeString,
 			Computed:    true,
-			Description: "Limit in MiB",
+			Description: "Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)",
 		},
 		"name": {
 			Type:        schema.TypeString,
@@ -35,10 +35,10 @@ var supervisorNamespaceStorageClassesSchema = &schema.Resource{
 
 var supervisorNamespaceStorageClassesInitialClassConfigOverridesSchema = &schema.Resource{
 	Schema: map[string]*schema.Schema{
-		"limit_mib": {
-			Type:        schema.TypeInt,
+		"limit": {
+			Type:        schema.TypeString,
 			Required:    true,
-			Description: "Limit in MiB",
+			Description: "Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)",
 		},
 		"name": {
 			Type:        schema.TypeString,
@@ -60,25 +60,25 @@ var supervisorNamespaceVMClassesSchema = &schema.Resource{
 
 var supervisorNamespaceZonesSchema = &schema.Resource{
 	Schema: map[string]*schema.Schema{
-		"cpu_limit_mhz": {
-			Type:        schema.TypeInt,
+		"cpu_limit": {
+			Type:        schema.TypeString,
 			Computed:    true,
-			Description: "CPU limit in MHz",
+			Description: "CPU limit (format: `<number><unit>`, where `<unit>` can be `M` or `G`)",
 		},
-		"cpu_reservation_mhz": {
-			Type:        schema.TypeInt,
+		"cpu_reservation": {
+			Type:        schema.TypeString,
 			Computed:    true,
-			Description: "CPU reservation in MHz",
+			Description: "CPU reservation (format: `<number><unit>`, where `<unit>` can be `M` or `G`)",
 		},
-		"memory_limit_mib": {
-			Type:        schema.TypeInt,
+		"memory_limit": {
+			Type:        schema.TypeString,
 			Computed:    true,
-			Description: "Memory limit in MiB",
+			Description: "Memory limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)",
 		},
-		"memory_reservation_mib": {
-			Type:        schema.TypeInt,
+		"memory_reservation": {
+			Type:        schema.TypeString,
 			Computed:    true,
-			Description: "Memory reservation in MiB",
+			Description: "Memory reservation (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)",
 		},
 		"name": {
 			Type:        schema.TypeString,
@@ -90,25 +90,25 @@ var supervisorNamespaceZonesSchema = &schema.Resource{
 
 var supervisorNamespaceZonesInitialClassConfigOverridesSchema = &schema.Resource{
 	Schema: map[string]*schema.Schema{
-		"cpu_limit_mhz": {
-			Type:        schema.TypeInt,
+		"cpu_limit": {
+			Type:        schema.TypeString,
 			Required:    true,
-			Description: "CPU limit in MHz",
+			Description: "CPU limit (format: `<number><unit>`, where `<unit>` can be `M` or `G`)",
 		},
-		"cpu_reservation_mhz": {
-			Type:        schema.TypeInt,
+		"cpu_reservation": {
+			Type:        schema.TypeString,
 			Required:    true,
-			Description: "CPU reservation in MHz",
+			Description: "CPU reservation (format: `<number><unit>`, where `<unit>` can be `M` or `G`)",
 		},
-		"memory_limit_mib": {
-			Type:        schema.TypeInt,
+		"memory_limit": {
+			Type:        schema.TypeString,
 			Required:    true,
-			Description: "Memory limit in MiB",
+			Description: "Memory limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)",
 		},
-		"memory_reservation_mib": {
-			Type:        schema.TypeInt,
+		"memory_reservation": {
+			Type:        schema.TypeString,
 			Required:    true,
-			Description: "Memory reservation in MiB",
+			Description: "Memory reservation (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)",
 		},
 		"name": {
 			Type:        schema.TypeString,
@@ -249,8 +249,8 @@ func resourceVcfaSupervisorNamespaceCreate(ctx context.Context, d *schema.Resour
 		for i, k := range storageClassesInitialClassConfigOverridesList {
 			storageClass := k.(map[string]interface{})
 			storageClassesInitialClassConfigOverrides[i] = ccitypes.SupervisorNamespaceSpecInitialClassConfigOverridesStorageClass{
-				LimitMiB: int64(storageClass["limit_mib"].(int)),
-				Name:     storageClass["name"].(string),
+				Limit: storageClass["limit"].(string),
+				Name:  storageClass["name"].(string),
 			}
 		}
 		supervisorNamespace.Spec.InitialClassConfigOverrides.StorageClasses = storageClassesInitialClassConfigOverrides
@@ -262,11 +262,11 @@ func resourceVcfaSupervisorNamespaceCreate(ctx context.Context, d *schema.Resour
 		for i, k := range zonesInitialClassConfigOverridesList {
 			zone := k.(map[string]interface{})
 			zonesInitialClassConfigOverrides[i] = ccitypes.SupervisorNamespaceSpecInitialClassConfigOverridesZone{
-				CpuLimitMHz:          int64(zone["cpu_limit_mhz"].(int)),
-				CpuReservationMHz:    int64(zone["cpu_reservation_mhz"].(int)),
-				MemoryLimitMiB:       int64(zone["memory_limit_mib"].(int)),
-				MemoryReservationMiB: int64(zone["memory_reservation_mib"].(int)),
-				Name:                 zone["name"].(string),
+				CpuLimit:          zone["cpu_limit"].(string),
+				CpuReservation:    zone["cpu_reservation"].(string),
+				MemoryLimit:       zone["memory_limit"].(string),
+				MemoryReservation: zone["memory_reservation"].(string),
+				Name:              zone["name"].(string),
 			}
 		}
 		supervisorNamespace.Spec.InitialClassConfigOverrides.Zones = zonesInitialClassConfigOverrides
@@ -468,8 +468,8 @@ func setSupervisorNamespaceData(_ *VCDClient, d *schema.ResourceData, projectNam
 	storageClasses := make([]interface{}, 0, len(supervisorNamespace.Status.StorageClasses))
 	for _, storageClass := range supervisorNamespace.Status.StorageClasses {
 		sc := map[string]interface{}{
-			"limit_mib": storageClass.LimitMiB,
-			"name":      storageClass.Name,
+			"limit": storageClass.Limit,
+			"name":  storageClass.Name,
 		}
 
 		storageClasses = append(storageClasses, sc)
@@ -479,8 +479,8 @@ func setSupervisorNamespaceData(_ *VCDClient, d *schema.ResourceData, projectNam
 	storageClassesInitialClassConfigOverrides := make([]interface{}, 0, len(supervisorNamespace.Spec.InitialClassConfigOverrides.StorageClasses))
 	for _, storageClass := range supervisorNamespace.Spec.InitialClassConfigOverrides.StorageClasses {
 		storageClassInitialClassConfigOverride := map[string]interface{}{
-			"limit_mib": storageClass.LimitMiB,
-			"name":      storageClass.Name,
+			"limit": storageClass.Limit,
+			"name":  storageClass.Name,
 		}
 
 		storageClassesInitialClassConfigOverrides = append(storageClassesInitialClassConfigOverrides, storageClassInitialClassConfigOverride)
@@ -500,11 +500,11 @@ func setSupervisorNamespaceData(_ *VCDClient, d *schema.ResourceData, projectNam
 	zones := make([]interface{}, 0, len(supervisorNamespace.Status.Zones))
 	for _, zone := range supervisorNamespace.Status.Zones {
 		z := map[string]interface{}{
-			"cpu_limit_mhz":          zone.CpuLimitMHz,
-			"cpu_reservation_mhz":    zone.CpuReservationMHz,
-			"memory_limit_mib":       zone.MemoryLimitMiB,
-			"memory_reservation_mib": zone.MemoryReservationMiB,
-			"name":                   zone.Name,
+			"cpu_limit":          zone.CpuLimit,
+			"cpu_reservation":    zone.CpuReservation,
+			"memory_limit":       zone.MemoryLimit,
+			"memory_reservation": zone.MemoryReservation,
+			"name":               zone.Name,
 		}
 
 		zones = append(zones, z)
@@ -514,11 +514,11 @@ func setSupervisorNamespaceData(_ *VCDClient, d *schema.ResourceData, projectNam
 	zonesInitialClassConfigOverrides := make([]interface{}, 0, len(supervisorNamespace.Spec.InitialClassConfigOverrides.Zones))
 	for _, zone := range supervisorNamespace.Spec.InitialClassConfigOverrides.Zones {
 		zoneInitialClassConfigOverride := map[string]interface{}{
-			"cpu_limit_mhz":          zone.CpuLimitMHz,
-			"cpu_reservation_mhz":    zone.CpuReservationMHz,
-			"memory_limit_mib":       zone.MemoryLimitMiB,
-			"memory_reservation_mib": zone.MemoryReservationMiB,
-			"name":                   zone.Name,
+			"cpu_limit":          zone.CpuLimit,
+			"cpu_reservation":    zone.CpuReservation,
+			"memory_limit":       zone.MemoryLimit,
+			"memory_reservation": zone.MemoryReservation,
+			"name":               zone.Name,
 		}
 
 		zonesInitialClassConfigOverrides = append(zonesInitialClassConfigOverrides, zoneInitialClassConfigOverride)
