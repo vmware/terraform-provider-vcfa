@@ -4,20 +4,29 @@ package vcfa
 
 import (
 	"fmt"
+	"net/url"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/vmware/go-vcloud-director/v3/ccitypes"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func TestAccVcfaSupervisorNamespaceIntegrated(t *testing.T) {
+	// Uncomment to actually execute the test
 	// t.Skipf("not enabled yet")
+
 	preTestChecks(t)
 	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
+	ref, err := url.Parse(testConfig.Provider.Url)
+	if err != nil {
+		t.Fatalf("failed parsing '%s' host: %s", testConfig.Provider.Url, err)
+	}
 	var params = StringMap{
 		"Testname":           t.Name(),
 		"SupervisorName":     testConfig.Tm.VcenterSupervisor,
@@ -52,14 +61,16 @@ func TestAccVcfaSupervisorNamespaceIntegrated(t *testing.T) {
 
 	params["FuncName"] = t.Name() + "-step2"
 	configText2 := templateFill(testAccVcfaSupervisorNamespaceIntegStep2, params)
+	params["FuncName"] = t.Name() + "-step3"
+	configText3 := templateFill(testAccVcfaSupervisorNamespaceIntegStep3DS, params)
 
-	// params["RegionVmClassRefs"] = fmt.Sprintf("%s.id", vmClassesRefs[0]) // There is always at least one VM class in config
-	// configText2 := templateFill(preRequisites+testAccVcfaOrgRegionQuotaStep2, params)
-	// params["FuncName"] = t.Name() + "-step3"
-	// configText3 := templateFill(preRequisites+testAccVcfaOrgRegionQuotaStep3DS, params)
+	params["FuncName"] = t.Name() + "-step4"
+	configText4 := templateFill(testAccVcfaSupervisorNamespaceIntegStep4, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
+	debugPrintf("#[DEBUG] CONFIGURATION step3: %s\n", configText3)
+	debugPrintf("#[DEBUG] CONFIGURATION step4: %s\n", configText4)
 
 	if vcfaShortTest {
 		t.Skip(acceptanceTestsSkipped)
@@ -85,13 +96,10 @@ func TestAccVcfaSupervisorNamespaceIntegrated(t *testing.T) {
 	// remains cached.
 	defer cachedVCDClients.reset()
 
-	resource.Test(t, resource.TestCase{
+	cachedNamespaceName := &testCachedFieldValue{}
 
+	resource.Test(t, resource.TestCase{
 		Steps: []resource.TestStep{
-			// {
-			// 	ProviderFactories: testAccProviders,
-			// 	Config:            configText0,
-			// },
 			{
 				ProviderFactories: testAccProviders,
 				Config:            configText1,
@@ -101,40 +109,55 @@ func TestAccVcfaSupervisorNamespaceIntegrated(t *testing.T) {
 				ProviderFactories: multipleFactories(),
 				PreConfig:         func() { createProject(t, params) }, //Setup project
 				Config:            configText2,
-				Check:             resource.ComposeTestCheckFunc(
-				// resource.TestCheckResourceAttrSet("vcfa_org_region_quota.test", "id"),
-				// resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "name", fmt.Sprintf("%s_%s", params["Testname"], testConfig.Tm.Region)), // Name is a combination of Org name + Region name
-				// resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "status", "READY"),
-				// resource.TestCheckResourceAttrPair("vcfa_org_region_quota.test", "org_id", "vcfa_org.test", "id"),
-				// resource.TestCheckResourceAttrPair("vcfa_org_region_quota.test", "region_id", regionHclRef, "id"),
-				// resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "supervisor_ids.#", "1"),
-				// resource.TestCheckTypeSetElemAttrPair("vcfa_org_region_quota.test", "supervisor_ids.*", "data.vcfa_supervisor.test", "id"),
-				// resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "zone_resource_allocations.#", "1"),
-				// resource.TestCheckTypeSetElemNestedAttrs("vcfa_org_region_quota.test", "zone_resource_allocations.*", map[string]string{
-				// 	"region_zone_name":       testConfig.Tm.VcenterSupervisorZone,
-				// 	"cpu_limit_mhz":          "2000",
-				// 	"cpu_reservation_mhz":    "100",
-				// 	"memory_limit_mib":       "1024",
-				// 	"memory_reservation_mib": "512",
-				// }),
-				// resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "region_vm_class_ids.#", fmt.Sprintf("%d", len(vmClassesRefs))),
-				// resource.TestCheckTypeSetElemNestedAttrs("vcfa_org_region_quota.test", "region_storage_policy.*", map[string]string{
-				// 	"storage_limit_mib": "100",
-				// 	"name":              params["StorageClass"].(string),
-				// }),
-				// resource.TestCheckResourceAttr("vcfa_org_region_quota.test", "region_storage_policy.#", "1"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestMatchResourceAttr("vcfa_supervisor_namespace.test", "id", regexp.MustCompile(fmt.Sprintf(`^%s:terraform-test`, params["ProjectName"].(string)))),
+					resource.TestMatchResourceAttr("vcfa_supervisor_namespace.test", "name", regexp.MustCompile(`^terraform-test`)),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "description", "Supervisor Namespace created by Terraform"),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "region_name", params["RegionName"].(string)),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "vpc_name", params["VpcName"].(string)),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "storage_classes_initial_class_config_overrides.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "zones_initial_class_config_overrides.#", "1"),
+					cachedNamespaceName.cacheTestResourceFieldValue("vcfa_supervisor_namespace.test", "name"), // capturing computed 'name' to use for other test steps
+				),
+			},
+			{
+				ProviderFactories: multipleFactories(),
+				Config:            configText3,
+				Check: resource.ComposeTestCheckFunc(
+					// Data source does not have 'name_prefix' therefore field count (%) differs
+					resourceFieldsEqual("data.vcfa_supervisor_namespace.test", "vcfa_supervisor_namespace.test", []string{"%"}),
+				),
+			},
+			{
+				ProviderFactories:       multipleFactories(),
+				ResourceName:            "vcfa_supervisor_namespace.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"name_prefix"},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					return params["ProjectName"].(string) + ImportSeparator + cachedNamespaceName.fieldValue, nil
+				},
+			},
+			{
+				ProviderFactories: multipleFactories(),
+				Config:            configText4,
+				Check: resource.ComposeTestCheckFunc(
+					cachedNamespaceName.testCheckCachedResourceFieldValuePattern("data.vcfa_kubeconfig.test-namespace", "id", fmt.Sprintf("%s:%%s:%s", params["OrgName"].(string), params["ProjectName"].(string))),
+					cachedNamespaceName.testCheckCachedResourceFieldValuePattern("data.vcfa_kubeconfig.test-namespace", "context_name", fmt.Sprintf("%s:%%s:%s", params["OrgName"].(string), params["ProjectName"].(string))),
+					resource.TestCheckResourceAttr("data.vcfa_kubeconfig.test-namespace", "insecure_skip_tls_verify", fmt.Sprintf("%t", testConfig.Provider.AllowInsecure)),
+					resource.TestCheckResourceAttr("data.vcfa_kubeconfig.test-namespace", "user", fmt.Sprintf("%s:%s@%s", params["OrgName"].(string), params["OrgUser"].(string), ref.Host)),
+					resource.TestCheckResourceAttrSet("data.vcfa_kubeconfig.test-namespace", "token"),
+					resource.TestCheckResourceAttrSet("data.vcfa_kubeconfig.test-namespace", "kube_config_raw"),
 				),
 			},
 			{
 				// Applying step1 config that will remove namespace
-
-				// PreConfig:         func() { removeProject(t, params) },
 				ProviderFactories: multipleFactories(),
 				Config:            configText1,
 				Check:             resource.ComposeTestCheckFunc(),
 			},
 			{
-				// Namespace already removed, removing project using SDK and leaveing for terarform to teardwon
+				// Namespace already removed, removing project using SDK and leaveing for Terarform to teardwon
 				PreConfig:         func() { removeProject(t, params) },
 				ProviderFactories: multipleFactories(),
 				Config:            configText1,
@@ -341,6 +364,24 @@ resource "vcfa_supervisor_namespace" "test" {
     memory_reservation = "2Mi"
     name               = "{{.SupervisorZoneName}}"
   }
+}
+`
+
+const testAccVcfaSupervisorNamespaceIntegStep3DS = testAccVcfaSupervisorNamespaceIntegStep2 + `
+data "vcfa_supervisor_namespace" "test" {
+  provider = vcfatenant
+
+  name         = vcfa_supervisor_namespace.test.name
+  project_name = vcfa_supervisor_namespace.test.project_name
+}
+`
+
+const testAccVcfaSupervisorNamespaceIntegStep4 = testAccVcfaSupervisorNamespaceIntegStep2 + `
+data "vcfa_kubeconfig" "test-namespace" {
+  provider = vcfatenant
+
+  project_name              = vcfa_supervisor_namespace.test.project_name
+  supervisor_namespace_name = vcfa_supervisor_namespace.test.name
 }
 `
 

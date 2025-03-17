@@ -52,10 +52,8 @@ func testParamsNotEmpty(t *testing.T, params StringMap) {
 
 func createTemporaryOrgConnection(orgName, username, password string) *VCDClient {
 	config := Config{
-		User:     username,
-		Password: password,
-		// Token:        testConfig.Provider.Token,
-		// ApiToken:     testConfig.Provider.ApiToken,
+		User:         username,
+		Password:     password,
 		SysOrg:       orgName,
 		Org:          orgName,
 		Href:         testConfig.Provider.Url,
