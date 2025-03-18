@@ -3,49 +3,11 @@
 package vcfa
 
 import (
-	"fmt"
 	"regexp"
-	"sync"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
-
-var priorityTests sync.Map
-var executedTests sync.Map
-var priorityTestCleanupFunc func() error
-
-type priorityTest struct {
-	Name string
-	Test func(*testing.T)
-}
-
-func testAccPriority(t *testing.T) {
-	_, executed := priorityTests.LoadOrStore("executed", true)
-	if !executed {
-		tests := []priorityTest{
-			{Name: "TestAccVcfaNsxManager", Test: TestAccVcfaNsxManager},
-			{Name: "TestAccVcfaVcenter", Test: TestAccVcfaVcenter},
-			{Name: "TestAccVcfaVcenterInvalid", Test: TestAccVcfaVcenterInvalid},
-		}
-
-		for _, test := range tests {
-			fmt.Printf("Running priority test %s as a subtest of %s:\n", test.Name, t.Name())
-			t.Run(test.Name, test.Test)
-			executedTests.Store(test.Name, !t.Failed())
-		}
-
-		// setup shared components for other tests
-		printfVerbose("# Will setup shared vCenter and NSX Manager\n")
-		cleanup, err := setupVcAndNsx()
-		if err != nil {
-			fmt.Printf("error setting up shared VC and NSX: %s", err)
-		}
-
-		priorityTestCleanupFunc = cleanup
-		fmt.Printf("=== Continuing run of %s test after priority tests are now done\n", t.Name())
-	}
-}
 
 func TestAccVcfaVcenter(t *testing.T) {
 	testName := "TestAccVcfaVcenter" // Trigerring the test at priority will create incorrect t.Name() value
