@@ -242,7 +242,8 @@ func resourceVcfaOrgLdap() *schema.Resource {
 }
 
 func resourceVcfaOrgLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
-	// Lock the Organization to prevent side effects
+	// Lock the Organization to serialize create/update operation and prevent side effects like bricked Organizations when
+	// vcfa_org_settings is updated at the same time
 	orgId := d.Get("org_id").(string)
 	vcfa.kvLock(orgId)
 	defer vcfa.kvUnlock(orgId)
@@ -354,7 +355,8 @@ func resourceVcfaOrgLdapUpdate(ctx context.Context, d *schema.ResourceData, meta
 }
 
 func resourceVcfaOrgLdapDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	// Lock the Organization to prevent side effects
+	// Lock the Organization to serialize delete operation and prevent side effects like bricked Organizations when
+	// vcfa_org_settings is deleted at the same time
 	orgId := d.Get("org_id").(string)
 	vcfa.kvLock(orgId)
 	defer vcfa.kvUnlock(orgId)
