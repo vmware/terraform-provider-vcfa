@@ -18,6 +18,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"text/template"
 	"time"
@@ -1038,6 +1039,42 @@ func waitForListenerStatusConnected(v *govcd.VCenter) error {
 		tryCount, int(time.Since(startTime)/time.Second), v.VSphereVCenter.ListenerState)
 }
 
+var priorityTests sync.Map
+var executedTests sync.Map
+var priorityTestCleanupFunc func() error
+
+type priorityTest struct {
+	Name string
+	Test func(*testing.T)
+}
+
+func testAccPriority(t *testing.T) {
+	_, executed := priorityTests.LoadOrStore("executed", true)
+	if !executed {
+		tests := []priorityTest{
+			{Name: "TestAccVcfaNsxManager", Test: TestAccVcfaNsxManager},
+			{Name: "TestAccVcfaVcenter", Test: TestAccVcfaVcenter},
+			{Name: "TestAccVcfaVcenterInvalid", Test: TestAccVcfaVcenterInvalid},
+		}
+
+		for _, test := range tests {
+			fmt.Printf("Running priority test %s as a subtest of %s:\n", test.Name, t.Name())
+			t.Run(test.Name, test.Test)
+			executedTests.Store(test.Name, !t.Failed())
+		}
+
+		// setup shared components for other tests
+		printfVerbose("# Will setup shared vCenter and NSX Manager\n")
+		cleanup, err := setupVcAndNsx()
+		if err != nil {
+			fmt.Printf("error setting up shared VC and NSX: %s", err)
+		}
+
+		priorityTestCleanupFunc = cleanup
+		fmt.Printf("=== Continuing run of %s test after priority tests are now done\n", t.Name())
+	}
+}
+
 // Creates a VCDClient based on the endpoint given in the TestConfig argument.
 // TestConfig struct can be obtained by calling GetConfigStruct. Throws an error
 // if endpoint given is not a valid url.
@@ -1178,8 +1215,13 @@ func preTestChecks(t *testing.T) {
 // 3) increments the pass/fail counters
 func postTestChecks(t *testing.T) {
 	// store executed test by name and if it succeeded
-	printfVerbose("# postTestChecks storing testname %s state\n", t.Name())
-	executedTests.Store(t.Name(), !t.Failed())
+	testname := t.Name()
+	if strings.Contains(testname, "/") {
+		testname = strings.SplitN(testname, "/", 2)[1]
+	}
+
+	printfVerbose("# postTestChecks storing testname %s state\n", testname)
+	executedTests.Store(testname, !t.Failed())
 
 	if t.Failed() && !skipLeftoversRemoval {
 		tmClient, err := getTestVCFAFromJson(testConfig)
