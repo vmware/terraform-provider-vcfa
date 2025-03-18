@@ -12,49 +12,39 @@ import (
 )
 
 var priorityTests sync.Map
-
 var executedTests sync.Map
-
-func init() {
-	// priorityTests.Store("executed", false)
-}
-
 var priorityTestCleanupFunc func() error
+
+type priorityTest struct {
+	Name string
+	Test func(*testing.T)
+}
 
 func testAccPriority(t *testing.T) {
 	_, executed := priorityTests.LoadOrStore("executed", true)
 	if !executed {
-		printfVerbose("# triggering priority tests")
-		firstTestAcc(t)
-		printfVerbose("# priority tests finished")
+		tests := []priorityTest{
+			{Name: "TestAccVcfaNsxManager", Test: TestAccVcfaNsxManager},
+			{Name: "TestAccVcfaVcenter", Test: TestAccVcfaVcenter},
+			{Name: "TestAccVcfaVcenterInvalid", Test: TestAccVcfaVcenterInvalid},
+		}
+
+		for _, test := range tests {
+			fmt.Printf("Running priority test %s as a subtest of %s:\n", test.Name, t.Name())
+			t.Run(test.Name, test.Test)
+			executedTests.Store(test.Name, !t.Failed())
+		}
+
+		// setup shared components for other tests
+		printfVerbose("# Will setup shared vCenter and NSX Manager\n")
+		cleanup, err := setupVcAndNsx()
+		if err != nil {
+			fmt.Printf("error setting up shared VC and NSX: %s", err)
+		}
+
+		priorityTestCleanupFunc = cleanup
+		fmt.Printf("=== Continuing run of %s test after priority tests are now done\n", t.Name())
 	}
-}
-
-func firstTestAcc(t *testing.T) {
-	// Run the shared tests as subtests in whic
-	tests := []func(*testing.T){
-		TestAccVcfaNsxManager,
-		TestAccVcfaVcenter,
-		// TestAccVcfaVcenterInvalid,
-	}
-
-	testNames := []string{"TestAccVcfaNsxManager", "TestAccVcfaVcenter"}
-
-	for index, test := range tests {
-		fmt.Printf("Running priority test %s as a subtest of %s:\n", testNames[index], t.Name())
-		t.Run(testNames[index], test)
-		executedTests.Store(testNames[index], !t.Failed())
-	}
-
-	// setup shared things for other tests
-
-	printfVerbose("# Will setup vCenter and NSX Manager\n")
-	cleanup, err := setupVcAndNsx()
-	if err != nil {
-		fmt.Printf("error setting up shared VC and NSX: %s", err)
-	}
-
-	priorityTestCleanupFunc = cleanup
 }
 
 func TestAccVcfaVcenter(t *testing.T) {
@@ -227,17 +217,8 @@ data "vcfa_vcenter" "test" {
 }
 `
 
-// var doOnceTestAccVcfaVcenterInvalid sync.Once
-
-// func TestAccVcfaVcenterInvalid(t *testing.T) {
-// 	// doOnceTestAccVcfaVcenter.Do(func() {
-// 	// t.Run("TestAccVcfaVcenterInvalid", testAccVcfaVcenterInvalid)
-// 	testAccVcfaVcenterInvalid(t)
-// 	// })
-// }
-
 func TestAccVcfaVcenterInvalid(t *testing.T) {
-	testName := "TestAccVcfaVcenterInvalid"
+	testName := "TestAccVcfaVcenterInvalid" // Trigerring the test at priority will create incorrect t.Name() value
 	preTestChecks(t)
 	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
@@ -256,8 +237,7 @@ func TestAccVcfaVcenterInvalid(t *testing.T) {
 		"NsxUsername":     testConfig.Tm.NsxManagerUsername,
 		"NsxPassword":     testConfig.Tm.NsxManagerPassword,
 		"NsxUrl":          testConfig.Tm.NsxManagerUrl,
-
-		"Testname": t.Name(),
+		"Testname":        testName,
 
 		"Tags": "tm",
 	}

@@ -772,14 +772,6 @@ func TestMain(m *testing.M) {
 	// Runs all test functions
 	exitCode := m.Run()
 
-	// If there were some priority tests - cleanup their things
-	if priorityTestCleanupFunc != nil {
-		err := priorityTestCleanupFunc()
-		if err != nil {
-			fmt.Printf("# got error while cleaning up vCenter / NSX Manager: %s", err)
-		}
-	}
-
 	if numberOfPartitions != 0 {
 		entTestFileName := getTestFileName("end", testConfig.Provider.TmVersion)
 		err := os.WriteFile(entTestFileName, []byte(fmt.Sprintf("%d", exitCode)), 0600)
@@ -810,6 +802,15 @@ func TestMain(m *testing.M) {
 			exitCode = 1
 		}
 	}
+
+	// If there were some priority tests - cleanup their things
+	if priorityTestCleanupFunc != nil {
+		err := priorityTestCleanupFunc()
+		if err != nil {
+			fmt.Printf("# got error while cleaning up vCenter / NSX Manager: %s", err)
+		}
+	}
+
 	os.Exit(exitCode)
 }
 
@@ -894,7 +895,12 @@ func getOrCreateNsxtManager(tmClient *govcd.VCDClient) (*govcd.NsxtManagerOpenAp
 		if vcfaTestVerbose {
 			fmt.Printf("# Deleting NSX-T Manager %s\n", nsxtManager.NsxtManagerOpenApi.Name)
 		}
-		err = nsxtManager.Delete()
+
+		nsxManager, err := tmClient.GetNsxtManagerOpenApiByName(nsxtCfg.Name)
+		if govcd.ContainsNotFound(err) {
+			return nil // does not exist, nothing to remove
+		}
+		err = nsxManager.Delete()
 		if err != nil {
 			return err
 		}
@@ -936,9 +942,8 @@ func getOrCreateVCenter(tmClient *govcd.VCDClient) (*govcd.VCenter, func() error
 	if !testConfig.Tm.CreateVcenter {
 		return nil, nil, fmt.Errorf("vCenter creation disabled")
 	}
-	if vcfaTestVerbose {
-		fmt.Printf("# Will create vCenter %s\n", testConfig.Tm.VcenterUrl)
-	}
+	printfVerbose("# Will create vCenter %s\n", testConfig.Tm.VcenterUrl)
+
 	vcCfg := &types.VSphereVirtualCenter{
 		Name:      "test-tf-shared-vc",
 		Username:  testConfig.Tm.VcenterUsername,
@@ -961,40 +966,33 @@ func getOrCreateVCenter(tmClient *govcd.VCDClient) (*govcd.VCenter, func() error
 		return nil, nil, err
 	}
 
-	if vcfaTestVerbose {
-		fmt.Printf("# Waiting for listener status to become 'CONNECTED'\n")
-	}
+	printfTrace("# Waiting for listener status to become 'CONNECTED'\n")
 	err = waitForListenerStatusConnected(vc)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	afterConnectedSleep := 4 * time.Second
-	if vcfaTestVerbose {
-		fmt.Printf("# Sleeping %s after vCenter is 'CONNECTED' \n", afterConnectedSleep.String())
-	}
+	printfTrace("# Sleeping %s after vCenter is 'CONNECTED' \n", afterConnectedSleep.String())
+
 	time.Sleep(afterConnectedSleep) // TODO: TM: Re-evaluate need for sleep
 	// Refresh connected vCenter to be sure that all artifacts are loaded
-	if vcfaTestVerbose {
-		fmt.Printf("# Refreshing vCenter %s\n", vc.VSphereVCenter.Url)
-	}
+	printfTrace("# Refreshing vCenter %s\n", vc.VSphereVCenter.Url)
+
 	err = vc.RefreshVcenter()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	if vcfaTestVerbose {
-		fmt.Printf("# Refreshing Storage Profiles in vCenter %s\n", vc.VSphereVCenter.Url)
-	}
+	printfTrace("# Refreshing Storage Profiles in vCenter %s\n", vc.VSphereVCenter.Url)
 	err = vc.RefreshStorageProfiles()
 	if err != nil {
 		return nil, nil, err
 	}
 
 	afterRefreshSleep := 30 * time.Second
-	if vcfaTestVerbose {
-		fmt.Printf("# Sleeping %s after vCenter refreshes \n", afterRefreshSleep.String())
-	}
+	printfTrace("# Sleeping %s after vCenter refreshes \n", afterRefreshSleep.String())
+
 	time.Sleep(afterRefreshSleep) // TODO: TM: Re-evaluate need for sleep
 	vCenterCreated := true
 
@@ -1002,9 +1000,12 @@ func getOrCreateVCenter(tmClient *govcd.VCDClient) (*govcd.VCenter, func() error
 		if !vCenterCreated {
 			return nil
 		}
-		if vcfaTestVerbose {
-			fmt.Printf("# Disabling and deleting vCenter %s\n", testConfig.Tm.VcenterUrl)
+		vc, err := tmClient.GetVCenterByName(vcCfg.Name)
+		if govcd.ContainsNotFound(err) {
+			return nil // does not exist, nothing to remove
 		}
+		printfVerbose("# Disabling and deleting vCenter %s\n", testConfig.Tm.VcenterUrl)
+
 		err = vc.Disable()
 		if err != nil {
 			return err
@@ -1177,7 +1178,7 @@ func preTestChecks(t *testing.T) {
 // 3) increments the pass/fail counters
 func postTestChecks(t *testing.T) {
 	// store executed test by name and if it succeeded
-	fmt.Printf("# postTestChecks storing testname %s state\n", t.Name())
+	printfVerbose("# postTestChecks storing testname %s state\n", t.Name())
 	executedTests.Store(t.Name(), !t.Failed())
 
 	if t.Failed() && !skipLeftoversRemoval {

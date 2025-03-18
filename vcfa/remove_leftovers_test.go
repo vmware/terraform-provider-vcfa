@@ -29,6 +29,9 @@ var doNotDelete = entityList{
 	{Type: "vcfa_org", Name: "tenant1", Comment: "tenant loaded with provisioning"},
 	{Type: "vcfa_org", Name: "system-classic-tenant", Comment: "tenant loaded with provisioning"},
 	{Type: "vcfa_org", Name: "tenant1classic", Comment: "classic tenant loaded with provisioning"},
+
+	{Type: "vcfa_nsx_manager", Name: "test-tf-shared-nsx", Comment: "classic tenant loaded with provisioning"},
+	{Type: "vcfa_vcenter", Name: "test-tf-shared-vc", Comment: "classic tenant loaded with provisioning"},
 }
 
 // alsoDelete contains a list of entities that should be removed , in addition to the ones
