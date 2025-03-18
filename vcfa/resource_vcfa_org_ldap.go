@@ -242,13 +242,17 @@ func resourceVcfaOrgLdap() *schema.Resource {
 }
 
 func resourceVcfaOrgLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
+	// Lock the Organization to prevent side effects
+	orgId := d.Get("org_id").(string)
+	vcfa.kvLock(orgId)
+	defer vcfa.kvUnlock(orgId)
+
 	settings, err := fillOrgLdapSettings(d)
 	if err != nil {
 		return diag.Errorf("[Org LDAP %s] error collecting settings values: %s", origin, err)
 	}
 
 	tmClient := meta.(ClientContainer).tmClient
-	orgId := d.Get("org_id").(string)
 	org, err := tmClient.GetTmOrgById(orgId)
 	if err != nil {
 		return diag.Errorf("[Org LDAP %s] error searching for Org %s: %s", origin, orgId, err)
@@ -350,8 +354,12 @@ func resourceVcfaOrgLdapUpdate(ctx context.Context, d *schema.ResourceData, meta
 }
 
 func resourceVcfaOrgLdapDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	tmClient := meta.(ClientContainer).tmClient
+	// Lock the Organization to prevent side effects
 	orgId := d.Get("org_id").(string)
+	vcfa.kvLock(orgId)
+	defer vcfa.kvUnlock(orgId)
+
+	tmClient := meta.(ClientContainer).tmClient
 
 	tmOrg, err := tmClient.GetTmOrgById(orgId)
 	if err != nil {
