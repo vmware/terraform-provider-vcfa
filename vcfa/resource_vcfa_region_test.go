@@ -3,7 +3,7 @@
 package vcfa
 
 import (
-	"regexp"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -15,9 +15,16 @@ func TestAccVcfaRegion(t *testing.T) {
 	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
 
+	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
+	vCenterHcl, vCenterHclRef := getVCenterHcl(t, nsxManagerHclRef)
+
 	var params = StringMap{
-		"Testname":           t.Name(),
-		"RegionName":         strings.ToLower(t.Name()), // to match 'rfc1123LabelNameRegex'
+		"Testname":   t.Name(),
+		"RegionName": strings.ToLower(t.Name()), // to match 'rfc1123LabelNameRegex'
+
+		"VcenterRefId":    fmt.Sprintf("%s.id", vCenterHclRef),
+		"NsxManagerRefId": fmt.Sprintf("%s.id", nsxManagerHclRef),
+
 		"NsxManagerUsername": testConfig.Tm.NsxManagerUsername,
 		"NsxManagerPassword": testConfig.Tm.NsxManagerPassword,
 		"NsxManagerUrl":      testConfig.Tm.NsxManagerUrl,
@@ -33,11 +40,13 @@ func TestAccVcfaRegion(t *testing.T) {
 	}
 	testParamsNotEmpty(t, params)
 
-	configText1 := templateFill(testAccVcfaRegionStep1, params)
+	prerequisites := vCenterHcl + nsxManagerHcl
+
+	configText1 := templateFill(prerequisites+testAccVcfaRegionStep1, params)
 	params["FuncName"] = t.Name() + "-step1"
-	configText2 := templateFill(testAccVcfaRegionStep2, params)
+	configText2 := templateFill(prerequisites+testAccVcfaRegionStep2, params)
 	params["FuncName"] = t.Name() + "-step2"
-	configText3 := templateFill(testAccVcfaRegionStep3DS, params)
+	configText3 := templateFill(prerequisites+testAccVcfaRegionStep3DS, params)
 	params["FuncName"] = t.Name() + "-step3"
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
@@ -56,8 +65,6 @@ func TestAccVcfaRegion(t *testing.T) {
 			{
 				Config: configText1,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "id", regexp.MustCompile(`^urn:vcloud:nsxtmanager:`)),
-					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_region.test", "id"),
 					cachedRegionId.cacheTestResourceFieldValue("vcfa_region.test", "id"),
 					resource.TestCheckResourceAttr("vcfa_region.test", "name", params["RegionName"].(string)),
@@ -71,9 +78,7 @@ func TestAccVcfaRegion(t *testing.T) {
 					resource.TestCheckTypeSetElemAttr("vcfa_region.test", "storage_policy_names.*", testConfig.Tm.VcenterStorageProfile),
 
 					resource.TestCheckResourceAttrSet("data.vcfa_supervisor.test", "id"),
-					resource.TestCheckResourceAttrPair("data.vcfa_supervisor.test", "vcenter_id", "vcfa_vcenter.test", "id"),
 					resource.TestCheckResourceAttrSet("data.vcfa_supervisor_zone.test", "id"),
-					resource.TestCheckResourceAttrPair("data.vcfa_supervisor_zone.test", "vcenter_id", "vcfa_vcenter.test", "id"),
 					resource.TestCheckResourceAttrSet("data.vcfa_supervisor_zone.test", "cpu_capacity_mhz"),
 					resource.TestCheckResourceAttrSet("data.vcfa_supervisor_zone.test", "cpu_used_mhz"),
 					resource.TestCheckResourceAttrSet("data.vcfa_supervisor_zone.test", "memory_capacity_mib"),
@@ -83,8 +88,6 @@ func TestAccVcfaRegion(t *testing.T) {
 			{
 				Config: configText2,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestMatchResourceAttr("vcfa_nsx_manager.test", "id", regexp.MustCompile(`^urn:vcloud:nsxtmanager:`)),
-					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_region.test", "id"),
 					cachedRegionId.testCheckCachedResourceFieldValue("vcfa_region.test", "id"),
 					resource.TestCheckResourceAttr("vcfa_region.test", "name", params["RegionName"].(string)),
@@ -98,10 +101,8 @@ func TestAccVcfaRegion(t *testing.T) {
 					resource.TestCheckTypeSetElemAttr("vcfa_region.test", "storage_policy_names.*", testConfig.Tm.VcenterStorageProfile),
 
 					resource.TestCheckResourceAttrSet("data.vcfa_supervisor.test", "id"),
-					resource.TestCheckResourceAttrPair("data.vcfa_supervisor.test", "vcenter_id", "vcfa_vcenter.test", "id"),
 
 					resource.TestCheckResourceAttrSet("data.vcfa_supervisor_zone.test", "id"),
-					resource.TestCheckResourceAttrPair("data.vcfa_supervisor_zone.test", "vcenter_id", "vcfa_vcenter.test", "id"),
 					resource.TestCheckResourceAttrSet("data.vcfa_supervisor_zone.test", "cpu_capacity_mhz"),
 					resource.TestCheckResourceAttrSet("data.vcfa_supervisor_zone.test", "cpu_used_mhz"),
 					resource.TestCheckResourceAttrSet("data.vcfa_supervisor_zone.test", "memory_capacity_mib"),
@@ -131,32 +132,30 @@ func TestAccVcfaRegion(t *testing.T) {
 }
 
 const testAccVcfaRegionPrerequisites = `
-resource "vcfa_nsx_manager" "test" {
-  name                   = "{{.Testname}}"
-  description            = "terraform test"
-  username               = "{{.NsxManagerUsername}}"
-  password               = "{{.NsxManagerPassword}}"
-  url                    = "{{.NsxManagerUrl}}"
-  auto_trust_certificate = true
-}
-
-resource "vcfa_vcenter" "test" {
-  name                     = "{{.Testname}}"
-  url                      = "{{.VcenterUrl}}"
-  auto_trust_certificate   = true
-  refresh_vcenter_on_read  = true
-  refresh_policies_on_read = true
-  username                 = "{{.VcenterUsername}}"
-  password                 = "{{.VcenterPassword}}"
-  is_enabled               = true
-  nsx_manager_id           = vcfa_nsx_manager.test.id
-}
+# resource "vcfa_nsx_manager" "test" {
+#   name                   = "{{.Testname}}"
+#   description            = "terraform test"
+#   username               = "{{.NsxManagerUsername}}"
+#   password               = "{{.NsxManagerPassword}}"
+#   url                    = "{{.NsxManagerUrl}}"
+#   auto_trust_certificate = true
+# }
+#
+# resource "vcfa_vcenter" "test" {
+#   name                     = "{{.Testname}}"
+#   url                      = "{{.VcenterUrl}}"
+#   auto_trust_certificate   = true
+#   refresh_vcenter_on_read  = true
+#   refresh_policies_on_read = true
+#   username                 = "{{.VcenterUsername}}"
+#   password                 = "{{.VcenterPassword}}"
+#   is_enabled               = true
+#   nsx_manager_id           = vcfa_nsx_manager.test.id
+# }
 
 data "vcfa_supervisor" "test" {
   name       = "{{.VcenterSupervisor}}"
-  vcenter_id = vcfa_vcenter.test.id
-
-  depends_on = [vcfa_vcenter.test]
+  vcenter_id = {{.VcenterRefId}}
 }
 
 data "vcfa_supervisor_zone" "test" {
@@ -169,7 +168,7 @@ const testAccVcfaRegionStep1 = testAccVcfaRegionPrerequisites + `
 resource "vcfa_region" "test" {
   name                 = "{{.RegionName}}"
   description          = "Terraform description"
-  nsx_manager_id       = vcfa_nsx_manager.test.id
+  nsx_manager_id       = {{.NsxManagerRefId}}
   supervisor_ids       = [data.vcfa_supervisor.test.id]
   storage_policy_names = ["{{.VcenterStorageProfile}}"]
 }
@@ -180,7 +179,7 @@ const testAccVcfaRegionStep2 = testAccVcfaRegionPrerequisites + `
 resource "vcfa_region" "test" {
   name                 = "{{.RegionName}}"
   description          = "Terraform description updated"
-  nsx_manager_id       = vcfa_nsx_manager.test.id
+  nsx_manager_id       = {{.NsxManagerRefId}}
   supervisor_ids       = [data.vcfa_supervisor.test.id]
   storage_policy_names = ["{{.VcenterStorageProfile}}"]
 }

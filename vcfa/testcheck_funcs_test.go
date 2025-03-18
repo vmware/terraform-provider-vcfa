@@ -125,10 +125,8 @@ func resourceFieldsEqualCustom(firstObject, secondObject string, excludeFields [
 				continue
 			}
 
-			if vcfaTestVerbose {
-				fmt.Printf("field %s %s (value %s) and %s (value %s))\n", fieldName, firstObject,
-					resource1.Primary.Attributes[fieldName], secondObject, resource2.Primary.Attributes[fieldName])
-			}
+			printfTrace("field %s %s (value %s) and %s (value %s))\n", fieldName, firstObject,
+				resource1.Primary.Attributes[fieldName], secondObject, resource2.Primary.Attributes[fieldName])
 			if !reflect.DeepEqual(resource1.Primary.Attributes[fieldName], resource2.Primary.Attributes[fieldName]) {
 				return fmt.Errorf("field %s differs in resources %s (value %s) and %s (value %s)",
 					fieldName, firstObject, resource1.Primary.Attributes[fieldName], secondObject, resource2.Primary.Attributes[fieldName])

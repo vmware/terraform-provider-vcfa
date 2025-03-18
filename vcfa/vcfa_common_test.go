@@ -18,6 +18,9 @@ func getVCenterHcl(t *testing.T, nsxManagerHclRef string) (string, string) {
 	tmClient := createTemporaryVCFAConnection(false)
 	vc, err := tmClient.GetVCenterByUrl(testConfig.Tm.VcenterUrl)
 	if err == nil {
+		if vcfaTestVerbose {
+			fmt.Printf("# Re-using existing vCenter Manager %s\n", testConfig.Tm.VcenterUrl)
+		}
 		return `
 data "vcfa_vcenter" "vc" {
   name = "` + vc.VSphereVCenter.Name + `"
@@ -54,6 +57,9 @@ func getNsxManagerHcl(t *testing.T) (string, string) {
 	tmClient := createTemporaryVCFAConnection(false)
 	nsxtManager, err := tmClient.GetNsxtManagerOpenApiByUrl(testConfig.Tm.NsxManagerUrl)
 	if err == nil {
+		if vcfaTestVerbose {
+			fmt.Printf("# Re-using existing NSX Manager %s\n", testConfig.Tm.NsxManagerUrl)
+		}
 		return `
 data "vcfa_nsx_manager" "nsx_manager" {
   name = "` + nsxtManager.NsxtManagerOpenApi.Name + `"

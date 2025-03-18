@@ -16,6 +16,7 @@ import (
 // These variables are needed by tests running under any tags
 var (
 	vcfaTestVerbose = os.Getenv("VCFA_TEST_VERBOSE") != ""
+	vcfaTestTrace   = os.Getenv("VCFA_TEST_TRACE") != ""
 	// Collection of defined tags in the current test run
 	testingTags = make(map[string]string)
 	// This library major version
