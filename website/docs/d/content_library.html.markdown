@@ -58,7 +58,7 @@ The following arguments are supported:
 
 * `name` - (Required) The name of the Content Library to read
 * `org_id` - (Required) The reference to the Organization that the Content Library belongs to. For Content Libraries of type `PROVIDER`,
-  a reference to the `System` org with [`vcfa_org` data source](/providers/vmware/vcfa/latest/docs/data-sources/org) must be provided.
+  a reference to the `System` org with [`vcfa_org` data source](/providers/vmware/vcfa/latest/docs/data-sources/org) must be provided
 
 ## Attribute reference
 
