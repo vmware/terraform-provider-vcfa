@@ -225,7 +225,7 @@ func resourceVcfaContentLibraryImport(_ context.Context, d *schema.ResourceData,
 	var org *govcd.TmOrg
 	var err error
 	if len(idSplit) == 1 {
-		// Nor Organization specified, meaning that is a PROVIDER Content Library
+		// No Organization specified, meaning that is a PROVIDER Content Library
 		cl, err = tmClient.GetContentLibraryByName(idSplit[0], nil)
 	} else {
 		org, err = tmClient.GetTmOrgByName(idSplit[0])

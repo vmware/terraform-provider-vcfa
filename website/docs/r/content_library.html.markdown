@@ -229,21 +229,46 @@ configuration. However, an experimental feature in Terraform 1.5+ allows also co
 See [Importing resources][importing-resources] for more information.
 
 An existing Content Library can be [imported][docs-import] into this resource via supplying its name.
-For example, using this structure, representing an existing Content Library that was **not** created using Terraform:
+For example, using this structure, representing an existing `TENANT` Content Library that was **not** created using Terraform:
 
 ```hcl
+data "vcfa_org" "org" {
+  name = "my-org"
+}
+
 resource "vcfa_content_library" "cl" {
-  name = "My Already Existing Library"
+  org_id = data.vcfa_org.org.id
+  name   = "My Already Existing Library"
 }
 ```
 
-You can import such Content Library into terraform state using this command
+You can import such Content Library into terraform state using this command:
+
+```
+terraform import vcfa_content_library.cl "my-org"."My Already Existing Library"
+```
+
+For an existing `PROVIDER` Content Library that was **not** created using Terraform:
+
+
+```hcl
+data "vcfa_org" "org" {
+  name = "System"
+}
+
+resource "vcfa_content_library" "cl" {
+  org_id = data.vcfa_org.org.id
+  name   = "My Already Existing Library"
+}
+```
+
+You can import such Content Library into terraform state using this command:
 
 ```
 terraform import vcfa_content_library.cl "My Already Existing Library"
 ```
 
-NOTE: the default separator (.) can be changed using Provider.import_separator or variable VCFA_IMPORT_SEPARATOR
+NOTE: the default separator (.) can be changed using Provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
 After that, you can expand the configuration file and either update or delete the Content Library as needed. Running `terraform plan`
 at this stage will show the difference between the minimal configuration file and the Content Library's stored properties.
