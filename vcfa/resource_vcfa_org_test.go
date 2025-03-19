@@ -121,7 +121,6 @@ data "vcfa_org_settings" "allow_ds" {
 
 // TestAccVcfaOrgClassicTenant tests a Tenant Manager Organization configured as "Classic Tenant"
 func TestAccVcfaOrgClassicTenant(t *testing.T) {
-	t.Skipf("requires feature flag")
 	preTestChecks(t)
 	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
