@@ -147,7 +147,7 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 				ResourceName:      "vcfa_content_library.cl",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateId:     params["Name"].(string),
+				ImportStateId:     fmt.Sprintf("System%s%s", ImportSeparator, params["Name"]),
 				ImportStateVerifyIgnore: []string{
 					"delete_recursive",
 					"delete_force",

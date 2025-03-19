@@ -218,15 +218,15 @@ func resourceVcfaContentLibraryImport(_ context.Context, d *schema.ResourceData,
 	tmClient := meta.(ClientContainer).tmClient
 
 	idSplit := strings.Split(d.Id(), ImportSeparator)
-	if len(idSplit) > 2 {
-		return nil, fmt.Errorf("invalid import identifier '%s', should be either <%s name>, or <%s name>%s<%s name>", labelVcfaContentLibrary, labelVcfaOrg, labelVcfaContentLibrary, d.Id(), ImportSeparator)
+	if len(idSplit) != 2 {
+		return nil, fmt.Errorf("invalid import identifier '%s', should be <%s name>%s<%s name>", labelVcfaOrg, labelVcfaContentLibrary, d.Id(), ImportSeparator)
 	}
 	var cl *govcd.ContentLibrary
 	var org *govcd.TmOrg
 	var err error
-	if len(idSplit) == 1 {
-		// No Organization specified, meaning that is a PROVIDER Content Library
-		cl, err = tmClient.GetContentLibraryByName(idSplit[0], nil)
+	if strings.EqualFold(idSplit[0], "system") {
+		// Provider Content Library
+		cl, err = tmClient.GetContentLibraryByName(idSplit[1], nil)
 	} else {
 		org, err = tmClient.GetTmOrgByName(idSplit[0])
 		if err != nil {

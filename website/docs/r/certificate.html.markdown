@@ -77,10 +77,13 @@ An existing Certificate from library can be [imported][docs-import] into this re
 via supplying the full dot separated path Certificate in library. `System` org should be used to import system
 certificates. An example is below:
 
-[docs-import]: https://www.terraform.io/docs/import/
-
 ```
 terraform import vcfa_certificate.imported my-org.my-certificate-alias
 ```
 
+NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+
 The above would import the Certificate named `my-certificate-alias` which is configured in organization named `my-org`.
+
+[docs-import]: https://www.terraform.io/docs/import
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
