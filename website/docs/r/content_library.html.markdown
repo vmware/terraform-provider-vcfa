@@ -161,7 +161,7 @@ The snippet below will create a Content Library of type `TENANT` logged in as a 
 configure the tenant user credentials in the provider configuration block, and read the target organization with a
 [`vcfa_org`][vcfa_org-ds] data source to use it as Organization reference in the `vcfa_content_library` resource.
 
-The [Storage Class][vcfa_storage_class-ds] needs to be available in the Region Quota that is assigned to the Organization.
+The [Storage Class][vcfa_storage_class-ds] needs to be available in the [Region Quota][vcfa_region_quota] that is assigned to the Organization.
 
 ~> To create subscribed libraries (with `subscription_config` block), check that the [`vcfa_org_settings`][vcfa_org_settings]
 of the target Organization allows it.
