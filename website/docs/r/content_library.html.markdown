@@ -17,7 +17,7 @@ Provides a resource to manage Content Libraries in VMware Cloud Foundation Autom
 ## Example Usage for a Provider Content Library
 
 The snippet below will create a Content Library of type `PROVIDER`. To achieve that, one needs to
-read the `System` (Provider) organization with the [`vcfa_org` data source][vcfa_org-ds] to
+read the `System` (Provider) organization with the [`vcfa_org`][vcfa_org-ds] data source to
 use it as Organization reference in the `vcfa_content_library` resource.
 
 Note that the snippet assumes that the [Region][vcfa_region-ds] is already created.
