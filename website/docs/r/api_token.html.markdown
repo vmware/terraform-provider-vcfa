@@ -3,24 +3,37 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_api_token"
 sidebar_current: "docs-vcfa-resource-api-token"
 description: |-
-  Provides a resource to manage API Tokens. API Tokens are an easy way to authenticate to VCFA. 
+  Provides a resource to manage API Tokens. API Tokens are an easy way to authenticate to VMware Cloud Foundation Automation. 
   They are user-based and have the same role as the user.
 ---
 
 # vcfa\_api\_token 
 
-Provides a resource to manage API Tokens. API Tokens are an easy way to authenticate to VCFA. 
+Provides a resource to manage API Tokens. API Tokens are an easy way to authenticate to VMware Cloud Foundation Automation. 
 They are user-based and have the same role as the user.
+
+-> This resource can be used by both **System Administrators** and **Tenant users**
 
 ## Example usage
 
+The snippet below generates an API Token for the `user1` user configured in the provider block:
+
 ```hcl
+provider "vcfa" {
+  user     = "user1"
+  password = var.my_password
+  org      = "tenant1"
+  # Omitted arguments...
+}
+
 resource "vcfa_api_token" "example_token" {
   name             = "example_token"
   file_name        = "example_token.json"
   allow_token_file = true
 }
 ```
+
+Configuring a System Administrator in the provider block will create the API Tokens in the System (Provider) Organization.
 
 ## Argument reference
 
@@ -38,7 +51,7 @@ JSON contents:
  }
 ```
 * `allow_token_file` - (Required) An additional check that the user is aware that the file contains
-  SENSITIVE information. Must be set to `true` or it will return a validation error.
+  **SENSITIVE** information. Must be set to `true` or it will return a validation error.
 
 ## Importing
 
@@ -54,4 +67,5 @@ terraform import vcfa_api_token.example_token example_token
 ```
 
 [docs-import]: https://www.terraform.io/docs/import/
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
 [provider-api-token-file]: /providers/vmware/vcfa/latest/docs#api_token_file

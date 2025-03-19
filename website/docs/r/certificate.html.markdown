@@ -13,9 +13,11 @@ Provides a VMware Cloud Foundation Automation Certificate resource. This can be 
 servers that VCF Automation has trusted communication with. These certificates are used for verification of the
 credentials of other servers.
 
-~> Only `System Administrator` can create this resource.
+-> This resource can be used by both **System Administrators** and **Tenant users**
 
 ## Example Usage
+
+Creating a Certificate in a tenant:
 
 ```hcl
 data "vcfa_org" "org1" {
