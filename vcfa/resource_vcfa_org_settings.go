@@ -44,11 +44,17 @@ func resourceVcfaOrgSettings() *schema.Resource {
 }
 
 func resourceVcfaOrgSettingsCreateUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	// Lock the Organization to serialize create/update operation and prevent side effects like bricked Organizations when
+	// vcfa_org_ldap is updated at the same time
+	orgId := d.Get("org_id").(string)
+	vcfa.kvLock(orgId)
+	defer vcfa.kvUnlock(orgId)
+
 	tmClient := meta.(ClientContainer).tmClient
 
-	org, err := tmClient.GetTmOrgById(d.Get("org_id").(string))
+	org, err := tmClient.GetTmOrgById(orgId)
 	if err != nil {
-		return diag.Errorf("error retrieving %s: %s", labelVcfaOrg, err)
+		return diag.Errorf("error retrieving %s '%s' : %s", labelVcfaOrg, orgId, err)
 	}
 
 	d.SetId(org.TmOrg.ID)
@@ -95,10 +101,16 @@ func resourceVcfaOrgSettingsRead(ctx context.Context, d *schema.ResourceData, me
 }
 
 func resourceVcfaOrgSettingsDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	// Lock the Organization to serialize delete operation and prevent side effects like bricked Organizations when
+	// vcfa_org_ldap is deleted at the same time
+	orgId := d.Get("org_id").(string)
+	vcfa.kvLock(orgId)
+	defer vcfa.kvUnlock(orgId)
+
 	tmClient := meta.(ClientContainer).tmClient
-	org, err := tmClient.GetTmOrgById(d.Get("org_id").(string))
+	org, err := tmClient.GetTmOrgById(orgId)
 	if err != nil {
-		return diag.Errorf("error retrieving %s: %s", labelVcfaOrg, err)
+		return diag.Errorf("error retrieving %s '%s': %s", labelVcfaOrg, orgId, err)
 	}
 
 	// reset settings
