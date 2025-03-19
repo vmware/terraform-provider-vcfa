@@ -59,11 +59,11 @@ func resourceVcfaContentLibrary() *schema.Resource {
 				Default:  true,
 				ForceNew: true, // Cannot be updated
 				Description: fmt.Sprintf("For Tenant Content Libraries this field represents whether this %s should be "+
-					"automatically attached to all current and future namespaces in the tenant organization. If no value is "+
+					"automatically attached to all current and future namespaces in the %s. If no value is "+
 					"supplied during creation then this field will default to true. If a value of false is supplied, "+
 					"then this Tenant %s will only be attached to namespaces that explicitly request it. "+
 					"For Provider Content Libraries this field is not needed for creation and will always be returned as true. "+
-					"This field cannot be updated after %s creation", labelVcfaContentLibrary, labelVcfaContentLibrary, labelVcfaContentLibrary),
+					"This field cannot be updated after creation", labelVcfaContentLibrary, labelVcfaOrg, labelVcfaContentLibrary),
 			},
 			"creation_date": {
 				Type:        schema.TypeString,
