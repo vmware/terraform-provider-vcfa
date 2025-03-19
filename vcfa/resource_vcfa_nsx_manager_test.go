@@ -9,16 +9,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-// var doOnceTestAccVcfaNsxManager sync.Once
-
-// func TestAccVcfaNsxManager(t *testing.T) {
-// 	// testAccVcfaNsxManager(t)
-// 	// doOnceTestAccVcfaNsxManager.Do(func() {
-// 	// t.Run("TestAccVcfaNsxManager", testAccVcfaNsxManager)
-// 	testAccVcfaNsxManager(t)
-// 	// })
-// }
-
 func TestAccVcfaNsxManager(t *testing.T) {
 	testName := "TestAccVcfaNsxManager"
 	preTestChecks(t)
