@@ -75,7 +75,7 @@ func resourceVcfaCertificateCreate(ctx context.Context, d *schema.ResourceData, 
 
 	certificateConfig := getCertificateConfigurationType(d)
 	var createdCertificate *govcd.Certificate
-	if isSysOrg(org) {
+	if isSystem(org) {
 		createdCertificate, err = tmClient.Client.AddCertificateToLibrary(certificateConfig)
 	} else {
 		// TODO: TM: Implement these methods in TmOrg
@@ -92,10 +92,6 @@ func resourceVcfaCertificateCreate(ctx context.Context, d *schema.ResourceData, 
 
 	d.SetId(createdCertificate.CertificateLibrary.Id)
 	return resourceVcfaCertificateRead(ctx, d, meta)
-}
-
-func isSysOrg(adminOrg *govcd.TmOrg) bool {
-	return strings.EqualFold(adminOrg.TmOrg.Name, "system")
 }
 
 // resourceVcfaCertificateUpdate covers Update functionality for resource
@@ -156,7 +152,7 @@ func getCertificateType(tmClient *VCDClient, orgId, certLibId string) (*govcd.Ce
 		return nil, err
 	}
 	var certificate *govcd.Certificate
-	if isSysOrg(org) {
+	if isSystem(org) {
 		certificate, err = tmClient.Client.GetCertificateFromLibraryById(certLibId)
 	} else {
 		// TODO: TM: Implement these methods in TmOrg
@@ -200,7 +196,7 @@ func resourceVcfaCertificateImport(_ context.Context, d *schema.ResourceData, me
 	}
 
 	var certificate *govcd.Certificate
-	if isSysOrg(org) {
+	if isSystem(org) {
 		certificate, err = tmClient.Client.GetCertificateFromLibraryByName(certificateName)
 	} else {
 		// TODO: TM: Implement these methods in TmOrg

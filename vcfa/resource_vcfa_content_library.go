@@ -31,8 +31,7 @@ func resourceVcfaContentLibrary() *schema.Resource {
 			},
 			"org_id": {
 				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true, // If not configured, Organization ID is retrieved and saved
+				Required:    true,
 				ForceNew:    true, // Can't be changed after created
 				Description: fmt.Sprintf("The reference to the %s that the %s belongs to", labelVcfaOrg, labelVcfaContentLibrary),
 			},
