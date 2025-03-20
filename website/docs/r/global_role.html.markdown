@@ -8,7 +8,8 @@ description: |-
 
 # vcfa\_global\_role
 
-Provides a VMware Cloud Foundation Automation Global Role. This can be used to create, modify, and delete Global Roles.
+Provides a resource to manage Global Roles in VMware Cloud Foundation Automation, that define roles that are published to one
+or more [Organizations][vcfa_org].
 
 ## Example Usage
 
@@ -42,7 +43,7 @@ resource "vcfa_global_role" "new-global-role" {
 
 The following arguments are supported:
 
-* `name` - (Required) The name of the Global Role.
+* `name` - (Required) The name of the Global Role
 * `description` - (Required) A description of the Global Role
 * `rights` - (Optional) List of rights assigned to this Global Role
 * `publish_to_all_orgs` - (Required) When true, publishes the Global Role to all Organizations
@@ -69,15 +70,17 @@ resource "vcfa_global_role" "my-global-role" {
 }
 ```
 
-You can import such Global Role into terraform state using this command
+You can import such Global Role into terraform state using this command:
 
 ```
 terraform import vcfa_global_role.my-global-role "My Existing Role"
 ```
 
-NOTE: the default separator (.) can be changed using Provider.import_separator or variable VCFA_IMPORT_SEPARATOR
-
-[docs-import]:https://www.terraform.io/docs/import/
+NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
 After that, you can expand the configuration file and either update or delete the Global Role as needed. Running `terraform plan`
 at this stage will show the difference between the minimal configuration file and the Global Role's stored properties.
+
+[docs-import]: https://www.terraform.io/docs/import
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
+[vcfa_org]: /providers/vmware/vcfa/latest/docs/resources/org
