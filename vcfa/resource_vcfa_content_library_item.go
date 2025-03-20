@@ -69,7 +69,7 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 			"image_identifier": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: fmt.Sprintf("Virtual Machine Identifier (VMI) of the %s. This is a read only field", labelVcfaContentLibraryItem),
+				Description: fmt.Sprintf("Virtual Machine Identifier (VMI) of the %s. This is a read-only field", labelVcfaContentLibraryItem),
 			},
 			"is_published": {
 				Type:        schema.TypeBool,
@@ -215,28 +215,29 @@ func resourceVcfaContentLibraryItemDelete(ctx context.Context, d *schema.Resourc
 func resourceVcfaContentLibraryItemImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	tmClient := meta.(ClientContainer).tmClient
 
-	id := strings.Split(d.Id(), ImportSeparator)
+	idSplit := strings.Split(d.Id(), ImportSeparator)
+	if len(idSplit) != 3 {
+		return nil, fmt.Errorf("ID syntax should be <%s name>%s<%s name>%s<%s name>", labelVcfaOrg, ImportSeparator, labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibraryItem)
+	}
+
 	var tenantContext *govcd.TenantContext
 	clName, cliName := "", ""
-	switch len(id) {
-	case 3:
+	if strings.EqualFold(idSplit[0], "system") {
+		// Provider Content Library Item: No org needed
+		clName = idSplit[0]
+		cliName = idSplit[1]
+	} else {
 		// Tenant Content Library Item: Organization + Content Library + Content Library Item
-		org, err := tmClient.GetTmOrgByName(id[0])
+		org, err := tmClient.GetTmOrgByName(idSplit[0])
 		if err != nil {
-			return nil, fmt.Errorf("error getting %s with name '%s' for import: %s", labelVcfaOrg, id[0], err)
+			return nil, fmt.Errorf("error getting %s with name '%s' for import: %s", labelVcfaOrg, idSplit[0], err)
 		}
 		tenantContext = &govcd.TenantContext{
 			OrgId:   org.TmOrg.ID,
 			OrgName: org.TmOrg.Name,
 		}
-		clName = id[1]
-		cliName = id[2]
-	case 2:
-		// Provider Content Library Item: Organization is not needed
-		clName = id[0]
-		cliName = id[1]
-	default:
-		return nil, fmt.Errorf("ID syntax should be <%s name>%s<%s name>%s<%s name> or <%s name>%s<%s name>", labelVcfaOrg, ImportSeparator, labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibraryItem, labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibraryItem)
+		clName = idSplit[1]
+		cliName = idSplit[2]
 	}
 
 	cl, err := tmClient.GetContentLibraryByName(clName, tenantContext)
