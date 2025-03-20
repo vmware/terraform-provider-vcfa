@@ -73,10 +73,10 @@ type TestConfig struct {
 		ApiTokenFile            string `json:"api_token_file,omitempty"`
 		ServiceAccountTokenFile string `json:"service_account_token_file,omitempty"`
 
-		// Tenant Manager version and API version, they allow tests to
+		// VCFA version and API version, they allow tests to
 		// check for compatibility without using an extra connection
-		TmVersion    string `json:"tmVersion,omitempty"`
-		TmApiVersion string `json:"tmApiVersion,omitempty"`
+		VcfaVersion string `json:"version,omitempty"`
+		ApiVersion  string `json:"apiVersion,omitempty"`
 
 		Url                      string `json:"url"`
 		SysOrg                   string `json:"sysOrg"`
@@ -238,8 +238,8 @@ const (
 # comment {{.Comment}}
 # date {{.Timestamp}}
 # file {{.CallerFileName}}
-# VCFA version {{.TmVersion}}
-# API version {{.TmApiVersion}}
+# VCFA version {{.VcfaVersion}}
+# API version {{.ApiVersion}}
 
 provider "vcfa" {
   user                 = "{{.PrUser}}"
@@ -403,8 +403,8 @@ func templateFill(tmpl string, inputData StringMap) string {
 		data["CallerFileName"] = callerFileName
 	}
 	data["Timestamp"] = time.Now().Format("2006-01-02 15:04")
-	data["TmVersion"] = testConfig.Provider.TmVersion
-	data["TmApiVersion"] = testConfig.Provider.TmApiVersion
+	data["VcfaVersion"] = testConfig.Provider.VcfaVersion
+	data["ApiVersion"] = testConfig.Provider.ApiVersion
 
 	// Creates a template. The template gets the same name of the calling function, to generate a better
 	// error message in case of failure
@@ -743,7 +743,7 @@ func TestMain(m *testing.M) {
 	exitCode := m.Run()
 
 	if numberOfPartitions != 0 {
-		entTestFileName := getTestFileName("end", testConfig.Provider.TmVersion)
+		entTestFileName := getTestFileName("end", testConfig.Provider.VcfaVersion)
 		err := os.WriteFile(entTestFileName, []byte(fmt.Sprintf("%d", exitCode)), 0600)
 		if err != nil {
 			fmt.Printf("error writing to file '%s': %s\n", entTestFileName, err)
@@ -847,7 +847,7 @@ func timeStamp() string {
 //     contains a pattern that matches the test name.
 //  6. If the flag -vcfa-re-run-failed is true, it will only run the tests that failed in the previous run
 func preTestChecks(t *testing.T) {
-	handlePartitioning(testConfig.Provider.TmVersion, testConfig.Provider.Url, t)
+	handlePartitioning(testConfig.Provider.VcfaVersion, testConfig.Provider.Url, t)
 	// if the test runs without -vcfa-pre-post-checks, all post-checks will be skipped
 	if !vcfaPrePostChecks {
 		return

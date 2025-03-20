@@ -32,7 +32,7 @@ func Resources(nameRegexp string, includeDeprecated bool) (map[string]*schema.Re
 }
 
 var globalDataSourceMap = map[string]*schema.Resource{
-	"vcfa_tm_version":                      datasourceVcfaTmVersion(),                   // 1.0
+	"vcfa_version":                         datasourceVcfaTmVersion(),                   // 1.0
 	"vcfa_vcenter":                         datasourceVcfaVcenter(),                     // 1.0
 	"vcfa_org":                             datasourceVcfaOrg(),                         // 1.0
 	"vcfa_nsx_manager":                     datasourceVcfaNsxManager(),                  // 1.0

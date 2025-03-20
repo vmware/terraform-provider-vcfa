@@ -47,7 +47,7 @@ provider "vcfa" {
 }
 
 # Fetch the Tenant Manager version
-data "vcfa_tm_version" "version" {
+data "vcfa_version" "version" {
   condition         = ">= 10.7.0"
   fail_if_not_match = false
 }
@@ -67,7 +67,7 @@ provider "vcfa" {
 }
 
 # Fetch the Tenant Manager version
-data "vcfa_tm_version" "version" {
+data "vcfa_version" "version" {
   condition         = ">= 10.7.0"
   fail_if_not_match = false
 }
@@ -87,7 +87,7 @@ provider "vcfa" {
 }
 
 # Fetch the Tenant Manager version
-data "vcfa_tm_version" "version" {
+data "vcfa_version" "version" {
   condition         = ">= 10.7.0"
   fail_if_not_match = false
 }

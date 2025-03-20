@@ -42,8 +42,8 @@ func testSpecificDataSourceNotFound(dataSourceName string, tmClient *VCDClient) 
 
 		skipAlwaysSlice := []skipAlways{
 			{
-				dataSourceName: "vcfa_tm_version",
-				reason:         "Data source vcfa_tm_version always returns data, it is not possible to get ENF",
+				dataSourceName: "vcfa_version",
+				reason:         "Data source vcfa_version always returns data, it is not possible to get ENF",
 			},
 			{
 				dataSourceName: "vcfa_kubeconfig",
