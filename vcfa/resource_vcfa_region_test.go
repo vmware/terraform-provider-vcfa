@@ -132,27 +132,6 @@ func TestAccVcfaRegion(t *testing.T) {
 }
 
 const testAccVcfaRegionPrerequisites = `
-# resource "vcfa_nsx_manager" "test" {
-#   name                   = "{{.Testname}}"
-#   description            = "terraform test"
-#   username               = "{{.NsxManagerUsername}}"
-#   password               = "{{.NsxManagerPassword}}"
-#   url                    = "{{.NsxManagerUrl}}"
-#   auto_trust_certificate = true
-# }
-#
-# resource "vcfa_vcenter" "test" {
-#   name                     = "{{.Testname}}"
-#   url                      = "{{.VcenterUrl}}"
-#   auto_trust_certificate   = true
-#   refresh_vcenter_on_read  = true
-#   refresh_policies_on_read = true
-#   username                 = "{{.VcenterUsername}}"
-#   password                 = "{{.VcenterPassword}}"
-#   is_enabled               = true
-#   nsx_manager_id           = vcfa_nsx_manager.test.id
-# }
-
 data "vcfa_supervisor" "test" {
   name       = "{{.VcenterSupervisor}}"
   vcenter_id = {{.VcenterRefId}}
