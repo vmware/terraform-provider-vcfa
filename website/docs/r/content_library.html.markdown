@@ -3,13 +3,13 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_content_library"
 sidebar_current: "docs-vcfa-resource-content-library"
 description: |-
-  Provides a resource to manage Content Libraries in VMware Cloud Foundation Automation. It can be used to upload
+  Provides a resource to manage Content Libraries in VMware Cloud Foundation Automation. It can be used to host
   Content Library Items such as ISO files, OVAs and OVFs.
 ---
 
 # vcfa\_content\_library
 
-Provides a resource to manage Content Libraries in VMware Cloud Foundation Automation. It can be used to upload
+Provides a resource to manage Content Libraries in VMware Cloud Foundation Automation. It can be used to host
 [Content Library Items][vcfa_content_library_item] such as ISO files, OVAs and OVFs.
 
 -> This resource can be used by both **System Administrators** and **Tenant users**
