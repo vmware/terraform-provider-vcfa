@@ -224,8 +224,8 @@ func resourceVcfaContentLibraryItemImport(_ context.Context, d *schema.ResourceD
 	clName, cliName := "", ""
 	if strings.EqualFold(idSplit[0], "system") {
 		// Provider Content Library Item: No org needed
-		clName = idSplit[0]
-		cliName = idSplit[1]
+		clName = idSplit[1]
+		cliName = idSplit[2]
 	} else {
 		// Tenant Content Library Item: Organization + Content Library + Content Library Item
 		org, err := tmClient.GetTmOrgByName(idSplit[0])
