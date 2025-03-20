@@ -35,7 +35,7 @@ The following arguments are supported:
 * `name` - (Required) The name of Edge Cluster
 * `region_id` - (Required) The ID of parent Region. Can be looked up using
   [`vcfa_region`](/providers/vmware/vcfa/latest/docs/data-sources/region) data source
-* `sync_before_read` - (Optional) Set to true to trigger a synchronization with the backend before attempting to search for Edge
+* `sync_before_read` - (Optional) Set to `true` to trigger a synchronization with the backend before attempting to search for Edge
   Cluster. Default `false`
 
 ## Attribute Reference

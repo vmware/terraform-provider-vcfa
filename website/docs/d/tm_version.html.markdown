@@ -73,6 +73,6 @@ The following arguments are supported:
 
 ## Attribute Reference
 
-- `matches_condition` - It is true if the VCFA Tenant Manager version matches the constraint set in `condition`
+- `matches_condition` - It is `true` if the VCFA Tenant Manager version matches the constraint set in `condition`
 - `tm_version` - The VCFA Tenant Manager version
 - `tm_api_version` - The maximum supported VCFA Tenant Manager API version
