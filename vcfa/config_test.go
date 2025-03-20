@@ -760,7 +760,7 @@ func TestMain(m *testing.M) {
 				fmt.Printf("error authenticating provider: %s\n", err)
 				exitCode = 1
 			}
-			err := removeLeftovers(tmClient, !silentLeftoversRemoval)
+			err := removeLeftovers(tmClient, !silentLeftoversRemoval, true)
 			if err != nil {
 				fmt.Printf("error during leftover removal: %s\n", err)
 				exitCode = 1
@@ -797,7 +797,7 @@ func TestMain(m *testing.M) {
 			fmt.Printf("error authenticating provider: %s\n", err)
 			exitCode = 1
 		}
-		err := removeLeftovers(tmClient, !silentLeftoversRemoval)
+		err := removeLeftovers(tmClient, !silentLeftoversRemoval, true)
 		if err != nil {
 			fmt.Printf("error during leftover removal: %s\n", err)
 			exitCode = 1
@@ -1048,7 +1048,7 @@ type priorityTest struct {
 	Test func(*testing.T)
 }
 
-func testAccPriority(t *testing.T) {
+func runPriorityTests(t *testing.T) {
 	_, executed := priorityTests.LoadOrStore("executed", true)
 	if !executed {
 		tests := []priorityTest{
@@ -1064,7 +1064,7 @@ func testAccPriority(t *testing.T) {
 		}
 
 		// setup shared components for other tests
-		printfVerbose("# Will setup shared vCenter and NSX Manager\n")
+		fmt.Println("# Will setup shared vCenter and NSX Manager")
 		cleanup, err := setupVcAndNsx()
 		if err != nil {
 			fmt.Printf("error setting up shared VC and NSX: %s", err)
@@ -1161,7 +1161,7 @@ func preTestChecks(t *testing.T) {
 	// precreated for sharing between other tests:
 	// * vCenter
 	// * NSX Manager
-	testAccPriority(t)
+	runPriorityTests(t)
 
 	handlePartitioning(testConfig.Provider.TmVersion, testConfig.Provider.Url, t)
 	// if the test runs without -vcfa-pre-post-checks, all post-checks will be skipped
@@ -1233,7 +1233,7 @@ func postTestChecks(t *testing.T) {
 			if err != nil {
 				t.Logf("error authenticating provider: %s\n", err)
 			}
-			err := removeLeftovers(tmClient, !silentLeftoversRemoval)
+			err := removeLeftovers(tmClient, !silentLeftoversRemoval, false)
 			if err != nil {
 				t.Logf("error during leftover removal: %s\n", err)
 			}

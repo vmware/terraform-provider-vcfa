@@ -29,9 +29,6 @@ var doNotDelete = entityList{
 	{Type: "vcfa_org", Name: "tenant1", Comment: "tenant loaded with provisioning"},
 	{Type: "vcfa_org", Name: "system-classic-tenant", Comment: "tenant loaded with provisioning"},
 	{Type: "vcfa_org", Name: "tenant1classic", Comment: "classic tenant loaded with provisioning"},
-
-	{Type: "vcfa_nsx_manager", Name: "test-tf-shared-nsx", Comment: "classic tenant loaded with provisioning"},
-	{Type: "vcfa_vcenter", Name: "test-tf-shared-vc", Comment: "classic tenant loaded with provisioning"},
 }
 
 // alsoDelete contains a list of entities that should be removed , in addition to the ones
@@ -57,7 +54,7 @@ var alwaysShow = []string{
 	"vcfa_nsx_manager",
 }
 
-func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
+func removeLeftovers(tmClient *govcd.VCDClient, verbose, isFinalCleanup bool) error {
 	if verbose {
 		fmt.Printf("Start leftovers removal\n")
 	}
@@ -262,7 +259,7 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 	// --------------------------------------------------------------
 	// NSX Managers
 	// --------------------------------------------------------------
-	if tmClient.Client.IsSysAdmin {
+	if tmClient.Client.IsSysAdmin && isFinalCleanup { // shared NSX Manager must be cleaned up in final stage
 		allNsxManagers, err := tmClient.GetAllNsxtManagersOpenApi(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving provider NSX Managers: %s", err)
@@ -282,7 +279,7 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 	// --------------------------------------------------------------
 	// vCenters
 	// --------------------------------------------------------------
-	if tmClient.Client.IsSysAdmin {
+	if tmClient.Client.IsSysAdmin && isFinalCleanup { // shared NSX Manager must be cleaned up in final stage
 		allVcs, err := tmClient.GetAllVCenters(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving provider vCenters: %s", err)
