@@ -86,6 +86,9 @@ the file path.
 To disable HTTP **request** logging, one can set the environment variable `GOVCD_LOG_SKIP_HTTP_REQ=1`.
 To disable HTTP **response** logging, one can set the environment variable `GOVCD_LOG_SKIP_HTTP_RESP=1`.
 
+Note that the logs of Terraform itself can also be customised, please take a look [here](https://developer.hashicorp.com/terraform/internals/debugging)
+if you need to troubleshoot unexpected behaviors from Terraform.
+
 ## Common errors
 
 ### Login does not work
