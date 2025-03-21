@@ -9,7 +9,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
+func init() {
+	registeredPriorityTests = append(registeredPriorityTests,
+		priorityTest{Name: "TestAccVcfaVcenter", Test: TestAccVcfaVcenter},
+		priorityTest{Name: "TestAccVcfaVcenterInvalid", Test: TestAccVcfaVcenterInvalid},
+	)
+}
+
 func TestAccVcfaVcenter(t *testing.T) {
+	testName := "TestAccVcfaVcenter" // Triggering the test at priority will create incorrect t.Name() value
 	preTestChecks(t)
 	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
@@ -27,20 +35,21 @@ func TestAccVcfaVcenter(t *testing.T) {
 		"NsxPassword":     testConfig.Tm.NsxManagerPassword,
 		"NsxUrl":          testConfig.Tm.NsxManagerUrl,
 
-		"Testname": t.Name(),
+		"Testname": testName,
 
 		"Tags": "tm",
 	}
 	testParamsNotEmpty(t, params)
 
+	params["FuncName"] = testName
 	configText1 := templateFill(testAccVcfaVcenterStep1, params)
-	params["FuncName"] = t.Name() + "-step2"
+	params["FuncName"] = testName + "-step2"
 	configText2 := templateFill(testAccVcfaVcenterStep2, params)
 
-	params["FuncName"] = t.Name() + "-step3"
+	params["FuncName"] = testName + "-step3"
 	configText3 := templateFill(testAccVcfaVcenterStep3, params)
 
-	params["FuncName"] = t.Name() + "-step4"
+	params["FuncName"] = testName + "-step4"
 	configText4 := templateFill(testAccVcfaVcenterStep4DS, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
@@ -59,7 +68,7 @@ func TestAccVcfaVcenter(t *testing.T) {
 				Config: configText1,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
-					resource.TestCheckResourceAttr("vcfa_vcenter.test", "name", t.Name()),
+					resource.TestCheckResourceAttr("vcfa_vcenter.test", "name", testName),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "description", ""),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "is_enabled", "true"),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "has_proxy", "false"),
@@ -75,7 +84,7 @@ func TestAccVcfaVcenter(t *testing.T) {
 				Config: configText2,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
-					resource.TestCheckResourceAttr("vcfa_vcenter.test", "name", t.Name()+"-rename"),
+					resource.TestCheckResourceAttr("vcfa_vcenter.test", "name", testName+"-rename"),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "is_enabled", "false"),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "description", "description from Terraform"),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "has_proxy", "false"),
@@ -92,7 +101,7 @@ func TestAccVcfaVcenter(t *testing.T) {
 				Config: configText3,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
-					resource.TestCheckResourceAttr("vcfa_vcenter.test", "name", t.Name()),
+					resource.TestCheckResourceAttr("vcfa_vcenter.test", "name", testName),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "description", ""),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "is_enabled", "true"),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "has_proxy", "false"),
@@ -122,6 +131,7 @@ func TestAccVcfaVcenter(t *testing.T) {
 }
 
 const testAccVcfaVcenterPrerequisites = `
+# skip-binary-test: vCenter server configuration is tested in next tests
 resource "vcfa_nsx_manager" "test" {
   name                   = "{{.Testname}}"
   description            = "terraform test"
@@ -178,6 +188,7 @@ data "vcfa_vcenter" "test" {
 `
 
 func TestAccVcfaVcenterInvalid(t *testing.T) {
+	testName := "TestAccVcfaVcenterInvalid" // Triggering the test at priority will create incorrect t.Name() value
 	preTestChecks(t)
 	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
@@ -196,15 +207,15 @@ func TestAccVcfaVcenterInvalid(t *testing.T) {
 		"NsxUsername":     testConfig.Tm.NsxManagerUsername,
 		"NsxPassword":     testConfig.Tm.NsxManagerPassword,
 		"NsxUrl":          testConfig.Tm.NsxManagerUrl,
-
-		"Testname": t.Name(),
+		"Testname":        testName,
 
 		"Tags": "tm",
 	}
 	testParamsNotEmpty(t, params)
 
+	params["FuncName"] = testName
 	configText1 := templateFill(testAccVcfaVcenterStep1, params)
-	params["FuncName"] = t.Name() + "-step2"
+	params["FuncName"] = testName + "-step2"
 	params["VcenterPassword"] = testConfig.Tm.VcenterPassword
 	configText2 := templateFill(testAccVcfaVcenterStep1, params)
 
@@ -225,7 +236,7 @@ func TestAccVcfaVcenterInvalid(t *testing.T) {
 				Config: configText2,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
-					resource.TestCheckResourceAttr("vcfa_vcenter.test", "name", t.Name()),
+					resource.TestCheckResourceAttr("vcfa_vcenter.test", "name", testName),
 					resource.TestCheckResourceAttr("vcfa_vcenter.test", "is_enabled", "true"),
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "cluster_health_status"),
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "is_connected"),

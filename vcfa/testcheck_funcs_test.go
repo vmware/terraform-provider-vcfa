@@ -33,9 +33,7 @@ func (c *testCachedFieldValue) cacheTestResourceFieldValue(resource, field strin
 		}
 		// Store the value in cache
 		c.fieldValue = value
-		if vcfaTestVerbose {
-			fmt.Printf("# stored field '%s' with value '%s'\n", field, c.fieldValue)
-		}
+		printfTrace("# stored field '%s' with value '%s'\n", field, c.fieldValue)
 		return nil
 	}
 }
@@ -56,9 +54,7 @@ func (c *testCachedFieldValue) testCheckCachedResourceFieldValue(resource, field
 			return fmt.Errorf("field %s in resource %s does not exist", field, resource)
 		}
 
-		if vcfaTestVerbose {
-			fmt.Printf("# Comparing field '%s' '%s==%s' in resource '%s'\n", field, value, c.fieldValue, resource)
-		}
+		printfTrace("# Comparing field '%s' '%s==%s' in resource '%s'\n", field, value, c.fieldValue, resource)
 
 		if value != c.fieldValue {
 			return fmt.Errorf("got '%s - %s' field value %s, expected: %s",
@@ -125,10 +121,8 @@ func resourceFieldsEqualCustom(firstObject, secondObject string, excludeFields [
 				continue
 			}
 
-			if vcfaTestVerbose {
-				fmt.Printf("field %s %s (value %s) and %s (value %s))\n", fieldName, firstObject,
-					resource1.Primary.Attributes[fieldName], secondObject, resource2.Primary.Attributes[fieldName])
-			}
+			printfTrace("field %s %s (value %s) and %s (value %s))\n", fieldName, firstObject,
+				resource1.Primary.Attributes[fieldName], secondObject, resource2.Primary.Attributes[fieldName])
 			if !reflect.DeepEqual(resource1.Primary.Attributes[fieldName], resource2.Primary.Attributes[fieldName]) {
 				return fmt.Errorf("field %s differs in resources %s (value %s) and %s (value %s)",
 					fieldName, firstObject, resource1.Primary.Attributes[fieldName], secondObject, resource2.Primary.Attributes[fieldName])
