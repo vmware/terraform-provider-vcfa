@@ -46,9 +46,9 @@ provider "vcfa" {
   logging_file         = "vcfa.log"
 }
 
-# Fetch the Tenant Manager version
+# Fetch the VCFA version
 data "vcfa_version" "version" {
-  condition         = ">= 10.7.0"
+  condition         = ">= 9.0.0"
   fail_if_not_match = false
 }
 ```
@@ -66,9 +66,9 @@ provider "vcfa" {
   logging_file         = "vcfa.log"
 }
 
-# Fetch the Tenant Manager version
+# Fetch the VCFA version
 data "vcfa_version" "version" {
-  condition         = ">= 10.7.0"
+  condition         = ">= 9.0.0"
   fail_if_not_match = false
 }
 ```
@@ -86,9 +86,9 @@ provider "vcfa" {
   logging_file         = "vcfa.log"
 }
 
-# Fetch the Tenant Manager version
+# Fetch the VCFA version
 data "vcfa_version" "version" {
-  condition         = ">= 10.7.0"
+  condition         = ">= 9.0.0"
   fail_if_not_match = false
 }
 ```
