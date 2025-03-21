@@ -868,7 +868,7 @@ func getOrCreateNsxtManager(tmClient *govcd.VCDClient) (*govcd.NsxtManagerOpenAp
 	}
 
 	if vcfaTestVerbose {
-		fmt.Printf("# Will create NSX-T Manager %s\n", testConfig.Tm.NsxManagerUrl)
+		fmt.Printf("# Creating NSX-T Manager %s\n", testConfig.Tm.NsxManagerUrl)
 	}
 	nsxtCfg := &types.NsxtManagerOpenApi{
 		Name:     "test-tf-shared-nsx",
@@ -945,7 +945,7 @@ func getOrCreateVCenter(tmClient *govcd.VCDClient) (*govcd.VCenter, func() error
 	if !testConfig.Tm.CreateVcenter {
 		return nil, nil, fmt.Errorf("vCenter creation disabled")
 	}
-	printfVerbose("# Will create vCenter %s\n", testConfig.Tm.VcenterUrl)
+	printfVerbose("# Creating vCenter %s\n", testConfig.Tm.VcenterUrl)
 
 	vcCfg := &types.VSphereVirtualCenter{
 		Name:      "test-tf-shared-vc",
@@ -1059,7 +1059,7 @@ func runPriorityTestsOnce(t *testing.T) {
 			{Name: "TestAccVcfaVcenterInvalid", Test: TestAccVcfaVcenterInvalid},
 		}
 
-		fmt.Printf("# Running priority tests to avoid clashes before creating shared components for other tests (can be skipped with '-vcfa-skip-priority-tests' flag)\n")
+		fmt.Printf("# Running priority tests before shared vCenter and NSX Manager is created, so they do not collide later (can be skipped with '-vcfa-skip-priority-tests' flag)\n")
 		for _, test := range tests {
 			fmt.Printf("# Running priority test '%s' as a subtest of '%s':\n", test.Name, t.Name())
 			t.Run(test.Name, test.Test)
