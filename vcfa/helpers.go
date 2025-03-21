@@ -2,10 +2,16 @@ package vcfa
 
 import (
 	"os"
+	"strings"
 
 	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"github.com/vmware/go-vcloud-director/v3/util"
 )
+
+// isSystem returns true if the given Organization is System (Provider)
+func isSystem(adminOrg *govcd.TmOrg) bool {
+	return strings.EqualFold(adminOrg.TmOrg.Name, "system")
+}
 
 // Returns a valid Tenant Context if the Organization identified by the given ID is valid and exists.
 // Otherwise, it returns either an empty tenant context, or an error if the Organization does not exist or is invalid.

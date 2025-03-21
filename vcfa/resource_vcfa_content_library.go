@@ -31,8 +31,7 @@ func resourceVcfaContentLibrary() *schema.Resource {
 			},
 			"org_id": {
 				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true, // If not configured, Organization ID is retrieved and saved
+				Required:    true,
 				ForceNew:    true, // Can't be changed after created
 				Description: fmt.Sprintf("The reference to the %s that the %s belongs to", labelVcfaOrg, labelVcfaContentLibrary),
 			},
@@ -60,11 +59,11 @@ func resourceVcfaContentLibrary() *schema.Resource {
 				Default:  true,
 				ForceNew: true, // Cannot be updated
 				Description: fmt.Sprintf("For Tenant Content Libraries this field represents whether this %s should be "+
-					"automatically attached to all current and future namespaces in the tenant organization. If no value is "+
+					"automatically attached to all current and future namespaces in the %s. If no value is "+
 					"supplied during creation then this field will default to true. If a value of false is supplied, "+
 					"then this Tenant %s will only be attached to namespaces that explicitly request it. "+
 					"For Provider Content Libraries this field is not needed for creation and will always be returned as true. "+
-					"This field cannot be updated after %s creation", labelVcfaContentLibrary, labelVcfaContentLibrary, labelVcfaContentLibrary),
+					"This field cannot be updated after creation", labelVcfaContentLibrary, labelVcfaOrg, labelVcfaContentLibrary),
 			},
 			"creation_date": {
 				Type:        schema.TypeString,
@@ -219,15 +218,15 @@ func resourceVcfaContentLibraryImport(_ context.Context, d *schema.ResourceData,
 	tmClient := meta.(ClientContainer).tmClient
 
 	idSplit := strings.Split(d.Id(), ImportSeparator)
-	if len(idSplit) > 2 {
-		return nil, fmt.Errorf("invalid import identifier '%s', should be either <%s name>, or <%s name>%s<%s name>", labelVcfaContentLibrary, labelVcfaOrg, labelVcfaContentLibrary, d.Id(), ImportSeparator)
+	if len(idSplit) != 2 {
+		return nil, fmt.Errorf("invalid import identifier '%s', should be <%s name>%s<%s name> for Tenant Content Libraries or System%s<%s name> for Provider Content Libraries", d.Id(), labelVcfaOrg, ImportSeparator, labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibrary)
 	}
 	var cl *govcd.ContentLibrary
 	var org *govcd.TmOrg
 	var err error
-	if len(idSplit) == 1 {
-		// Nor Organization specified, meaning that is a PROVIDER Content Library
-		cl, err = tmClient.GetContentLibraryByName(idSplit[0], nil)
+	if strings.EqualFold(idSplit[0], "system") {
+		// Provider Content Library
+		cl, err = tmClient.GetContentLibraryByName(idSplit[1], nil)
 	} else {
 		org, err = tmClient.GetTmOrgByName(idSplit[0])
 		if err != nil {
