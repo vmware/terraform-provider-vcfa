@@ -241,6 +241,16 @@ func resourceVcfaOrgLdap() *schema.Resource {
 	}
 }
 
+func resourceVcfaOrgLdapCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	return resourceVcfaOrgLdapCreateOrUpdate(ctx, d, meta, "resource")
+}
+func resourceVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	return genericVcfaOrgLdapRead(ctx, d, meta, "resource", nil)
+}
+func resourceVcfaOrgLdapUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	return resourceVcfaOrgLdapCreateOrUpdate(ctx, d, meta, "resource")
+}
+
 func resourceVcfaOrgLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
 	// Lock the Organization to serialize create/update operation and prevent side effects like bricked Organizations when
 	// vcfa_org_settings is updated at the same time
@@ -263,17 +273,11 @@ func resourceVcfaOrgLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceDa
 	if err != nil {
 		return diag.Errorf("[Org LDAP %s] error setting org '%s' LDAP configuration: %s", origin, orgId, err)
 	}
-	return resourceVcfaOrgLdapRead(ctx, d, meta)
+
+	return genericVcfaOrgLdapRead(ctx, d, meta, origin, settings)
 }
 
-func resourceVcfaOrgLdapCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return resourceVcfaOrgLdapCreateOrUpdate(ctx, d, meta, "create")
-}
-func resourceVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return genericVcfaOrgLdapRead(ctx, d, meta, "resource")
-}
-
-func genericVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
+func genericVcfaOrgLdapRead(_ context.Context, d *schema.ResourceData, meta interface{}, origin string, settings *types.OrgLdapSettingsType) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 	orgId := d.Get("org_id").(string)
 
@@ -338,20 +342,26 @@ func genericVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta in
 		}
 
 		if origin == "resource" {
-			// The password field does not exist in data source as it's never returned.
-			// Here we set it explicitly to be reminded of that fact, only for the resource.
-			customSettings["password"] = ""
+			if settings != nil && settings.CustomOrgLdapSettings != nil && settings.CustomOrgLdapSettings.Password != "" {
+				// This will be true on Create and Update, as we pass the original LDAP settings as parameter to this function.
+				// This way we can save the original password that the user set on create or update.
+				customSettings["password"] = settings.CustomOrgLdapSettings.Password
+			} else {
+				// This happens on Reads. We don't have original settings (Read operations pass 'settings' parameter as nil).
+				// In this case, we recover the password from state.
+				oldSettings := d.Get("custom_settings").([]interface{})
+				if len(oldSettings) > 0 {
+					customSettings["password"] = oldSettings[0].(map[string]interface{})["password"]
+				}
+			}
 		}
+
 		err = d.Set("custom_settings", []map[string]interface{}{customSettings})
 		if err != nil {
 			return diag.Errorf("[Org LDAP read %s] error setting 'user_attributes' field: %s", origin, err)
 		}
 	}
 	return nil
-}
-
-func resourceVcfaOrgLdapUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return resourceVcfaOrgLdapCreateOrUpdate(ctx, d, meta, "update")
 }
 
 func resourceVcfaOrgLdapDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
