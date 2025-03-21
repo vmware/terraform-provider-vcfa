@@ -18,12 +18,15 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"testing"
 	"text/template"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
+	"github.com/vmware/go-vcloud-director/v3/types/v56"
 	"github.com/vmware/go-vcloud-director/v3/util"
 )
 
@@ -48,7 +51,9 @@ func init() {
 	setBoolFlag(&vcfaReRunFailed, "vcfa-re-run-failed", "VCFA_RE_RUN_FAILED", "Run only tests that failed in a previous run")
 	setBoolFlag(&testDistributedNetworks, "vcfa-test-distributed", "", "enables testing of distributed network")
 	setBoolFlag(&enableDebug, "vcfa-debug", "GOVCD_DEBUG", "enables debug output")
-	setBoolFlag(&vcfaTestVerbose, "vcfa-verbose", "TEST_VERBOSE", "enables verbose output")
+	setBoolFlag(&vcfaTestVerbose, "vcfa-verbose", "VCFA_TEST_VERBOSE", "enables verbose output")
+	setBoolFlag(&vcfaTestTrace, "vcfa-test-trace", "VCFA_TEST_TRACE", "enables trace output")
+	setBoolFlag(&vcfaSkipPriorityTests, "vcfa-skip-priority-tests", "VCFA_SKIP_PRIORITY_TESTS", "skips ")
 	setBoolFlag(&enableTrace, "vcfa-trace", "GOVCD_TRACE", "enables function calls tracing")
 	setBoolFlag(&vcfaShortTest, "vcfa-short", "VCFA_SHORT_TEST", "runs short test")
 	setBoolFlag(&vcfaAddProvider, "vcfa-add-provider", envVcfaAddProvider, "add provider to test scripts")
@@ -57,6 +62,7 @@ func init() {
 	setBoolFlag(&vcfaTestOrgUser, "vcfa-test-org-user", envVcfaTestOrgUser, "Run tests with org user")
 	setStringFlag(&vcfaSkipPattern, "vcfa-skip-pattern", "VCFA_SKIP_PATTERN", "Skip tests that match the pattern (implies vcfa-pre-post-checks")
 	setBoolFlag(&skipLeftoversRemoval, "vcfa-skip-leftovers-removal", "VCFA_SKIP_LEFTOVERS_REMOVAL", "Do not attempt removal of leftovers at the end of the test suite")
+	setBoolFlag(&onlyLeftoverRemoval, "vcfa-only-leftover-removal", "VCFA_ONLY_LEFTOVER_REMOVAL", "Only do leftover cleanup")
 	setBoolFlag(&silentLeftoversRemoval, "vcfa-silent-leftovers-removal", "VCFA_SILENT_LEFTOVERS_REMOVAL", "Omit details during removal of leftovers")
 	setStringFlag(&testListFileName, "vcfa-partition-tests-file", "VCFA_PARTITION_TESTS_FILE", "Name of the file containing the tests to run in the current partition node")
 	setIntFlag(&numberOfPartitions, "vcfa-partitions", "VCFA_PARTITIONS", "")
@@ -210,6 +216,7 @@ var (
 
 	// skipLeftoversRemoval skips the removal of leftovers at the end of the test suite
 	skipLeftoversRemoval = false
+	onlyLeftoverRemoval  = false
 
 	// silentLeftoversRemoval omits details while removing leftovers
 	silentLeftoversRemoval = false
@@ -327,6 +334,7 @@ func templateFill(tmpl string, inputData StringMap) string {
 	realCaller := caller
 	// Removes the full path to the function, leaving only package + function name
 	caller = filepath.Base(caller)
+	caller = strings.ReplaceAll(caller, "/", "-")
 
 	_, callerFileName, _, _ := runtime.Caller(1)
 	// First, we get all variables in the pattern {{.VarName}}
@@ -739,6 +747,31 @@ func TestMain(m *testing.M) {
 		}
 	}
 
+	if onlyLeftoverRemoval {
+		if vcfaTestVerbose {
+			fmt.Println("# Running only leftover cleanup")
+		}
+		var exitCode int
+		tmClient, err := getTestVCFAFromJson(testConfig)
+		if err != nil {
+			fmt.Printf("error getting a govcd client: %s\n", err)
+			exitCode = 1
+		} else {
+			err = ProviderAuthenticate(tmClient, testConfig.Provider.User, testConfig.Provider.Password, testConfig.Provider.Token, testConfig.Provider.SysOrg, testConfig.Provider.ApiToken, testConfig.Provider.ApiTokenFile, testConfig.Provider.ServiceAccountTokenFile)
+			if err != nil {
+				fmt.Printf("error authenticating provider: %s\n", err)
+				exitCode = 1
+			}
+			err := removeLeftovers(tmClient, !silentLeftoversRemoval, true)
+			if err != nil {
+				fmt.Printf("error during leftover removal: %s\n", err)
+				exitCode = 1
+			}
+		}
+		// Exiting early
+		os.Exit(exitCode)
+	}
+
 	// Runs all test functions
 	exitCode := m.Run()
 
@@ -766,13 +799,246 @@ func TestMain(m *testing.M) {
 			fmt.Printf("error authenticating provider: %s\n", err)
 			exitCode = 1
 		}
-		err := removeLeftovers(tmClient, !silentLeftoversRemoval)
+		err := removeLeftovers(tmClient, !silentLeftoversRemoval, true)
 		if err != nil {
 			fmt.Printf("error during leftover removal: %s\n", err)
 			exitCode = 1
 		}
 	}
+
+	// If there were some priority tests - cleanup their things
+	if priorityTestCleanupFunc != nil {
+		err := priorityTestCleanupFunc()
+		if err != nil {
+			fmt.Printf("# got error while cleaning up vCenter / NSX Manager: %s", err)
+		}
+	}
+
 	os.Exit(exitCode)
+}
+
+func setupVcAndNsx() (func() error, error) {
+	tmClient := createSystemTemporaryVCFAConnection()
+	nsxManager, nsxCleanup, err := getOrCreateNsxtManager(tmClient.VCDClient)
+	if err != nil {
+		return nil, fmt.Errorf("got error after NSX Manager creation: %s", err)
+	}
+	if nsxManager == nil {
+		return nil, fmt.Errorf("nil NSX Manager after creation")
+	}
+
+	vc, vcCleanup, err := getOrCreateVCenter(tmClient.VCDClient)
+	if err != nil {
+		return nil, fmt.Errorf("got error after vCenter creation: %s", err)
+	}
+	if vc == nil {
+		return nil, fmt.Errorf("nil vCenter after creation")
+	}
+
+	cleanupFunc := func() error {
+		if vcfaTestVerbose {
+			fmt.Println("# Cleaning up shared vCenter and NSX Manager")
+		}
+		err := nsxCleanup()
+		if err != nil {
+			return fmt.Errorf("error cleaning up deferred NSX Manager: %s", err)
+		}
+		err = vcCleanup()
+		if err != nil {
+			return fmt.Errorf("error cleaning up deferred vCenter: %s", err)
+		}
+
+		return nil
+
+	}
+
+	return cleanupFunc, nil
+}
+
+func getOrCreateNsxtManager(tmClient *govcd.VCDClient) (*govcd.NsxtManagerOpenApi, func() error, error) {
+	nsxtManager, err := tmClient.GetNsxtManagerOpenApiByUrl(testConfig.Tm.NsxManagerUrl)
+	if err == nil {
+		return nsxtManager, nil, nil
+	}
+	if !govcd.ContainsNotFound(err) {
+		return nil, nil, err
+	}
+	if !testConfig.Tm.CreateNsxManager {
+		return nil, nil, fmt.Errorf("NSX manager creation disabled")
+	}
+
+	if vcfaTestVerbose {
+		fmt.Printf("# Creating NSX-T Manager %s\n", testConfig.Tm.NsxManagerUrl)
+	}
+	nsxtCfg := &types.NsxtManagerOpenApi{
+		Name:     "test-tf-shared-nsx",
+		Username: testConfig.Tm.NsxManagerUsername,
+		Password: testConfig.Tm.NsxManagerPassword,
+		Url:      testConfig.Tm.NsxManagerUrl,
+	}
+	// Certificate must be trusted before adding NSX-T Manager
+	url, err := url.Parse(nsxtCfg.Url)
+	if err != nil {
+		return nil, nil, err
+	}
+	_, err = tmClient.AutoTrustHttpsCertificate(url, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	nsxtManager, err = tmClient.CreateNsxtManagerOpenApi(nsxtCfg)
+	if err != nil {
+		return nil, nil, err
+	}
+	nsxtManagerCreated := true
+
+	return nsxtManager, func() error {
+		if !nsxtManagerCreated {
+			return nil
+		}
+		if vcfaTestVerbose {
+			fmt.Printf("# Deleting NSX-T Manager %s\n", nsxtManager.NsxtManagerOpenApi.Name)
+		}
+
+		nsxManager, err := tmClient.GetNsxtManagerOpenApiByName(nsxtCfg.Name)
+		if govcd.ContainsNotFound(err) {
+			return nil // does not exist, nothing to remove
+		}
+		err = nsxManager.Delete()
+		if err != nil {
+			return err
+		}
+		return nil
+	}, nil
+}
+
+func getOrCreateVCenter(tmClient *govcd.VCDClient) (*govcd.VCenter, func() error, error) {
+	vc, err := tmClient.GetVCenterByUrl(testConfig.Tm.VcenterUrl)
+	if err == nil {
+		if !vc.VSphereVCenter.IsEnabled {
+			if vcfaTestVerbose {
+				fmt.Printf("# vCenter with %s found. Enabling it.\n", testConfig.Tm.VcenterUrl)
+			}
+			vc.VSphereVCenter.IsEnabled = true
+			vc, err = vc.Update(vc.VSphereVCenter)
+			if err != nil {
+				return nil, nil, err
+			}
+			err = waitForListenerStatusConnected(vc)
+			if err != nil {
+				return nil, nil, err
+			}
+			err = vc.Refresh()
+			if err != nil {
+				return nil, nil, err
+			}
+			err = vc.RefreshStorageProfiles()
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+
+		return vc, nil, nil
+	}
+	if !govcd.ContainsNotFound(err) {
+		return nil, nil, err
+	}
+	if !testConfig.Tm.CreateVcenter {
+		return nil, nil, fmt.Errorf("vCenter creation disabled")
+	}
+	printfVerbose("# Creating vCenter %s\n", testConfig.Tm.VcenterUrl)
+
+	vcCfg := &types.VSphereVirtualCenter{
+		Name:      "test-tf-shared-vc",
+		Username:  testConfig.Tm.VcenterUsername,
+		Password:  testConfig.Tm.VcenterPassword,
+		Url:       testConfig.Tm.VcenterUrl,
+		IsEnabled: true,
+	}
+	// Certificate must be trusted before adding vCenter
+	url, err := url.Parse(vcCfg.Url)
+	if err != nil {
+		return nil, nil, err
+	}
+	_, err = tmClient.AutoTrustHttpsCertificate(url, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	vc, err = tmClient.CreateVcenter(vcCfg)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	printfTrace("# Waiting for listener status to become 'CONNECTED'\n")
+	err = waitForListenerStatusConnected(vc)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	afterConnectedSleep := 4 * time.Second
+	printfTrace("# Sleeping %s after vCenter is 'CONNECTED' \n", afterConnectedSleep.String())
+
+	time.Sleep(afterConnectedSleep) // TODO: TM: Re-evaluate need for sleep
+	// Refresh connected vCenter to be sure that all artifacts are loaded
+	printfTrace("# Refreshing vCenter %s\n", vc.VSphereVCenter.Url)
+
+	err = vc.RefreshVcenter()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	printfTrace("# Refreshing Storage Profiles in vCenter %s\n", vc.VSphereVCenter.Url)
+	err = vc.RefreshStorageProfiles()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	afterRefreshSleep := 30 * time.Second
+	printfTrace("# Sleeping %s after vCenter refreshes \n", afterRefreshSleep.String())
+
+	time.Sleep(afterRefreshSleep) // TODO: TM: Re-evaluate need for sleep
+	vCenterCreated := true
+
+	return vc, func() error {
+		if !vCenterCreated {
+			return nil
+		}
+		vc, err := tmClient.GetVCenterByName(vcCfg.Name)
+		if govcd.ContainsNotFound(err) {
+			return nil // does not exist, nothing to remove
+		}
+		printfVerbose("# Disabling and deleting vCenter %s\n", testConfig.Tm.VcenterUrl)
+
+		err = vc.Disable()
+		if err != nil {
+			return err
+		}
+		err = vc.Delete()
+		if err != nil {
+			return err
+		}
+		return nil
+	}, nil
+}
+
+func waitForListenerStatusConnected(v *govcd.VCenter) error {
+	startTime := time.Now()
+	tryCount := 20
+	for c := 0; c < tryCount; c++ {
+		err := v.Refresh()
+		if err != nil {
+			return fmt.Errorf("error refreshing vCenter: %s", err)
+		}
+
+		if v.VSphereVCenter.ListenerState == "CONNECTED" {
+			return nil
+		}
+
+		time.Sleep(2 * time.Second)
+	}
+
+	return fmt.Errorf("waiting for listener state to become 'CONNECTED' expired after %d tries (%d seconds), got '%s'",
+		tryCount, int(time.Since(startTime)/time.Second), v.VSphereVCenter.ListenerState)
 }
 
 // Creates a VCDClient based on the endpoint given in the TestConfig argument.
@@ -847,6 +1113,29 @@ func timeStamp() string {
 //     contains a pattern that matches the test name.
 //  6. If the flag -vcfa-re-run-failed is true, it will only run the tests that failed in the previous run
 func preTestChecks(t *testing.T) {
+	// Run priority tests that are responsible for testing core components before they are
+	// precreated for sharing between other tests:
+	// * vCenter
+	// * NSX Manager
+	if !vcfaSkipPriorityTests {
+		runPriorityTestsOnce(t)
+	}
+
+	// Prevent executing a test twice in case it was already executed
+	testname := t.Name()
+	if strings.Contains(testname, "/") {
+		testname = strings.SplitN(testname, "/", 2)[1]
+	}
+
+	if testSucceeded, isSet := executedTests.Load(testname); isSet {
+		if !testSucceeded.(bool) {
+			t.Logf("%s already FAILED", testname)
+			t.FailNow()
+		} else {
+			t.Skipf("%s already run with priority", testname)
+		}
+	}
+
 	handlePartitioning(testConfig.Provider.TmVersion, testConfig.Provider.Url, t)
 	// if the test runs without -vcfa-pre-post-checks, all post-checks will be skipped
 	if !vcfaPrePostChecks {
@@ -898,6 +1187,15 @@ func preTestChecks(t *testing.T) {
 // 2) stores file name in the "pass" or "fail" list, depending on their outcome. The lists are distinct by VCFA IP
 // 3) increments the pass/fail counters
 func postTestChecks(t *testing.T) {
+	// store executed test by name and if it succeeded
+	testname := t.Name()
+	if strings.Contains(testname, "/") {
+		testname = strings.SplitN(testname, "/", 2)[1]
+	}
+
+	printfTrace("# postTestChecks storing testname %s state\n", testname)
+	executedTests.Store(testname, !t.Failed())
+
 	if t.Failed() && !skipLeftoversRemoval {
 		tmClient, err := getTestVCFAFromJson(testConfig)
 		if err != nil {
@@ -908,7 +1206,7 @@ func postTestChecks(t *testing.T) {
 			if err != nil {
 				t.Logf("error authenticating provider: %s\n", err)
 			}
-			err := removeLeftovers(tmClient, !silentLeftoversRemoval)
+			err := removeLeftovers(tmClient, !silentLeftoversRemoval, false)
 			if err != nil {
 				t.Logf("error during leftover removal: %s\n", err)
 			}
@@ -1089,4 +1387,54 @@ provider "vcfa" {
 		return ""
 	}
 	return buf.String()
+}
+
+func printfVerbose(format string, args ...interface{}) {
+	if vcfaTestVerbose {
+		fmt.Printf(format, args...)
+	}
+}
+
+func printfTrace(format string, args ...interface{}) {
+	if vcfaTestTrace {
+		fmt.Printf(format, args...)
+	}
+}
+
+var priorityTestsExecuted atomic.Bool
+var executedTests sync.Map
+var priorityTestCleanupFunc func() error
+
+type priorityTest struct {
+	Name string
+	Test func(*testing.T)
+}
+
+var registeredPriorityTests = []priorityTest{}
+
+func runPriorityTestsOnce(t *testing.T) {
+	notExecuted := priorityTestsExecuted.CompareAndSwap(false, true)
+	executed := !notExecuted
+	if executed {
+		return
+	}
+
+	fmt.Printf("# Running priority tests before shared vCenter and NSX Manager is created, so they do not collide later (can be skipped with '-vcfa-skip-priority-tests' flag)\n")
+	for _, test := range registeredPriorityTests {
+		fmt.Printf("# Running priority test '%s' as a subtest of '%s':\n", test.Name, t.Name())
+		t.Run(test.Name, test.Test)
+		printfTrace("## Storing test to executed test list '%s'\n", test.Name)
+		executedTests.Store(test.Name, !t.Failed())
+	}
+
+	// setup shared components for other tests
+	fmt.Printf("# Setting up shared vCenter and NSX Manager\n")
+	cleanup, err := setupVcAndNsx()
+	if err != nil {
+		fmt.Printf("error setting up shared VC and NSX: %s", err)
+	}
+	fmt.Printf("# Done setting up shared vCenter and NSX Manager\n")
+
+	priorityTestCleanupFunc = cleanup
+	fmt.Printf("# Continuing run of %s test after priority tests are now done\n", t.Name())
 }

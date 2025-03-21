@@ -54,7 +54,7 @@ var alwaysShow = []string{
 	"vcfa_nsx_manager",
 }
 
-func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
+func removeLeftovers(tmClient *govcd.VCDClient, verbose, isFinalCleanup bool) error {
 	if verbose {
 		fmt.Printf("Start leftovers removal\n")
 	}
@@ -259,7 +259,7 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 	// --------------------------------------------------------------
 	// NSX Managers
 	// --------------------------------------------------------------
-	if tmClient.Client.IsSysAdmin {
+	if tmClient.Client.IsSysAdmin && (isFinalCleanup || vcfaSkipPriorityTests) {
 		allNsxManagers, err := tmClient.GetAllNsxtManagersOpenApi(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving provider NSX Managers: %s", err)
@@ -279,7 +279,7 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose bool) error {
 	// --------------------------------------------------------------
 	// vCenters
 	// --------------------------------------------------------------
-	if tmClient.Client.IsSysAdmin {
+	if tmClient.Client.IsSysAdmin && (isFinalCleanup || vcfaSkipPriorityTests) {
 		allVcs, err := tmClient.GetAllVCenters(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving provider vCenters: %s", err)
