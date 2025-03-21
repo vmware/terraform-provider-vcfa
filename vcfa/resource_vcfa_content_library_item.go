@@ -217,7 +217,8 @@ func resourceVcfaContentLibraryItemImport(_ context.Context, d *schema.ResourceD
 
 	idSplit := strings.Split(d.Id(), ImportSeparator)
 	if len(idSplit) != 3 {
-		return nil, fmt.Errorf("ID syntax should be <%s name>%s<%s name>%s<%s name>", labelVcfaOrg, ImportSeparator, labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibraryItem)
+		return nil, fmt.Errorf("ID syntax should be <%s name>%s<%s name>%s<%s name> for Tenant Content Library Items or System%s<%s name>%s<%s name> for "+
+			"Provider Content Library Items", labelVcfaOrg, ImportSeparator, labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibraryItem, ImportSeparator, labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibraryItem)
 	}
 
 	var tenantContext *govcd.TenantContext
