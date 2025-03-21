@@ -9,6 +9,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
+func init() {
+	registeredPriorityTests = append(registeredPriorityTests,
+		priorityTest{Name: "TestAccVcfaNsxManager", Test: TestAccVcfaNsxManager},
+	)
+}
+
 func TestAccVcfaNsxManager(t *testing.T) {
 	testName := "TestAccVcfaNsxManager"
 	preTestChecks(t)

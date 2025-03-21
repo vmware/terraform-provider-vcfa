@@ -9,6 +9,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
+func init() {
+	registeredPriorityTests = append(registeredPriorityTests,
+		priorityTest{Name: "TestAccVcfaVcenter", Test: TestAccVcfaVcenter},
+		priorityTest{Name: "TestAccVcfaVcenterInvalid", Test: TestAccVcfaVcenterInvalid},
+	)
+}
+
 func TestAccVcfaVcenter(t *testing.T) {
 	testName := "TestAccVcfaVcenter" // Trigerring the test at priority will create incorrect t.Name() value
 	preTestChecks(t)
