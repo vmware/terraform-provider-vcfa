@@ -3,23 +3,33 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_content_library"
 sidebar_current: "docs-vcfa-data-source-content-library"
 description: |-
-  Provides a VMware Cloud Foundation Automation Content Library data source. This can be used to read Content Libraries.
+  Provides a data source to read a Content Library in VMware Cloud Foundation Automation. This can be used to obtain the details
+  of Content Libraries, such as description, creation date, etc.
 ---
 
 # vcfa\_content\_library
 
-Provides a VMware Cloud Foundation Automation Content Library data source. This can be used to read Content Libraries.
+Provides a data source to read a Content Library in VMware Cloud Foundation Automation. This can be used to obtain the details
+of Content Libraries, such as description, creation date, etc.
+
+-> This data source can be used by both **System Administrators** and **Tenant users**
 
 ## Example Usage for Provider libraries
 
 ```hcl
+data "vcfa_org" "system" {
+  name = "System"
+}
+
 data "vcfa_content_library" "cl" {
-  name = "My Library"
+  org_id = data.vcfa_org.system.id
+  name   = "My Library"
 }
 
 output "is_shared" {
   value = data.vcfa_content_library.cl.is_shared
 }
+
 output "owner_org" {
   value = data.vcfa_content_library.cl.org_id
 }
@@ -47,10 +57,10 @@ output "is_shared" {
 The following arguments are supported:
 
 * `name` - (Required) The name of the Content Library to read
-* `org_id` - (Optional) The reference to the Organization that the Content Library belongs to. If it is not set, assumes the
-  Content Library is of type `PROVIDER`
+* `org_id` - (Required) The reference to the Organization that the Content Library belongs to. For Content Libraries of type `PROVIDER`,
+  a reference to the `System` org with [`vcfa_org` data source](/providers/vmware/vcfa/latest/docs/data-sources/org) must be provided
 
 ## Attribute reference
 
-All arguments and attributes defined in [the resource](/providers/vmware/vcfa/latest/docs/resources/content_library) are supported
+All arguments and attributes defined in [`vcfa_content_library` resource](/providers/vmware/vcfa/latest/docs/resources/content_library) are supported
 as read-only (Computed) values.

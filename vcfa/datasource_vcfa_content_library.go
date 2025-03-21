@@ -21,7 +21,7 @@ func datasourceVcfaContentLibrary() *schema.Resource {
 			},
 			"org_id": {
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 				Description: fmt.Sprintf("The reference to the %s that the %s belongs to", labelVcfaOrg, labelVcfaContentLibrary),
 			},
 			"storage_class_ids": {
