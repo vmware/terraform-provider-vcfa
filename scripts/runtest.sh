@@ -330,6 +330,7 @@ case $wanted in
         ;;
     short)
         export VCFA_SKIP_TEMPLATE_WRITING=1
+        export VCFA_SKIP_PRIORITY_TESTS=1
         export MORE_TAGS="functional"
         short_test
         ;;
