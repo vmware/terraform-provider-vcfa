@@ -1121,7 +1121,7 @@ func preTestChecks(t *testing.T) {
 		runPriorityTestsOnce(t)
 	}
 
-	// Prevent executing a test twice in case it was already executed in
+	// Prevent executing a test twice in case it was already executed
 	testname := t.Name()
 	if strings.Contains(testname, "/") {
 		testname = strings.SplitN(testname, "/", 2)[1]

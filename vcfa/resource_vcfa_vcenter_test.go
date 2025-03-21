@@ -17,7 +17,7 @@ func init() {
 }
 
 func TestAccVcfaVcenter(t *testing.T) {
-	testName := "TestAccVcfaVcenter" // Trigerring the test at priority will create incorrect t.Name() value
+	testName := "TestAccVcfaVcenter" // Triggering the test at priority will create incorrect t.Name() value
 	preTestChecks(t)
 	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
@@ -188,7 +188,7 @@ data "vcfa_vcenter" "test" {
 `
 
 func TestAccVcfaVcenterInvalid(t *testing.T) {
-	testName := "TestAccVcfaVcenterInvalid" // Trigerring the test at priority will create incorrect t.Name() value
+	testName := "TestAccVcfaVcenterInvalid" // Triggering the test at priority will create incorrect t.Name() value
 	preTestChecks(t)
 	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
