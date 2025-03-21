@@ -19,6 +19,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"text/template"
 	"time"
@@ -1040,7 +1041,7 @@ func waitForListenerStatusConnected(v *govcd.VCenter) error {
 		tryCount, int(time.Since(startTime)/time.Second), v.VSphereVCenter.ListenerState)
 }
 
-var priorityTests sync.Map
+var priorityTestsExecuted atomic.Bool
 var executedTests sync.Map
 var priorityTestCleanupFunc func() error
 
@@ -1050,8 +1051,8 @@ type priorityTest struct {
 }
 
 func runPriorityTestsOnce(t *testing.T) {
-	_, executed := priorityTests.LoadOrStore("executed", true)
-	if !executed {
+	notExecuted := priorityTestsExecuted.CompareAndSwap(false, true)
+	if notExecuted {
 		tests := []priorityTest{
 			{Name: "TestAccVcfaNsxManager", Test: TestAccVcfaNsxManager},
 			{Name: "TestAccVcfaVcenter", Test: TestAccVcfaVcenter},
@@ -1232,7 +1233,6 @@ func postTestChecks(t *testing.T) {
 	}
 
 	printfTrace("# postTestChecks storing testname %s state\n", testname)
-	fmt.Printf("#### Storing test to executed test list '%s'", testname)
 	executedTests.Store(testname, !t.Failed())
 
 	if t.Failed() && !skipLeftoversRemoval {
