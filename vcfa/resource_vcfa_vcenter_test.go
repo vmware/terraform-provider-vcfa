@@ -124,6 +124,7 @@ func TestAccVcfaVcenter(t *testing.T) {
 }
 
 const testAccVcfaVcenterPrerequisites = `
+# skip-binary-test: vCenter server configuration is tested in next tests
 resource "vcfa_nsx_manager" "test" {
   name                   = "{{.Testname}}"
   description            = "terraform test"

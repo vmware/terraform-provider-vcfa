@@ -259,7 +259,7 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose, isFinalCleanup bool) er
 	// --------------------------------------------------------------
 	// NSX Managers
 	// --------------------------------------------------------------
-	if tmClient.Client.IsSysAdmin && isFinalCleanup { // shared NSX Manager must be cleaned up in final stage
+	if tmClient.Client.IsSysAdmin && (isFinalCleanup || vcfaSkipPriorityTests) {
 		allNsxManagers, err := tmClient.GetAllNsxtManagersOpenApi(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving provider NSX Managers: %s", err)
@@ -279,7 +279,7 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose, isFinalCleanup bool) er
 	// --------------------------------------------------------------
 	// vCenters
 	// --------------------------------------------------------------
-	if tmClient.Client.IsSysAdmin && isFinalCleanup { // shared NSX Manager must be cleaned up in final stage
+	if tmClient.Client.IsSysAdmin && (isFinalCleanup || vcfaSkipPriorityTests) {
 		allVcs, err := tmClient.GetAllVCenters(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving provider vCenters: %s", err)

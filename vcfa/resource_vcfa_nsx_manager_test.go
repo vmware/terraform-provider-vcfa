@@ -85,6 +85,7 @@ func TestAccVcfaNsxManager(t *testing.T) {
 }
 
 const testAccVcfaNsxManagerStep1 = `
+# skip-binary-test: NSX Manager configuration is tested in next tests
 resource "vcfa_nsx_manager" "test" {
   name                   = "{{.Testname}}"
   description            = "terraform test"
@@ -95,6 +96,7 @@ resource "vcfa_nsx_manager" "test" {
 }
 `
 const testAccVcfaNsxManagerStep2 = `
+# skip-binary-test: NSX Manager configuration is tested in next tests
 resource "vcfa_nsx_manager" "test" {
   name                   = "{{.Testname}}"
   description            = ""
@@ -106,6 +108,7 @@ resource "vcfa_nsx_manager" "test" {
 `
 
 const testAccVcfaNsxManagerStep3DS = testAccVcfaNsxManagerStep1 + `
+# skip-binary-test: NSX Manager configuration is tested in next tests
 data "vcfa_nsx_manager" "test" {
   name = vcfa_nsx_manager.test.name
 }

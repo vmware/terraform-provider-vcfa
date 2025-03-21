@@ -51,7 +51,8 @@ func init() {
 	setBoolFlag(&testDistributedNetworks, "vcfa-test-distributed", "", "enables testing of distributed network")
 	setBoolFlag(&enableDebug, "vcfa-debug", "GOVCD_DEBUG", "enables debug output")
 	setBoolFlag(&vcfaTestVerbose, "vcfa-verbose", "VCFA_TEST_VERBOSE", "enables verbose output")
-	setBoolFlag(&vcfaTestTrace, "vcfa-test-trace", "VCFA_TEST_TRACE", "enables verbose output")
+	setBoolFlag(&vcfaTestTrace, "vcfa-test-trace", "VCFA_TEST_TRACE", "enables trace output")
+	setBoolFlag(&vcfaSkipPriorityTests, "vcfa-skip-priority-tests", "VCFA_SKIP_PRIORITY_TESTS", "skips ")
 	setBoolFlag(&enableTrace, "vcfa-trace", "GOVCD_TRACE", "enables function calls tracing")
 	setBoolFlag(&vcfaShortTest, "vcfa-short", "VCFA_SHORT_TEST", "runs short test")
 	setBoolFlag(&vcfaAddProvider, "vcfa-add-provider", envVcfaAddProvider, "add provider to test scripts")
@@ -1048,7 +1049,7 @@ type priorityTest struct {
 	Test func(*testing.T)
 }
 
-func runPriorityTests(t *testing.T) {
+func runPriorityTestsOnce(t *testing.T) {
 	_, executed := priorityTests.LoadOrStore("executed", true)
 	if !executed {
 		tests := []priorityTest{
@@ -1057,21 +1058,24 @@ func runPriorityTests(t *testing.T) {
 			{Name: "TestAccVcfaVcenterInvalid", Test: TestAccVcfaVcenterInvalid},
 		}
 
+		fmt.Printf("# Running priority tests to avoid clashes before creating shared components for other tests (can be skipped with '-vcfa-skip-priority-tests' flag)\n")
 		for _, test := range tests {
-			fmt.Printf("Running priority test %s as a subtest of %s:\n", test.Name, t.Name())
+			fmt.Printf("# Running priority test '%s' as a subtest of '%s':\n", test.Name, t.Name())
 			t.Run(test.Name, test.Test)
+			printfTrace("## Storing test to executed test list '%s'\n", test.Name)
 			executedTests.Store(test.Name, !t.Failed())
 		}
 
 		// setup shared components for other tests
-		fmt.Println("# Will setup shared vCenter and NSX Manager")
+		fmt.Printf("# Setting up shared vCenter and NSX Manager\n")
 		cleanup, err := setupVcAndNsx()
 		if err != nil {
 			fmt.Printf("error setting up shared VC and NSX: %s", err)
 		}
+		fmt.Printf("# Done setting up shared vCenter and NSX Manager\n")
 
 		priorityTestCleanupFunc = cleanup
-		fmt.Printf("=== Continuing run of %s test after priority tests are now done\n", t.Name())
+		fmt.Printf("# Continuing run of %s test after priority tests are now done\n", t.Name())
 	}
 }
 
@@ -1147,21 +1151,28 @@ func timeStamp() string {
 //     contains a pattern that matches the test name.
 //  6. If the flag -vcfa-re-run-failed is true, it will only run the tests that failed in the previous run
 func preTestChecks(t *testing.T) {
-	// Never execute a test twice
-	if testSucceeded, isSet := executedTests.Load(t.Name()); isSet {
-		if !testSucceeded.(bool) {
-			t.Logf("%s already FAILED", t.Name())
-			t.FailNow()
-		} else {
-			t.Skipf("%s already run with priority", t.Name())
-		}
-	}
-
 	// Run priority tests that are responsible for testing core components before they are
 	// precreated for sharing between other tests:
 	// * vCenter
 	// * NSX Manager
-	runPriorityTests(t)
+	if !vcfaSkipPriorityTests {
+		runPriorityTestsOnce(t)
+	}
+
+	// Prevent executing a test twice in case it was already executed in
+	testname := t.Name()
+	if strings.Contains(testname, "/") {
+		testname = strings.SplitN(testname, "/", 2)[1]
+	}
+
+	if testSucceeded, isSet := executedTests.Load(testname); isSet {
+		if !testSucceeded.(bool) {
+			t.Logf("%s already FAILED", testname)
+			t.FailNow()
+		} else {
+			t.Skipf("%s already run with priority", testname)
+		}
+	}
 
 	handlePartitioning(testConfig.Provider.TmVersion, testConfig.Provider.Url, t)
 	// if the test runs without -vcfa-pre-post-checks, all post-checks will be skipped
@@ -1220,7 +1231,8 @@ func postTestChecks(t *testing.T) {
 		testname = strings.SplitN(testname, "/", 2)[1]
 	}
 
-	printfVerbose("# postTestChecks storing testname %s state\n", testname)
+	printfTrace("# postTestChecks storing testname %s state\n", testname)
+	fmt.Printf("#### Storing test to executed test list '%s'", testname)
 	executedTests.Store(testname, !t.Failed())
 
 	if t.Failed() && !skipLeftoversRemoval {
