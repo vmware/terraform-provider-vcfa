@@ -241,6 +241,16 @@ func resourceVcfaOrgLdap() *schema.Resource {
 	}
 }
 
+func resourceVcfaOrgLdapCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	return resourceVcfaOrgLdapCreateOrUpdate(ctx, d, meta, "resource")
+}
+func resourceVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	return genericVcfaOrgLdapRead(ctx, d, meta, "resource", nil)
+}
+func resourceVcfaOrgLdapUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	return resourceVcfaOrgLdapCreateOrUpdate(ctx, d, meta, "resource")
+}
+
 func resourceVcfaOrgLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}, origin string) diag.Diagnostics {
 	// Lock the Organization to serialize create/update operation and prevent side effects like bricked Organizations when
 	// vcfa_org_settings is updated at the same time
@@ -264,17 +274,7 @@ func resourceVcfaOrgLdapCreateOrUpdate(ctx context.Context, d *schema.ResourceDa
 		return diag.Errorf("[Org LDAP %s] error setting org '%s' LDAP configuration: %s", origin, orgId, err)
 	}
 
-	return genericVcfaOrgLdapRead(ctx, d, meta, "create", settings)
-}
-
-func resourceVcfaOrgLdapCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return resourceVcfaOrgLdapCreateOrUpdate(ctx, d, meta, "create")
-}
-func resourceVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return genericVcfaOrgLdapRead(ctx, d, meta, "resource", nil)
-}
-func resourceVcfaOrgLdapUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return resourceVcfaOrgLdapCreateOrUpdate(ctx, d, meta, "update")
+	return genericVcfaOrgLdapRead(ctx, d, meta, origin, settings)
 }
 
 func genericVcfaOrgLdapRead(_ context.Context, d *schema.ResourceData, meta interface{}, origin string, settings *types.OrgLdapSettingsType) diag.Diagnostics {

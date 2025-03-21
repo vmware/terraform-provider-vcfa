@@ -90,7 +90,7 @@ func TestAccVcfaProviderLdap(t *testing.T) {
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateIdFunc:       func(state *terraform.State) (string, error) { return testConfig.Tm.Org, nil },
-				ImportStateVerifyIgnore: []string{"auto_trust_certificate"},
+				ImportStateVerifyIgnore: []string{"auto_trust_certificate", "password"},
 			},
 		},
 	})
