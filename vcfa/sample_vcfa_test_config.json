@@ -6,8 +6,8 @@
     "//"  : "This section contains credentials related to the VCFA connection of Sys or Org user",
     "user": "serviceadministrator",
     "password": "somePassword",
-    "tmVersion": "10.7.0",
-    "tmApiVersion": "40.0",
+    "vcfaVersion": "9.0.0",
+    "apiVersion": "40.0",
     "//": "Access token to be used instead of username/password",
     "token": "",
 

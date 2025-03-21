@@ -193,7 +193,7 @@ func TestVcfaDataSources(t *testing.T) {
 		},
 		{
 			name:    "MatchExactDataSourceName",
-			args:    args{nameRegexp: "vcfa_tm_version", includeDeprecated: false},
+			args:    args{nameRegexp: "vcfa_version", includeDeprecated: false},
 			wantLen: 1, // should return only one because exact name was given
 			lenOnly: true,
 			wantErr: false,

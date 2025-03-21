@@ -8,7 +8,8 @@ description: |-
 
 # vcfa\_global\_role
 
-Provides a VMware Cloud Foundation Automation Global Role data source. This can be used to read Global Roles.
+Provides a data source to read a Global Role in VMware Cloud Foundation Automation, it can be used to retrieve details
+of an existing Global Role, like the [Organizations][vcfa_org] in which it is published.
 
 ## Example Usage
 
@@ -43,7 +44,6 @@ org_user_out = {
 }
 ```
 
-
 ## Argument Reference
 
 The following arguments are supported:
@@ -55,6 +55,8 @@ The following arguments are supported:
 * `description` - A description of the Global Role
 * `bundle_key` - Key used for internationalization
 * `rights` - List of rights assigned to this Global Role
-* `publish_to_all_orgs` - When true, publishes the Global Role to all Organizations
-* `org_ids` - List of IDs of Organizations to which this Global Role gets published. Ignored if `publish_to_all_orgs` is true
+* `publish_to_all_orgs` - When `true`, publishes the Global Role to all [Organizations][vcfa_org]
+* `org_ids` - List of IDs of [Organizations][vcfa_org] to which this Global Role gets published. Ignored if `publish_to_all_orgs` is `true`
 * `read_only` - Whether this Global Role is read-only
+
+[vcfa_org]: /providers/vmware/vcfa/latest/docs/resources/org
