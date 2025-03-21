@@ -219,7 +219,7 @@ func resourceVcfaContentLibraryImport(_ context.Context, d *schema.ResourceData,
 
 	idSplit := strings.Split(d.Id(), ImportSeparator)
 	if len(idSplit) != 2 {
-		return nil, fmt.Errorf("invalid import identifier '%s', should be <%s name>%s<%s name>", d.Id(), labelVcfaOrg, ImportSeparator, labelVcfaContentLibrary)
+		return nil, fmt.Errorf("invalid import identifier '%s', should be <%s name>%s<%s name> or System%s<%s name> for Provider Content Libraries", d.Id(), labelVcfaOrg, ImportSeparator, labelVcfaContentLibrary, ImportSeparator, labelVcfaContentLibrary)
 	}
 	var cl *govcd.ContentLibrary
 	var org *govcd.TmOrg
