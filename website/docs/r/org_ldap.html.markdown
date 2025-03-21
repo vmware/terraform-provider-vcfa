@@ -55,22 +55,6 @@ resource "vcfa_org_ldap" "my-org-ldap" {
 }
 ```
 
--> **Note** 
-The password value never gets returned by GET. Therefore, if we want `terraform plan` to return a clean state, we need
-to add a `lifecycle` block at the end of the resource definition, after creating or updating it.
-And we need to remove the `lifecycle` block _if we want to change the password_.
-
-```hcl
-resource "vcfa_org_ldap" "my-org-ldap" {
-  # all other fields
-  # ...
-  lifecycle {
-    # password value does not get returned by GET
-    ignore_changes = [custom_settings[0].password]
-  }
-}
-```
-
 ## Example Usage 2 - Using system configuration
 
 ```hcl
@@ -109,9 +93,7 @@ The `custom_settings` section contains the configuration for the LDAP server
 * `is_ssl` - (Optional) True if the LDAP service requires an SSL connection. If the certificate is not trusted already, `auto_trust_certificate=true` is needed.
 * `username` - (Optional) _Username_ to use when logging in to LDAP, specified using LDAP attribute=value pairs 
   (for example: cn="ldap-admin", c="example", dc="com")
-* `password` - (Optional) _Password_ for the user identified by UserName. This value is never returned by GET. 
-   It is inspected on create and modify. On modify, the absence of this element indicates that the password should not be changed
-
+* `password` - (Optional) _Password_ for the user identified by `username`. This value is never returned on reads
 * `user_attributes` - (Required) User settings when `ldap_mode` is `CUSTOM` See [User Attributes](#user-attributes) below for details
 * `group_attributes` - (Required) Group settings when `ldap_mode` is `CUSTOM` See [Group Attributes](#group-attributes) below for details
 

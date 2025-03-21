@@ -60,7 +60,7 @@ func TestAccVcfaProviderLdap(t *testing.T) {
 					resource.TestCheckResourceAttr(ldapResourceDef, "base_distinguished_name", testConfig.Ldap.BaseDistinguishedName),
 					resource.TestCheckResourceAttr(ldapResourceDef, "connector_type", testConfig.Ldap.Type),
 					resource.TestCheckResourceAttr(ldapResourceDef, "custom_ui_button_label", "Hello there"),
-					resource.TestCheckResourceAttr(ldapResourceDef, "password", ""), // Password is not returned
+					resource.TestCheckResourceAttr(ldapResourceDef, "password", testConfig.Ldap.Password),
 					resource.TestCheckResourceAttr(ldapResourceDef, "user_attributes.0.object_class", "user"),
 					resource.TestCheckResourceAttr(ldapResourceDef, "user_attributes.0.unique_identifier", "objectGuid"),
 					resource.TestCheckResourceAttr(ldapResourceDef, "user_attributes.0.display_name", "displayName"),
@@ -90,7 +90,7 @@ func TestAccVcfaProviderLdap(t *testing.T) {
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateIdFunc:       func(state *terraform.State) (string, error) { return testConfig.Tm.Org, nil },
-				ImportStateVerifyIgnore: []string{"auto_trust_certificate"},
+				ImportStateVerifyIgnore: []string{"auto_trust_certificate", "password"},
 			},
 		},
 	})

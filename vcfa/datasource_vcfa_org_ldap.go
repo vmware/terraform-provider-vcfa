@@ -77,5 +77,5 @@ func datasourceVcfaOrgLdap() *schema.Resource {
 }
 
 func datasourceVcfaOrgLdapRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return genericVcfaOrgLdapRead(ctx, d, meta, "datasource")
+	return genericVcfaOrgLdapRead(ctx, d, meta, "datasource", nil)
 }

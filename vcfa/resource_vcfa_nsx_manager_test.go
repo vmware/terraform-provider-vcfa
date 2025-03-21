@@ -9,7 +9,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
+func init() {
+	registeredPriorityTests = append(registeredPriorityTests,
+		priorityTest{Name: "TestAccVcfaNsxManager", Test: TestAccVcfaNsxManager},
+	)
+}
+
 func TestAccVcfaNsxManager(t *testing.T) {
+	testName := "TestAccVcfaNsxManager"
 	preTestChecks(t)
 	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
@@ -19,7 +26,7 @@ func TestAccVcfaNsxManager(t *testing.T) {
 	}
 
 	var params = StringMap{
-		"Testname": t.Name(),
+		"Testname": testName,
 		"Username": testConfig.Tm.NsxManagerUsername,
 		"Password": testConfig.Tm.NsxManagerPassword,
 		"Url":      testConfig.Tm.NsxManagerUrl,
@@ -28,10 +35,11 @@ func TestAccVcfaNsxManager(t *testing.T) {
 	}
 	testParamsNotEmpty(t, params)
 
+	params["FuncName"] = testName
 	configText1 := templateFill(testAccVcfaNsxManagerStep1, params)
-	params["FuncName"] = t.Name() + "-step2"
+	params["FuncName"] = testName + "-step2"
 	configText2 := templateFill(testAccVcfaNsxManagerStep2, params)
-	params["FuncName"] = t.Name() + "-step3"
+	params["FuncName"] = testName + "-step3"
 	configText3 := templateFill(testAccVcfaNsxManagerStep3DS, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
@@ -83,6 +91,7 @@ func TestAccVcfaNsxManager(t *testing.T) {
 }
 
 const testAccVcfaNsxManagerStep1 = `
+# skip-binary-test: NSX Manager configuration is tested in next tests
 resource "vcfa_nsx_manager" "test" {
   name                   = "{{.Testname}}"
   description            = "terraform test"
@@ -93,6 +102,7 @@ resource "vcfa_nsx_manager" "test" {
 }
 `
 const testAccVcfaNsxManagerStep2 = `
+# skip-binary-test: NSX Manager configuration is tested in next tests
 resource "vcfa_nsx_manager" "test" {
   name                   = "{{.Testname}}"
   description            = ""
@@ -104,6 +114,7 @@ resource "vcfa_nsx_manager" "test" {
 `
 
 const testAccVcfaNsxManagerStep3DS = testAccVcfaNsxManagerStep1 + `
+# skip-binary-test: NSX Manager configuration is tested in next tests
 data "vcfa_nsx_manager" "test" {
   name = vcfa_nsx_manager.test.name
 }
