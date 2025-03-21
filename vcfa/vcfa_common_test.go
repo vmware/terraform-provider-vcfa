@@ -145,25 +145,31 @@ data "vcfa_region_vm_class" "region_vm_class%d" {
 // getContentLibraryHcl gets a Content Library data source as first returned parameter and its HCL reference as second one,
 // only if a Content Library is already configured in TM. Otherwise, it returns a Content Library resource HCL as first returned parameter
 // and its HCL reference as second one
-func getContentLibraryHcl(t *testing.T, regionHclRef, orgHclRef string) (string, string) {
+func getContentLibraryHcl(t *testing.T, regionHclRef, orgIdRef string) (string, string) {
 	if testConfig.Tm.ContentLibrary == "" {
 		t.Fatalf("the property tm.contentLibrary is required but it is not present in testing JSON")
 	}
 	if testConfig.Tm.StorageClass == "" {
 		t.Fatalf("the property tm.storageClass is required but it is not present in testing JSON")
 	}
-	orgHcl := ""
-	if orgHclRef != "" {
-		orgHcl = "org_id = " + orgHclRef
+
+	orgDataSource := ""
+	if orgIdRef == "" {
+		orgDataSource = `
+data "vcfa_org" "system" {
+  name = "System"
+}
+`
+		orgIdRef = "data.vcfa_org.system.id"
 	}
 
 	tmClient := createTemporaryVCFAConnection(false)
 	cl, err := tmClient.GetContentLibraryByName(testConfig.Tm.ContentLibrary, nil)
 	if err == nil {
-		return `
+		return orgDataSource + `
 data "vcfa_content_library" "content_library" {
-  name = "` + cl.ContentLibrary.Name + `"
-  ` + orgHcl + `
+  org_id = ` + orgIdRef + `
+  name   = "` + cl.ContentLibrary.Name + `"
 }
 `, "data.vcfa_content_library.content_library"
 	}
@@ -171,18 +177,18 @@ data "vcfa_content_library" "content_library" {
 		t.Fatal(err)
 		return "", ""
 	}
-	return `
+	return orgDataSource + `
 data "vcfa_storage_class" "storage_class" {
   region_id = ` + regionHclRef + `.id 
   name      = "` + testConfig.Tm.StorageClass + `"
 }
 
 resource "vcfa_content_library" "content_library" {
-  ` + orgHcl + `
-  name                 = "` + testConfig.Tm.ContentLibrary + `"
-  description          = "` + testConfig.Tm.ContentLibrary + `"
-  storage_class_ids    = [data.vcfa_storage_class.storage_class.id]
-  delete_recursive     = true
+  org_id            = ` + orgIdRef + `
+  name              = "` + testConfig.Tm.ContentLibrary + `"
+  description       = "` + testConfig.Tm.ContentLibrary + `"
+  storage_class_ids = [data.vcfa_storage_class.storage_class.id]
+  delete_recursive  = true
 }
 `, "vcfa_content_library.content_library"
 }

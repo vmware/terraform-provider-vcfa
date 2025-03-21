@@ -3,16 +3,16 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_certificate"
 sidebar_current: "docs-vcfa-data-source-certificate"
 description: |-
-  Provides a VMware Cloud Foundation Automation Certificate data source. This can be used to read the certificates that
+  Provides a data source to read a Certificate in VMware Cloud Foundation Automation. This can be used to read the certificates that
   VCF Automation provides to others. They can be used when creating services that must be secured.
 ---
 
 # vcfa\_certificate
 
-Provides a VMware Cloud Foundation Automation Certificate data source. This can be used to read the certificates that
+Provides a data source to read a Certificate in VMware Cloud Foundation Automation. This can be used to read the certificates that
 VCF Automation provides to others. They can be used when creating services that must be secured.
 
-~> Only `System Administrator` can access System certificates using this data source.
+-> This data source can be used by both **System Administrators** and **Tenant users**
 
 ## Example Usage
 
@@ -21,9 +21,20 @@ data "vcfa_org" "system" {
   name = "System"
 }
 
-data "vcfa_certificate" "certificate1" {
+# This certificate if read from the Provider ("System" org)
+data "vcfa_certificate" "system_certificate" {
   org_id = data.vcfa_org.system.id
   alias  = "SAML Encryption"
+}
+
+data "vcfa_org" "tenant" {
+  name = "my-tenant1"
+}
+
+# This certificate if read from the tenant
+data "vcfa_certificate" "tenant_certificate" {
+  org_id = data.vcfa_org.tenant.id
+  alias  = "Example certificate"
 }
 ```
 
@@ -32,7 +43,7 @@ data "vcfa_certificate" "certificate1" {
 The following arguments are supported:
 
 * `org_id` - (Required) - ID of the Organization that owns the Certificate
-* `alias` - (Optional)  - alias (name) of the Certificate. Either `alias` or `id` are required
+* `alias` - (Optional)  - Alias (name) of the Certificate. Either `alias` or `id` are required
 * `id` - (Optional)  - ID of the Certificate. Either `alias` or `id` are required
 
 ## Attribute Reference
