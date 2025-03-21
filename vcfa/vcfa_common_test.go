@@ -18,7 +18,7 @@ func getVCenterHcl(t *testing.T, nsxManagerHclRef string) (string, string) {
 	tmClient := createTemporaryVCFAConnection(false)
 	vc, err := tmClient.GetVCenterByUrl(testConfig.Tm.VcenterUrl)
 	if err == nil {
-		printfVerbose("# Re-using existing vCenter Manager %s\n", testConfig.Tm.VcenterUrl)
+		printfVerbose("# Re-using existing vCenter Server %s\n", testConfig.Tm.VcenterUrl)
 		return `
 data "vcfa_vcenter" "vc" {
   name = "` + vc.VSphereVCenter.Name + `"
