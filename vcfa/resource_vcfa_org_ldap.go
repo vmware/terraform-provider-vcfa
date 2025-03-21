@@ -347,7 +347,7 @@ func genericVcfaOrgLdapRead(_ context.Context, d *schema.ResourceData, meta inte
 				// This way we can save the original password that the user set on create or update.
 				customSettings["password"] = settings.CustomOrgLdapSettings.Password
 			} else {
-				// This happens on Reads. We don't have original settings (Read operations pass this parameter as nil).
+				// This happens on Reads. We don't have original settings (Read operations pass 'settings' parameter as nil).
 				// In this case, we recover the password from state.
 				oldSettings := d.Get("custom_settings").([]interface{})
 				if len(oldSettings) > 0 {
