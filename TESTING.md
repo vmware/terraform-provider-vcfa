@@ -56,7 +56,7 @@ make testunit
 The test suite will prioritize testing core infrastructure component resources such *vCenter server*
 and *NSX Manager*. After the prioritized tests are run, it will create these components so that they
 can be shared with the next tests that rely on it. This saves a lot of time because almost every
-tests relies on core components anttheir creation takes time. The test snippet helpers in
+tests relies on core components and their creation takes time. The test snippet helpers in
 `vcfa_common_test.go` are flexible and can either return `data` or `resource` snippet for these
 components. As long as these helpers are used, the test will take advantage of sharing components.
 
@@ -294,7 +294,7 @@ and immediately defer `postTestChecks(t)` right before the end.
 ## Leftovers removal
 
 After the test suite runs, an automated process will scan the vcfa and remove any resources that may have been
-left behind because od test failure or environment issues.
+left behind because of test failure or environment issues.
 The procedure can be skipped by using the flag `-vcfa-skip-leftovers-removal`. If you want the operation to omit
 details of the scanning, you can use `-vcfa-silent-leftovers-removal`.
 
