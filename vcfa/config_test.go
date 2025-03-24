@@ -205,11 +205,6 @@ var (
 	// vcfaHelp displays the vcfa-* flags
 	vcfaHelp = false
 
-	// Distributed networks require an edge gateway with distributed routing enabled,
-	// which in turn requires a NSX controller. To run the distributed test, users
-	// need to set the environment variable VCFA_TEST_DISTRIBUTED_NETWORK
-	testDistributedNetworks = false
-
 	// runTestRunListFileLock regulates access to the list of run tests
 	runTestRunListFileLock = newMutexKVSilent()
 
