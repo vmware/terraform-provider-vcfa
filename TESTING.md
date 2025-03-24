@@ -56,9 +56,10 @@ make testunit
 The test suite will prioritize testing core infrastructure component resources such *vCenter server*
 and *NSX Manager*. After the prioritized tests are run, it will create these components so that they
 can be shared with the next tests that rely on it. This saves a lot of time because almost every
-tests relies on core components and their creation takes time. The test snippet helpers in
-`vcfa_common_test.go` are flexible and can either return `data` or `resource` snippet for these
-components. As long as these helpers are used, the test will take advantage of sharing components.
+tests relies on core components and their creation/removal for each test takes time. The test
+snippet helpers in `vcfa_common_test.go` are flexible and can either return `data` or `resource`
+snippet for these components. As long as these helpers are used, the test will take advantage of
+sharing components.
 
 The prioritization and core component sharing functionality **can be disabled** by using
 `-vcfa-skip-priority-tests` flag. The penalty is prolonged test execution time due to each test will
@@ -66,7 +67,7 @@ create its own components.
 
 **Note:** Go testing framework does not directly provide functionality to prioritize tests,
 therefore the priority tests are always executed as subtests of whichever test was triggered. Their
-state is store and later, when the same test is picked for run, it will be skipped with its
+state is stored and later, when the same test is picked for run, it will be skipped with its
 previously reported state. This functionality can be skipped with `-vcfa-skip-priority-tests` flag.
 
 In the below test output, the three prioritized tests `TestAccVcfaNsxManager`, `TestAccVcfaVcenter`
@@ -178,12 +179,6 @@ terraform tool through a shell script, and for every test we run
 * `terraform apply -auto-approve`
 * `terraform plan -detailed-exitcode` (for ensuring that `plan` is empty right after `apply`)
 * `terraform destroy -auto-approve`
-
-The test for Cloud Director runs from GNUMakefile, using:
-
-```bash
-make test-binary
-```
 
 Running **VCFA** binary tests, using:
 
