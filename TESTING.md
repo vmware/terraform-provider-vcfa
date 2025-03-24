@@ -39,20 +39,13 @@ example) configuration that can be either be put into working directory or its p
 
 The test suite will prioritize testing core infrastructure component resources such *vCenter server*
 and *NSX Manager*. After the prioritized tests are run, it will create these components so that they
-can be shared with the next tests that rely on it. The test snippet helpers in `vcfa_common_test.go`
-are flexible and can either return `data` or `resource` snippet for these components.
+can be shared with the next tests that rely on it. This saves a lot of time because almost every
+tests relies on core components, but their creation takes time. The test snippet helpers in
+`vcfa_common_test.go` are flexible and can either return `data` or `resource` snippet for these
+components.
 
-The prioritization and core component sharing functionality **can be skipped** by using
+The prioritization and core component sharing functionality **can be disabled** by using
 `-vcfa-skip-priority-tests` flag. The penalty is prolonged test execution time.
-
-The prioritization itself has some technical specific to how it is being run. Go test framework does
-not offer test priority specification and test order is never guaranteed. However, while the goal of
-test suite is to try and share core components (especially the ones that take long time to create) -
-these components must still be tested with their respective tests. As a result, there is some
-specifics in the testing implementation - the vCenter server and NSX Manager tests are always run
-the first ones and once only. Once their respective tests are run, the testing framework uses SDK
-functionality to create shared vCenter server and NSX Manager instances so that next tests can reuse
-them.
 
 **Note:** Go testing framework does not directly provide functionality to prioritize tests,
 therefore the priority tests are always executed as subtests of whichever test was triggered. Their
@@ -301,32 +294,8 @@ If we use `-vcfa-pre-post-checks` and the run was successful, the next run will 
 would be all found in `VCFA_test_pass_list_{vcfa_IP}.txt`. To run again the test from scratch, we could either remove
 the file manually, or use the tag `-vcfa-remove-test-list`.
 
-**VERY IMPORTANT**: for the conditional running to work, each test must have a call to `preTestChecks(t)`  at the beginning
-and to `postTestChecks(t)` right before the end.
-
-## Tests with multiple providers
-
-When the test requires multiple providers (such as system administrator + tenant or two different tenants with an
-optional system administrator), we can take advantage of the capability of setting multiple providers as `ProviderFactories`,
-using a pre-defined function and several conventions:
-
-1. Set the test as being only runnable by system administrator (`skipIfNotSysAdmin`). The Org user roles will be defined
-   by the provider names (see item #3).
-2. Add the provider factories (`ProviderFactories: buildMultipleProviders(),`)
-3. Assign an explicit provider to every resource or data source, using `provider = vcfa` for system administrator, 
-   and `provider = vcfaorg1` and `provider = vcfaorg2` for tenants using the first and second Org in your vcfa (e.g. "testorg" and "testorg-1").
-4. The provider names must not be changed. Also, do not use the expressions `VCFAorg1` or `VCFAorg2` in any other
-   test that don't require multiple providers.
-
-The test framework does not support aliases. Therefore, the test that runs in the integrated environment will be slightly
-different from the text that gets written to the files in `test-artifacts`, where the absolute provider names get
-converted to aliases, and an explicit provider definition for the Org users is added to the script.
-Look at `TestResourceInfoProviders` to see a full example of how to use the method described in this section.
-
-**CAVEAT**: when using `buildMultipleProviders()`, you must make sure that the system provider (`VCFA`) is used at least
-once in the HCL script. If it is not, the variable `testAccProvider` may not get initialised, and if that happens,
-test checks that use the expression `conn := testAccProvider.Meta().(*vcfaClient)` will panic.
-
+**VERY IMPORTANT**: for the conditional running to work, each test must have a call to `preTestChecks(t)` at the beginning
+and immediately defer `postTestChecks(t)` right before the end.
 
 ## Leftovers removal
 
@@ -347,26 +316,25 @@ There are several environment variables that can affect the tests. Many of them 
 that can be used in combination with the `go test` command. You can see them using the `-vcfa-help` flag.
 
 * `TF_ACC=1` enables the acceptance tests. It is also set when you run `make testacc`.
-* `GOvcfa_DEBUG=1` (`-vcfa-debug`) enables debug output of the test suite
-* `GOvcfa_TRACE=1` (`-vcfa-trace`) enables function calls tracing
+* `GOVCD_DEBUG=1` (`-govcd-debug`) enables debug output of the test suite
+* `GOVCD_TRACE=1` (`-govcd-trace`) enables function calls tracing
 * `VCFA_SKIP_TEMPLATE_WRITING=1`  (`-vcfa-skip-template-write`) skips the production of test templates into `./vcfa/test-artifacts`
 * `VCFA_ADD_PROVIDER=1` (`-vcfa-add-provider`) Adds the full provider definition to the snippets inside `./vcfa/test-artifacts`.
-   **WARNING**: the provider definition includes your vCloud Director credentials.
+   **WARNING**: the provider definition includes your VCFA credentials.
+* `VCFA_SHORT_TEST=1` (`-vcfa-short`) Will not execute the tests themselves, but only generate snippets in `./vcfa/test-artifacts`.
 * `VCFA_CONFIG=FileName` sets the file name for the test configuration file.
 * `VCFA_TEST_SUITE_CLEANUP=1` will clean up testing resources that were created in previous test runs.
-* `VCFA_TEST_VERBOSE=1` (`-vcfa-verbose`) enables verbose output in some tests, such as the list of used tags, or the version
+* `VCFA_TEST_VERBOSE=1` (`-vcfa-test-verbose`) enables verbose output in some tests, such as the list of used tags, or the version
 used in the documentation index.
 * `VCFA_TEST_TRACE=1` (`vcfa-test-trace`) enable trace output in some tests that is not shown in verbose mode
 * `VCFA_SKIP_PRIORITY_TESTS=1` (`vcfa-skip-priority-tests`) will disable using test prioritization
-  and infrastructure component sharing
+  and core infrastructure component sharing
 * `VCFA_TEST_ORG_USER=1` (`-vcfa-test-org-user`) will enable tests with Org User, using the credentials from the configuration file
   (`testEnvBuild.OrgUser` and `testEnvBuild.OrgUserPassword`)
 * `VCFA_TOKEN=string` : specifies the authentication token to use instead of username/password
    (Use `./scripts/get_token.sh` to retrieve one)
-* `VCFA_TEST_DISTRIBUTED_NETWORK=1` (`-vcfa-test-distributed`) runs testing of distributed networks (requires the edge gateway to have distributed
-  routing enabled)
 * `VCFA_TEST_DATA_GENERATION=1` generates some sample catalog items for data source filter engine test
-* `GOvcfa_KEEP_TEST_OBJECTS=1` does not delete test objects created with `VCFA_TEST_DATA_GENERATION`
+* `GOVCD_KEEP_TEST_OBJECTS=1` does not delete test objects created with `VCFA_TEST_DATA_GENERATION`
 * `VCFA_MAX_ITEMS=number` during filter engine tests, limits the collection of data sources of a given type to the number
   indicated. The default is 5. The maximum is 100.
 * `VCFA_PRE_POST_CHECKS` (`-vcfa-pre-post-checks`) Perform checks before and after tests (false)
@@ -378,10 +346,6 @@ used in the documentation index.
 * `VCFA_SKIP_PATTERN` (`-vcfa-skip-pattern`) Skip tests that match the pattern (implies vcfa-pre-post-checks ()
 * `VCFA_SKIP_LEFTOVERS_REMOVAL` (`-vcfa-skip-leftover-removal`) Do not run the leftovers removal at the end of the suite
 * `VCFA_SILENT_LEFTOVERS_REMOVAL` (`-vcfa-silent-leftover-removal`) Omit details during leftovers removal.
-* `VCFA_PARTITIONS` (`-vcfa-partitions`) Number of partitions used to run the tests
-* `VCFA_PARTITION_NODE` (`VCFA-partition-node`) Number of current node running one of the partitions
-* `VCFA_PARTITION_TESTS_FILE` (`-vcfa-partition-tests-file`) File containing the list of tests that this node will run
-
 
 When both the environment variable and the command line option are possible, the environment variable gets evaluated first.
 
