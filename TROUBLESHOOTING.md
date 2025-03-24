@@ -132,3 +132,21 @@ to be blocked until they are approved (or rejected) by an authorized user. If yo
 may need to ask that the Organization has `quarantine_content_library_items` disabled, or that someone approves or denies the
 upload when the Terraform script is applied.
 
+### Configuring external entity connection (vCenter server, NSX Manager) returns certificate error
+
+Sample error:
+
+```sh
+vcfa_vcenter.demo: Creating...
+╷
+│ Error: error creating entity vCenter Server. Storing tainted resources ID urn:vcloud:vimserver:39e82b7d-8ca8-4dbf-b13e-16cbc3bf73f6. Task error: task did not complete successfully:  [400:BAD_REQUEST] - [ 17-2025-03-24-16-22-00-804--dbab3b29-dd00-4fbb-9a6c-1953e4b88f1c ] Failed to connect to the vCenter due to org.bouncycastle.tls.TlsFatalAlert: certificate_unknown(46).
+│ 
+│   with vcfa_vcenter.demo,
+│   on main.tf line 21, in resource "vcfa_vcenter" "demo":
+│   21: resource "vcfa_vcenter" "demo" {
+```
+
+The entities that handle external connections (vCenter server, NSX Manager, LDAP Server
+configurations, etc.) must have a valid trusted certificate configured for a destination entity.
+Make sure that the certificate of that entity is trusted. Resources have `auto_trust_certificate`
+boolean field that can be used to leverage.
