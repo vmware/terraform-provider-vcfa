@@ -1,33 +1,25 @@
 # Testing terraform-provider-vcfa
 
-
 ## Table of contents
 
 - [Meeting prerequisites: Building the test environment](#meeting-prerequisites-building-the-test-environment)
 - [VCFA test environment configuration](#vcfa-test-environment-configuration)
-- [Test prioritization and sharing core components (vCenter, NSX Manager)](#test-prioritization-and-sharing-core-components)
 - [Running tests](#running-tests)
-
-- [Tests split by feature set](#tests-split-by-feature-set)
+- [Test prioritization and sharing core components (vCenter, NSX Manager)](#test-prioritization-and-sharing-core-components)
 - [Adding new tests](#adding-new-tests)
-  - [Parallelism considerations](#parallelism-considerations)
+- [Parallelism considerations](#parallelism-considerations)
 - [Binary testing](#binary-testing)
 - [Handling failures in binary tests](#handling-failures-in-binary-tests)
-- [Upgrade testing](#upgrade-testing)
-- [Custom terraform scripts](#custom-terraform-scripts)
 - [Conditional running of tests](#conditional-running-of-tests)
-- [Tests with multiple providers](#tests-with-multiple-providers)
-- [Partitioned tests](#partitioned-tests)
 - [Leftovers removal](#leftovers-removal)
 - [Environment variables and corresponding flags](#environment-variables-and-corresponding-flags)
-- [Troubleshooting code issues](#troubleshooting-code-issues)  OK
+- [Troubleshooting code issues](#troubleshooting-code-issues)
 
 ## Meeting prerequisites: Building the test environment
 
 To run the tests, your VCFA needs to have the following:
 
-* Classic tenancy feature flag enabled
-
+* Classic Tenancy feature flag enabled
 
 ## VCFA test environment configuration
 
@@ -35,27 +27,54 @@ To run the tests, your VCFA needs to have the following:
 example) configuration that can be either be put into working directory or its path can be set using
 `VCFA_CONFIG` environment variable.
 
+## Running tests
+
+In order to test the provider, you can simply run `make test`.
+
+```sh
+$ make test
+```
+
+In order to run the full suite of Acceptance tests for **VCFA**, run `make testacc`.
+
+*Note:* Acceptance tests create real resources, and often cost money to run.
+
+```sh
+$ make testacc
+```
+
+### Unit tests
+
+You can run the unit tests directly with
+
+```sh
+make testunit
+```
+
 ## Test prioritization and sharing core components
 
 The test suite will prioritize testing core infrastructure component resources such *vCenter server*
 and *NSX Manager*. After the prioritized tests are run, it will create these components so that they
 can be shared with the next tests that rely on it. This saves a lot of time because almost every
-tests relies on core components, but their creation takes time. The test snippet helpers in
+tests relies on core components anttheir creation takes time. The test snippet helpers in
 `vcfa_common_test.go` are flexible and can either return `data` or `resource` snippet for these
-components.
+components. As long as these helpers are used, the test will take advantage of sharing components.
 
 The prioritization and core component sharing functionality **can be disabled** by using
-`-vcfa-skip-priority-tests` flag. The penalty is prolonged test execution time.
+`-vcfa-skip-priority-tests` flag. The penalty is prolonged test execution time due to each test will
+create its own components.
 
 **Note:** Go testing framework does not directly provide functionality to prioritize tests,
 therefore the priority tests are always executed as subtests of whichever test was triggered. Their
 state is store and later, when the same test is picked for run, it will be skipped with its
 previously reported state. This functionality can be skipped with `-vcfa-skip-priority-tests` flag.
 
-Test output extract
+In the below test output, the three prioritized tests `TestAccVcfaNsxManager`, `TestAccVcfaVcenter`
+and `TestAccVcfaVcenterInvalid` are being run as subtests of `TestAccDataSourceNotFound` because it
+was the first test that was execute in the test suite. When the actual test runs are triggered, they
+are skipped with a note that they were already executed.
 
 ```sh
-
 TestAccDataSourceNotFound
 # Running priority tests before shared vCenter and NSX Manager is created, so they do not collide later (can be skipped with '-vcfa-skip-priority-tests' flag)
 # Running priority test 'TestAccVcfaNsxManager' as a subtest of 'TestAccDataSourceNotFound':
@@ -93,31 +112,6 @@ TestAccVcfaVcenterInvalid
 config_test.go:1135: TestAccVcfaVcenterInvalid already run with priority
 SKIP: TestAccVcfaVcenterInvalid (0.00s)
 ```
-
-## Running tests
-
-In order to test the provider, you can simply run `make test`.
-
-```sh
-$ make test
-```
-
-In order to run the full suite of Acceptance tests for **VCFA**, run `make testacc`.
-
-*Note:* Acceptance tests create real resources, and often cost money to run.
-
-```sh
-$ make testacc
-```
-
-### Unit tests
-
-You can run the unit tests directly with
-
-```sh
-make testunit
-```
-
 
 ## Adding new tests
 
@@ -293,7 +287,7 @@ When `-vcfa-pre-post-checks` is used, we have several advantages:
 If we use `-vcfa-pre-post-checks` and the run was successful, the next run will skip all tests, because the test names
 would be all found in `VCFA_test_pass_list_{vcfa_IP}.txt`. To run again the test from scratch, we could either remove
 the file manually, or use the tag `-vcfa-remove-test-list`.
-
+<!--  -->
 **VERY IMPORTANT**: for the conditional running to work, each test must have a call to `preTestChecks(t)` at the beginning
 and immediately defer `postTestChecks(t)` right before the end.
 
