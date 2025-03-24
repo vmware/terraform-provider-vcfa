@@ -46,9 +46,9 @@ provider "vcfa" {
   logging_file         = "vcfa.log"
 }
 
-# Fetch the Tenant Manager version
-data "vcfa_tm_version" "version" {
-  condition         = ">= 10.7.0"
+# Fetch the VCFA version
+data "vcfa_version" "version" {
+  condition         = ">= 9.0.0"
   fail_if_not_match = false
 }
 ```
@@ -66,9 +66,9 @@ provider "vcfa" {
   logging_file         = "vcfa.log"
 }
 
-# Fetch the Tenant Manager version
-data "vcfa_tm_version" "version" {
-  condition         = ">= 10.7.0"
+# Fetch the VCFA version
+data "vcfa_version" "version" {
+  condition         = ">= 9.0.0"
   fail_if_not_match = false
 }
 ```
@@ -86,9 +86,9 @@ provider "vcfa" {
   logging_file         = "vcfa.log"
 }
 
-# Fetch the Tenant Manager version
-data "vcfa_tm_version" "version" {
-  condition         = ">= 10.7.0"
+# Fetch the VCFA version
+data "vcfa_version" "version" {
+  condition         = ">= 9.0.0"
   fail_if_not_match = false
 }
 ```
@@ -149,10 +149,10 @@ The following arguments are used to configure the VMware Cloud Foundation Automa
 - `url` - (Required) This is the URL for the VCFA endpoint hostname e.g.
   https://server.domain.com. Can also be specified with the `VCFA_URL` environment variable.
 
-- `allow_unverified_ssl` - (Optional) Boolean that can be set to true to
+- `allow_unverified_ssl` - (Optional) Boolean that can be set to `true` to
   disable SSL certificate verification. This should be used with care as it
   could allow an attacker to intercept your auth token. If omitted, default
-  value is false. Can also be specified with the
+  value is `false`. Can also be specified with the
   `VCFA_ALLOW_UNVERIFIED_SSL` environment variable.
 
 - `logging` - (Optional) Boolean that enables API calls logging from upstream library `go-vcloud-director`. 

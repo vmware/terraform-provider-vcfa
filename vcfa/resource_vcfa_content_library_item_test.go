@@ -153,7 +153,7 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 				ResourceName:            cli1,
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateId:           fmt.Sprintf("%s%s%s", testConfig.Tm.ContentLibrary, ImportSeparator, params["Name"].(string)+"1"),
+				ImportStateId:           fmt.Sprintf("System%s%s%s%s", ImportSeparator, testConfig.Tm.ContentLibrary, ImportSeparator, params["Name"].(string)+"1"),
 				ImportStateVerifyIgnore: []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}, // file_paths and upload_piece_size cannot be obtained during imports, that's why it's Optional
 			},
 		},
