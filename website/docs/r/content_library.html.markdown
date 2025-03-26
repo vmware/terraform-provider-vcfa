@@ -202,7 +202,8 @@ The following arguments are supported:
 * `delete_force` - (Optional) Defaults to `false`. On deletion, forcefully deletes the Content Library and its Content Library items. Only considered with
   `PROVIDER` Content Libraries, ignored otherwise
 * `delete_recursive` - (Optional) Defaults to `false`. On deletion, deletes the Content Library, including its Content Library items, in a single operation
-* `storage_class_ids` - (Required) A set of [Storage Class IDs][vcfa_storage_class-ds] used by this Content Library
+* `storage_class_ids` - (Required) A set of [Storage Class IDs][vcfa_storage_class-ds] used by this Content Library. These Storage Classes must be available
+  in the Region or Region Quota where the Content Library is created, for `PROVIDER` or `TENANT` types respectively
 * `auto_attach` - (Optional) Defaults to `true`. For `TENANT` Content Libraries this field represents whether this Content Library should be
   automatically attached to all current and future namespaces in the Organization. If a value of `false` is supplied, then this
   Tenant Content Library will only be attached to namespaces that explicitly request it. For `PROVIDER` Content Libraries this field is not needed
