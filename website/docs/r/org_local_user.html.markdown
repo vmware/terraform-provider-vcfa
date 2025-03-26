@@ -10,6 +10,8 @@ description: |-
 
 Provides a resource to manage local users in VMware Cloud Foundation Automation Organizations.
 
+~> This resource can only be used by **System Administrators**
+
 ## Example Usage
 
 ```hcl

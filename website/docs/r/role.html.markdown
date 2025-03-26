@@ -10,6 +10,8 @@ description: |-
 
 Provides a VMware Cloud Foundation Automation Role. This can be used to create, modify, and delete Roles.
 
+-> This resource can be used by both **System Administrators** and **Tenant users**
+
 ## Example Usage
 
 ```hcl

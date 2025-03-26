@@ -10,6 +10,8 @@ description: |-
 
 Provides a resource to manage VMware Cloud Foundation Automation Organization general Settings.
 
+~> This resource can only be used by **System Administrators**
+
 -> For Organization Networking settings, see [`vcfa_org_networking`](/providers/vmware/vcfa/latest/docs/resources/org_networking) resource
 
 ## Example Usage

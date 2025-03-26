@@ -10,7 +10,7 @@ description: |-
 
 Provides a VMware Cloud Foundation Automation Provider Gateway resource.
 
-~> Only `System Administrator` can create this resource.
+~> This resource can only be used by **System Administrators**
 
 ## Example Usage
 

@@ -10,6 +10,8 @@ description: |-
 
 Provides a resource to manage VMware Cloud Foundation Automation Organization Regional Networking VPC QoS settings.
 
+~> This resource can only be used by **System Administrators**
+
 -> Organization Regional Networking VPC inherits QoS settings from the Edge Cluster by default, but
 one can use this resource to override provided defaults. Deleting this resource will revert the
 settings back to Edge Cluster defaults.

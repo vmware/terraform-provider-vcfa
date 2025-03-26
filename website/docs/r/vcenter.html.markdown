@@ -10,7 +10,7 @@ description: |-
 
 Provides a resource to manage vCenters in VMware Cloud Foundation Automation.
 
-~> Only `System Administrator` can create this resource.
+~> This resource can only be used by **System Administrators**
 
 ## Example Usage
 

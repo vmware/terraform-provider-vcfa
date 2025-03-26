@@ -10,6 +10,8 @@ description: |-
 
 Provides a resource to manage VMware Cloud Foundation Automation Organization Region Quotas.
 
+~> This resource can only be used by **System Administrators**
+
 ## Example Usage
 
 ```hcl

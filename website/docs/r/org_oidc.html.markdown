@@ -10,6 +10,8 @@ description: |-
 
 Provides a resource to configure or remove OpenID Connect (OIDC) for an Organization in VMware Cloud Foundation Automation.
 
+-> This resource can be used by both **System Administrators** and **Tenant users**
+
 ## Example Usage with Well-known Configuration Endpoint
 
 The well-known configuration endpoint retrieves all the OpenID Connect settings values:

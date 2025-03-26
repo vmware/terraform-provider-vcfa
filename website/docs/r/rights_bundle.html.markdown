@@ -10,6 +10,8 @@ description: |-
 
 Provides a VMware Cloud Foundation Automation Rights Bundle resource. This can be used to create, modify, and delete Rights Bundles.
 
+~> This resource can only be used by **System Administrators**
+
 ## Example Usage
 
 ```hcl

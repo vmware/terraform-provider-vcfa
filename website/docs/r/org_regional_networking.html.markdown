@@ -10,6 +10,8 @@ description: |-
 
 Provides a resource to manage VMware Cloud Foundation Automation Organization Regional Networking Settings.
 
+~> This resource can only be used by **System Administrators**
+
 ## Example Usage
 
 ```hcl
