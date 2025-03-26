@@ -3,12 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_rights_bundle"
 sidebar_current: "docs-vcfa-data-source-rights-bundle"
 description: |-
- Provides a VMware Cloud Foundation Automation Rights Bundle data source. This can be used to read Rights Bundles.
+  Provides a data source to read a Rights Bundle from VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_rights\_bundle
 
-Provides a VMware Cloud Foundation Automation Rights Bundle data source. This can be used to read Rights Bundles.
+Provides a data source to read a Rights Bundle from VMware Cloud Foundation Automation.
+
+~> This data source can only be used by **System Administrators**
 
 ## Example Usage
 

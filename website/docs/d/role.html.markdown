@@ -3,12 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_role"
 sidebar_current: "docs-vcfa-data-source-role"
 description: |-
- Provides a VMware Cloud Foundation Automation Role. This can be used to read Roles.
+  Provides a data source to read a Role from VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_role
 
-Provides a VMware Cloud Foundation Automation Role data source. This can be used to read Roles.
+Provides a data source to read a Role from VMware Cloud Foundation Automation.
+
+-> This data source can be used by both **System Administrators** and **Tenant users**
 
 ## Example Usage
 

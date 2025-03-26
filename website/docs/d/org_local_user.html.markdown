@@ -10,6 +10,8 @@ description: |-
 
 Provides a data source to read local users in VMware Cloud Foundation Automation Organizations.
 
+~> This data source can only be used by **System Administrators**
+
 ## Example Usage
 
 ```hcl

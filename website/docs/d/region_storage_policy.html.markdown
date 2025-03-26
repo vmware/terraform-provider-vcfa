@@ -10,6 +10,8 @@ description: |-
 
 Provides a VMware Cloud Foundation Automation data source to read Region Storage Policies.
 
+~> This data source can only be used by **System Administrators**
+
 -> To retrieve Storage Classes, use the [`vcfa_storage_class`](/providers/vmware/vcfa/latest/docs/data-sources/storage_class)
 data source instead
 

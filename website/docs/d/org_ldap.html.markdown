@@ -10,6 +10,8 @@ description: |-
 
 Provides a data source to read LDAP configuration for an Organization.
 
+-> This data source can be used by both **System Administrators** and **Tenant users**
+
 -> To read LDAP of the Provider (System) organization, please use [`vcfa_provider_ldap` data source](/providers/vmware/vcfa/latest/docs/data-sources/provider_ldap) instead
 
 ## Example Usage

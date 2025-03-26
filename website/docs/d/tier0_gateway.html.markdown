@@ -3,12 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_tier0_gateway"
 sidebar_current: "docs-vcfa-data-source-tier0-gateway"
 description: |-
-  Provides a VMware Cloud Foundation Automation Tier 0 Gateway data source.
+  Provides a data source to read a Tier-0 Gateway from VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_tier0\_gateway
 
-Provides a VMware Cloud Foundation Automation Tier 0 Gateway data source.
+Provides a data source to read a Tier-0 Gateway from VMware Cloud Foundation Automation.
+
+~> This data source can only be used by **System Administrators**
 
 ## Example Usage
 

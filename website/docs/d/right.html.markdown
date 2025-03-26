@@ -8,7 +8,9 @@ description: |-
 
 # vcfa\_right
 
-Provides a data source to read available rights in VMware Cloud Foundation Automation.
+Provides a data source to read available Rights in VMware Cloud Foundation Automation.
+
+-> This data source can be used by both **System Administrators** and **Tenant users**
 
 ## Example usage
 

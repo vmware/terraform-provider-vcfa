@@ -3,12 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_supervisor_namespace"
 sidebar_current: "docs-data-source-vcfa-supervisor-namespace"
 description: |-
-  Provides a VMware Cloud Foundation Automation Supervisor Namespace data source.
+  Provides a data source to read a Supervisor Namespace from VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_supervisor\_namespace
 
-Provides a VMware Cloud Foundation Automation Supervisor Namespace data source.
+Provides a data source to read a Supervisor Namespace from VMware Cloud Foundation Automation.
+
+~> This data source can only be used by **System Administrators**
 
 ## Example Usage
 

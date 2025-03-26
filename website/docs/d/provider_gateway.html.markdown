@@ -10,6 +10,8 @@ description: |-
 
 Provides a VMware Cloud Foundation Automation Provider Gateway data source.
 
+~> This data source can only be used by **System Administrators**
+
 ## Example Usage
 
 ```hcl

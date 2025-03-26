@@ -8,7 +8,9 @@ description: |-
 
 # vcfa\_supervisor\_zone
 
-Provides a data source to read Supervisor Zones in VMware Cloud Foundation Automation.
+Provides a data source to read a Supervisor Zone in VMware Cloud Foundation Automation.
+
+~> This data source can only be used by **System Administrators**
 
 ## Example Usage
 

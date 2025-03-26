@@ -10,6 +10,8 @@ description: |-
 
 Provides a data source to fetch the [kubeconfig](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/) data from VMware Cloud Foundation Automation.
 
+~> This data source can only be used by **System Administrators**
+
 ## Example Usage
 
 ```hcl

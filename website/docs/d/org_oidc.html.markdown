@@ -10,6 +10,8 @@ description: |-
 
 Provides a data source to read the OpenID Connect (OIDC) configuration of an Organization in VMware Cloud Foundation Automation.
 
+-> This data source can be used by both **System Administrators** and **Tenant users**
+
 ## Example Usage
 
 ```hcl

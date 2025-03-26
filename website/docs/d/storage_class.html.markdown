@@ -3,12 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_storage_class"
 sidebar_current: "docs-vcfa-data-source-storage-class"
 description: |-
-  Provides a VMware Cloud Foundation Automation data source to read Storage Classes.
+  Provides a data source to read a Storage Class in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_storage\_class
 
-Provides a VMware Cloud Foundation Automation data source to read Storage Classes.
+Provides a data source to read a Storage Class in VMware Cloud Foundation Automation.
+
+-> This data source can be used by both **System Administrators** and **Tenant users**
 
 ## Example Usage
 

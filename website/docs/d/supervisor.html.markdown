@@ -3,12 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_supervisor"
 sidebar_current: "docs-vcfa-data-source-supervisor"
 description: |-
-  Provides a data source to read Supervisors in VMware Cloud Foundation Automation.
+  Provides a data source to read a Supervisor in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_supervisor
 
-Provides a data source to read Supervisors in VMware Cloud Foundation Automation.
+Provides a data source to read a Supervisor in VMware Cloud Foundation Automation.
+
+~> This data source can only be used by **System Administrators**
 
 ## Example Usage
 

@@ -10,6 +10,8 @@ description: |-
 
 Provides a data source to read VMware Cloud Foundation Automation Organization general Settings.
 
+~> This data source can only be used by **System Administrators**
+
 -> For Organization Networking settings, see [`vcfa_org_networking`](/providers/vmware/vcfa/latest/docs/data-sources/org_networking) data source 
 
 ## Example Usage
