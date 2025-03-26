@@ -166,7 +166,8 @@ that the tests defined for parallel run are not clashing with each other.
 
 By default `make testacc` runs acceptance tests with parallelism enabled (for the tests which are
 defined with `resource.ParallelTest`). If there is a need to troubleshoot or simply force the tests
-to run sequentially - `make seqtestacc` can be used to achieve it.
+to run sequentially - `make seqtestacc` can be used to achieve it. Only a minority of tests are
+running in parallel mode due to there can't be multiple resources created without having large lab.
 
 ## Binary testing
 
