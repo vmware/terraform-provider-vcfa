@@ -211,7 +211,7 @@ The following arguments are supported:
 * `description` - (Optional) The description of the Content Library. Not used if the library is subscribed to another one (see `subscription_config` below), as
   the value will be the one from publisher library
 * `subscription_config` - (Optional) A block representing subscription settings of a Content Library:
-  *  `subscription_url` - Subscription url of this Content Library
+  *  `subscription_url` - Subscription URL of this Content Library
   *  `password` - Password to use to authenticate with the publisher
   *  `need_local_copy` - Whether to eagerly download content from publisher and store it locally
 
