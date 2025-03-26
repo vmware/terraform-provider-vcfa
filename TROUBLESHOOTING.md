@@ -7,6 +7,7 @@
   - [Login does not work](#login-does-not-work)
   - [Entity Not Found error](#entity-not-found-error)
   - [vcfa_content_library_item creation never finishes (it's stuck)](#vcfa_content_library_item-creation-never-finishes-its-stuck)
+  - [Configuring external entity connection (vCenter server, NSX Manager) returns certificate error](#configuring-external-entity-connection-vcenter-server-nsx-manager-returns-certificate-error)
 
 ## How to enable logging
 
