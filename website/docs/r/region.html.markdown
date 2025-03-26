@@ -70,10 +70,16 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing Region configuration can be [imported][docs-import] into this resource via supplying
 path for it. An example is below:
 
-[docs-import]: https://www.terraform.io/docs/import/
-
 ```
 terraform import vcfa_region.imported my-region
 ```
 
-The above would import the `my-region` Region settings
+NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+
+The above would import the `my-region` Region settings.
+
+After that, you must expand the configuration file before you can either update or delete the Region configuration. Running `terraform plan`
+at this stage will show the difference between the minimal configuration file and the stored properties.
+
+[docs-import]: https://www.terraform.io/docs/import
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources

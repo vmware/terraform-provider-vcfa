@@ -122,10 +122,16 @@ An existing Organization Region Quota configuration can be [imported][docs-impor
 via supplying path for it. An example is
 below:
 
-[docs-import]: https://www.terraform.io/docs/import/
-
 ```
 terraform import vcfa_org_region_quota.imported my-org-name.my-region-name
 ```
 
+NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+
 The above would import the Organization Region Quota that belongs to `my-org-name` Organization and `my-region-name` Region.
+
+After that, you can expand the configuration file and either update or delete the Organization Region Quota as needed. Running `terraform plan`
+at this stage will show the difference between the minimal configuration file and the Organization Region Quota's stored properties.
+
+[docs-import]: https://www.terraform.io/docs/import
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources

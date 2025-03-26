@@ -51,8 +51,6 @@ The following arguments are supported:
 - `ingress_burst_size_bytes` - (Optional) Ingress burst size in bytes. Required with
   `ingress_committed_bandwidth_mbps`. Default is `-1` - unlimited
 
-
-
 ## Attribute Reference
 
 - `edge_cluster_id` - ID of parent Edge Cluster
@@ -66,11 +64,17 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing Regional Networking Configuration can be [imported][docs-import] into this resource via supplying path
 for it. An example is below:
 
-[docs-import]: https://www.terraform.io/docs/import/
-
 ```
-terraform import vcfa_org_regional_networking.imported my-org-name.my-regional-configuration-name
+terraform import vcfa_org_regional_networking_vpc_qos.imported my-org-name.my-regional-configuration-name
 ```
 
-The above would import the `my-regional-configuration-name` Regional Networking Configuration
-Settings that are defined for `my-org-name` Organization.
+NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+
+The above would import the Regional Networking VPC QoS settings that are defined by the `my-regional-configuration-name`
+Regional Networking Configuration Settings present in the `my-org-name` Organization.
+
+After that, you can expand the configuration file and either update or delete the Regional Networking VPC QoS as needed. Running `terraform plan`
+at this stage will show the difference between the minimal configuration file and the Regional Networking VPC QoS' stored properties.
+
+[docs-import]: https://www.terraform.io/docs/import
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources

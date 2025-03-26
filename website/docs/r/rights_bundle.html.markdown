@@ -75,9 +75,10 @@ You can import such Rights Bundle into terraform state using this command
 terraform import vcfa_rights_bundle.default-set "Default Rights Bundle"
 ```
 
-NOTE: the default separator (.) can be changed using Provider.import_separator or variable VCFA_IMPORT_SEPARATOR
-
-[docs-import]:https://www.terraform.io/docs/import/
+NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
 After that, you can expand the configuration file and either update or delete the Rights Bundle as needed. Running `terraform plan`
 at this stage will show the difference between the minimal configuration file and the Rights Bundle's stored properties.
+
+[docs-import]: https://www.terraform.io/docs/import
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources

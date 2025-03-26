@@ -140,13 +140,16 @@ resource "vcfa_org_ldap" "my-org-ldap" {
 }
 ```
 
-You can import such LDAP configuration into terraform state using one of the following commands
+You can import such Organization LDAP configuration into terraform state using one of the following commands
 
 ```
 terraform import vcfa_org_ldap.my-org-ldap organization_name
 ```
 
-After that, you must expand the configuration file before you can either update or delete the LDAP configuration. Running `terraform plan`
+NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+
+After that, you must expand the configuration file before you can either update or delete the Organization LDAP configuration. Running `terraform plan`
 at this stage will show the difference between the minimal configuration file and the stored properties.
 
-[docs-import]:https://www.terraform.io/docs/import/
+[docs-import]: https://www.terraform.io/docs/import
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources

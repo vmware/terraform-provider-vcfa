@@ -56,10 +56,16 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing Org Local User configuration can be [imported][docs-import] into this resource via
 supplying path for it. An example is below:
 
-[docs-import]: https://www.terraform.io/docs/import/
-
 ```
 terraform import vcfa_org_local_user.imported my-org-name.my-user-name
 ```
 
+NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+
 The above would import the `my-user-name` local user from  `my-org-name` Organization.
+
+After that, you can expand the configuration file and either update or delete the Organization Local User as needed. Running `terraform plan`
+at this stage will show the difference between the minimal configuration file and the Organization Local User's stored properties.
+
+[docs-import]: https://www.terraform.io/docs/import
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources

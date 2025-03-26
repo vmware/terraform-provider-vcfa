@@ -145,8 +145,10 @@ terraform import vcfa_supervisor_namespace.existing_supervisor_namespace "projec
 
 Where `project_name` is the name of the Project and `supervisor_namespace_name` is the name of the Supervisor Namespace.
 
-NOTE: the default separator (.) can be changed using Provider.import_separator or variable VCFA_IMPORT_SEPARATOR
+NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
-[docs-import]:https://www.terraform.io/docs/import/
+After that, you can expand the configuration file and either update or delete the Supervisor Namespace as needed.
+Running `terraform plan` at this stage will show the difference between the minimal configuration file and the Supervisor Namespace's stored properties.
 
-After that, you can expand the configuration file and either update or delete the Supervisor Namespace as needed. Running `terraform plan` at this stage will show the difference between the minimal configuration file and the Supervisor Namespace's stored properties.
+[docs-import]: https://www.terraform.io/docs/import
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
