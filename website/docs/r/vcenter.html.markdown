@@ -3,12 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_vcenter"
 sidebar_current: "docs-vcfa-resource-vcenter"
 description: |-
-  Provides a resource to manage vCenters in VMware Cloud Foundation Automation.
+  Provides a resource to manage vCenter servers in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_vcenter
 
-Provides a resource to manage vCenters in VMware Cloud Foundation Automation.
+Provides a resource to manage vCenter servers in VMware Cloud Foundation Automation.
 
 ~> This resource can only be used by **System Administrators**
 
