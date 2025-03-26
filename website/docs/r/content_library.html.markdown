@@ -213,7 +213,6 @@ The following arguments are supported:
 * `subscription_config` - (Optional) A block representing subscription settings of a Content Library:
   *  `subscription_url` - Subscription URL of this Content Library. For example, a published library from vCenter: `https://my-vcenter/cls/vcsp/lib/972a669e-c668-48f6-91e9-410962befbe4/lib.json`
   *  `password` - Password to use to authenticate with the publisher
-  *  `need_local_copy` - Whether to eagerly download content from publisher and store it locally
 
 ~> To use `subscription_config` block in `TENANT` type Content Libraries, check that the [`vcfa_org_settings`][vcfa_org_settings]
 of the target Organization allows it.

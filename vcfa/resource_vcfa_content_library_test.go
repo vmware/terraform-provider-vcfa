@@ -115,7 +115,6 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceNameSubscribed, "subscription_config.#", "1"),
 					resource.TestCheckResourceAttr(resourceNameSubscribed, "subscription_config.0.subscription_url", params["SubscriptionUrl"].(string)),
 					resource.TestCheckResourceAttr(resourceNameSubscribed, "subscription_config.0.password", "******"),
-					resource.TestCheckResourceAttr(resourceNameSubscribed, "subscription_config.0.need_local_copy", "true"),
 					resource.TestMatchResourceAttr(resourceNameSubscribed, "version_number", regexp.MustCompile("[0-9]")),
 				),
 			},
@@ -191,7 +190,6 @@ resource "vcfa_content_library" "cl_subscribed" {
   ]
   subscription_config {
     subscription_url = "{{.SubscriptionUrl}}"
-    need_local_copy  = true
   }
   delete_force = true
   delete_recursive = true
@@ -345,7 +343,6 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 					resource.TestCheckResourceAttr(clSubscribed, "subscription_config.#", "1"),
 					resource.TestCheckResourceAttr(clSubscribed, "subscription_config.0.subscription_url", params["SubscriptionUrl"].(string)),
 					resource.TestCheckResourceAttr(clSubscribed, "subscription_config.0.password", "******"),
-					resource.TestCheckResourceAttr(clSubscribed, "subscription_config.0.need_local_copy", "true"),
 					resource.TestMatchResourceAttr(clSubscribed, "version_number", regexp.MustCompile("[0-9]")),
 				),
 			},
@@ -536,7 +533,6 @@ resource "vcfa_content_library" "cl_subscribed" {
   ]
   subscription_config {
     subscription_url = "{{.SubscriptionUrl}}"
-    need_local_copy  = true
   }
   delete_force = true
   delete_recursive = true
