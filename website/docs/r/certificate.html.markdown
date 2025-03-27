@@ -3,14 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_certificate"
 sidebar_current: "docs-vcfa-resource-certificate"
 description: |-
-  Provides a VMware Cloud Foundation Automation Certificate resource. It can be used to manage the certificates of
+  Provides a resource to manage Certificates in VMware Cloud Foundation Automation. It can be used to manage the certificates of
   servers that VCF Automation has trusted communication with. These certificates are used for verification of the
   credentials of other servers.
 ---
 
 # vcfa\_certificate
 
-Provides a VMware Cloud Foundation Automation Certificate resource. It can be used to manage the certificates of
+Provides a resource to manage Certificates in VMware Cloud Foundation Automation. It can be used to manage the certificates of
 servers that VCF Automation has trusted communication with. These certificates are used for verification of the
 credentials of other servers.
 
