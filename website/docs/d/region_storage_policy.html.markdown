@@ -3,12 +3,13 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_region_storage_policy"
 sidebar_current: "docs-vcfa-data-source-region-storage-policy"
 description: |-
-  Provides a VMware Cloud Foundation Automation data source to read Region Storage Policies.
+  Provides a data source to read a Region Storage Policy in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_region\_storage\_policy
 
-Provides a VMware Cloud Foundation Automation data source to read Region Storage Policies.
+Provides a data source to read a Region Storage Policy in VMware Cloud Foundation Automation. These are useful
+when configuring an [Organization Region Quota](/providers/vmware/vcfa/latest/docs/resources/org_region_quota) `region_storage_policy` block.
 
 _Used by: **Provider**_
 
@@ -37,7 +38,7 @@ output "policy_id" {
 The following arguments are supported:
 
 * `name` - (Required) The name of the Region Storage Policy to read
-* `region_id` - (Required) The ID of the Region where the Storage Policy belongs
+* `region_id` - (Required) The ID of the [Region](/providers/vmware/vcfa/latest/docs/data-sources/region) where the Storage Policy belongs
 
 ## Attribute reference
 
