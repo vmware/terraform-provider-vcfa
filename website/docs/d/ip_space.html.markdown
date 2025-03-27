@@ -10,7 +10,7 @@ description: |-
 
 Provides a VMware Cloud Foundation Automation IP Space data source.
 
-_Used by: **Provider**, **Tenant**_
+_Used by: **Provider**
 
 ## Example Usage
 

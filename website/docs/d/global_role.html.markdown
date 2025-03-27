@@ -3,7 +3,8 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_global_role"
 sidebar_current: "docs-vcfa-data-source-global-role"
 description: |-
- Provides a VMware Cloud Foundation Automation Global Role data source . This can be used to read Global Roles.
+  Provides a data source to read a Global Role in VMware Cloud Foundation Automation, it can be used to retrieve details
+  of an existing Global Role, like the Organizations in which it is published
 ---
 
 # vcfa\_global\_role
