@@ -3,12 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_provider_gateway"
 sidebar_current: "docs-vcfa-data-source-provider-gateway"
 description: |-
-  Provides a VMware Cloud Foundation Automation Provider Gateway data source.
+  Provides a data source to read a Provider Gateway in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_provider\_gateway
 
-Provides a VMware Cloud Foundation Automation Provider Gateway data source.
+Provides a data source to read a Provider Gateway in VMware Cloud Foundation Automation.
 
 _Used by: **Provider**_
 
