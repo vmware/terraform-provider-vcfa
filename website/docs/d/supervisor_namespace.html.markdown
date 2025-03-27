@@ -10,14 +10,46 @@ description: |-
 
 Provides a data source to read a Supervisor Namespace from VMware Cloud Foundation Automation.
 
-_Used by: **Provider**_
+_Used by: **Tenant**_
 
-## Example Usage
+## Example Usage - Retrieving from a Project resource
 
 ```hcl
+# A project resource managed by the Kubernetes provider
+resource "kubernetes_manifest" "project" {
+  manifest = {
+    "apiVersion" = "project.cci.vmware.com/v1alpha2"
+    "kind"       = "Project"
+    "metadata" = {
+      "name" = "tf-demo-project"
+    }
+    "spec" = {
+      "description" = "Created by Terraform VCFA Provider"
+    }
+  }
+}
+
 data "vcfa_supervisor_namespace" "supervisor_namespace" {
-  name         = "demo-supervisor-namespace"
-  project_name = "default-project"
+  name         = "tf-supervisor-namespace"
+  project_name = kubernetes_manifest.project.manifest["metadata"]["name"]
+}
+```
+
+## Example Usage - Retrieving from a Project data source
+
+```hcl
+# A project data source read with the Kubernetes provider. This project already exists
+data "kubernetes_resource" "project" {
+  api_version = "project.cci.vmware.com/v1alpha2"
+  kind       = "Project"
+  metadata {
+    name = "tf-tenant-demo-project"
+  }
+}
+
+data "vcfa_supervisor_namespace" "supervisor_namespace" {
+  name         = "tf-supervisor-namespace"
+  project_name = data.kubernetes_resource.project.object["metadata"]["name"]
 }
 ```
 
@@ -26,7 +58,10 @@ data "vcfa_supervisor_namespace" "supervisor_namespace" {
 The following arguments are supported:
 
 * `name` - (Required) The name of the Supervisor Namespace
-* `project_name` - (Required) The name of the Project where the Supervisor Namespace belongs to
+* `project_name` - (Required) The name of the Project where the Supervisor Namespace belongs to. Can be fetched
+with the Kubernetes provider [`kubernetes_resource`](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/resource) data source
+for existing Projects, or with a reference to the [`kubernetes_manifest`](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/manifest)
+if the Project is managed in the same Terraform configuration. See the example above to see how to use both
 
 ## Attribute Reference
 
