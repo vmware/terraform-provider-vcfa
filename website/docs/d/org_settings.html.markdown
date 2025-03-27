@@ -30,7 +30,7 @@ data "vcfa_org_settings" "demo" {
 
 The following arguments are supported:
 
-- `org_id` - (Required) The ID of [Organization][vcfa_org-ds].
+- `org_id` - (Required) The ID of the [Organization][vcfa_org-ds].
 
 ## Attribute Reference
 
