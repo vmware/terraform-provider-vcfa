@@ -2,7 +2,7 @@
 
 ## Table of contents
 
-- [Terraform provider considerations](#terraform-provider-considerations)
+- [Terraform considerations](#terraform-considerations)
   - [State management](#state-management)
   - [Terraform native logging](#terraform-native-logging)
   - [Provider version constraints](#provider-version-constraints)
@@ -13,8 +13,7 @@
   - [vcfa_content_library_item creation never finishes (it's stuck)](#vcfa_content_library_item-creation-never-finishes-its-stuck)
   - [Configuring external entity connection (vCenter server, NSX Manager) returns certificate error](#configuring-external-entity-connection-vcenter-server-nsx-manager-returns-certificate-error)
 
-
-## Terraform provider considerations
+## Terraform considerations
 
 This section briefly touches on *Terraform* functionality that is provided within
 [`terraform`][terraform] binary by [Hashicorp][hashicorp].
@@ -28,7 +27,7 @@ either be stored [locally, or remotely][state-storage]. The state contains mappi
 infrastructure and it serves multiple purposes: drift detection, performance, additional metadata
 tracking.
 
-Local state is usually stored in `.tfstate` file, while remote state storage specifics depend on
+Local state is usually stored in `terraform.tfstate` file, while remote state storage specifics depend on
 [state backend][state-backend] being used. `terraform state` subcommand provides CLI capabilities
 for state management.
 
@@ -37,7 +36,8 @@ for state management.
 ### Terraform native logging
 
 Terraform itself, independently of the provider plugin being used, has some debugging options that
-can enable additional logging. They are documented in [Terraform page][terraform-debugging].
+can enable additional logging. They are documented in [Terraform debugging
+page][terraform-debugging].
 
 ### Provider version constraints
 
@@ -47,8 +47,23 @@ block][provider-versioning]. An important part of the configuration block is [ve
 constraint][provider-version-constraints] that defines which version of the plugin should be
 installed.
 
-Terraform provider plugins follow [semantic versioning][semver] pattern and [each major, minor and
-patch numbers have their meanings][provider-semver].
+Terraform provider plugins follow [semantic versioning][semver] pattern and
+[MAJOR.MINOR.PATCH][provider-semver].
+
+```
+terraform {
+  required_providers {
+    vcfa = {
+      source = "vmware/vcfa"
+      version = "~> 1.0.0" # pins major and minor versions, but will accept new patch versions (e.g. 1.0.1)
+    }
+  }
+}
+
+provider "vcfa" {
+  # Configuration options
+}
+```
 
 ## How to enable logging
 
