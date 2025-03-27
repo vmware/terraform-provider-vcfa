@@ -3,7 +3,7 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_supervisor_zone"
 sidebar_current: "docs-vcfa-data-source-supervisor-zone"
 description: |-
-  Provides a data source to read Supervisor Zones in VMware Cloud Foundation Automation. These are useful
+  Provides a data source to read a Supervisor Zone in VMware Cloud Foundation Automation. These are useful
   when configuring an Organization Region Quota "zone_resource_allocations" argument.
 ---
 
