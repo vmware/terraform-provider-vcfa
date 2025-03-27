@@ -3,12 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org_ldap"
 sidebar_current: "docs-vcfa-data-source-org-ldap"
 description: |-
-  Provides a data source to read LDAP configuration for an Organization.
+  Provides a data source to read LDAP configuration from an Organization.
 ---
 
 # vcfa\_org\_ldap
 
-Provides a data source to read LDAP configuration for an Organization.
+Provides a data source to read LDAP configuration from an [Organization][vcfa_org-ds].
 
 _Used by: **Provider**, **Tenant**_
 
@@ -30,9 +30,11 @@ data "vcfa_org_ldap" "first" {
 
 The following arguments are supported:
 
-* `org_id` - (Required)  - ID of the organization containing the LDAP settings
+* `org_id` - (Required)  - ID of the [Organization][vcfa_org-ds] containing the LDAP settings
 
 ## Attribute Reference
 
 All the arguments and attributes defined in
 [`vcfa_org_ldap`](/providers/vmware/vcfa/latest/docs/resources/org_ldap) resource are available, except `password`.
+
+[vcfa_org-ds]: /providers/vmware/vcfa/latest/docs/data-sources/org

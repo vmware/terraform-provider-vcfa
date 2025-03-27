@@ -3,12 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org"
 sidebar_current: "docs-vcfa-data-source-org"
 description: |-
-  Provides a data source to read VMware Cloud Foundation Automation Organizations.
+  Provides a data source to read an Organization in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_org
 
-Provides a data source to read VMware Cloud Foundation Automation Organizations.
+Provides a data source to read an Organization in VMware Cloud Foundation Automation.
 
 _Used by: **Provider**, **Tenant**_
 
