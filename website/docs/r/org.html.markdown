@@ -69,8 +69,8 @@ _NOTE_: The default separator `.` can be changed using provider's `import_separa
 
 The above would import the `my-org-name` Organization settings.
 
-After that, you can expand the configuration file and either update or delete the Organization Settings as needed. Running `terraform plan`
-at this stage will show the difference between the minimal configuration file and the Organization Settings's stored properties.
+After that, you can expand the configuration file and either update or delete the Organization as needed. Running `terraform plan`
+at this stage will show the difference between the minimal configuration file and the Organization's stored properties.
 
 [docs-import]: https://www.terraform.io/docs/import
 [importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
