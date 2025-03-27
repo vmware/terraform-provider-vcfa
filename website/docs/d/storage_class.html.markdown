@@ -3,14 +3,19 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_storage_class"
 sidebar_current: "docs-vcfa-data-source-storage-class"
 description: |-
-  Provides a data source to read a Storage Class in VMware Cloud Foundation Automation.
+  Provides a data source to read a Storage Class in VMware Cloud Foundation Automation.  Storage Classes can be used to
+  create Content Libraries and other objects.
 ---
 
 # vcfa\_storage\_class
 
-Provides a data source to read a Storage Class in VMware Cloud Foundation Automation.
+Provides a data source to read a Storage Class in VMware Cloud Foundation Automation. Storage Classes can be used to
+create [Content Libraries](/providers/vmware/vcfa/latest/docs/resources/content_library) and other objects.
 
 _Used by: **Provider**, **Tenant**_
+
+-> When configuring Organization Region Quotas, use the [`vcfa_region_storage_policy`](/providers/vmware/vcfa/latest/docs/data-sources/region_storage_policy)
+data source instead.
 
 ## Example Usage
 
@@ -38,7 +43,7 @@ resource "vcfa_content_library" "cl" {
 The following arguments are supported:
 
 * `name` - (Required) The name of the Storage Class to read
-* `region_id` - (Required) The ID of the Region where the Storage Class belongs
+* `region_id` - (Required) The ID of the [Region](/providers/vmware/vcfa/latest/docs/data-sources/region) where the Storage Class belongs
 
 ## Attribute reference
 
