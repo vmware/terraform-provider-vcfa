@@ -30,7 +30,7 @@ data "vcfa_supervisor" "one" {
 The following arguments are supported:
 
 * `name` - (Required) The name of Supervisor
-* `vcenter_id` - (Required) vCenter server ID that contains this Supervisor
+* `vcenter_id` - (Required) ID of the [vCenter server](/providers/vmware/vcfa/latest/docs/data-sources/vcenter) that contains this Supervisor
 
 ## Attribute Reference
 
