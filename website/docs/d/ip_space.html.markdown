@@ -3,12 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_ip_space"
 sidebar_current: "docs-vcfa-data-source-ip-space"
 description: |-
-  Provides a VMware Cloud Foundation Automation IP Space data source.
+  Provides a data source to read an IP Space in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_ip\_space
 
-Provides a VMware Cloud Foundation Automation IP Space data source.
+Provides a data source to read an IP Space in VMware Cloud Foundation Automation.
 
 _Used by: **Provider**_
 
@@ -29,8 +29,8 @@ data "vcfa_ip_space" "demo" {
 
 The following arguments are supported:
 
-* `name` - (Required) The name of IP Space
-* `region_id` - (Required) The Region ID that has this IP Space definition. Can be looked up using
+* `name` - (Required) The name of the IP Space
+* `region_id` - (Required) The ID of the Region that has this IP Space definition. Can be looked up using
   [`vcfa_region`](/providers/vmware/vcfa/latest/docs/data-sources/region)
 
 ## Attribute Reference
