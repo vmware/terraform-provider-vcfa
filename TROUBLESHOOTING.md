@@ -5,6 +5,7 @@
 - [Terraform provider considerations](#terraform-provider-considerations)
   - [State management](#state-management)
   - [Terraform native logging](#terraform-native-logging)
+  - [Provider version constraints](#provider-version-constraints)
 - [How to enable logging](#how-to-enable-logging)
 - [Common errors](#common-errors)
   - [Login does not work](#login-does-not-work)
@@ -27,12 +28,27 @@ either be stored [locally, or remotely][state-storage]. The state contains mappi
 infrastructure and it serves multiple purposes: drift detection, performance, additional metadata
 tracking.
 
+Local state is usually stored in `.tfstate` file, while remote state storage specifics depend on
+[state backend][state-backend] being used. `terraform state` subcommand provides CLI capabilities
+for state management.
+
 *Note:* Terraform state may contain [sensitive data][state-sensitive-data].
 
 ### Terraform native logging
 
 Terraform itself, independently of the provider plugin being used, has some debugging options that
 can enable additional logging. They are documented in [Terraform page][terraform-debugging].
+
+### Provider version constraints
+
+Terraform providers are installed automatically by using `terraform init` command. The plugin is
+fetched based on [`required_providers` section within `terraform` configuration
+block][provider-versioning]. An important part of the configuration block is [version
+constraint][provider-version-constraints] that defines which version of the plugin should be
+installed.
+
+Terraform provider plugins follow [semantic versioning][semver] pattern and [each major, minor and
+patch numbers have their meanings][provider-semver].
 
 ## How to enable logging
 
@@ -184,3 +200,8 @@ boolean field that can be used to leverage.
 [terraform-debugging]: https://developer.hashicorp.com/terraform/internals/debugging
 [state-storage]: https://developer.hashicorp.com/terraform/language/state/remote
 [state-sensitive-data]: https://developer.hashicorp.com/terraform/language/state/sensitive-data
+[state-backend]: https://developer.hashicorp.com/terraform/language/backend
+[provider-versioning]: https://developer.hashicorp.com/terraform/tutorials/configuration-language/provider-versioning
+[provider-version-constraints]:https://developer.hashicorp.com/terraform/tutorials/configuration-language/versions#terraform-version-constraints
+[provider-semver]: https://developer.hashicorp.com/terraform/plugin/best-practices/versioning
+[semver]: https://semver.org/
