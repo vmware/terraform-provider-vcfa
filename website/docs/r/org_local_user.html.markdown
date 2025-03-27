@@ -62,7 +62,7 @@ supplying path for it. An example is below:
 terraform import vcfa_org_local_user.imported my-org-name.my-user-name
 ```
 
-NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
 The above would import the `my-user-name` local user from  `my-org-name` Organization.
 

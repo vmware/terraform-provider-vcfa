@@ -75,7 +75,7 @@ supplying path for it. An example is below:
 terraform import vcfa_provider_gateway.imported my-region-name.my-provider-gateway
 ```
 
-NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
 The above would import the `my-provider-gateway` Provider Gateway in Region `my-region-name`
 

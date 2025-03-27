@@ -78,7 +78,7 @@ for it. An example is below:
 terraform import vcfa_org_regional_networking.imported my-org-name.my-regional-configuration-name
 ```
 
-NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
 The above would import the `my-regional-configuration-name` Regional Networking Configuration Settings that are defined for `my-org-name` Organization.
 

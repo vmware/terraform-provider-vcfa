@@ -71,7 +71,7 @@ path for it. An example is below:
 terraform import vcfa_edge_cluster_qos.imported my-region-name.my-edge-cluster-name
 ```
 
-NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
 The above would import the `my-edge-cluster-name` Edge Cluster QoS settings that is in `my-region-name` Region.
 

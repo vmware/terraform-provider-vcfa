@@ -19,7 +19,7 @@ _Used by: **Provider**, **Tenant**_
 ## Example Usage
 
 ```hcl
-# Creating a Certificate in a tenant:
+# Creating a Certificate in a tenant
 data "vcfa_org" "org1" {
   name = "myOrg"
 }
@@ -33,7 +33,7 @@ resource "vcfa_certificate" "new-certificate" {
   private_key_passphrase = "passphrase"
 }
 
-# Creating a Certificate in System (Provider) organization:
+# Creating a Certificate in System (Provider) organization
 data "vcfa_org" "system" {
   name = "System"
 }
@@ -84,7 +84,7 @@ terraform import vcfa_certificate.imported System.my-system-certificate-alias
 terraform import vcfa_certificate.imported my-org.my-certificate-alias
 ```
 
-NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
 The above would import the Certificate named `my-system-certificate-alias` that exists in the System (Provider) Organization and
 `my-certificate-alias` which is configured in Organization named `my-org`.

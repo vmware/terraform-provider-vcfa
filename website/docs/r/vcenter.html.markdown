@@ -99,7 +99,7 @@ path for it. An example is below:
 terraform import vcfa_vcenter.imported my-vcenter
 ```
 
-NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
 The above would import the `my-vcenter` vCenter settings that are defined at provider level.
 

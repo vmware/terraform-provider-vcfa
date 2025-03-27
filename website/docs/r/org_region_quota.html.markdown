@@ -128,7 +128,7 @@ below:
 terraform import vcfa_org_region_quota.imported my-org-name.my-region-name
 ```
 
-NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
 The above would import the Organization Region Quota that belongs to `my-org-name` Organization and `my-region-name` Region.
 
