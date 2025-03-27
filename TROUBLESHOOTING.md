@@ -251,7 +251,7 @@ vcfa_vcenter.demo: Creating...
 The entities that handle external connections (vCenter server, NSX Manager, LDAP Server
 configurations, etc.) must have a valid trusted certificate configured for a destination entity.
 Make sure that the certificate of that entity is trusted. Resources have `auto_trust_certificate`
-boolean field that can be used to leverage.
+boolean field that can be used to leveraged trusting the certificate automatically.
 
 [terraform]: https://www.terraform.io/
 [terraform-state]: https://developer.hashicorp.com/terraform/language/state
