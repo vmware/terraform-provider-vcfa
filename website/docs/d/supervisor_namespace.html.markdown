@@ -12,6 +12,9 @@ Provides a data source to read a Supervisor Namespace from VMware Cloud Foundati
 
 _Used by: **Tenant**_
 
+-> This data source may use the [Kubernetes provider](https://registry.terraform.io/providers/hashicorp/kubernetes),
+to see how to obtain the Kubeconfig, please check the [`vcfa_kubeconfig`](/providers/vmware/vcfa/latest/docs/data-sources/kubeconfig) data source.
+
 ## Example Usage - Retrieving from a Project resource
 
 ```hcl
