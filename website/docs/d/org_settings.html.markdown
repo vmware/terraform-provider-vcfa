@@ -12,7 +12,7 @@ Provides a data source to read the General Settings from an [Organization][vcfa_
 
 _Used by: **Provider**, **Tenant**_
 
--> For Networking Settings of an Organization, see [`vcfa_org_networking`](/providers/vmware/vcfa/latest/docs/data-sources/org_networking) data source 
+-> For Networking Settings of an Organization, see [`vcfa_org_networking`](/providers/vmware/vcfa/latest/docs/data-sources/org_networking) data source.
 
 ## Example Usage
 

@@ -43,7 +43,7 @@ The following arguments are supported:
 * `name` - (Required) A name for Region. It must match RFC 1123 Label name (lower-case alphabet,
   numbers between 0 and 9 and hyphen `-`)
 * `description` - (Optional) An optional description for Region
-* `nsx_manager_id` - (Required) NSX-T Manager assigned to this region. Can be looked up using
+* `nsx_manager_id` - (Required) NSX Manager assigned to this region. Can be looked up using
   [`vcfa_nsx_manager`](/providers/vmware/vcfa/latest/docs/data-sources/nsx_manager)
 * `supervisor_ids` - (Required) A set of Supervisor IDs. At least one is required. Can be looked up
   using [`vcfa_supervisor`](/providers/vmware/vcfa/latest/docs/data-sources/supervisor)

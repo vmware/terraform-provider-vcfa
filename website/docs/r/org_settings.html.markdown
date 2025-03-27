@@ -3,16 +3,16 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org_settings"
 sidebar_current: "docs-vcfa-resource-org-settings"
 description: |-
-  Provides a resource to manage VMware Cloud Foundation Automation Organization general Settings.
+  Provides a resource to manage the General Settings of an Organization in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_org\_settings
 
-Provides a resource to manage VMware Cloud Foundation Automation Organization general Settings.
+Provides a resource to manage the General Settings of an [Organization][vcfa_org] in VMware Cloud Foundation Automation.
 
 _Used by: **Provider**_
 
--> For Organization Networking settings, see [`vcfa_org_networking`](/providers/vmware/vcfa/latest/docs/resources/org_networking) resource
+-> For Organization Networking settings, see [`vcfa_org_networking`](/providers/vmware/vcfa/latest/docs/resources/org_networking) resource.
 
 ## Example Usage
 
@@ -61,3 +61,4 @@ at this stage will show the difference between the minimal configuration file an
 
 [docs-import]: https://www.terraform.io/docs/import
 [importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
+[vcfa_org]: /providers/vmware/vcfa/latest/docs/resources/org

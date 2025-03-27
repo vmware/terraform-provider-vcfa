@@ -3,12 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_rights_bundle"
 sidebar_current: "docs-vcfa-resource-rights-bundle"
 description: |-
- Provides a VMware Cloud Foundation Automation Rights Bundle resource. This can be used to create, modify, and delete Rights Bundles.
+  Provides a resource to manage Right Bundles in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_rights\_bundle
 
-Provides a VMware Cloud Foundation Automation Rights Bundle resource. This can be used to create, modify, and delete Rights Bundles.
+Provides a resource to manage Right Bundles in VMware Cloud Foundation Automation.
 
 _Used by: **Provider**_
 
@@ -47,7 +47,7 @@ The following arguments are supported:
 * `name` - (Required) The name of the Rights Bundle
 * `description` - (Required) A description of the Rights Bundle
 * `rights` - (Optional) Set of Rights assigned to this Rights Bundle
-* `publish_to_all_orgs` - (Required) When `true`, publishes the Rights Bundle to all Organizations
+* `publish_to_all_orgs` - (Required) When `true`, publishes the Rights Bundle to all [Organizations][vcfa_org]
 * `org_ids` - (Optional) Set of IDs of the Organizations to which this Rights Bundle gets published. Ignored if `publish_to_all_orgs` is `true`
 
 ## Attribute Reference
@@ -84,3 +84,4 @@ at this stage will show the difference between the minimal configuration file an
 
 [docs-import]: https://www.terraform.io/docs/import
 [importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
+[vcfa_org]: /providers/vmware/vcfa/latest/docs/resources/org

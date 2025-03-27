@@ -71,7 +71,7 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 					cachedProviderGateway.cacheTestResourceFieldValue("vcfa_provider_gateway.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "region_id"),
-					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "nsxt_tier0_gateway_id"),
+					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "tier0_gateway_id"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "name", t.Name()),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "description", "Made using Terraform"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "ip_space_ids.#", "2"),
@@ -83,7 +83,7 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 					cachedProviderGateway.testCheckCachedResourceFieldValue("vcfa_provider_gateway.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "region_id"),
-					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "nsxt_tier0_gateway_id"),
+					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "tier0_gateway_id"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "name", t.Name()),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "description", "Made using Terraform updated"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "ip_space_ids.#", "1"),
@@ -95,7 +95,7 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 					cachedProviderGateway.testCheckCachedResourceFieldValue("vcfa_provider_gateway.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "region_id"),
-					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "nsxt_tier0_gateway_id"),
+					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "tier0_gateway_id"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "name", t.Name()+"-updated"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "description", ""),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "ip_space_ids.#", "3"),
@@ -157,7 +157,7 @@ resource "vcfa_provider_gateway" "test" {
   name                  = "{{.Testname}}"
   description           = "Made using Terraform"
   region_id             = {{.RegionId}}
-  nsxt_tier0_gateway_id = data.vcfa_tier0_gateway.test.id
+  tier0_gateway_id = data.vcfa_tier0_gateway.test.id
   ip_space_ids          = [ vcfa_ip_space.test.id, vcfa_ip_space.test2.id ]
 }
 `
@@ -167,7 +167,7 @@ resource "vcfa_provider_gateway" "test" {
   name                  = "{{.Testname}}"
   description           = "Made using Terraform updated"
   region_id             = {{.RegionId}}
-  nsxt_tier0_gateway_id = data.vcfa_tier0_gateway.test.id
+  tier0_gateway_id = data.vcfa_tier0_gateway.test.id
   ip_space_ids          = [ vcfa_ip_space.test2.id ]
 }
 `
@@ -176,7 +176,7 @@ const testAccVcfaProviderGatewayStep3 = testAccVcfaProviderGatewayPrereqs + `
 resource "vcfa_provider_gateway" "test" {
   name                  = "{{.Testname}}-updated"
   region_id             = {{.RegionId}}
-  nsxt_tier0_gateway_id = data.vcfa_tier0_gateway.test.id
+  tier0_gateway_id = data.vcfa_tier0_gateway.test.id
   ip_space_ids          = [ vcfa_ip_space.test2.id, vcfa_ip_space.test.id, {{.IpSpace1Id}} ]
 }
 `

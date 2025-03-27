@@ -46,7 +46,7 @@ func resourceVcfaProviderGateway() *schema.Resource {
 				ForceNew:    true,
 				Description: fmt.Sprintf("Parent %s of %s", labelVcfaRegion, labelVcfaProviderGateway),
 			},
-			"nsxt_tier0_gateway_id": {
+			"tier0_gateway_id": {
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
@@ -173,7 +173,7 @@ func getProviderGatewayType(tmClient *VCDClient, d *schema.ResourceData) (*types
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
 		RegionRef:   types.OpenApiReference{ID: d.Get("region_id").(string)},
-		BackingRef:  types.OpenApiReference{ID: d.Get("nsxt_tier0_gateway_id").(string)},
+		BackingRef:  types.OpenApiReference{ID: d.Get("tier0_gateway_id").(string)},
 	}
 
 	ipSpaceIds := convertSchemaSetToSliceOfStrings(d.Get("ip_space_ids").(*schema.Set))
@@ -202,7 +202,7 @@ func setProviderGatewayData(tmClient *VCDClient, d *schema.ResourceData, p *govc
 	dSet(d, "name", p.TmProviderGateway.Name)
 	dSet(d, "description", p.TmProviderGateway.Description)
 	dSet(d, "region_id", p.TmProviderGateway.RegionRef.ID)
-	dSet(d, "nsxt_tier0_gateway_id", p.TmProviderGateway.BackingRef.ID)
+	dSet(d, "tier0_gateway_id", p.TmProviderGateway.BackingRef.ID)
 	dSet(d, "status", p.TmProviderGateway.Status)
 
 	// IP Space Associations have to be read separatelly after creation (more details at the top of file)

@@ -3,13 +3,13 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_provider_ldap"
 sidebar_current: "docs-vcfa-resource-ldap"
 description: |-
-  Provides a VMware Cloud Foundation Automation LDAP resource for the Provider (System). This can be used to create, delete, and 
-  update the Provider (System) LDAP configuration.
+  Provides a LDAP resource for the Provider (System) Organization in VMware Cloud Foundation Automation.
+  This can be used to create, delete, and update the Provider (System) LDAP configuration.
 ---
 
 # vcfa\_provider\_ldap
 
-Provides a VMware Cloud Foundation Automation LDAP resource for the Provider (System).
+Provides a LDAP resource for the Provider (System) Organization in VMware Cloud Foundation Automation.
 This can be used to create, delete, and update the Provider (System) LDAP configuration.
 
 _Used by: **Provider**_
@@ -100,8 +100,7 @@ An existing System LDAP configuration can be [imported][docs-import] into this r
 For example, using this structure, representing an existing LDAP configuration that was **not** created using Terraform:
 
 ```hcl
-resource "vcfa_provider_ldap" "existing-ldap" {
-}
+resource "vcfa_provider_ldap" "existing-ldap" {}
 ```
 
 You can import such Provider LDAP configuration into terraform state using one of the following commands

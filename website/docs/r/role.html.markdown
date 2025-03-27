@@ -3,12 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_role"
 sidebar_current: "docs-vcfa-resource-role"
 description: |-
- Provides a VMware Cloud Foundation Automation Role. This can be used to create, modify, and delete Roles.
+  Provides a resource to manage Roles in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_role
 
-Provides a VMware Cloud Foundation Automation Role. This can be used to create, modify, and delete Roles.
+Provides a resource to manage Roles in VMware Cloud Foundation Automation.
 
 _Used by: **Provider**, **Tenant**_
 
@@ -36,7 +36,7 @@ resource "vcfa_role" "new-role" {
 
 The following arguments are supported:
 
-* `org_id` - (Required) The ID of organization of the Role. Can be fetched with [`vcfa_org` data source](/providers/vmware/vcfa/latest/docs/data-sources/org)
+* `org_id` - (Required) The ID of Organization that will have the Role. Can be fetched with [`vcfa_org` data source](/providers/vmware/vcfa/latest/docs/data-sources/org)
 * `name` - (Required) The name of the Role
 * `description` - (Required) A description of the Role
 * `rights` - (Optional) Set of rights assigned to this Role
