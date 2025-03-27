@@ -8,7 +8,7 @@ description: |-
 
 # vcfa\_org\_oidc
 
-Provides a resource to configure or remove OpenID Connect (OIDC) for an Organization in VMware Cloud Foundation Automation.
+Provides a resource to configure or remove OpenID Connect (OIDC) for an [Organization][vcfa_org] in VMware Cloud Foundation Automation.
 
 _Used by: **Provider**, **Tenant**_
 
@@ -55,7 +55,10 @@ resource "vcfa_org_oidc" "oidc" {
 ```
 
 Once the OIDC settings are created, if users want to restore an overridden value to the original one given by the
-well-known configuration endpoint, they must perform an update in code to set the previous value explicitly:
+well-known configuration endpoint, they must perform an update in code to set the previous value explicitly.
+
+In other words, removing the argument or setting it to `""` **won't** make the original value from the well-known configuration endpoint
+to be restored during updates.
 
 ```hcl
 data "vcfa_org" "my_org" {
@@ -75,9 +78,6 @@ resource "vcfa_org_oidc" "oidc" {
   userinfo_endpoint     = "https://my-other-idp.company.com/oidc/userinfo" # Still overridden
 }
 ```
-
-In other words, removing the argument or setting it to `""` **won't** make the original value from the well-known configuration endpoint
-to be restored during updates.
 
 ## Example Usage without Well-known Configuration Endpoint
 
@@ -118,7 +118,7 @@ resource "vcfa_org_oidc" "oidc" {
 
 The following arguments are supported:
 
-* `org_id` - (Required) ID of the Organization that will have the OpenID Connect settings configured. There must be only one
+* `org_id` - (Required) ID of the [Organization][vcfa_org] that will have the OpenID Connect settings configured. There must be only one
   resource `vcfa_org_oidc` per `org_id`, as there is only one OpenID configuration per Organization
 * `client_id` - (Required) Client ID to use with the OIDC provider
 * `client_secret` - (Required) Client Secret to use with the OIDC provider
@@ -180,10 +180,11 @@ The following arguments are supported:
 
 ## Importing
 
-~> **Note:** The current implementation of Terraform import can only import resources into the state. It does not generate
-configuration. [More information.][docs-import]
+~> **Note:** The current implementation of Terraform import can only import resources into the
+state. It does not generate configuration. However, an experimental feature in Terraform 1.5+ allows
+also code generation. See [Importing resources][importing-resources] for more information.
 
-An existing OIDC configuration for an Org can be [imported][docs-import] into this resource via supplying the path for an Organization.
+An existing OIDC configuration for an Organization can be [imported][docs-import] into this resource via supplying the path for an Organization.
 For example, using this structure, representing an existing OIDC configuration that was **not** created using Terraform:
 
 ```hcl
@@ -211,3 +212,4 @@ at this stage will show the difference between the minimal configuration file an
 
 [docs-import]: https://www.terraform.io/docs/import
 [importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
+[vcfa_org]: /providers/vmware/vcfa/latest/docs/resources/org

@@ -51,9 +51,9 @@ resource "vcfa_ip_space" "demo" {
 
 The following arguments are supported:
 
-* `name` - (Required) A tenant facing name for IP Space
+* `name` - (Required) A tenant facing name for the IP Space
 * `description` - (Optional) An optional description
-* `region_id` - (Required) A region ID. Can be looked up using [Region data source][vcfa_region-ds]
+* `region_id` - (Required) A Region ID. Can be looked up using [Region data source][vcfa_region-ds]
 * `external_scope` - (Required) A CIDR (e.g. 10.0.0.0/8) for External Reachability. It represents
   the IPs used outside the datacenter, north of the [Provider Gateway][vcfa_provider_gateway]
 * `default_quota_max_subnet_size` - (Required) Maximum subnet size that can be allocated (e.g. 24)

@@ -3,20 +3,20 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org_ldap"
 sidebar_current: "docs-vcfa-resource-org-ldap"
 description: |-
-  Provides a VMware Cloud Foundation Automation LDAP resource for Organizations. This can be used to create, delete, and 
-  update LDAP configuration for an organization.
+  Provides a LDAP resource for Organizations in VMware Cloud Foundation Automation.
+  This can be used to create, update and delete LDAP configuration for an Organization.
 ---
 
 # vcfa\_org\_ldap
 
-Provides a VMware Cloud Foundation Automation LDAP resource for Organizations.
-This can be used to create, update and delete LDAP configuration for an Organization.
+Provides a LDAP resource for Organizations in VMware Cloud Foundation Automation.
+This can be used to create, update and delete LDAP configuration for an [Organization][vcfa_org].
 
 _Used by: **Provider**, **Tenant**_
 
 -> To configure LDAP for the Provider (System) organization, please use [`vcfa_provider_ldap` resource](/providers/vmware/vcfa/latest/docs/resources/provider_ldap) instead
 
-## Example Usage 1 - Custom configuration
+## Example Usage 1 - Custom Configuration
 
 ```hcl
 data "vcfa_org" "my-org" {
@@ -57,7 +57,7 @@ resource "vcfa_org_ldap" "my-org-ldap" {
 }
 ```
 
-## Example Usage 2 - Using system configuration
+## Example Usage 2 - Using System Configuration
 
 ```hcl
 data "vcfa_org" "my-org" {
@@ -76,7 +76,7 @@ resource "vcfa_org_ldap" "my-org-ldap" {
 
 The following arguments are supported:
 
-* `org_id` - (Required) Org ID: there is only one LDAP configuration available for an organization. Thus, the resource can be identified by the Org.
+* `org_id` - (Required) [Organization][vcfa_org] ID. There is only one LDAP configuration available for an organization
 * `ldap_mode` - (Required) One of `NONE`, `CUSTOM`, `SYSTEM`. Note that using `NONE` has the effect of removing the LDAP settings
 * `auto_trust_certificate` - (Required) Defines if the LDAP certificate should automatically be trusted, only makes sense if `custom_settings.0.is_ssl=true` (see [Custom Settings](#custom-settings))
   The certificate is not removed by Terraform when this resource is destroyed
@@ -92,7 +92,7 @@ The `custom_settings` section contains the configuration for the LDAP server
 * `port` - (Required) Port number of the LDAP server (usually 389 for LDAP, 636 for LDAPS)
 * `connector_type` - (Required) Type of connector: one of `OPEN_LDAP`, `ACTIVE_DIRECTORY`
 * `base_distinguished_name` - (Required) LDAP search base
-* `is_ssl` - (Optional) True if the LDAP service requires an SSL connection. If the certificate is not trusted already, `auto_trust_certificate=true` is needed.
+* `is_ssl` - (Optional) `true` if the LDAP service requires an SSL connection. If the certificate is not trusted already, `auto_trust_certificate=true` is needed.
 * `username` - (Optional) _Username_ to use when logging in to LDAP, specified using LDAP attribute=value pairs 
   (for example: cn="ldap-admin", c="example", dc="com")
 * `password` - (Optional) _Password_ for the user identified by `username`. This value is never returned on reads
@@ -155,3 +155,4 @@ at this stage will show the difference between the minimal configuration file an
 
 [docs-import]: https://www.terraform.io/docs/import
 [importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
+[vcfa_org]: /providers/vmware/vcfa/latest/docs/resources/org

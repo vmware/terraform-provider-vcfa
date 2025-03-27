@@ -3,12 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org_region_quota"
 sidebar_current: "docs-vcfa-resource-org-region-quota"
 description: |-
-  Provides a resource to manage VMware Cloud Foundation Automation Organization Region Quotas.
+  Provides a resource to manage Region Quotas from an Organization in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_org\_region\_quota
 
-Provides a resource to manage VMware Cloud Foundation Automation Organization Region Quotas.
+Provides a resource to manage Region Quotas from an Organization in VMware Cloud Foundation Automation.
 
 _Used by: **Provider**_
 
@@ -74,10 +74,10 @@ resource "vcfa_org_region_quota" "first" {
 
 The following arguments are supported:
 
-- `org_id` - (Required) An Org ID for this Organization Region Quota to be assigned to
-- `region_id` - (Required) A Region ID that this Organization Region Quota should be backed by
-- `supervisor_ids` - (Required) A set of Supervisor IDs that back this Organization Region Quota. Can be looked up
-  using [`vcfa_supervisor`](/providers/vmware/vcfa/latest/docs/data-sources/supervisor) data source
+- `org_id` - (Required) An [Organization][vcfa_org] ID for this Organization Region Quota to be assigned to
+- `region_id` - (Required) A [Region][vcfa_region] ID that this Organization Region Quota should be backed by
+- `supervisor_ids` - (Required) A set of Supervisor] IDs that back this Organization Region Quota. Can be looked up
+  using [`vcfa_supervisor`][vcfa_supervisor] data source
 - `zone_resource_allocations` - (Required) A set of Zone Resource Allocation definitions. See [Zone Resource Allocations](#zone-resource-allocations-block)
 - `region_vm_class_ids` - (Required) A set of Region VM Class IDs. These can be fetched with [`vcfa_region_vm_class` data source](/providers/vmware/vcfa/latest/docs/data-sources/region_vm_class)
 - `region_storage_policy` - (Required) A set of Region Storage Policies. See [Region Storage Policies](#region-storage-policies)
@@ -121,8 +121,7 @@ state. It does not generate configuration. However, an experimental feature in T
 also code generation. See [Importing resources][importing-resources] for more information.
 
 An existing Organization Region Quota configuration can be [imported][docs-import] into this resource
-via supplying path for it. An example is
-below:
+via supplying path for it. An example is below:
 
 ```
 terraform import vcfa_org_region_quota.imported my-org-name.my-region-name
@@ -137,3 +136,6 @@ at this stage will show the difference between the minimal configuration file an
 
 [docs-import]: https://www.terraform.io/docs/import
 [importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
+[vcfa_org]: /providers/vmware/vcfa/latest/docs/resources/org
+[vcfa_region]: /providers/vmware/vcfa/latest/docs/resources/region
+[vcfa_supervisor]: /providers/vmware/vcfa/latest/docs/data-sources/supervisor

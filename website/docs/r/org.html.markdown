@@ -3,12 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org"
 sidebar_current: "docs-vcfa-resource-org"
 description: |-
-  Provides a resource to manage VMware Cloud Foundation Automation Organizations.
+  Provides a resource to manage Organizations in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_org
 
-Provides a resource to manage VMware Cloud Foundation Automation Organizations.
+Provides a resource to manage Organizations in VMware Cloud Foundation Automation.
 
 _Used by: **Provider**_
 
@@ -27,9 +27,9 @@ resource "vcfa_org" "test" {
 
 The following arguments are supported:
 
-- `name` - (Required) A name for Organization with which users log in to it as it will be used in
-  the URL. The Org must be disabled to or transition from previous disabled state
-  (`is_enabled=false`) to change a name because it changes tenant login URL
+- `name` - (Required) The unique identifier in the full URL with which users log in to this Organization.
+  To update this argument, the Organization must be disabled to or transition from previous disabled state
+  (`is_enabled=false`) because the update changes tenant login URL
 - `display_name` - (Required) A human-readable name for Organization
 - `description` - (Optional) An optional description for Organization
 - `is_enabled` - (Optional) Defines if Organization is enabled. Default `true`. **Note:**
@@ -42,8 +42,8 @@ The following arguments are supported:
 
 The following attributes are exported on this resource:
 
-- `managed_by_id` - ID of Org that owns this Org
-- `managed_by_name` - Name of Org that owns this Org
+- `managed_by_id` - ID of the Organization that owns this Organization
+- `managed_by_name` - Name of Organization that owns this Organization
 - `org_region_quota_count` - Number of Region Quotas belonging to this Organization
 - `catalog_count` - Number of catalogs belonging to this Organization
 - `vapp_count` - Number of vApps belonging to this Organization

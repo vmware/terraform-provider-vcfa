@@ -29,7 +29,7 @@ resource "vcfa_nsx_manager" "test" {
 
 The following arguments are supported:
 
-* `name` - (Required) A name for NSX Manager
+* `name` - (Required) A name for the NSX Manager
 * `description` - (Optional) An optional description for NSX Manager
 * `username` - (Required) A username for authenticating to NSX Manager
 * `password` - (Required) A password for authenticating to NSX Manager
@@ -69,8 +69,7 @@ terraform import vcfa_nsx_manager.imported my-nsx-manager
 
 _NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
-The above would import the `my-nsx-manager` NSX Manager settings that are defined at provider
-level.
+The above would import the `my-nsx-manager` NSX Manager settings that are defined at Provider (System) level.
 
 After that, you can expand the configuration file and either update or delete the NSX Manager as needed. Running `terraform plan`
 at this stage will show the difference between the minimal configuration file and the NSX Manager's stored properties.
