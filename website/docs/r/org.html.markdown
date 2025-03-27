@@ -58,7 +58,7 @@ The following attributes are exported on this resource:
 state. It does not generate configuration. However, an experimental feature in Terraform 1.5+ allows
 also code generation. See [Importing resources][importing-resources] for more information.
 
-An existing Org configuration can be [imported][docs-import] into this resource via supplying path
+An existing Organization configuration can be [imported][docs-import] into this resource via supplying path
 for it. An example is below:
 
 ```
