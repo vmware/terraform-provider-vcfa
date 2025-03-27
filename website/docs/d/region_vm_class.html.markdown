@@ -3,7 +3,8 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_region_vm_class"
 sidebar_current: "docs-vcfa-data-source-region-vm-class"
 description: |-
-  Provides a data source to read Region Virtual Machine Classes in VMware Cloud Foundation Automation
+  Provides a data source to read Region Virtual Machine Classes in VMware Cloud Foundation Automation. These are useful
+  when configuring an Organization Region Quota "region_vm_class_ids" argument.
 ---
 
 # vcfa\_region\_vm\_class

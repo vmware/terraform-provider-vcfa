@@ -3,7 +3,7 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_storage_class"
 sidebar_current: "docs-vcfa-data-source-storage-class"
 description: |-
-  Provides a data source to read a Storage Class in VMware Cloud Foundation Automation.  Storage Classes can be used to
+  Provides a data source to read a Storage Class in VMware Cloud Foundation Automation. Storage Classes can be used to
   create Content Libraries and other objects.
 ---
 
