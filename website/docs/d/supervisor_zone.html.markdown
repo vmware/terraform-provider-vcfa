@@ -36,7 +36,7 @@ data "vcfa_supervisor_zone" "one" {
 
 The following arguments are supported:
 
-* `supervisor_id` - (Required) ID of parent [Supervisor](/providers/vmware/vcfa/latest/docs/resources/supervisor)
+* `supervisor_id` - (Required) ID of parent [Supervisor](/providers/vmware/vcfa/latest/docs/data-sources/supervisor)
 * `name` - (Required) The name of Supervisor Zone
 
 ## Attribute Reference
