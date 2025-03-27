@@ -44,7 +44,7 @@ data "vcfa_supervisor_namespace" "supervisor_namespace" {
 # A project data source read with the Kubernetes provider. This project already exists
 data "kubernetes_resource" "project" {
   api_version = "project.cci.vmware.com/v1alpha2"
-  kind       = "Project"
+  kind        = "Project"
   metadata {
     name = "tf-tenant-demo-project"
   }
