@@ -2,12 +2,37 @@
 
 ## Table of contents
 
+- [Terraform provider considerations](#terraform-provider-considerations)
+  - [State management](#state-management)
+  - [Terraform native logging](#terraform-native-logging)
 - [How to enable logging](#how-to-enable-logging)
 - [Common errors](#common-errors)
   - [Login does not work](#login-does-not-work)
   - [Entity Not Found error](#entity-not-found-error)
   - [vcfa_content_library_item creation never finishes (it's stuck)](#vcfa_content_library_item-creation-never-finishes-its-stuck)
   - [Configuring external entity connection (vCenter server, NSX Manager) returns certificate error](#configuring-external-entity-connection-vcenter-server-nsx-manager-returns-certificate-error)
+
+
+## Terraform provider considerations
+
+This section briefly touches on *Terraform* functionality that is provided within
+[`terraform`][terraform] binary by [Hashicorp][hashicorp].
+
+*Note:* For the VCFA provider specific logging see [How to enable logging](#how-to-enable-logging).
+
+### State management
+
+One of core features of Terraform is storing [infrastructure state][terraform-state]. The state can
+either be stored [locally, or remotely][state-storage]. The state contains mapping of existing
+infrastructure and it serves multiple purposes: drift detection, performance, additional metadata
+tracking.
+
+*Note:* Terraform state may contain [sensitive data][state-sensitive-data].
+
+### Terraform native logging
+
+Terraform itself, independently of the provider plugin being used, has some debugging options that
+can enable additional logging. They are documented in [Terraform page][terraform-debugging].
 
 ## How to enable logging
 
@@ -151,3 +176,11 @@ The entities that handle external connections (vCenter server, NSX Manager, LDAP
 configurations, etc.) must have a valid trusted certificate configured for a destination entity.
 Make sure that the certificate of that entity is trusted. Resources have `auto_trust_certificate`
 boolean field that can be used to leverage.
+
+[terraform]: https://www.terraform.io/
+[terraform-state]: https://developer.hashicorp.com/terraform/language/state
+[hashicorp]: https://www.hashicorp.com/
+[terraform-provider-docs]: https://developer.hashicorp.com/terraform/language/providers
+[terraform-debugging]: https://developer.hashicorp.com/terraform/internals/debugging
+[state-storage]: https://developer.hashicorp.com/terraform/language/state/remote
+[state-sensitive-data]: https://developer.hashicorp.com/terraform/language/state/sensitive-data
