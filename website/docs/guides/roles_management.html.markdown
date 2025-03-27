@@ -3,7 +3,7 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: Roles Management"
 sidebar_current: "docs-vcfa-guides-roles"
 description: |-
- Provides guidance to VMware Cloud roles management
+ Provides guidance to roles management in VMware Cloud Foundation Automation
 ---
 
 # Roles Management

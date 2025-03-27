@@ -11,6 +11,8 @@ description: |-
 Provides a data source to read a Global Role in VMware Cloud Foundation Automation, it can be used to retrieve details
 of an existing Global Role, like the [Organizations][vcfa_org] in which it is published.
 
+_Used by: **Provider**_
+
 ## Example Usage
 
 ```hcl

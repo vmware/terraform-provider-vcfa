@@ -12,7 +12,7 @@ description: |-
 Provides a resource to manage API Tokens. API Tokens are an easy way to authenticate to VMware Cloud Foundation Automation. 
 They are user-based and have the same role as the user.
 
--> This resource can be used by both **System Administrators** and **Tenant users**
+_Used by: **Provider**, **Tenant**_
 
 ## Example usage
 

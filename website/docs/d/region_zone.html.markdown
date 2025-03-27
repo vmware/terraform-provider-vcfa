@@ -10,7 +10,7 @@ description: |-
 
 Provides a data source to read VMware Cloud Foundation Automation Region Zone that can be used when creating a Region Quota.
 
-~> This data source can only be used by **System Administrators**
+_Used by: **Provider**_
 
 ## Example Usage
 

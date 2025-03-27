@@ -11,7 +11,7 @@ description: |-
 Provides a resource to manage Global Roles in VMware Cloud Foundation Automation. Global Roles define roles that are published to one
 or more [Organizations][vcfa_org].
 
-~> This resource can only be used by **System Administrators**
+_Used by: **Provider**_
 
 ## Example Usage
 

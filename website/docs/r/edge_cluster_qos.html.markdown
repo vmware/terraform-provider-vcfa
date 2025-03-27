@@ -10,11 +10,11 @@ description: |-
 
 Provides a resource to define Quality of Service (QoS) settings of an Edge Cluster in VMware Cloud Foundation Automation.
 
+_Used by: **Provider**_
+
 -> This resource does not create an Edge Cluster QoS entity, but configures QoS for a given
 `edge_cluster_id`. Similarly, `terraform destroy` operation does not remove Edge Cluster, but resets
 QoS settings to default (unlimited).
-
-~> This resource can only be used by **System Administrators**
 
 ## Example Usage
 

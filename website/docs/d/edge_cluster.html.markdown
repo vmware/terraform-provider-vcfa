@@ -12,7 +12,7 @@ Provides a data source to read an Edge Cluster in VMware Cloud Foundation Automa
 [`vcfa_org_regional_networking`](/providers/vmware/vcfa/latest/docs/resources/org_regional_networking) or
 [`vcfa_edge_cluster_qos`](/providers/vmware/vcfa/latest/docs/resources/edge_cluster_qos).
 
-~> This resource can only be used by **System Administrators**
+_Used by: **Provider**_
 
 ## Example Usage
 

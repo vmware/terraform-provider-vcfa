@@ -11,7 +11,7 @@ description: |-
 Provides a data source to read Region Virtual Machine Classes in VMware Cloud Foundation Automation. These are useful
 when configuring an [Organization Region Quota](/providers/vmware/vcfa/latest/docs/resources/org_region_quota) `region_vm_class_ids` argument.
 
-~> This data source can only be used by **System Administrators**
+_Used by: **Provider**_
 
 ## Example Usage
 

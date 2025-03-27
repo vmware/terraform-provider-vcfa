@@ -10,7 +10,7 @@ description: |-
 
 Provides a resource to manage VMware Cloud Foundation Automation Organizations.
 
-~> This resource can only be used by **System Administrators**
+_Used by: **Provider**_
 
 ## Example Usage
 

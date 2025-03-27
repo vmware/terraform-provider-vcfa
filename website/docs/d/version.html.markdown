@@ -12,7 +12,7 @@ description: |-
 Provides a data source to fetch the version details from VMware Cloud Foundation Automation, its maximum supported API version and
 perform some optional checks with version constraints.
 
-~> This data source can only be used by **System Administrators**
+_Used by: **Provider**_
 
 ## Example Usage
 

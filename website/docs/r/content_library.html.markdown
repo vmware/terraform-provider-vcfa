@@ -12,7 +12,7 @@ description: |-
 Provides a resource to manage Content Libraries in VMware Cloud Foundation Automation. It can be used to host
 [Content Library Items][vcfa_content_library_item] such as ISO files, OVAs and OVFs.
 
--> This resource can be used by both **System Administrators** and **Tenant users**
+_Used by: **Provider**, **Tenant**_
 
 ## Example Usage for a Provider Content Library
 

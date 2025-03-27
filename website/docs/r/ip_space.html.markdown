@@ -12,7 +12,7 @@ description: |-
 Provides a resource to manage IP Spaces in VMware Cloud Foundation Automation. IP spaces offer a structured approach for
 administrators to allocate IP addresses to different [Organizations][vcfa_org], enabling connectivity to external networks.
 
-~> This resource can only be used by **System Administrators**
+_Used by: **Provider**_
 
 ## Example Usage
 

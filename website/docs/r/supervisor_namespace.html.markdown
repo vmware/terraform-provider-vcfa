@@ -10,7 +10,7 @@ description: |-
 
 Provides a VMware Cloud Foundation Automation Supervisor Namespace. This can be used to create, modify, and delete Supervisor namespaces.
 
-~> This resource can only be used by **Tenant users**
+_Used by: **Tenant**_
 
 ## Example Usage
 

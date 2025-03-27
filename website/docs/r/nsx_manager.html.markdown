@@ -10,7 +10,7 @@ description: |-
 
 Provides a data source to manage NSX Managers attached to VMware Cloud Foundation Automation.
 
-~> This resource can only be used by **System Administrators**
+_Used by: **Provider**_
 
 ## Example Usage
 

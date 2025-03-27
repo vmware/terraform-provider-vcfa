@@ -13,7 +13,7 @@ Provides a VMware Cloud Foundation Automation Certificate resource. This can be 
 servers that VCF Automation has trusted communication with. These certificates are used for verification of the
 credentials of other servers.
 
--> This resource can be used by both **System Administrators** and **Tenant users**
+_Used by: **Provider**, **Tenant**_
 
 ## Example Usage
 

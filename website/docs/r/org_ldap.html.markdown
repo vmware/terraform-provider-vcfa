@@ -12,7 +12,7 @@ description: |-
 Provides a VMware Cloud Foundation Automation LDAP resource for Organizations.
 This can be used to create, update and delete LDAP configuration for an Organization.
 
--> This resource can be used by both **System Administrators** and **Tenant users**
+_Used by: **Provider**, **Tenant**_
 
 -> To configure LDAP for the Provider (System) organization, please use [`vcfa_provider_ldap` resource](/providers/vmware/vcfa/latest/docs/resources/provider_ldap) instead
 
