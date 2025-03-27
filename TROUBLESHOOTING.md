@@ -2,18 +2,23 @@
 
 ## Table of contents
 
-- [Terraform considerations](#terraform-considerations)
+- [About Terraform](#about-terraform)
   - [State management](#state-management)
   - [Terraform native logging](#terraform-native-logging)
   - [Provider version constraints](#provider-version-constraints)
-- [How to enable logging](#how-to-enable-logging)
-- [Common errors](#common-errors)
-  - [Login does not work](#login-does-not-work)
-  - [Entity Not Found error](#entity-not-found-error)
-  - [vcfa_content_library_item creation never finishes (it's stuck)](#vcfa_content_library_item-creation-never-finishes-its-stuck)
-  - [Configuring external entity connection (vCenter server, NSX Manager) returns certificate error](#configuring-external-entity-connection-vcenter-server-nsx-manager-returns-certificate-error)
+  - [Terraform architecture and responsibility boundaries](#terraform-architecture-and-responsibility-boundaries)
+    - [Terraform Core responsibilities](#terraform-core-responsibilities)
+    - [Terraform Provider plugin responsibilities](#terraform-provider-plugin-responsibilities)
+    - [Provider version constraints](#provider-version-constraints)
+- [Terraform provider VCFA](#about-terraform)
+  - [How to enable logging](#how-to-enable-logging)
+  - [Common errors](#common-errors)
+    - [Login does not work](#login-does-not-work)
+    - [Entity Not Found error](#entity-not-found-error)
+    - [vcfa_content_library_item creation never finishes (it's stuck)](#vcfa_content_library_item-creation-never-finishes-its-stuck)
+    - [External entity connection (vCenter server, NSX Manager) returns certificate error](#external-entity-connection-vcenter-server-nsx-manager-returns-certificate-error)
 
-## Terraform considerations
+## About Terraform
 
 This section briefly touches on *Terraform* functionality that is provided within
 [`terraform`][terraform] binary by [Hashicorp][hashicorp].
@@ -65,7 +70,47 @@ provider "vcfa" {
 }
 ```
 
-## How to enable logging
+### Terraform architecture and responsibility boundaries
+
+Terraform consists of three main components:
+* Core (`terraform` binary)
+* Plugins (called providers) e.g. Terraform Provider VCFA
+* Upstream APIs (some Go SDK for the platform)
+
+#### Terraform Core responsibilities
+
+The **Core** that is best identified by `terraform` binary in the consumers system, is developed by
+Hashicorp. It provides:
+
+* HCL (Hashicorp Configuration Language) engine and syntax
+* Schema diff that is being shown when performing operations
+* Dependency graph for the entities
+* All the tooling, including:
+  * Terraform enterprise
+  * Workspaces
+  * CDK
+  * Registry and documentation format
+* Some fields in any resource:
+  * `lifecycle`
+  * `provisioner`
+
+#### Terraform Provider plugin responsibilities
+
+Plugin responsibilities, **Terraform provider VCFA** in this case:
+
+* Implementation of provider plugin using Terraform plugin SDK
+  * Architecture (entity schema and granularity of resources/data sources)
+  * Implementation of Create, Read, Update, Delete and Import (CRUD+I for each resource
+  * Implementation of Read (R) for each data source
+* Maintenance of Go SDK
+* Releasing the provider to Terraform registry
+* Documentation (published to registry)
+* Maintenance and support
+* Respecting SemVer for the releases
+
+## Terraform provider VCFA
+
+### How to enable logging
 
 The VCFA provider can be configured to write logs into a specific file located in a customised path:
 
@@ -146,9 +191,9 @@ To disable HTTP **response** logging, one can set the environment variable `GOVC
 Note that the logs of Terraform itself can also be customised, please take a look [here](https://developer.hashicorp.com/terraform/internals/debugging)
 if you need to troubleshoot unexpected behaviors from Terraform.
 
-## Common errors
+### Common errors
 
-### Login does not work
+#### Login does not work
 
 ```
 Error: something went wrong during authentication: error finding LoginUrl: could not find valid version for login: could not retrieve supported versions: error fetching versions: Get "https://my-vcfa-url.com/api/versions": dial tcp: lookup my-vcfa-url.com: no such host
@@ -168,7 +213,7 @@ If you are using an API Token, verify that it is valid and not expired. Set a va
 
 If you are using an API Token from `vcfa_api_token`(https://github.com/vmware/terraform-provider-vcfa/blob/main/providers/vmware/vcfa/latest/docs/resources/api_token), verify that it is valid, not expired and the syntax is correct. Set a valid token file in `api_token_file`.
 
-### Entity Not Found error
+#### Entity Not Found error
 
 ```
 Error: error getting Organization by Name 'not-exist': [ENF] entity not found: got zero entities by name 'not-exist'
@@ -178,7 +223,7 @@ While the error looks trivial (the object does not exist), it may also mean that
 does not have enough Rights to fetch the object. When you are sure that the object exists and the error persists, check
 that you are logged in with a user with enough Rights.
 
-### vcfa_content_library_item creation never finishes (it's stuck)
+#### vcfa_content_library_item creation never finishes (it's stuck)
 
 If `vcfa_content_library_item` creation never ends, it could be that `quarantine_content_library_items` setting is enabled
 for the Organization in which the Content Library Item is being uploaded
@@ -189,7 +234,7 @@ to be blocked until they are approved (or rejected) by an authorized user. If yo
 may need to ask that the Organization has `quarantine_content_library_items` disabled, or that someone approves or denies the
 upload when the Terraform script is applied.
 
-### Configuring external entity connection (vCenter server, NSX Manager) returns certificate error
+#### External entity connection (vCenter server, NSX Manager) returns certificate error
 
 Sample error:
 
