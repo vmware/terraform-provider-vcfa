@@ -154,30 +154,30 @@ data "vcfa_tier0_gateway" "test" {
 
 const testAccVcfaProviderGatewayStep1 = testAccVcfaProviderGatewayPrereqs + `
 resource "vcfa_provider_gateway" "test" {
-  name                  = "{{.Testname}}"
-  description           = "Made using Terraform"
-  region_id             = {{.RegionId}}
+  name             = "{{.Testname}}"
+  description      = "Made using Terraform"
+  region_id        = {{.RegionId}}
   tier0_gateway_id = data.vcfa_tier0_gateway.test.id
-  ip_space_ids          = [ vcfa_ip_space.test.id, vcfa_ip_space.test2.id ]
+  ip_space_ids     = [ vcfa_ip_space.test.id, vcfa_ip_space.test2.id ]
 }
 `
 
 const testAccVcfaProviderGatewayStep2 = testAccVcfaProviderGatewayPrereqs + `
 resource "vcfa_provider_gateway" "test" {
-  name                  = "{{.Testname}}"
-  description           = "Made using Terraform updated"
-  region_id             = {{.RegionId}}
+  name             = "{{.Testname}}"
+  description      = "Made using Terraform updated"
+  region_id        = {{.RegionId}}
   tier0_gateway_id = data.vcfa_tier0_gateway.test.id
-  ip_space_ids          = [ vcfa_ip_space.test2.id ]
+  ip_space_ids     = [ vcfa_ip_space.test2.id ]
 }
 `
 
 const testAccVcfaProviderGatewayStep3 = testAccVcfaProviderGatewayPrereqs + `
 resource "vcfa_provider_gateway" "test" {
-  name                  = "{{.Testname}}-updated"
-  region_id             = {{.RegionId}}
+  name             = "{{.Testname}}-updated"
+  region_id        = {{.RegionId}}
   tier0_gateway_id = data.vcfa_tier0_gateway.test.id
-  ip_space_ids          = [ vcfa_ip_space.test2.id, vcfa_ip_space.test.id, {{.IpSpace1Id}} ]
+  ip_space_ids     = [ vcfa_ip_space.test2.id, vcfa_ip_space.test.id, {{.IpSpace1Id}} ]
 }
 `
 
