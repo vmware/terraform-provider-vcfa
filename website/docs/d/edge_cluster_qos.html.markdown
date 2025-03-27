@@ -8,7 +8,9 @@ description: |-
 
 # vcfa\_edge\_cluster\_qos
 
-Provides a VMware Cloud Foundation Automation Edge Cluster QoS data source.
+Provides a resource to read Quality of Service (QoS) settings from an Edge Cluster in VMware Cloud Foundation Automation.
+
+~> This resource can only be used by **System Administrators**
 
 ## Example Usage
 

@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccVcfaTmVersion(t *testing.T) {
+func TestAccVcfaVersion(t *testing.T) {
 	preTestChecks(t)
 	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
@@ -77,50 +77,50 @@ func TestAccVcfaTmVersion(t *testing.T) {
 			{
 				Config: step1,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("tm_version='%s',condition='>= 99.99.99',fail_if_not_match='false'", currentVersion)),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_version", currentVersion),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_api_version", apiVersion),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "matches_condition", "false"),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "id", fmt.Sprintf("version='%s',condition='>= 99.99.99',fail_if_not_match='false'", currentVersion)),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "version", currentVersion),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "api_version", apiVersion),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "matches_condition", "false"),
 				),
 			},
 			{
 				Config:      step2,
-				ExpectError: regexp.MustCompile(fmt.Sprintf(`the VCFA Tenant Manager version '%s' doesn't match the version constraint '>= 99.99.99'`, currentVersion)),
+				ExpectError: regexp.MustCompile(fmt.Sprintf(`the VCFA version '%s' doesn't match the version constraint '>= 99.99.99'`, currentVersion)),
 			},
 			{
 				Config: step3,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("tm_version='%s',condition='= %s',fail_if_not_match='true'", currentVersion, currentVersion)),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_version", currentVersion),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_api_version", apiVersion),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "matches_condition", "true"),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "id", fmt.Sprintf("version='%s',condition='= %s',fail_if_not_match='true'", currentVersion, currentVersion)),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "version", currentVersion),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "api_version", apiVersion),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "matches_condition", "true"),
 				),
 			},
 			{
 				Config: step4,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("tm_version='%s',condition='~> %s.%s',fail_if_not_match='true'", currentVersion, versionTokens[0], versionTokens[1])),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_version", currentVersion),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_api_version", apiVersion),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "matches_condition", "true"),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "id", fmt.Sprintf("version='%s',condition='~> %s.%s',fail_if_not_match='true'", currentVersion, versionTokens[0], versionTokens[1])),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "version", currentVersion),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "api_version", apiVersion),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "matches_condition", "true"),
 				),
 			},
 			{
 				Config: step5,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("tm_version='%s',condition='!= 10.3.0',fail_if_not_match='true'", currentVersion)),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_version", currentVersion),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_api_version", apiVersion),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "matches_condition", "true"),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "id", fmt.Sprintf("version='%s',condition='!= 10.3.0',fail_if_not_match='true'", currentVersion)),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "version", currentVersion),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "api_version", apiVersion),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "matches_condition", "true"),
 				),
 			},
 			{
 				Config: step6,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "id", fmt.Sprintf("tm_version='%s',condition='',fail_if_not_match='false'", currentVersion)),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_version", currentVersion),
-					resource.TestCheckResourceAttr("data.vcfa_tm_version.version", "tm_api_version", apiVersion),
-					resource.TestCheckNoResourceAttr("data.vcfa_tm_version.version", "matches_condition"),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "id", fmt.Sprintf("version='%s',condition='',fail_if_not_match='false'", currentVersion)),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "version", currentVersion),
+					resource.TestCheckResourceAttr("data.vcfa_version.version", "api_version", apiVersion),
+					resource.TestCheckNoResourceAttr("data.vcfa_version.version", "matches_condition"),
 				),
 			},
 		},
@@ -129,13 +129,13 @@ func TestAccVcfaTmVersion(t *testing.T) {
 
 const testAccVcfaTmVersion = `
 {{.SkipBinaryTest}}
-data "vcfa_tm_version" "version" {
+data "vcfa_version" "version" {
   condition         = "{{.Condition}}"
   fail_if_not_match = {{.FailIfNotMatch}}
 }
 `
 
 const testAccVcfaTmVersionWithoutArguments = `
-data "vcfa_tm_version" "version" {
+data "vcfa_version" "version" {
 }
 `
