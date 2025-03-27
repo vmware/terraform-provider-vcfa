@@ -79,7 +79,7 @@ Terraform consists of three main components:
 
 #### Terraform Core responsibilities
 
-The **Core** that is best identified by `terraform` binary in the consumers system, is developed by
+The **Core** that is best identified by `terraform` binary in the consumer's system, is developed by
 Hashicorp. It provides:
 
 * HCL (Hashicorp Configuration Language) engine and syntax
@@ -98,6 +98,7 @@ Hashicorp. It provides:
 
 Plugin responsibilities, **Terraform provider VCFA** in this case:
 
+* Communication with the platform API (VCFA)
 * Implementation of provider plugin using Terraform plugin SDK
   * Architecture (entity schema and granularity of resources/data sources)
   * Implementation of Create, Read, Update, Delete and Import (CRUD+I for each resource
