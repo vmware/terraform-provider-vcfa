@@ -12,7 +12,7 @@ Provides a data source to read VMware Cloud Foundation Automation Organization g
 
 _Used by: **Provider**_
 
--> For Organization Networking settings, see [`vcfa_org_networking`](/providers/vmware/vcfa/latest/docs/data-sources/org_networking) data source 
+-> For Networking Settings of an Organization, see [`vcfa_org_networking`](/providers/vmware/vcfa/latest/docs/data-sources/org_networking) data source 
 
 ## Example Usage
 

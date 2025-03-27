@@ -3,12 +3,12 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org_region_quota"
 sidebar_current: "docs-vcfa-data-source-org-region-quota"
 description: |-
-  Provides a data source to read VMware Cloud Foundation Automation Organization Region Quotas.
+  Provides a data source to read a Region Quota from an Organization in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_org\_region\_quota
 
-Provides a data source to read VMware Cloud Foundation Automation Organization Region Quotas.
+Provides a data source to read a Region Quota from an [Organization][vcfa_org-ds] in VMware Cloud Foundation Automation.
 
 _Used by: **Provider**_
 
@@ -33,10 +33,13 @@ data "vcfa_org_region_quota" "test" {
 
 The following arguments are supported:
 
-- `region_id` - (Required)  An ID for the parent Region
-- `org_id` - (Required) An ID for the parent Organization
+- `region_id` - (Required)  An ID for the parent [Region][vcfa_region-ds]
+- `org_id` - (Required) An ID for the parent [Organization][vcfa_org-ds]
 
 ## Attribute Reference
 
 All the arguments and attributes defined in
 [`vcfa_org_region_quota`](/providers/vmware/vcfa/latest/docs/resources/org_region_quota) resource are available.
+
+[vcfa_region-ds]: /providers/vmware/vcfa/latest/docs/data-sources/region
+[vcfa_org-ds]: /providers/vmware/vcfa/latest/docs/data-sources/org
