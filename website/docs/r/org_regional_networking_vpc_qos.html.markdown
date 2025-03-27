@@ -3,16 +3,17 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org_regional_networking_vpc_qos"
 sidebar_current: "docs-vcfa-resource-org-regional-networking-vpc-qos"
 description: |-
-  Provides a resource to manage VMware Cloud Foundation Automation Organization Regional Networking VPC QoS settings.
+  Provides a resource to manage Organization Regional Networking VPC QoS settings in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_org\_regional\_networking\_vpc\_qos
 
-Provides a resource to manage VMware Cloud Foundation Automation Organization Regional Networking VPC QoS settings.
+Provides a resource to manage [Organization Regional Networking][vcfa_org_regional_networking] VPC QoS settings in
+VMware Cloud Foundation Automation.
 
 _Used by: **Provider**_
 
--> Organization Regional Networking VPC inherits QoS settings from the Edge Cluster by default, but
+-> Organization Regional Networking VPC inherits QoS settings from the [Edge Cluster][vcfa_edge_cluster_qos] by default, but
 one can use this resource to override provided defaults. Deleting this resource will revert the
 settings back to Edge Cluster defaults.
 
@@ -41,17 +42,17 @@ resource "vcfa_org_regional_networking_vpc_qos" "demo" {
 
 The following arguments are supported:
 
-- `org_regional_networking_id` - (Required) The ID of Organization Regional Networking configuration
+- `org_regional_networking_id` - (Required) The ID of [Organization Regional Networking][vcfa_org_regional_networking] configuration
 - `egress_committed_bandwidth_mbps` - (Optional) Committed egress bandwidth specified in Mbps.
   Bandwidth is limited to line rate. Traffic exceeding bandwidth will be dropped. Required with
-  `egress_burst_size_bytes`. Default is `-1` - unlimited
+  `egress_burst_size_bytes`. Default is `-1` (unlimited)
 - `egress_burst_size_bytes` - (Optional) Egress burst size in bytes. Required with
-  `egress_committed_bandwidth_mbps`. Default is `-1` - unlimited
+  `egress_committed_bandwidth_mbps`. Default is `-1` (unlimited)
 - `ingress_committed_bandwidth_mbps` - (Optional) Committed ingress bandwidth specified in Mbps.
   Bandwidth is limited to line rate. Traffic exceeding bandwidth will be dropped. Required with
-  `ingress_burst_size_bytes`. Default is `-1` - unlimited
+  `ingress_burst_size_bytes`. Default is `-1` (unlimited)
 - `ingress_burst_size_bytes` - (Optional) Ingress burst size in bytes. Required with
-  `ingress_committed_bandwidth_mbps`. Default is `-1` - unlimited
+  `ingress_committed_bandwidth_mbps`. Default is `-1` (unlimited)
 
 ## Attribute Reference
 
@@ -80,3 +81,5 @@ at this stage will show the difference between the minimal configuration file an
 
 [docs-import]: https://www.terraform.io/docs/import
 [importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
+[vcfa_org_regional_networking]: /providers/vmware/vcfa/latest/docs/resources/org_regional_networking
+[vcfa_edge_cluster_qos]: /providers/vmware/vcfa/latest/docs/data-sources/edge_cluster_qos
