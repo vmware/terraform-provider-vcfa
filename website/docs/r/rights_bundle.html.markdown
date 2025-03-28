@@ -45,7 +45,7 @@ The following arguments are supported:
 * `name` - (Required) The name of the Rights Bundle
 * `description` - (Required) A description of the Rights Bundle
 * `rights` - (Optional) Set of Rights assigned to this Rights Bundle
-* `publish_to_all_orgs` - (Required) When true, publishes the Rights Bundle to all Organizations
+* `publish_to_all_orgs` - (Required) When `true`, publishes the Rights Bundle to all Organizations
 * `org_ids` - (Optional) Set of IDs of the Organizations to which this Rights Bundle gets published. Ignored if `publish_to_all_orgs` is `true`
 
 ## Attribute Reference

@@ -330,12 +330,14 @@ case $wanted in
         ;;
     short)
         export VCFA_SKIP_TEMPLATE_WRITING=1
+        export VCFA_SKIP_PRIORITY_TESTS=1
         export MORE_TAGS="functional"
         short_test
         ;;
     short-provider-orguser)
         unset VCFA_SKIP_TEMPLATE_WRITING
         export VCFA_TEST_ORG_USER=1
+        export VCFA_SKIP_PRIORITY_TESTS=1
         export VCFA_ADD_PROVIDER=1
         export MORE_TAGS="functional binary"
         short_test
@@ -343,12 +345,14 @@ case $wanted in
      short-provider)
         unset VCFA_SKIP_TEMPLATE_WRITING
         export VCFA_ADD_PROVIDER=1
+        export VCFA_SKIP_PRIORITY_TESTS=1
         export MORE_TAGS="functional binary"
         short_test
         ;;
      short-provider-tm)
         unset VCFA_SKIP_TEMPLATE_WRITING
         export VCFA_ADD_PROVIDER=1
+        export VCFA_SKIP_PRIORITY_TESTS=1
         export MORE_TAGS="tm binary"
         short_test
         ;;
@@ -357,7 +361,7 @@ case $wanted in
         acceptance_test functional
         ;;
     acceptance-cci)
-        acceptance_test "unit cci" "-vcfa-test-org-user -vcfa-skip-leftovers-removal"
+        acceptance_test "unit cci" "-vcfa-skip-priority-tests -vcfa-test-org-user -vcfa-skip-leftovers-removal"
         ;;
     acceptance)
         acceptance_test "unit functional"

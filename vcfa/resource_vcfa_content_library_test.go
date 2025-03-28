@@ -147,7 +147,7 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 				ResourceName:      "vcfa_content_library.cl",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateId:     params["Name"].(string),
+				ImportStateId:     fmt.Sprintf("System%s%s", ImportSeparator, params["Name"]),
 				ImportStateVerifyIgnore: []string{
 					"delete_recursive",
 					"delete_force",
@@ -158,6 +158,10 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 }
 
 const testAccVcfaContentLibraryProviderStep1 = `
+data "vcfa_org" "system" {
+  name = "System"
+}
+
 data "vcfa_region_storage_policy" "sp" {
   region_id = {{.RegionId}}
   name      = "{{.RegionStoragePolicy}}"
@@ -169,6 +173,7 @@ data "vcfa_storage_class" "sc" {
 }
 
 resource "vcfa_content_library" "cl" {
+  org_id      = data.vcfa_org.system.id
   name        = "{{.Name}}"
   description = "{{.Name}}"
   storage_class_ids = [
@@ -179,6 +184,7 @@ resource "vcfa_content_library" "cl" {
 }
 
 resource "vcfa_content_library" "cl_subscribed" {
+  org_id      = data.vcfa_org.system.id
   name        = "{{.Name}}Subscribed"
   storage_class_ids = [
     data.vcfa_storage_class.sc.id
@@ -194,11 +200,13 @@ resource "vcfa_content_library" "cl_subscribed" {
 
 const testAccVcfaContentLibraryProviderStep3 = testAccVcfaContentLibraryProviderStep1 + `
 data "vcfa_content_library" "cl_ds" {
-  name = vcfa_content_library.cl.name
+  org_id = vcfa_content_library.cl.org_id
+  name   = vcfa_content_library.cl.name
 }
 
 data "vcfa_content_library" "cl_subscribed_ds" {
-  name = vcfa_content_library.cl_subscribed.name
+  org_id = vcfa_content_library.cl_subscribed.org_id
+  name   = vcfa_content_library.cl_subscribed.name
 }
 `
 

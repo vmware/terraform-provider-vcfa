@@ -188,11 +188,6 @@ func saveTmLdapSettingsInState(d *schema.ResourceData, config *types.TmLdapSetti
 	dSet(d, "connector_type", config.ConnectorType)
 	dSet(d, "is_ssl", config.IsSsl)
 	dSet(d, "username", config.UserName)
-	if origin == "resource" {
-		// The password field does not exist in data source as it's never returned.
-		// Here we set it explicitly to be reminded of that fact, but only in the resource.
-		dSet(d, "password", "")
-	}
 	if config.CustomUiButtonLabel != nil {
 		dSet(d, "custom_ui_button_label", *config.CustomUiButtonLabel)
 	}

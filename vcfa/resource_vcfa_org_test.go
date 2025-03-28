@@ -119,7 +119,7 @@ data "vcfa_org_settings" "allow_ds" {
 }
 `
 
-// TestAccVcfaOrgClassicTenant tests a Tenant Manager Organization configured as "Classic Tenant"
+// TestAccVcfaOrgClassicTenant tests an Organization configured as "Classic Tenant"
 func TestAccVcfaOrgClassicTenant(t *testing.T) {
 	preTestChecks(t)
 	defer postTestChecks(t)

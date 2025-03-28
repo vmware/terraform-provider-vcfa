@@ -60,7 +60,7 @@ func datasourceVcfaCertificateRead(_ context.Context, d *schema.ResourceData, me
 
 	// get by ID when it's available
 	var certificate *govcd.Certificate
-	if isSysOrg(org) {
+	if isSystem(org) {
 		if alias != "" {
 			certificate, err = tmClient.Client.GetCertificateFromLibraryByName(alias)
 		} else if d.Get("id").(string) != "" {

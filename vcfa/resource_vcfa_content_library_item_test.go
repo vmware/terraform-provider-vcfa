@@ -5,7 +5,6 @@ package vcfa
 import (
 	"fmt"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"testing"
 
@@ -13,16 +12,17 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-// getContentLibraryItemResourcesAbsolutePaths returns the absolute paths to the testing resources
-// required to test Content Library Items. Absolute paths are required when running binary tests.
-func getContentLibraryItemResourcesAbsolutePaths(t *testing.T) []string {
-	paths := []string{
-		"../test-resources/test_vapp_template.ova",
-		"../test-resources/test.iso",
-		"../test-resources/test_vapp_template_ovf/descriptor.ovf",
-		"../test-resources/test_vapp_template_ovf/disk1.vmdk"}
-	absPaths := make([]string, len(paths))
-	for i, s := range paths {
+var contentLibraryItemTestingResourcePaths = []string{
+	"../test-resources/test_vapp_template.ova",
+	"../test-resources/test.iso",
+	"../test-resources/test_vapp_template_ovf/descriptor.ovf",
+	"../test-resources/test_vapp_template_ovf/disk1.vmdk"}
+
+// getTestingResourcesAbsolutePaths returns the absolute paths to the testing resources
+// required to test. Absolute paths are required when running binary tests.
+func getTestingResourcesAbsolutePaths(t *testing.T, relativePaths []string) []string {
+	absPaths := make([]string, len(relativePaths))
+	for i, s := range relativePaths {
 		absPath, err := filepath.Abs(s)
 		if err != nil {
 			t.Fatal(err)
@@ -43,7 +43,7 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
 	contentLibraryHcl, contentLibraryHclRef := getContentLibraryHcl(t, regionHclRef, "")
 
-	itemPaths := getContentLibraryItemResourcesAbsolutePaths(t)
+	itemPaths := getTestingResourcesAbsolutePaths(t, contentLibraryItemTestingResourcePaths)
 	var params = StringMap{
 		"Name":              t.Name(),
 		"ContentLibraryRef": fmt.Sprintf("%s.id", contentLibraryHclRef),
@@ -90,7 +90,7 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 					resource.TestCheckResourceAttr(cli1, "is_published", "false"),
 					resource.TestCheckResourceAttrSet(cli1, "image_identifier"),
 					resource.TestCheckResourceAttr(cli1, "item_type", "TEMPLATE"),
-					resource.TestMatchResourceAttr(cli1, "owner_org_id", regexp.MustCompile("urn:vcloud:org:")),
+					resource.TestCheckResourceAttrPair(cli1, "owner_org_id", "data.vcfa_org.system", "id"),
 					resource.TestCheckResourceAttr(cli1, "status", "READY"),
 					resource.TestCheckResourceAttr(cli1, "last_successful_sync", ""),
 					resource.TestCheckResourceAttr(cli1, "version", "1"),
@@ -104,7 +104,7 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 					resource.TestCheckResourceAttr(cli2, "is_published", "false"),
 					resource.TestCheckResourceAttrSet(cli2, "image_identifier"),
 					resource.TestCheckResourceAttr(cli2, "item_type", "ISO"),
-					resource.TestMatchResourceAttr(cli2, "owner_org_id", regexp.MustCompile("urn:vcloud:org:")),
+					resource.TestCheckResourceAttrPair(cli2, "owner_org_id", "data.vcfa_org.system", "id"),
 					resource.TestCheckResourceAttr(cli2, "status", "READY"),
 					resource.TestCheckResourceAttr(cli2, "last_successful_sync", ""),
 					resource.TestCheckResourceAttr(cli2, "version", "1"),
@@ -118,7 +118,7 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 					resource.TestCheckResourceAttr(cli3, "is_published", "false"),
 					resource.TestCheckResourceAttrSet(cli3, "image_identifier"),
 					resource.TestCheckResourceAttr(cli3, "item_type", "TEMPLATE"),
-					resource.TestMatchResourceAttr(cli3, "owner_org_id", regexp.MustCompile("urn:vcloud:org:")),
+					resource.TestCheckResourceAttrPair(cli3, "owner_org_id", "data.vcfa_org.system", "id"),
 					resource.TestCheckResourceAttr(cli3, "status", "READY"),
 					resource.TestCheckResourceAttr(cli3, "last_successful_sync", ""),
 					resource.TestCheckResourceAttr(cli3, "version", "1"),
@@ -153,7 +153,7 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 				ResourceName:            cli1,
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateId:           fmt.Sprintf("%s%s%s", testConfig.Tm.ContentLibrary, ImportSeparator, params["Name"].(string)+"1"),
+				ImportStateId:           fmt.Sprintf("System%s%s%s%s", ImportSeparator, testConfig.Tm.ContentLibrary, ImportSeparator, params["Name"].(string)+"1"),
 				ImportStateVerifyIgnore: []string{"file_paths.#", "file_paths.0", "upload_piece_size", "%"}, // file_paths and upload_piece_size cannot be obtained during imports, that's why it's Optional
 			},
 		},
@@ -212,7 +212,7 @@ func TestAccVcfaContentLibraryItemTenant(t *testing.T) {
 	// to create libraries in the Organization
 	contentLibraryHcl, contentLibraryHclRef := getContentLibraryHcl(t, regionHclRef, "vcfa_org_region_quota.test.org_id")
 
-	itemPaths := getContentLibraryItemResourcesAbsolutePaths(t)
+	itemPaths := getTestingResourcesAbsolutePaths(t, contentLibraryItemTestingResourcePaths)
 	var params = StringMap{
 		"Org":                 testConfig.Tm.Org,
 		"Username":            "test-user",
