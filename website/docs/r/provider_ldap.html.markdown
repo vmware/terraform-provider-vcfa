@@ -3,14 +3,16 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_provider_ldap"
 sidebar_current: "docs-vcfa-resource-ldap"
 description: |-
-  Provides a VMware Cloud Foundation Automation LDAP resource for the Provider (System). This can be used to create, delete, and 
-  update the Provider (System) LDAP configuration.
+  Provides a LDAP resource for the Provider (System) Organization in VMware Cloud Foundation Automation.
+  This can be used to create, delete, and update the Provider (System) LDAP configuration.
 ---
 
 # vcfa\_provider\_ldap
 
-Provides a VMware Cloud Foundation Automation LDAP resource for the Provider (System).
+Provides a LDAP resource for the Provider (System) Organization in VMware Cloud Foundation Automation.
 This can be used to create, delete, and update the Provider (System) LDAP configuration.
+
+_Used by: **Provider**_
 
 -> To configure LDAP for a regular organization (tenant), please use [`vcfa_org_ldap` resource](/providers/vmware/vcfa/latest/docs/resources/org_ldap) instead
 
@@ -98,17 +100,19 @@ An existing System LDAP configuration can be [imported][docs-import] into this r
 For example, using this structure, representing an existing LDAP configuration that was **not** created using Terraform:
 
 ```hcl
-resource "vcfa_provider_ldap" "existing-ldap" {
-}
+resource "vcfa_provider_ldap" "existing-ldap" {}
 ```
 
-You can import such LDAP configuration into terraform state using one of the following commands
+You can import such Provider LDAP configuration into terraform state using one of the following commands
 
 ```
-terraform import vcfa_org_ldap.existing-ldap
+terraform import vcfa_provider_ldap.existing-ldap
 ```
 
-After that, you must expand the configuration file before you can either update or delete the LDAP configuration. Running `terraform plan`
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+
+After that, you must expand the configuration file before you can either update or delete the Provider LDAP configuration. Running `terraform plan`
 at this stage will show the difference between the minimal configuration file and the stored properties.
 
-[docs-import]:https://www.terraform.io/docs/import/
+[docs-import]: https://www.terraform.io/docs/import
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources

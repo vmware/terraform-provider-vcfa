@@ -111,11 +111,6 @@ func resourceVcfaContentLibrary() *schema.Resource {
 							Computed:    true,
 							Description: "Password to use to authenticate with the publisher",
 						},
-						"need_local_copy": {
-							Type:        schema.TypeBool,
-							Optional:    true,
-							Description: "Whether to eagerly download content from publisher and store it locally",
-						},
 					},
 				},
 			},
@@ -260,7 +255,6 @@ func getContentLibraryType(d *schema.ResourceData) *types.ContentLibrary {
 		subsConfig := v.([]interface{})[0].(map[string]interface{})
 		t.SubscriptionConfig = &types.ContentLibrarySubscriptionConfig{
 			SubscriptionUrl: subsConfig["subscription_url"].(string),
-			NeedLocalCopy:   subsConfig["need_local_copy"].(bool),
 			Password:        subsConfig["password"].(string),
 		}
 	}
@@ -299,7 +293,6 @@ func setContentLibraryData(_ *VCDClient, d *schema.ResourceData, cl *govcd.Conte
 			map[string]interface{}{
 				"subscription_url": cl.ContentLibrary.SubscriptionConfig.SubscriptionUrl,
 				"password":         cl.ContentLibrary.SubscriptionConfig.Password,
-				"need_local_copy":  cl.ContentLibrary.SubscriptionConfig.NeedLocalCopy,
 			},
 		}
 	}

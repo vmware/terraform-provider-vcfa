@@ -3,14 +3,16 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org_settings"
 sidebar_current: "docs-vcfa-resource-org-settings"
 description: |-
-  Provides a resource to manage VMware Cloud Foundation Automation Organization general Settings.
+  Provides a resource to manage the General Settings of an Organization in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_org\_settings
 
-Provides a resource to manage VMware Cloud Foundation Automation Organization general Settings.
+Provides a resource to manage the General Settings of an [Organization][vcfa_org] in VMware Cloud Foundation Automation.
 
--> For Organization Networking settings, see [`vcfa_org_networking`](/providers/vmware/vcfa/latest/docs/resources/org_networking) resource
+_Used by: **Provider**_
+
+-> For Organization Networking settings, see [`vcfa_org_networking`](/providers/vmware/vcfa/latest/docs/resources/org_networking) resource.
 
 ## Example Usage
 
@@ -46,10 +48,17 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing Org configuration can be [imported][docs-import] into this resource via supplying path
 for it. An example is below:
 
-[docs-import]: https://www.terraform.io/docs/import/
-
 ```
 terraform import vcfa_org_settings.imported my-org-name
 ```
 
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+
 The above would import the `my-org-name` Organization settings.
+
+After that, you can expand the configuration file and either update or delete the Organization settings as needed. Running `terraform plan`
+at this stage will show the difference between the minimal configuration file and the Organization settings' stored properties.
+
+[docs-import]: https://www.terraform.io/docs/import
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
+[vcfa_org]: /providers/vmware/vcfa/latest/docs/resources/org

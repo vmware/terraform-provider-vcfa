@@ -11,6 +11,8 @@ description: |-
 Provides a resource to manage Global Roles in VMware Cloud Foundation Automation. Global Roles define roles that are published to one
 or more [Organizations][vcfa_org].
 
+_Used by: **Provider**_
+
 ## Example Usage
 
 ```hcl
@@ -76,7 +78,7 @@ You can import such Global Role into terraform state using this command:
 terraform import vcfa_global_role.my-global-role "My Existing Role"
 ```
 
-NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
 After that, you can expand the configuration file and either update or delete the Global Role as needed. Running `terraform plan`
 at this stage will show the difference between the minimal configuration file and the Global Role's stored properties.

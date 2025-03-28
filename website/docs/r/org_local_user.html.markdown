@@ -3,12 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org_local_user"
 sidebar_current: "docs-vcfa-resource-org-local-user"
 description: |-
-  Provides a resource to manage local users in VMware Cloud Foundation Automation Organizations.
+  Provides a resource to manage local Users from an Organization in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_org\_local\_user
 
-Provides a resource to manage local users in VMware Cloud Foundation Automation Organizations.
+Provides a resource to manage Local Users from an [Organization][vcfa_org] in VMware Cloud Foundation Automation.
+
+_Used by: **Provider**_
 
 ## Example Usage
 
@@ -42,10 +44,10 @@ resource "vcfa_org_local_user" "demo" {
 
 The following arguments are supported:
 
-- `org_id` - (Required) An Org ID for this Local User to be created in 
-- `role_ids` - (Required) A set of role IDs to assign to this user
-- `username` - (Required) User name for this local user
-- `password` - (Required) A password for the user
+- `org_id` - (Required) An [Organization][vcfa_org] ID for this Local User to be created in 
+- `role_ids` - (Required) A set of [Role][vcfa_global_role] IDs to assign to this Local User
+- `username` - (Required) Username for this Local User
+- `password` - (Required) A password for the Local User
 
 ## Importing
 
@@ -53,13 +55,21 @@ The following arguments are supported:
 state. It does not generate configuration. However, an experimental feature in Terraform 1.5+ allows
 also code generation. See [Importing resources][importing-resources] for more information.
 
-An existing Org Local User configuration can be [imported][docs-import] into this resource via
+An existing Organization Local User configuration can be [imported][docs-import] into this resource via
 supplying path for it. An example is below:
-
-[docs-import]: https://www.terraform.io/docs/import/
 
 ```
 terraform import vcfa_org_local_user.imported my-org-name.my-user-name
 ```
 
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+
 The above would import the `my-user-name` local user from  `my-org-name` Organization.
+
+After that, you can expand the configuration file and either update or delete the Organization Local User as needed. Running `terraform plan`
+at this stage will show the difference between the minimal configuration file and the Organization Local User's stored properties.
+
+[docs-import]: https://www.terraform.io/docs/import
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
+[vcfa_org]: /providers/vmware/vcfa/latest/docs/resources/org
+[vcfa_global_role]: /providers/vmware/vcfa/latest/docs/resources/global_role

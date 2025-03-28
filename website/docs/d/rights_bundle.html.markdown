@@ -3,12 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_rights_bundle"
 sidebar_current: "docs-vcfa-data-source-rights-bundle"
 description: |-
- Provides a VMware Cloud Foundation Automation Rights Bundle data source. This can be used to read Rights Bundles.
+  Provides a data source to read a Rights Bundle from VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_rights\_bundle
 
-Provides a VMware Cloud Foundation Automation Rights Bundle data source. This can be used to read Rights Bundles.
+Provides a data source to read a Rights Bundle from VMware Cloud Foundation Automation.
+
+_Used by: **Provider**_
 
 ## Example Usage
 
@@ -135,7 +137,6 @@ default-rb = {
 }
 ```
 
-
 ## Argument Reference
 
 The following arguments are supported:
@@ -147,6 +148,6 @@ The following arguments are supported:
 * `description` - A description of the Rights Bundle
 * `bundle_key` - Key used for internationalization
 * `rights` - Set of rights assigned to this role
-* `publish_to_all_orgs` - When `true`, publishes the Rights Bundle to all Organizations
+* `publish_to_all_orgs` - When `true`, publishes the Rights Bundle to all [Organizations](/providers/vmware/vcfa/latest/docs/resources/org)
 * `org_ids` - Set of IDs of the Organizations to which this Rights Bundle gets published. Ignored if `publish_to_all_orgs` is `true`
 * `read_only` - Whether this Rights Bundle is read-only

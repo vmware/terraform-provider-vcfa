@@ -30,7 +30,7 @@ func datasourceVcfaProviderGateway() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("Description of %s", labelVcfaProviderGateway),
 			},
-			"nsxt_tier0_gateway_id": {
+			"tier0_gateway_id": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Description: fmt.Sprintf("Parent %s of %s", labelVcfaTier0Gateway, labelVcfaProviderGateway),

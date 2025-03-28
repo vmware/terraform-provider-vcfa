@@ -3,16 +3,19 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_role"
 sidebar_current: "docs-vcfa-data-source-role"
 description: |-
- Provides a VMware Cloud Foundation Automation Role. This can be used to read Roles.
+  Provides a data source to read a Role from VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_role
 
-Provides a VMware Cloud Foundation Automation Role data source. This can be used to read Roles.
+Provides a data source to read a Role from VMware Cloud Foundation Automation.
+
+_Used by: **Provider**, **Tenant**_
 
 ## Example Usage
 
 ```hcl
+# Reading a Role from System (Provider) organization
 data "vcfa_org" "system" {
   name = "System"
 }
@@ -20,6 +23,16 @@ data "vcfa_org" "system" {
 data "vcfa_role" "sysadmin" {
   org_id = data.vcfa_org.system.id
   name   = "System Administrator"
+}
+
+# Reading a Role from a regular tenant
+data "vcfa_org" "org1" {
+  name = "org1"
+}
+
+data "vcfa_role" "sysadmin" {
+  org_id = data.vcfa_org.org1.id
+  name   = "Organization Administrator"
 }
 ```
 
@@ -73,7 +86,7 @@ sysadmin-out = {
 
 The following arguments are supported:
 
-* `org_id` - (Required) The ID of Organization of the Role. Can be fetched with [`vcfa_org` data source](/providers/vmware/vcfa/latest/docs/data-sources/org)
+* `org_id` - (Required) The ID of Organization where the Role belongs. Can be fetched with [`vcfa_org` data source](/providers/vmware/vcfa/latest/docs/data-sources/org)
 * `name` - (Required) The name of the Role
 
 ## Attribute Reference

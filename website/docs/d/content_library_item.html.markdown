@@ -12,7 +12,7 @@ description: |-
 Provides a data source to read a Content Library Item in VMware Cloud Foundation Automation. This can be used to obtain the details
 of Content Library Items, such as description, creation date, subscription details, etc.
 
--> This data source can be used by both **System Administrators** and **Tenant users**
+_Used by: **Provider**, **Tenant**_
 
 ## Example Usage
 
@@ -50,8 +50,9 @@ The following arguments are supported:
 
 ## Attribute reference
 
-All arguments and attributes defined in [`vcfa_content_library`][vcfa_content_library] resource are supported
+All arguments and attributes defined in [`vcfa_content_library_item`][vcfa_content_library_item] resource are supported
 as read-only (Computed) values.
 
 [vcfa_content_library]: /providers/vmware/vcfa/latest/docs/data-sources/content_library
 [vcfa_content_library-ds]: /providers/vmware/vcfa/latest/docs/data-sources/content_library
+[vcfa_content_library_item]: /providers/vmware/vcfa/latest/docs/resources/content_library_item

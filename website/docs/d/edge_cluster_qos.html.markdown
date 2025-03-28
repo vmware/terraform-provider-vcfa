@@ -10,7 +10,7 @@ description: |-
 
 Provides a resource to read Quality of Service (QoS) settings from an Edge Cluster in VMware Cloud Foundation Automation.
 
-~> This resource can only be used by **System Administrators**
+_Used by: **Provider**_
 
 ## Example Usage
 

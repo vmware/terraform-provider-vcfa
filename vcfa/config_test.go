@@ -862,7 +862,7 @@ func getOrCreateNsxtManager(tmClient *govcd.VCDClient) (*govcd.NsxtManagerOpenAp
 	}
 
 	if vcfaTestVerbose {
-		fmt.Printf("# Creating NSX-T Manager %s\n", testConfig.Tm.NsxManagerUrl)
+		fmt.Printf("# Creating NSX Manager %s\n", testConfig.Tm.NsxManagerUrl)
 	}
 	nsxtCfg := &types.NsxtManagerOpenApi{
 		Name:     "test-tf-shared-nsx",
@@ -870,7 +870,7 @@ func getOrCreateNsxtManager(tmClient *govcd.VCDClient) (*govcd.NsxtManagerOpenAp
 		Password: testConfig.Tm.NsxManagerPassword,
 		Url:      testConfig.Tm.NsxManagerUrl,
 	}
-	// Certificate must be trusted before adding NSX-T Manager
+	// Certificate must be trusted before adding NSX Manager
 	url, err := url.Parse(nsxtCfg.Url)
 	if err != nil {
 		return nil, nil, err
@@ -890,7 +890,7 @@ func getOrCreateNsxtManager(tmClient *govcd.VCDClient) (*govcd.NsxtManagerOpenAp
 			return nil
 		}
 		if vcfaTestVerbose {
-			fmt.Printf("# Deleting NSX-T Manager %s\n", nsxtManager.NsxtManagerOpenApi.Name)
+			fmt.Printf("# Deleting NSX Manager %s\n", nsxtManager.NsxtManagerOpenApi.Name)
 		}
 
 		nsxManager, err := tmClient.GetNsxtManagerOpenApiByName(nsxtCfg.Name)

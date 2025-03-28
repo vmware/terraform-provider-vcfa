@@ -3,12 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org_local_user"
 sidebar_current: "docs-vcfa-data-source-org-local-user"
 description: |-
-  Provides a data source to read local users in VMware Cloud Foundation Automation Organizations.
+  Provides a data source to read a local User from an Organization in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_org\_local\_user
 
-Provides a data source to read local users in VMware Cloud Foundation Automation Organizations.
+Provides a data source to read a local User from an [Organization][vcfa_org-ds] in VMware Cloud Foundation Automation.
+
+_Used by: **Provider**, **Tenant**_
 
 ## Example Usage
 
@@ -27,7 +29,7 @@ data "vcfa_org_local_user" "demo" {
 
 The following arguments are supported:
 
-- `org_id` - (Required) A parent Org ID for looking up this user
+- `org_id` - (Required) A parent [Organization][vcfa_org-ds] ID for looking up this user
 - `username` - (Required) The name of existing user
 
 ## Attribute Reference
@@ -35,3 +37,5 @@ The following arguments are supported:
 All the arguments and attributes defined in
 [`vcfa_org_local_user`](/providers/vmware/vcfa/latest/docs/resources/org_local_user) resource are
 available.
+
+[vcfa_org-ds]: /providers/vmware/vcfa/latest/docs/data-sources/org
