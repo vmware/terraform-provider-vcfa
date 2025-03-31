@@ -54,7 +54,6 @@ resource "vcfa_content_library" "cl2" {
   ]
   subscription_config {
     subscription_url = "https://my-vcenter.com/cls/vcsp/lib/41eb97db-e1b4-47e6-b0f3-5e02aa3830f7/lib.json"
-    need_local_copy  = true
   }
 }
 ```
