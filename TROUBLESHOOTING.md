@@ -44,6 +44,13 @@ Terraform itself, independently of the provider plugin being used, has some debu
 can enable additional logging. They are documented in [Terraform debugging
 page][terraform-debugging].
 
+In a nutshell, these are the main variables, but the [debugging page][terraform-debugging] has more details:
+
+```
+TF_LOG=trace
+TF_LOG_PATH=tf.log
+```
+
 ### Provider version constraints
 
 Terraform providers are installed automatically by using `terraform init` command. The plugin is
@@ -103,8 +110,8 @@ Plugin responsibilities, **Terraform provider VCFA** in this case:
   * Architecture (entity schema and granularity of resources/data sources)
   * Implementation of Create, Read, Update, Delete and Import (CRUD+I for each resource
   * Implementation of Read (R) for each data source
-* Maintenance of Go SDK
-* Releasing the provider to Terraform registry
+* Maintenance of [Go SDK][go-vcloud-director]
+* Releasing the provider to [Terraform registry][registry-vcfa]
 * Documentation (published to registry)
 * Maintenance and support
 * Respecting SemVer for the releases
@@ -266,3 +273,5 @@ boolean field that can be used to leveraged trusting the certificate automatical
 [provider-version-constraints]:https://developer.hashicorp.com/terraform/tutorials/configuration-language/versions#terraform-version-constraints
 [provider-semver]: https://developer.hashicorp.com/terraform/plugin/best-practices/versioning
 [semver]: https://semver.org/
+[go-vcloud-director]: https://github.com/vmware/go-vcloud-director
+[registry-vcfa]: http://registry.terraform.io/providers/vmware/vcfa
