@@ -3,14 +3,16 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org_settings"
 sidebar_current: "docs-vcfa-data-source-org-settings"
 description: |-
-  Provides a data source to read VMware Cloud Foundation Automation Organization general Settings.
+  Provides a data source to read the General Settings from an Organization in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_org\_settings
 
-Provides a data source to read VMware Cloud Foundation Automation Organization general Settings.
+Provides a data source to read the General Settings from an [Organization][vcfa_org-ds] in VMware Cloud Foundation Automation.
 
--> For Organization Networking settings, see [`vcfa_org_networking`](/providers/vmware/vcfa/latest/docs/data-sources/org_networking) data source 
+_Used by: **Provider**, **Tenant**_
+
+-> For Networking Settings of an Organization, see [`vcfa_org_networking`](/providers/vmware/vcfa/latest/docs/data-sources/org_networking) data source.
 
 ## Example Usage
 
@@ -28,10 +30,12 @@ data "vcfa_org_settings" "demo" {
 
 The following arguments are supported:
 
-- `org_id` - (Required) The ID of Organization.
+- `org_id` - (Required) The ID of the [Organization][vcfa_org-ds].
 
 ## Attribute Reference
 
 All the arguments and attributes defined in
 [`vcfa_org_settings`](/providers/vmware/vcfa/latest/docs/resources/org_settings) resource are
 available.
+
+[vcfa_org-ds]: /providers/vmware/vcfa/latest/docs/data-sources/org

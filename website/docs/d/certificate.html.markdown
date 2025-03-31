@@ -12,7 +12,7 @@ description: |-
 Provides a data source to read a Certificate in VMware Cloud Foundation Automation. This can be used to read the certificates that
 VCF Automation provides to others. They can be used when creating services that must be secured.
 
--> This data source can be used by both **System Administrators** and **Tenant users**
+_Used by: **Provider**, **Tenant**_
 
 ## Example Usage
 

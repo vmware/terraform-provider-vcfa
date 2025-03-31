@@ -10,7 +10,7 @@ description: |-
 
 Provides a data source to manage NSX Managers attached to VMware Cloud Foundation Automation.
 
-~> Only `System Administrator` can create this resource.
+_Used by: **Provider**_
 
 ## Example Usage
 
@@ -29,7 +29,7 @@ resource "vcfa_nsx_manager" "test" {
 
 The following arguments are supported:
 
-* `name` - (Required) A name for NSX Manager
+* `name` - (Required) A name for the NSX Manager
 * `description` - (Optional) An optional description for NSX Manager
 * `username` - (Required) A username for authenticating to NSX Manager
 * `password` - (Required) A password for authenticating to NSX Manager
@@ -63,11 +63,16 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing NSX Manager configuration can be [imported][docs-import] into this resource via
 supplying path for it. An example is below:
 
-[docs-import]: https://www.terraform.io/docs/import/
-
 ```
 terraform import vcfa_nsx_manager.imported my-nsx-manager
 ```
 
-The above would import the `my-nsx-manager` NSX Manager settings that are defined at provider
-level.
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+
+The above would import the `my-nsx-manager` NSX Manager settings that are defined at Provider (System) level.
+
+After that, you can expand the configuration file and either update or delete the NSX Manager as needed. Running `terraform plan`
+at this stage will show the difference between the minimal configuration file and the NSX Manager's stored properties.
+
+[docs-import]: https://www.terraform.io/docs/import
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources

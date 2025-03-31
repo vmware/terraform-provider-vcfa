@@ -10,6 +10,8 @@ description: |-
 
 Provides a data source for reading available NSX Managers attached to VMware Cloud Foundation Automation.
 
+_Used by: **Provider**_
+
 ## Example Usage 
 
 ```hcl
@@ -22,12 +24,12 @@ data "vcfa_nsx_manager" "main" {
 
 The following arguments are supported:
 
-* `name` - (Required) NSX manager name
+* `name` - (Required) NSX Manager name
 
 ## Attribute reference
 
-* `id` - ID of the manager
-* `href` - Full URL of the manager
+* `id` - ID of the NSX Manager
+* `href` - Full URL of the NSX Manager
 
 All attributes defined in
 [`vcfa_nsx_manager`](/providers/vmware/vcfa/latest/docs/resources/nsx_manager#attribute-reference)

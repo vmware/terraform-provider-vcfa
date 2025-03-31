@@ -12,7 +12,7 @@ description: |-
 Provides a data source to read a Content Library in VMware Cloud Foundation Automation. This can be used to obtain the details
 of Content Libraries, such as description, creation date, etc.
 
--> This data source can be used by both **System Administrators** and **Tenant users**
+_Used by: **Provider**, **Tenant**_
 
 ## Example Usage for Provider libraries
 

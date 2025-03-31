@@ -4,23 +4,22 @@ page_title: "VMware Cloud Foundation Automation: vcfa_api_token"
 sidebar_current: "docs-vcfa-resource-api-token"
 description: |-
   Provides a resource to manage API Tokens. API Tokens are an easy way to authenticate to VMware Cloud Foundation Automation. 
-  They are user-based and have the same role as the user.
+  They are user-based and have the same Role as the user.
 ---
 
 # vcfa\_api\_token 
 
 Provides a resource to manage API Tokens. API Tokens are an easy way to authenticate to VMware Cloud Foundation Automation. 
-They are user-based and have the same role as the user.
+They are user-based and have the same [Role](/providers/vmware/vcfa/latest/docs/resources/role) as the user.
 
--> This resource can be used by both **System Administrators** and **Tenant users**
+_Used by: **Provider**, **Tenant**_
 
 ## Example usage
 
-The snippet below generates an API Token for the `user1` user configured in the provider block:
-
 ```hcl
+# The vcfa_api_token below generates an API Token for the "bob" user configured in the provider block.
 provider "vcfa" {
-  user     = "user1"
+  user     = "bob"
   password = var.my_password
   org      = "tenant1"
   # Omitted arguments...
@@ -31,9 +30,21 @@ resource "vcfa_api_token" "example_token" {
   file_name        = "example_token.json"
   allow_token_file = true
 }
-```
 
-Configuring a System Administrator in the provider block will create the API Tokens in the System (Provider) Organization.
+# Creating an API Token as the System Administrator.
+provider "vcfa" {
+  user     = "serviceadministrator"
+  password = var.system_password
+  org      = "System"
+  # Omitted arguments...
+}
+
+resource "vcfa_api_token" "system_token" {
+  name             = "system_token"
+  file_name        = "system_token.json"
+  allow_token_file = true
+}
+```
 
 ## Argument reference
 
@@ -68,4 +79,3 @@ terraform import vcfa_api_token.example_token example_token
 
 [docs-import]: https://www.terraform.io/docs/import/
 [importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
-[provider-api-token-file]: /providers/vmware/vcfa/latest/docs#api_token_file

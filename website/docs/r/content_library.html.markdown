@@ -12,7 +12,7 @@ description: |-
 Provides a resource to manage Content Libraries in VMware Cloud Foundation Automation. It can be used to host
 [Content Library Items][vcfa_content_library_item] such as ISO files, OVAs and OVFs.
 
--> This resource can be used by both **System Administrators** and **Tenant users**
+_Used by: **Provider**, **Tenant**_
 
 ## Example Usage for a Provider Content Library
 
@@ -54,7 +54,6 @@ resource "vcfa_content_library" "cl2" {
   ]
   subscription_config {
     subscription_url = "https://my-vcenter.com/cls/vcsp/lib/41eb97db-e1b4-47e6-b0f3-5e02aa3830f7/lib.json"
-    need_local_copy  = true
   }
 }
 ```
@@ -202,7 +201,8 @@ The following arguments are supported:
 * `delete_force` - (Optional) Defaults to `false`. On deletion, forcefully deletes the Content Library and its Content Library items. Only considered with
   `PROVIDER` Content Libraries, ignored otherwise
 * `delete_recursive` - (Optional) Defaults to `false`. On deletion, deletes the Content Library, including its Content Library items, in a single operation
-* `storage_class_ids` - (Required) A set of [Storage Class IDs][vcfa_storage_class-ds] used by this Content Library
+* `storage_class_ids` - (Required) A set of [Storage Class IDs][vcfa_storage_class-ds] used by this Content Library. These Storage Classes must be available
+  in the [Region][vcfa_region-ds] or [Region Quota][vcfa_region_quota] where the Content Library is created, for `PROVIDER` or `TENANT` types respectively
 * `auto_attach` - (Optional) Defaults to `true`. For `TENANT` Content Libraries this field represents whether this Content Library should be
   automatically attached to all current and future namespaces in the Organization. If a value of `false` is supplied, then this
   Tenant Content Library will only be attached to namespaces that explicitly request it. For `PROVIDER` Content Libraries this field is not needed
@@ -210,9 +210,8 @@ The following arguments are supported:
 * `description` - (Optional) The description of the Content Library. Not used if the library is subscribed to another one (see `subscription_config` below), as
   the value will be the one from publisher library
 * `subscription_config` - (Optional) A block representing subscription settings of a Content Library:
-  *  `subscription_url` - Subscription url of this Content Library
+  *  `subscription_url` - Subscription URL of this Content Library. For example, a published library from vCenter: `https://my-vcenter/cls/vcsp/lib/972a669e-c668-48f6-91e9-410962befbe4/lib.json`
   *  `password` - Password to use to authenticate with the publisher
-  *  `need_local_copy` - Whether to eagerly download content from publisher and store it locally
 
 ~> To use `subscription_config` block in `TENANT` type Content Libraries, check that the [`vcfa_org_settings`][vcfa_org_settings]
 of the target Organization allows it.
@@ -272,7 +271,7 @@ You can import such Content Library into terraform state using this command:
 terraform import vcfa_content_library.cl "System"."My Already Existing Library"
 ```
 
-NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
 After that, you can expand the configuration file and either update or delete the Content Library as needed. Running `terraform plan`
 at this stage will show the difference between the minimal configuration file and the Content Library's stored properties.

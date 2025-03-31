@@ -3,12 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_right"
 sidebar_current: "docs-vcfa-data-source-right"
 description: |-
- Provides a VMware Cloud Foundation Automation Right data source. This can be used to read existing rights
+  Provides a data source to read available Rights in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_right
 
-Provides a data source to read available rights in VMware Cloud Foundation Automation.
+Provides a data source to read available Rights in VMware Cloud Foundation Automation.
+
+_Used by: **Provider**, **Tenant**_
 
 ## Example usage
 
@@ -44,12 +46,12 @@ some-right = {
 
 The following arguments are supported:
 
-* `name` - (Required) The name of the right.
+* `name` - (Required) The name of the Right.
 
 ## Attribute reference
 
-* `description` - A description of the right
-* `category_id` - The ID of the category for this right
+* `description` - A description of the Right
+* `category_id` - The ID of the category for this Right
 * `bundle_key` - Key used for internationalization
-* `right type` - Type of the right (VIEW or MODIFY)
-* `implied_rights` - List of rights that are implied with this one
+* `right type` - Type of the Right (VIEW or MODIFY)
+* `implied_rights` - List of Rights that are implied with this one

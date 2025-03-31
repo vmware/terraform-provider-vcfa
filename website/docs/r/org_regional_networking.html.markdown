@@ -3,12 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_org_regional_networking"
 sidebar_current: "docs-vcfa-resource-org-regional-networking"
 description: |-
-  Provides a resource to manage VMware Cloud Foundation Automation Organization Regional Networking Settings.
+  Provides a resource to manage Organization Regional Networking Settings in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_org\_regional\_networking
 
-Provides a resource to manage VMware Cloud Foundation Automation Organization Regional Networking Settings.
+Provides a resource to manage Organization Regional Networking Settings in VMware Cloud Foundation Automation.
+
+_Used by: **Provider**_
 
 ## Example Usage
 
@@ -55,12 +57,12 @@ resource "vcfa_org_regional_networking" "demo" {
 
 The following arguments are supported:
 
-- `name` - (Required) A name for Org Regional Networking Configuration
-- `org_id` - (Required) An Organization ID for which the Regional Networking Settings are to be
+- `name` - (Required) A name for Organization Regional Networking Configuration
+- `org_id` - (Required) An [Organization][vcfa_org] ID for which the Regional Networking Settings are to be
   configured
-- `provider_gateway_id` - (Required) Provider Gateway ID that should be used for this Org
-- `region_id` - (Required) Region ID that should be used for this Org
-- `edge_cluster_id` - (Optional) Edge Cluster ID that can be used for this Org. Can be left out so
+- `provider_gateway_id` - (Required) [Provider Gateway][vcfa_provider_gateway] ID that should be used for this Organization
+- `region_id` - (Required) [Region][vcfa_region] ID that should be used for this Organization
+- `edge_cluster_id` - (Optional) [Edge Cluster][vcfa_edge_cluster-ds] ID that can be used for this Organization. Can be left out so
   that it is picked automatically
 
 ## Importing
@@ -72,11 +74,20 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing Regional Networking Configuration can be [imported][docs-import] into this resource via supplying path
 for it. An example is below:
 
-[docs-import]: https://www.terraform.io/docs/import/
-
 ```
 terraform import vcfa_org_regional_networking.imported my-org-name.my-regional-configuration-name
 ```
 
-The above would import the `my-regional-configuration-name` Regional Networking Configuration
-Settings that are defined for `my-org-name` Organization.
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+
+The above would import the `my-regional-configuration-name` Regional Networking Configuration Settings that are defined for `my-org-name` Organization.
+
+After that, you can expand the configuration file and either update or delete the Regional Networking Configuration Settings as needed. Running `terraform plan`
+at this stage will show the difference between the minimal configuration file and the Regional Networking Configuration Settings' stored properties.
+
+[docs-import]: https://www.terraform.io/docs/import
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
+[vcfa_org]: /providers/vmware/vcfa/latest/docs/resources/org
+[vcfa_provider_gateway]: /providers/vmware/vcfa/latest/docs/resources/provider_gateway
+[vcfa_region]: /providers/vmware/vcfa/latest/docs/resources/region
+[vcfa_edge_cluster-ds]: /providers/vmware/vcfa/latest/docs/data-sources/edge_cluster

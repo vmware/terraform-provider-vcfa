@@ -3,12 +3,16 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_supervisor_zone"
 sidebar_current: "docs-vcfa-data-source-supervisor-zone"
 description: |-
-  Provides a data source to read Supervisor Zones in VMware Cloud Foundation Automation.
+  Provides a data source to read a Supervisor Zone in VMware Cloud Foundation Automation. These are useful
+  when configuring an Organization Region Quota "zone_resource_allocations" argument.
 ---
 
 # vcfa\_supervisor\_zone
 
-Provides a data source to read Supervisor Zones in VMware Cloud Foundation Automation.
+Provides a data source to read a Supervisor Zone in VMware Cloud Foundation Automation. These are useful
+when configuring an [Organization Region Quota](/providers/vmware/vcfa/latest/docs/resources/org_region_quota) `zone_resource_allocations` argument.
+
+_Used by: **Provider**_
 
 ## Example Usage
 
@@ -32,7 +36,7 @@ data "vcfa_supervisor_zone" "one" {
 
 The following arguments are supported:
 
-* `supervisor_id` - (Required) ID of parent Supervisor
+* `supervisor_id` - (Required) ID of parent [Supervisor](/providers/vmware/vcfa/latest/docs/data-sources/supervisor)
 * `name` - (Required) The name of Supervisor Zone
 
 ## Attribute Reference

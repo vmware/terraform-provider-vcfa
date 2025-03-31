@@ -12,7 +12,7 @@ description: |-
 Provides a resource to manage Content Library Items in VMware Cloud Foundation Automation. Allows to upload an ISO file, an OVA or an OVF
 to a [Content Library][vcfa_content_library].
 
--> This resource can be used by both **System Administrators** and **Tenant users**
+_Used by: **Provider**, **Tenant**_
 
 ## Example Usage
 
@@ -98,7 +98,7 @@ If the Content Library Item is a `PROVIDER` one (System org):
 terraform import vcfa_content_library_item.cli System."My Already Existing Library"."My Already Existing Item"
 ```
 
-NOTE: the default separator (.) can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
 After that, you can expand the configuration file and either update or delete the Content Library Item as needed. Running `terraform plan`
 at this stage will show the difference between the minimal configuration file and the Content Library Item's stored properties.

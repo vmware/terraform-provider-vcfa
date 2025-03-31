@@ -3,14 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_vcenter"
 sidebar_current: "docs-vcfa-resource-vcenter"
 description: |-
-  Provides a resource to manage vCenters in VMware Cloud Foundation Automation.
+  Provides a resource to manage vCenter servers in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_vcenter
 
-Provides a resource to manage vCenters in VMware Cloud Foundation Automation.
+Provides a resource to manage vCenter servers in VMware Cloud Foundation Automation.
 
-~> Only `System Administrator` can create this resource.
+_Used by: **Provider**_
 
 ## Example Usage
 
@@ -35,14 +35,14 @@ resource "vcfa_vcenter" "demo" {
 
 The following arguments are supported:
 
-* `nsx_manager_id` - (Required) ID of existing NSX Manager that this vCenter server uses
+* `nsx_manager_id` - (Required) ID of existing [NSX Manager][vcfa_nsx_manager-ds] that this vCenter server uses
 * `name` - (Required) A name for vCenter server
 * `description` - (Optional) An optional description for vCenter server
 * `username` - (Required) A username for authenticating to vCenter server
 * `password` - (Required) A password for authenticating to vCenter server
 * `refresh_vcenter_on_create` - (Optional) An optional flag to trigger refresh operation on the
   underlying vCenter once after creation. This might take some time, but can help to load up new
-  artifacts from vCenter (e.g. Supervisors). This operation is visible as a new task in UI. Update
+  artifacts from vCenter (e.g. [Supervisors][vcfa_supervisor-ds]). This operation is visible as a new task in UI. Update
   is a no-op. It may be useful after adding vCenter or if new infrastructure is added to vCenter.
   Default `false`.
 * `refresh_policies_on_create` - (Optional) An optional flag to trigger policy refresh operation on
@@ -52,12 +52,12 @@ The following arguments are supported:
   vCenter. Default `false`. 
 * `refresh_vcenter_on_read` - (Optional) An optional flag to trigger refresh operation on the
   underlying vCenter on every read. This might take some time, but can help to load up new artifacts
-  from vCenter (e.g. Supervisors). This operation is visible as a new task in UI. Update is a no-op.
+  from vCenter (e.g. [Supervisors][vcfa_supervisor-ds]). This operation is visible as a new task in UI. Update is a no-op.
   It may be useful after adding vCenter or if new infrastructure is added to vCenter. Default
   `false`.
 * `refresh_policies_on_read` - (Optional) An optional flag to trigger policy refresh operation on
   the underlying vCenter on every read. This might take some time, but can help to load up new
-  artifacts from vCenter (e.g. Storage Policies). Update is a no-op. This operation is visible as a
+  artifacts from vCenter (e.g. [Storage Policies][vcfa_storage_class-ds]). Update is a no-op. This operation is visible as a
   new task in UI. It may be useful after adding vCenter or if new infrastructure is added to
   vCenter. Default `false`. 
 * `url` - (Required) An URL of vCenter server
@@ -95,10 +95,19 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing vCenter configuration can be [imported][docs-import] into this resource via supplying
 path for it. An example is below:
 
-[docs-import]: https://www.terraform.io/docs/import/
-
 ```
 terraform import vcfa_vcenter.imported my-vcenter
 ```
 
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
+
 The above would import the `my-vcenter` vCenter settings that are defined at provider level.
+
+After that, you must expand the configuration file before you can either update or delete the vCenter configuration. Running `terraform plan`
+at this stage will show the difference between the minimal configuration file and the stored properties.
+
+[docs-import]: https://www.terraform.io/docs/import
+[importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
+[vcfa_nsx_manager-ds]: /providers/vmware/vcfa/latest/docs/data-sources/nsx_manager
+[vcfa_supervisor-ds]: /providers/vmware/vcfa/latest/docs/data-sources/supervisor
+[vcfa_storage_class-ds]: /providers/vmware/vcfa/latest/docs/data-sources/storage_class

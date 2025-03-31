@@ -3,12 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_region"
 sidebar_current: "docs-vcfa-data-source-region"
 description: |-
-  Provides a data source to read Regions in VMware Cloud Foundation Automation.
+  Provides a data source to read a Region in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_region
 
-Provides a data source to read Regions in VMware Cloud Foundation Automation.
+Provides a data source to read a Region in VMware Cloud Foundation Automation.
+
+_Used by: **Provider**, **Tenant**_
 
 ## Example Usage
 

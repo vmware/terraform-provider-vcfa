@@ -3,12 +3,14 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_supervisor"
 sidebar_current: "docs-vcfa-data-source-supervisor"
 description: |-
-  Provides a data source to read Supervisors in VMware Cloud Foundation Automation.
+  Provides a data source to read a Supervisor in VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_supervisor
 
-Provides a data source to read Supervisors in VMware Cloud Foundation Automation.
+Provides a data source to read a Supervisor in VMware Cloud Foundation Automation.
+
+_Used by: **Provider**_
 
 ## Example Usage
 
@@ -28,7 +30,7 @@ data "vcfa_supervisor" "one" {
 The following arguments are supported:
 
 * `name` - (Required) The name of Supervisor
-* `vcenter_id` - (Required) vCenter server ID that contains this Supervisor
+* `vcenter_id` - (Required) ID of the [vCenter server](/providers/vmware/vcfa/latest/docs/data-sources/vcenter) that contains this Supervisor
 
 ## Attribute Reference
 

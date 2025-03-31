@@ -3,19 +3,33 @@ layout: "vcfa"
 page_title: "VMware Cloud Foundation Automation: vcfa_supervisor_namespace"
 sidebar_current: "docs-data-source-vcfa-supervisor-namespace"
 description: |-
-  Provides a VMware Cloud Foundation Automation Supervisor Namespace data source.
+  Provides a data source to read a Supervisor Namespace from VMware Cloud Foundation Automation.
 ---
 
 # vcfa\_supervisor\_namespace
 
-Provides a VMware Cloud Foundation Automation Supervisor Namespace data source.
+Provides a data source to read a Supervisor Namespace from VMware Cloud Foundation Automation.
+
+_Used by: **Tenant**_
+
+-> This data source may use the [Kubernetes provider](https://registry.terraform.io/providers/hashicorp/kubernetes),
+to see how to obtain the Kubeconfig, please check the [`vcfa_kubeconfig`](/providers/vmware/vcfa/latest/docs/data-sources/kubeconfig) data source.
 
 ## Example Usage
 
 ```hcl
+# A project data source read with the Kubernetes provider. This project already exists
+data "kubernetes_resource" "project" {
+  api_version = "project.cci.vmware.com/v1alpha2"
+  kind        = "Project"
+  metadata {
+    name = "tf-tenant-demo-project"
+  }
+}
+
 data "vcfa_supervisor_namespace" "supervisor_namespace" {
-  name         = "demo-supervisor-namespace"
-  project_name = "default-project"
+  name         = "tf-supervisor-namespace"
+  project_name = data.kubernetes_resource.project.object["metadata"]["name"]
 }
 ```
 
@@ -24,7 +38,9 @@ data "vcfa_supervisor_namespace" "supervisor_namespace" {
 The following arguments are supported:
 
 * `name` - (Required) The name of the Supervisor Namespace
-* `project_name` - (Required) The name of the Project where the Supervisor Namespace belongs to
+* `project_name` - (Required) The name of the Project where the Supervisor Namespace belongs to. Can be fetched
+  with the Kubernetes provider [`kubernetes_resource`](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/resource)
+  data source for existing Projects
 
 ## Attribute Reference
 
