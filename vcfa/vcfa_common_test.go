@@ -238,11 +238,11 @@ data "vcfa_tier0_gateway" "test" {
 }
 
 resource "vcfa_provider_gateway" "test" {
-  name                  = "` + testConfig.Tm.ProviderGateway + `"
-  description           = "getProviderGatewayHcl"
-  region_id             = ` + regionHclRef + `.id
-  nsxt_tier0_gateway_id = data.vcfa_tier0_gateway.test.id
-  ip_space_ids          = [` + ipSpaceHclRef + `.id]
+  name             = "` + testConfig.Tm.ProviderGateway + `"
+  description      = "getProviderGatewayHcl"
+  region_id        = ` + regionHclRef + `.id
+  tier0_gateway_id = data.vcfa_tier0_gateway.test.id
+  ip_space_ids     = [` + ipSpaceHclRef + `.id]
 }
 `, "vcfa_provider_gateway.test"
 }
