@@ -1,2 +1,2 @@
-- **New Resource:** `vcfa_org_regional_networking` to manage Org Regional Networking Settings [GH-18]
+- **New Resource:** `vcfa_org_regional_networking` to manage Org Regional Networking Settings [GH-18, GH-70]
 - **New Data Source:** `vcfa_org_regional_networking` to read Org Regional Networking Settings [GH-18]

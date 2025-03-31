@@ -80,11 +80,6 @@ func datasourceVcfaContentLibrary() *schema.Resource {
 							Computed:    true,
 							Description: "Password to use to authenticate with the publisher",
 						},
-						"need_local_copy": {
-							Type:        schema.TypeBool,
-							Computed:    true,
-							Description: "Whether to eagerly download content from publisher and store it locally",
-						},
 					},
 				},
 			},
