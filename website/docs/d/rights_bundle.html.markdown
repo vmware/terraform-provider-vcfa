@@ -151,3 +151,8 @@ The following arguments are supported:
 * `publish_to_all_orgs` - When `true`, publishes the Rights Bundle to all [Organizations](/providers/vmware/vcfa/latest/docs/resources/org)
 * `org_ids` - Set of IDs of the Organizations to which this Rights Bundle gets published. Ignored if `publish_to_all_orgs` is `true`
 * `read_only` - Whether this Rights Bundle is read-only
+
+## More information
+
+See [Roles management](/providers/vmware/vcfa/latest/docs/guides/roles_management) for a broader description of how roles and
+rights work together.

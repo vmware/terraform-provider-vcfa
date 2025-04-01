@@ -12,6 +12,9 @@ Provides a resource to manage Right Bundles in VMware Cloud Foundation Automatio
 
 _Used by: **Provider**_
 
+-> If you create a Rights Bundle, and it is not visible in UI (_Provider > Access Control > Rights Bundles_),
+be sure to enable the `Advanced Rights Bundle Mode` feature flag in _Provider > Feature Flags_.
+
 ## Example Usage
 
 ```hcl
@@ -81,6 +84,11 @@ _NOTE_: The default separator `.` can be changed using provider's `import_separa
 
 After that, you can expand the configuration file and either update or delete the Rights Bundle as needed. Running `terraform plan`
 at this stage will show the difference between the minimal configuration file and the Rights Bundle's stored properties.
+
+## More information
+
+See [Roles management](/providers/vmware/vcfa/latest/docs/guides/roles_management) for a broader description of how roles and
+rights work together.
 
 [docs-import]: https://www.terraform.io/docs/import
 [importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources

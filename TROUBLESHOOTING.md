@@ -17,6 +17,7 @@
     - [Entity Not Found error](#entity-not-found-error)
     - [vcfa_content_library_item creation never finishes (it's stuck)](#vcfa_content_library_item-creation-never-finishes-its-stuck)
     - [External entity connection (vCenter server, NSX Manager) returns certificate error](#external-entity-connection-vcenter-server-nsx-manager-returns-certificate-error)
+    - [Created vcfa_rights_bundle does not appear in UI](#created-vcfa_rights_bundle-does-not-appear-in-ui)
 
 ## About Terraform
 
@@ -260,6 +261,14 @@ The entities that handle external connections (vCenter server, NSX Manager, LDAP
 configurations, etc.) must have a valid trusted certificate configured for a destination entity.
 Make sure that the certificate of that entity is trusted. Resources have `auto_trust_certificate`
 boolean field that can be used to leveraged trusting the certificate automatically.
+
+#### Created vcfa_rights_bundle does not appear in UI
+
+If the `vcfa_rights_bundle` resource was created successfully after a `terraform apply` and it cannot be seen
+in the UI (_Provider > Access Control > Rights Bundles_), you may need to enable the `Advanced Rights Bundle Mode` feature flag
+that can be located at: _Provider > Feature Flags_.
+
+After turning it on (`true`), the created `vcfa_rights_bundle` should appear listed.
 
 [terraform]: https://www.terraform.io/
 [terraform-state]: https://developer.hashicorp.com/terraform/language/state

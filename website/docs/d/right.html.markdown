@@ -55,3 +55,8 @@ The following arguments are supported:
 * `bundle_key` - Key used for internationalization
 * `right type` - Type of the Right (VIEW or MODIFY)
 * `implied_rights` - List of Rights that are implied with this one
+
+## More information
+
+See [Roles management](/providers/vmware/vcfa/latest/docs/guides/roles_management) for a broader description of how roles and
+rights work together.

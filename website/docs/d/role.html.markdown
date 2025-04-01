@@ -95,3 +95,8 @@ The following arguments are supported:
 * `description` - A description of the Role
 * `bundle_key` - Key used for internationalization
 * `rights` - Set of rights assigned to this Role
+
+## More information
+
+See [Roles management](/providers/vmware/vcfa/latest/docs/guides/roles_management) for a broader description of how roles and
+rights work together.
