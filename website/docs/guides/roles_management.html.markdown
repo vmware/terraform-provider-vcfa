@@ -37,12 +37,16 @@ script, and would also increase the amount of computing needed to run a script.
 Examples:
 
 ```hcl
-data "vcfa_role" "cl_item_manage" {
+data "vcfa_org" "org1" {
+  name = "org1"
+}
+
+data "vcfa_right" "cl_item_manage" {
   name = "Content Library Item: Manage"
 }
 
 output "cl_item_manage" {
-  value = data.vcfa_role.cl_item_manage
+  value = data.vcfa_right.cl_item_manage
 }
 ```
 
@@ -98,8 +102,12 @@ first need to see it, you add both rights, and don't consider either of them to 
 For example, lets say, for the sake of simplicity, that you want to create a role with just two rights, as listed below:
 
 ```hcl
+data "vcfa_org" "org1" {
+  name = "org1"
+}
+
 resource "vcfa_role" "new-role" {
-  org         = "datacloud"
+  org_id      = data.vcfa_org.org1.id
   name        = "new-role"
   description = "new role"
   rights = [
@@ -111,21 +119,26 @@ resource "vcfa_role" "new-role" {
 When you run `terraform apply`, you get this error:
 
 ```
-vcfa_role.new-role: Creating...
 ╷
-│ Error: The rights set for this role require the following implied rights to be added:
+│ Error: The Rights set requires the following implied Rights to be added:
 │ "Content Library Item: View",
-│
+│ 
+│ 
 │   with vcfa_role.new-role,
-│   on config.tf line 91, in resource "vcfa_role" "new-role":
-│   91: resource "vcfa_role" "new-role" {
-│
+│   on main.tf line 448, in resource "vcfa_role" "new-role":
+│  448: resource "vcfa_role" "new-role" {
+│ 
+╵
 ```
 Thus, you update the script to include the rights mentioned in the error message
 
 ```hcl
+data "vcfa_org" "org1" {
+  name = "org1"
+}
+
 resource "vcfa_role" "new-role" {
-  org         = "datacloud"
+  org_id      = data.vcfa_org.org1.id
   name        = "new-role"
   description = "new role"
   rights = [
@@ -145,49 +158,47 @@ resource "vcfa_global_role" "new-global-role" {
   name        = "new-global-role"
   description = "new global role"
   rights = [
-    "Catalog: Add vApp from My Cloud",
-    "Catalog: Edit Properties",
-    "vApp Template / Media: Edit",
-    "vApp Template / Media: View",
-    "Catalog: View Private and Shared Catalogs",
+    "Content Library: View",
+    "Content Library Item: View",
+    "Group / User: View",
+    "IP Blocks: View",
   ]
-  publish_to_all_tenants = true
+  publish_to_all_orgs = true
 }
 
 resource "vcfa_rights_bundle" "new-rights-bundle" {
   name        = "new-rights-bundle"
   description = "new rights bundle"
   rights = [
-    "Catalog: Add vApp from My Cloud",
-    "Catalog: Edit Properties",
-    "vApp Template / Media: Edit",
-    "vApp Template / Media: View",
-    "Catalog: View Private and Shared Catalogs",
+    "Content Library: View",
+    "Content Library Item: View",
+    "Group / User: View",
+    "IP Blocks: View",
   ]
-  publish_to_all_tenants = true
+  publish_to_all_orgs = true
 }
 ```
 
 ## Tenant management
 
-Rights Bundle and Global Roles have a `tenants` section where you can list to which tenants the resource should be
+Rights Bundle and Global Roles have a `org_ids` section where you can list to which tenants the resource should be
 published, meaning which tenants can feel the effects of this resource.
 
 There are two fields related to managing tenants:
 
-* `publish_to_all_tenants` with value "true" or "false".
+* `publish_to_all_orgs` with value "true" or "false".
     * If true, the resource will be published to all tenants, even if they don't exist yet. All future organizations will get to feel the benefits or restrictions published by the resource
-    * If false, then we take into account the `tenants` field.
-* `tenants` is a list of organizations (tenants) to which we want the effects of this resource to apply.
+    * If false, then we take into account the `org_ids` field.
+* `org_ids` is a list of organizations (tenants) to which we want the effects of this resource to apply.
 
 Examples:
 
 ```hcl
 resource "vcfa_global_role" "new-global-role" {
-  name                   = "new-global-role"
-  description            = "new global role"
-  rights                 = [/* rights list goes here */]
-  publish_to_all_tenants = true
+  name                = "new-global-role"
+  description         = "new global role"
+  rights              = [/* rights list goes here */]
+  publish_to_all_orgs = true
 }
 ```
 This global role will be published to all tenants, including the ones that will be created after this resource.
@@ -195,30 +206,38 @@ This global role will be published to all tenants, including the ones that will 
 Now we modify it:
 
 ```hcl
+data "vcfa_org" "org1" {
+  name = "org1"
+}
+
+data "vcfa_org" "org2" {
+  name = "org2"
+}
+
 resource "vcfa_global_role" "new-global-role" {
-  name                   = "new-global-role"
-  description            = "new global role"
-  rights                 = [/* rights list goes here */]
-  publish_to_all_tenants = false
-  tenants                = ["org1", "org2"]
+  name                = "new-global-role"
+  description         = "new global role"
+  rights              = [/* rights list goes here */]
+  publish_to_all_orgs = false
+  org_ids             = [data.vcfa_org.org1.id, data.vcfa_org.org2.id]
 }
 ```
 
 The effects of this global role are only propagated to `org1` and `org2`. Other organizations cease to see the role that
-was instantiated by thsi global role.
+was instantiated by this global role.
 
 Let's do another change:
 
 ```hcl
 resource "vcfa_global_role" "new-global-role" {
-  name                   = "new-global-role"
-  description            = "new global role"
-  rights                 = [/* rights list goes here */]
-  publish_to_all_tenants = false
+  name                = "new-global-role"
+  description         = "new global role"
+  rights              = [/* rights list goes here */]
+  publish_to_all_orgs = false
 }
 ```
 
-The `tenants` field is removed, meaning that we don't publish to anyone. And since `publish_to_all_tenants` is false,
+The `org_ids` field is removed, meaning that we don't publish to anyone. And since `publish_to_all_orgs` is false,
 the tenants previously in the list are removed from publishing, making the global role isolated. It won't have
 any effect on any organization until we update its tenants list.
 
@@ -227,7 +246,7 @@ any effect on any organization until we update its tenants list.
 If you want to modify a Role, Global Role, or Rights Bundle that is already in your system, you need first to import
 it into Terraform state, and only then you can apply your changes.
 
-Let's say, for example, that you want to change a rights bundle `Default Rights Bundle`, to publish it only to a limited
+Let's say, for example, that you want to change a rights bundle `Default Tenant Rights Bundle`, to publish it only to a limited
 set of tenants, while you will create a separate rights bundle for other tenants that need a different set of rights.
 
 The import procedure works in three steps:
@@ -236,20 +255,24 @@ The import procedure works in three steps:
 Create a data source for the rights bundle, and a resource that takes all its attributes from the data source:
 
 ```hcl
+data "vcfa_org" "org1" {
+  name = "org1"
+}
 
 data "vcfa_rights_bundle" "old-rb" {
-  name = "Default Rights Bundle"
+  name = "Default Tenant Rights Bundle"
 }
 
 resource "vcfa_rights_bundle" "new-rb" {
-  name                   = "Default Rights Bundle"
-  rights                 = data.vcfa_rights_bundle.old-rb.rights
-  tenants                = ["first-org"]
-  publish_to_all_tenants = false
+  name                = "Default Tenant Rights Bundle"
+  description         = "Default set of tenant rights"
+  rights              = data.vcfa_rights_bundle.old-rb.rights
+  org_ids             = [data.vcfa_org.org1.id]
+  publish_to_all_orgs = false
 }
 ```
 
-Using the data source will free you from the need of listing all the rights contained in the bundle (113 in VCFA 10.2).
+Using the data source will free you from the need of listing all the rights contained in the bundle.
 It will also make the script work across different versions, where the list of rights may differ. If you were interested
 in changing the rights themselves, you could add an `output` block for the data source, copy the rights to the resource
 definition, and then remove or add what you need.
@@ -258,7 +281,7 @@ definition, and then remove or add what you need.
 Import the rights bundle into terraform:
 
 ```
-$ terraform import vcfa_rights_bundle.new-rb "Default Rights Bundle"
+$ terraform import vcfa_rights_bundle.new-rb "Default Tenant Rights Bundle"
 ```
 
 (3)<br>
@@ -276,12 +299,12 @@ Create a data source for the rights container, with an `output` structure that s
 to clone a global role:
 
 ```hcl
-data "vcfa_global_role" "vapp-user" {
-  name = "vApp User"
+data "vcfa_global_role" "role-to-clone" {
+  name = "Organization User"
 }
 
-output "vapp-user" {
-  value = data.vcfa_global_role.vapp-user
+output "role-to-clone" {
+  value = data.vcfa_global_role.role-to-clone
 }
 ```
 
@@ -291,35 +314,22 @@ Using the data from the output, copy the rights section into a new resource
 From this:
 
 ```
-vapp-user = {
-  "bundle_key" = "ROLE_VAPP_USER"
-  "description" = "Rights given to a user who uses vApps created by others"
-  "id" = "urn:vcloud:globalRole:ff1e0c91-1288-3664-82b7-a6fa303af4d1"
-  "name" = "vApp User"
-  "publish_to_all_tenants" = true
-  "read_only" = false
-  "rights" = toset([
-    "Organization vDC Compute Policy: View",
-    "Organization vDC Named Disk: View Properties",
-    "UI Plugins: View",
-    "vApp Template / Media: View",
-    "vApp Template: Checkout",
-    "vApp: Copy",
-    "vApp: Delete",
-    "vApp: Edit Properties",
-    "vApp: Edit VM Network",
-    "vApp: Edit VM Properties",
-    "vApp: Manage VM Password Settings",
-    "vApp: Power Operations",
-    "vApp: Sharing",
-    "vApp: Snapshot Operations",
-    "vApp: Use Console",
-    "vApp: View ACL",
-    "vApp: View VM metrics",
+role-to-clone = {
+  "bundle_key" = "ROLE_ORGANIZATION_USER"
+  "description" = "Rights given to an organization user"
+  "id" = "urn:vcloud:globalRole:b49c5a15-73fd-4390-9e87-1e1d47e69c39"
+  "name" = "Organization User"
+  "org_ids" = toset([
+    "urn:vcloud:org:08e9ee67-0314-4157-b36c-88c686194e57",
   ])
-  "tenants" = toset([
-    "org1",
-    "org2",
+  "publish_to_all_orgs" = true
+  "read_only" = true
+  "rights" = toset([
+    "API Tokens: Manage",
+    "Metrics: View",
+    "Namespace Usage: Manage",
+    "Namespace Usage: View",
+    "vApp: Use Console",
   ])
 }
 ```
@@ -327,31 +337,23 @@ vapp-user = {
 to this:
 
 ```hcl
+data "vcfa_org" "org1" {
+  name = "org1"
+}
+
 resource "vcfa_global_role" "new-vapp-user" {
-  name                   = "new vApp User"
-  description            = "New rights given to a user who uses vApps created by others"
-  publish_to_all_tenants = false
+  name                = "new-cloned-role"
+  description         = "New global role cloned from an existing one"
+  publish_to_all_orgs = false
   rights = [
-    "Organization vDC Compute Policy: View",
-    "Organization vDC Named Disk: View Properties",
-    "UI Plugins: View",
-    "vApp Template / Media: View",
-    "vApp Template: Checkout",
-    "vApp: Copy",
-    "vApp: Delete",
-    "vApp: Edit Properties",
-    "vApp: Edit VM Network",
-    "vApp: Edit VM Properties",
-    "vApp: Manage VM Password Settings",
-    "vApp: Power Operations",
-    "vApp: Sharing",
-    "vApp: Snapshot Operations",
+    "API Tokens: Manage",
+    "Metrics: View",
+    "Namespace Usage: Manage",
+    "Namespace Usage: View",
     "vApp: Use Console",
-    "vApp: View ACL",
-    "vApp: View VM metrics",
   ]
-  tenants = [
-    "org2",
+  org_ids = [
+    data.vcfa_org.org1.id,
   ]
 }
 ```
@@ -370,17 +372,17 @@ Using [setsubtract](https://www.terraform.io/docs/language/functions/setsubtract
 from a given set.
 
 ```hcl
-data "vcfa_global_role" "vapp-user" {
-  name = "vApp User"
+data "vcfa_global_role" "role-to-clone" {
+  name = "Organization User"
 }
 
 resource "vcfa_global_role" "new-vapp-user" {
-  name                   = "new-vapp-user"
-  description            = "new global role from CLI"
-  publish_to_all_tenants = true
+  name                = "new-cloned-role"
+  description         = "New global role cloned from an existing one"
+  publish_to_all_orgs = true
   rights = setsubtract(
-    data.vcfa_global_role.vapp-user.rights,                  # rights from existing global role
-    ["vApp: Edit VM Network", "vApp: Edit VM Properties", ] # rights to be removed
+    data.vcfa_global_role.role-to-clone.rights, # rights from existing global role
+    ["vApp: Use Console" ]                      # rights to be removed
   )
 }
 ```
@@ -392,28 +394,22 @@ sets into one. For example, we can take the rights from both "vApp User" and "Ca
 and if we want we can even add extra rights that we specify manually.
 
 ```hcl
-data "vcfa_global_role" "vapp-user" {
-  name = "vApp User"
+data "vcfa_global_role" "role-to-clone1" {
+  name = "Organization User"
 }
 
-data "vcfa_global_role" "catalog-author" {
-  name = "Catalog Author"
+data "vcfa_global_role" "role-to-clone2" {
+  name = "Organization Auditor"
 }
 
 resource "vcfa_global_role" "super-vapp-user" {
-  name                   = "super-vapp-user"
-  description            = "Another global role from CLI"
-  publish_to_all_tenants = true
+  name                = "new-cloned-role"
+  description         = "New global role cloned from an existing one"
+  publish_to_all_orgs = true
   rights = setunion(
-    data.vcfa_global_role.vapp-user.rights,      # rights from existing global role
-    data.vcfa_global_role.catalog-author.rights, # rights from existing global role
-    ["API Explorer: View"],                     # more rights to be added
+    data.vcfa_global_role.role-to-clone1.rights, # rights from existing global role
+    data.vcfa_global_role.role-to-clone2.rights, # rights from existing global role
+    ["Content Library: View"],                   # more rights to be added
   )
 }
 ```
-
-
-## References
-
-* [Managing Rights and Roles](https://docs.vmware.com/en/VMware-Cloud-Director/10.2/VMware-Cloud-Director-Service-Provider-Admin-Portal-Guide/GUID-816FBBBC-2CDA-4B1D-9B1A-C22BC31B46F2.html)
-* [VMware Cloud Foundation Automation – Simple Rights Management with Bundles](https://blogs.vmware.com/cloudprovider/2019/12/effective-rights-bundles.html)

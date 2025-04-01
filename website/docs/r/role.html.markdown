@@ -79,3 +79,8 @@ at this stage will show the difference between the minimal configuration file an
 
 [docs-import]: https://www.terraform.io/docs/import
 [importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
+
+## More information
+
+See [Roles management](/providers/vmware/vcd/latest/docs/guides/roles_management) for a broader description of how roles and
+rights work together.

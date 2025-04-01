@@ -62,4 +62,9 @@ The following arguments are supported:
 * `org_ids` - List of IDs of [Organizations][vcfa_org] to which this Global Role gets published. Ignored if `publish_to_all_orgs` is `true`
 * `read_only` - Whether this Global Role is read-only
 
+## More information
+
+See [Roles management](/providers/vmware/vcd/latest/docs/guides/roles_management) for a broader description of how roles and
+rights work together.
+
 [vcfa_org]: /providers/vmware/vcfa/latest/docs/resources/org

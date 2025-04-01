@@ -83,6 +83,11 @@ _NOTE_: The default separator `.` can be changed using provider's `import_separa
 After that, you can expand the configuration file and either update or delete the Global Role as needed. Running `terraform plan`
 at this stage will show the difference between the minimal configuration file and the Global Role's stored properties.
 
+## More information
+
+See [Roles management](/providers/vmware/vcd/latest/docs/guides/roles_management) for a broader description of how roles and
+rights work together.
+
 [docs-import]: https://www.terraform.io/docs/import
 [importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
 [vcfa_org]: /providers/vmware/vcfa/latest/docs/resources/org
