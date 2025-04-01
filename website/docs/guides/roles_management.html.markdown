@@ -73,6 +73,9 @@ make them available to a selected set of tenants.
 A **Rights Bundle** ([`vcfa_rights_bundle`](/providers/vmware/vcfa/latest/docs/resources/rights_bundle)) is a set of rights that can be made available to tenants. While global roles define tenant roles, a
 rights bundle define which rights, independently of a global role listing, can be given to one or more tenants.
 
+-> If you create a Rights Bundle, and it is not visible in UI (_Provider > Access Control > Rights Bundles_),
+be sure to enable the `Advanced Rights Bundle Mode` feature flag in _Provider > Feature Flags_.
+
 An example is necessary to understand the concept.
 
 Let's say that, as a provider, you change the publishing of the rights bundle `Default Tenant Rights Bundle` and restrict its

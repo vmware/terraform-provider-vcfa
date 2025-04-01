@@ -12,6 +12,9 @@ Provides a resource to manage Right Bundles in VMware Cloud Foundation Automatio
 
 _Used by: **Provider**_
 
+-> If you create a Rights Bundle, and it is not visible in UI (_Provider > Access Control > Rights Bundles_),
+be sure to enable the `Advanced Rights Bundle Mode` feature flag in _Provider > Feature Flags_.
+
 ## Example Usage
 
 ```hcl
