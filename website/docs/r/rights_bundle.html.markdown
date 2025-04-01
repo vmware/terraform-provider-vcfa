@@ -84,7 +84,7 @@ at this stage will show the difference between the minimal configuration file an
 
 ## More information
 
-See [Roles management](/providers/vmware/vcd/latest/docs/guides/roles_management) for a broader description of how roles and
+See [Roles management](/providers/vmware/vcfa/latest/docs/guides/roles_management) for a broader description of how roles and
 rights work together.
 
 [docs-import]: https://www.terraform.io/docs/import

@@ -64,7 +64,7 @@ The following arguments are supported:
 
 ## More information
 
-See [Roles management](/providers/vmware/vcd/latest/docs/guides/roles_management) for a broader description of how roles and
+See [Roles management](/providers/vmware/vcfa/latest/docs/guides/roles_management) for a broader description of how roles and
 rights work together.
 
 [vcfa_org]: /providers/vmware/vcfa/latest/docs/resources/org
