@@ -382,7 +382,7 @@ resource "vcfa_global_role" "new-vapp-user" {
   publish_to_all_orgs = true
   rights = setsubtract(
     data.vcfa_global_role.role-to-clone.rights, # rights from existing global role
-    ["vApp: Use Console"]                      # rights to be removed
+    ["vApp: Use Console"]                       # rights to be removed
   )
 }
 ```
