@@ -16,7 +16,7 @@ import (
 )
 
 func TestAccVcfaSupervisorNamespace(t *testing.T) {
-	t.Skipf("Not enabled by default") // Uncomment to execute the test
+	// t.Skipf("Not enabled by default") // Uncomment to execute the test
 
 	preTestChecks(t)
 	defer postTestChecks(t)
@@ -26,6 +26,13 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed parsing '%s' host: %s", testConfig.Provider.Url, err)
 	}
+
+	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
+	vCenterHcl, vCenterHclRef := getVCenterHcl(t, nsxManagerHclRef)
+	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
+	ipSpaceHcl, ipSpaceHclRef := getIpSpaceHcl(t, regionHclRef, "1", "1")
+	providerGatewayHcl, providerGatewayHclRef := getProviderGatewayHcl(t, regionHclRef, ipSpaceHclRef)
+
 	var params = StringMap{
 		"Testname":           t.Name(),
 		"SupervisorName":     testConfig.Tm.VcenterSupervisor,
@@ -52,19 +59,25 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 		"NsxEdgeCluster": testConfig.Tm.NsxEdgeCluster,
 		"RegionVmClass":  "best-effort-2xlarge",
 
+		"RegionId":          fmt.Sprintf("%s.id", regionHclRef),
+		"ProviderGatewayId": fmt.Sprintf("%s.id", providerGatewayHclRef),
+
 		"Tags": "tm org regionQuota",
 	}
 	testParamsNotEmpty(t, params)
 
-	configText1 := templateFill(testAccVcfaSupervisorNamespaceStep1, params)
+	skipBinaryTest := "# skip-binary-test: prerequisite buildup for acceptance tests"
+	configTextPrerequisites := vCenterHcl + nsxManagerHcl + regionHcl + ipSpaceHcl + providerGatewayHcl + skipBinaryTest
+
+	configText1 := templateFill(configTextPrerequisites+testAccVcfaSupervisorNamespaceStep1, params)
 
 	params["FuncName"] = t.Name() + "-step2"
-	configText2 := templateFill(testAccVcfaSupervisorNamespaceStep2, params)
+	configText2 := templateFill(configTextPrerequisites+testAccVcfaSupervisorNamespaceStep2, params)
 	params["FuncName"] = t.Name() + "-step3"
-	configText3 := templateFill(testAccVcfaSupervisorNamespaceStep3DS, params)
+	configText3 := templateFill(configTextPrerequisites+testAccVcfaSupervisorNamespaceStep3DS, params)
 
 	params["FuncName"] = t.Name() + "-step4"
-	configText4 := templateFill(testAccVcfaSupervisorNamespaceStep4, params)
+	configText4 := templateFill(configTextPrerequisites+testAccVcfaSupervisorNamespaceStep4, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
@@ -99,6 +112,11 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		Steps: []resource.TestStep{
+			// {
+			// 	ProviderFactories: testAccProviders,
+			// 	Config:            configText0,
+			// 	Check:             resource.ComposeTestCheckFunc(),
+			// },
 			{
 				ProviderFactories: testAccProviders,
 				Config:            configText1,
@@ -167,111 +185,106 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 }
 
 const testAccVcfaSupervisorNamespaceStep1 = `
-resource "vcfa_vcenter" "vc" {
-  provider = vcfa
+#resource "vcfa_vcenter" "vc" {
+#  provider = vcfa
+#
+#  name                       = "{{.Testname}}"
+#  url                        = "{{.VcenterUrl}}"
+#  auto_trust_certificate     = true
+#  refresh_vcenter_on_create  = true
+#  refresh_policies_on_create = true
+#  username                   = "{{.VcenterUsername}}"
+#  password                   = "{{.VcenterPassword}}"
+#  is_enabled                 = true
+#  nsx_manager_id             = vcfa_nsx_manager.nsx_manager.id
+#}
+#
+#resource "vcfa_nsx_manager" "nsx_manager" {
+#  provider = vcfa
+#
+#  name                   = "{{.Testname}}"
+#  description            = "description"
+#  username               = "{{.NsxUsername}}"
+#  password               = "{{.NsxPassword}}"
+#  url                    = "{{.NsxUrl}}"
+#  auto_trust_certificate = true
+#}
 
-  name                       = "{{.Testname}}"
-  url                        = "{{.VcenterUrl}}"
-  auto_trust_certificate     = true
-  refresh_vcenter_on_create  = true
-  refresh_policies_on_create = true
-  username                   = "{{.VcenterUsername}}"
-  password                   = "{{.VcenterPassword}}"
-  is_enabled                 = true
-  nsx_manager_id             = vcfa_nsx_manager.nsx_manager.id
-}
-
-resource "vcfa_nsx_manager" "nsx_manager" {
-  provider = vcfa
-
-  name                   = "{{.Testname}}"
-  description            = "description"
-  username               = "{{.NsxUsername}}"
-  password               = "{{.NsxPassword}}"
-  url                    = "{{.NsxUrl}}"
-  auto_trust_certificate = true
-}
 
 
+#data "vcfa_supervisor" "test" {
+#  provider = vcfa
+#
+#  name       = "{{.Supervisor}}"
+#  vcenter_id = vcfa_vcenter.vc.id
+#  depends_on = [vcfa_vcenter.vc]
+#}
+#
+#resource "vcfa_region" "region" {
+#  provider = vcfa
+#
+#  name                 = "{{.RegionName}}"
+#  description          = "test-region"
+#  nsx_manager_id       = vcfa_nsx_manager.nsx_manager.id
+#  supervisor_ids       = [data.vcfa_supervisor.test.id]
+#  storage_policy_names = ["{{.StorageClass}}"]
+#}
+#
 
-data "vcfa_supervisor" "test" {
-  provider = vcfa
-
-  name       = "{{.Supervisor}}"
-  vcenter_id = vcfa_vcenter.vc.id
-  depends_on = [vcfa_vcenter.vc]
-}
-
-resource "vcfa_region" "region" {
-  provider = vcfa
-
-  name                 = "{{.RegionName}}"
-  description          = "test-region"
-  nsx_manager_id       = vcfa_nsx_manager.nsx_manager.id
-  supervisor_ids       = [data.vcfa_supervisor.test.id]
-  storage_policy_names = ["{{.StorageClass}}"]
-}
+#
+#
+#resource "vcfa_ip_space" "test-1" {
+#  provider = vcfa
+#
+#  name                          = "{{.Testname}}"
+#  description                   = "Made using Terraform"
+#  region_id                     = vcfa_region.region.id
+#  external_scope                = "43.12.1.0/30"
+#  default_quota_max_subnet_size = 24
+#  default_quota_max_cidr_count  = 1
+#  default_quota_max_ip_count    = 1
+#  internal_scope {
+#    cidr = "32.0.1.0/24"
+#  }
+#}
+#	
+#data "vcfa_tier0_gateway" "test" {
+#  provider = vcfa
+#
+#  region_id = vcfa_region.region.id 
+#  name      = "{{.Tier0Gateway}}"
+#}
+#
+#resource "vcfa_provider_gateway" "test" {
+#  provider = vcfa
+#
+#  name                  = "{{.Testname}}"
+#  region_id             = vcfa_region.region.id
+#  nsxt_tier0_gateway_id = data.vcfa_tier0_gateway.test.id
+#  ip_space_ids          = [vcfa_ip_space.test-1.id]
+#}
 
 data "vcfa_region_vm_class" "region_vm_class0" {
-  provider = vcfa
-
-  region_id = vcfa_region.region.id
+  region_id = {{.RegionId}}
   name      = "{{.RegionVmClass}}"
 }
 
-
-resource "vcfa_ip_space" "test-1" {
-  provider = vcfa
-
-  name                          = "{{.Testname}}"
-  description                   = "Made using Terraform"
-  region_id                     = vcfa_region.region.id
-  external_scope                = "43.12.1.0/30"
-  default_quota_max_subnet_size = 24
-  default_quota_max_cidr_count  = 1
-  default_quota_max_ip_count    = 1
-  internal_scope {
-    cidr = "32.0.1.0/24"
-  }
-}
-	
-data "vcfa_tier0_gateway" "test" {
-  provider = vcfa
-
-  region_id = vcfa_region.region.id 
-  name      = "{{.Tier0Gateway}}"
-}
-
-resource "vcfa_provider_gateway" "test" {
-  provider = vcfa
-
-  name                  = "{{.Testname}}"
-  region_id             = vcfa_region.region.id
-  nsxt_tier0_gateway_id = data.vcfa_tier0_gateway.test.id
-  ip_space_ids          = [vcfa_ip_space.test-1.id]
-}
-
-
 data "vcfa_region_zone" "test" {
-  provider = vcfa
-
   region_id = vcfa_region.region.id
   name      = "{{.SupervisorZoneName}}"
 }
 
 data "vcfa_region_storage_policy" "sp" {
-  provider = vcfa
-
   name      = "{{.StorageClass}}"
   region_id = vcfa_region.region.id
 }
 
 resource "vcfa_org_region_quota" "test" {
-  provider = vcfa
+#  provider = vcfa
 
   org_id         = vcfa_org.test.id
-  region_id      = vcfa_region.region.id
-  supervisor_ids = [data.vcfa_supervisor.test.id]
+  region_id      = {{.RegionId}}
+  supervisor_ids = [data.vcfa_supervisor.supervisor.id]
   zone_resource_allocations {
     region_zone_id         = data.vcfa_region_zone.test.id
     cpu_limit_mhz          = 2000
@@ -289,7 +302,7 @@ resource "vcfa_org_region_quota" "test" {
 }
 
 resource "vcfa_org" "test" {
-  provider = vcfa
+# provider = vcfa
 
   name         = "{{.OrgName}}"
   display_name = "terraform-test"
@@ -298,14 +311,14 @@ resource "vcfa_org" "test" {
 }
 
 data "vcfa_role" "org-admin" {
-  provider = vcfa
+#  provider = vcfa
 
   org_id   = vcfa_org.test.id
   name     = "Organization Administrator"
 }
 
 resource "vcfa_org_local_user" "user" {
-  provider = vcfa
+#  provider = vcfa
   org_id   = vcfa_org.test.id
   role_ids = [data.vcfa_role.org-admin.id]
   username = "{{.OrgUser}}"
@@ -313,21 +326,21 @@ resource "vcfa_org_local_user" "user" {
 }
 
 resource "vcfa_org_networking" "test" {
-  provider = vcfa
+#  provider = vcfa
 
   org_id   = vcfa_org.test.id
   log_name = "tftestsn"
 }
 
 data "vcfa_edge_cluster" "test" {
-  provider = vcfa
+#  provider = vcfa
 
   name      = "{{.NsxEdgeCluster}}"
   region_id = vcfa_region.region.id
 }
 
 resource "vcfa_org_regional_networking" "test" {
-  provider = vcfa
+#   provider = vcfa
 
   name                = "{{.Testname}}"
   org_id              = vcfa_org.test.id
