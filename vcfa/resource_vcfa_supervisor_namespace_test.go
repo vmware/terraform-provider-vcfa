@@ -5,6 +5,7 @@ package vcfa
 import (
 	"fmt"
 	"net/url"
+	"os"
 	"regexp"
 	"testing"
 
@@ -16,7 +17,10 @@ import (
 )
 
 func TestAccVcfaSupervisorNamespace(t *testing.T) {
-	// t.Skipf("Not enabled by default") // Uncomment to execute the test
+	var executeTest = os.Getenv("VCFA_NAMESPACE_TEST") != ""
+	if !executeTest {
+		t.Skipf("TestAccVcfaSupervisorNamespace not enabled by default. Use 'VCFA_NAMESPACE_TEST=1' to enable")
+	}
 
 	preTestChecks(t)
 	defer postTestChecks(t)
@@ -112,11 +116,6 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		Steps: []resource.TestStep{
-			// {
-			// 	ProviderFactories: testAccProviders,
-			// 	Config:            configText0,
-			// 	Check:             resource.ComposeTestCheckFunc(),
-			// },
 			{
 				ProviderFactories: testAccProviders,
 				Config:            configText1,
@@ -185,85 +184,6 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 }
 
 const testAccVcfaSupervisorNamespaceStep1 = `
-#resource "vcfa_vcenter" "vc" {
-#  provider = vcfa
-#
-#  name                       = "{{.Testname}}"
-#  url                        = "{{.VcenterUrl}}"
-#  auto_trust_certificate     = true
-#  refresh_vcenter_on_create  = true
-#  refresh_policies_on_create = true
-#  username                   = "{{.VcenterUsername}}"
-#  password                   = "{{.VcenterPassword}}"
-#  is_enabled                 = true
-#  nsx_manager_id             = vcfa_nsx_manager.nsx_manager.id
-#}
-#
-#resource "vcfa_nsx_manager" "nsx_manager" {
-#  provider = vcfa
-#
-#  name                   = "{{.Testname}}"
-#  description            = "description"
-#  username               = "{{.NsxUsername}}"
-#  password               = "{{.NsxPassword}}"
-#  url                    = "{{.NsxUrl}}"
-#  auto_trust_certificate = true
-#}
-
-
-
-#data "vcfa_supervisor" "test" {
-#  provider = vcfa
-#
-#  name       = "{{.Supervisor}}"
-#  vcenter_id = vcfa_vcenter.vc.id
-#  depends_on = [vcfa_vcenter.vc]
-#}
-#
-#resource "vcfa_region" "region" {
-#  provider = vcfa
-#
-#  name                 = "{{.RegionName}}"
-#  description          = "test-region"
-#  nsx_manager_id       = vcfa_nsx_manager.nsx_manager.id
-#  supervisor_ids       = [data.vcfa_supervisor.test.id]
-#  storage_policy_names = ["{{.StorageClass}}"]
-#}
-#
-
-#
-#
-#resource "vcfa_ip_space" "test-1" {
-#  provider = vcfa
-#
-#  name                          = "{{.Testname}}"
-#  description                   = "Made using Terraform"
-#  region_id                     = vcfa_region.region.id
-#  external_scope                = "43.12.1.0/30"
-#  default_quota_max_subnet_size = 24
-#  default_quota_max_cidr_count  = 1
-#  default_quota_max_ip_count    = 1
-#  internal_scope {
-#    cidr = "32.0.1.0/24"
-#  }
-#}
-#	
-#data "vcfa_tier0_gateway" "test" {
-#  provider = vcfa
-#
-#  region_id = vcfa_region.region.id 
-#  name      = "{{.Tier0Gateway}}"
-#}
-#
-#resource "vcfa_provider_gateway" "test" {
-#  provider = vcfa
-#
-#  name                  = "{{.Testname}}"
-#  region_id             = vcfa_region.region.id
-#  nsxt_tier0_gateway_id = data.vcfa_tier0_gateway.test.id
-#  ip_space_ids          = [vcfa_ip_space.test-1.id]
-#}
-
 data "vcfa_region_vm_class" "region_vm_class0" {
   region_id = {{.RegionId}}
   name      = "{{.RegionVmClass}}"
@@ -280,8 +200,6 @@ data "vcfa_region_storage_policy" "sp" {
 }
 
 resource "vcfa_org_region_quota" "test" {
-#  provider = vcfa
-
   org_id         = vcfa_org.test.id
   region_id      = {{.RegionId}}
   supervisor_ids = [data.vcfa_supervisor.supervisor.id]
@@ -302,8 +220,6 @@ resource "vcfa_org_region_quota" "test" {
 }
 
 resource "vcfa_org" "test" {
-# provider = vcfa
-
   name         = "{{.OrgName}}"
   display_name = "terraform-test"
   description  = "terraform test"
@@ -311,14 +227,11 @@ resource "vcfa_org" "test" {
 }
 
 data "vcfa_role" "org-admin" {
-#  provider = vcfa
-
   org_id   = vcfa_org.test.id
   name     = "Organization Administrator"
 }
 
 resource "vcfa_org_local_user" "user" {
-#  provider = vcfa
   org_id   = vcfa_org.test.id
   role_ids = [data.vcfa_role.org-admin.id]
   username = "{{.OrgUser}}"
@@ -326,22 +239,16 @@ resource "vcfa_org_local_user" "user" {
 }
 
 resource "vcfa_org_networking" "test" {
-#  provider = vcfa
-
   org_id   = vcfa_org.test.id
   log_name = "tftestsn"
 }
 
 data "vcfa_edge_cluster" "test" {
-#  provider = vcfa
-
   name      = "{{.NsxEdgeCluster}}"
   region_id = vcfa_region.region.id
 }
 
 resource "vcfa_org_regional_networking" "test" {
-#   provider = vcfa
-
   name                = "{{.Testname}}"
   org_id              = vcfa_org.test.id
   provider_gateway_id = vcfa_provider_gateway.test.id
