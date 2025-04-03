@@ -1,4 +1,4 @@
-//go:build cci || ALL || functional
+//go:build api || cci || ALL || functional
 
 package vcfa
 
