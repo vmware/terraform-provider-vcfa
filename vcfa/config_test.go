@@ -473,7 +473,6 @@ func templateFill(tmpl string, inputData StringMap) string {
 				templateText = strings.Replace(templateText, providerVcfaSystem2, providerVcfaSys2Alias, -1)
 			}
 		}
-
 		resourceFile := path.Join(testArtifactsDirectory, caller) + ".tf"
 		storedFunc, alreadyWritten := testArtifactNames[resourceFile]
 		if alreadyWritten {
