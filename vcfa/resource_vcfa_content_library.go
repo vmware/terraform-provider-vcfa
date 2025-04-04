@@ -96,19 +96,19 @@ func resourceVcfaContentLibrary() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Optional:    true,
-				ForceNew:    true, // Can't change subscription settings
 				Description: fmt.Sprintf("A block representing subscription settings of a %s", labelVcfaContentLibrary),
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"subscription_url": {
 							Type:        schema.TypeString,
 							Required:    true,
+							ForceNew:    true, // Can't change subscription url
 							Description: fmt.Sprintf("Subscription url of this %s", labelVcfaContentLibrary),
 						},
 						"password": {
 							Type:        schema.TypeString,
-							Optional:    true, // Required at Runtime as cannot be Required + Computed in schema. (It is computed as password cannot be recovered)
-							Computed:    true,
+							Optional:    true,
+							Sensitive:   true,
 							Description: "Password to use to authenticate with the publisher",
 						},
 					},
@@ -133,7 +133,7 @@ func resourceVcfaContentLibraryCreate(ctx context.Context, d *schema.ResourceDat
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	err = setContentLibraryData(tmClient, d, cl)
+	err = setContentLibraryData(tmClient, d, cl, "resource")
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -163,7 +163,7 @@ func resourceVcfaContentLibraryRead(_ context.Context, d *schema.ResourceData, m
 		return diag.FromErr(err)
 	}
 
-	err = setContentLibraryData(tmClient, d, cl)
+	err = setContentLibraryData(tmClient, d, cl, "resource")
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -261,7 +261,7 @@ func getContentLibraryType(d *schema.ResourceData) *types.ContentLibrary {
 	return t
 }
 
-func setContentLibraryData(_ *VCDClient, d *schema.ResourceData, cl *govcd.ContentLibrary) error {
+func setContentLibraryData(_ *VCDClient, d *schema.ResourceData, cl *govcd.ContentLibrary, origin string) error {
 	if cl == nil || cl.ContentLibrary == nil {
 		return fmt.Errorf("provided %s is nil", labelVcfaContentLibrary)
 	}
@@ -292,10 +292,17 @@ func setContentLibraryData(_ *VCDClient, d *schema.ResourceData, cl *govcd.Conte
 		subscriptionConfig = []interface{}{
 			map[string]interface{}{
 				"subscription_url": cl.ContentLibrary.SubscriptionConfig.SubscriptionUrl,
-				"password":         cl.ContentLibrary.SubscriptionConfig.Password,
 			},
 		}
+		// Password is only available in resource
+		if origin == "resource" {
+			// Password is never returned by backend. We save what we have currently
+			if p := d.Get("subscription_config.0.password"); p != "" {
+				subscriptionConfig[0].(map[string]interface{})["password"] = p
+			}
+		}
 	}
+
 	err = d.Set("subscription_config", subscriptionConfig)
 	if err != nil {
 		return err

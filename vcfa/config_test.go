@@ -38,6 +38,9 @@ const (
 	envSecondVcfaSysOrg   = "VCFA_SYSORG2"
 )
 
+// vsphereProviderVersion specifies the version of vSphere Terraform Provider
+var vsphereProviderVersion = "~> 2.11"
+
 func init() {
 
 	// To list the flags when we run "go test -tags functional -vcfa-help", the flag name must start with "vcfa"
@@ -101,13 +104,12 @@ type TestConfig struct {
 		SupervisorZone string `json:"supervisorZone"`
 	} `json:"cci"`
 	Tm struct {
-		Org                           string   `json:"org"`
-		CreateRegion                  bool     `json:"createRegion"`
-		Region                        string   `json:"region"`
-		StorageClass                  string   `json:"storageClass"`
-		RegionVmClasses               []string `json:"regionVmClasses"`
-		ContentLibrary                string   `json:"contentLibrary"`
-		SubscriptionContentLibraryUrl string   `json:"subscriptionContentLibraryUrl"`
+		Org             string   `json:"org"`
+		CreateRegion    bool     `json:"createRegion"`
+		Region          string   `json:"region"`
+		StorageClass    string   `json:"storageClass"`
+		RegionVmClasses []string `json:"regionVmClasses"`
+		ContentLibrary  string   `json:"contentLibrary"`
 
 		CreateNsxManager   bool   `json:"createNsxManager"`
 		NsxManagerUsername string `json:"nsxManagerUsername"`
@@ -121,6 +123,8 @@ type TestConfig struct {
 		VcenterUsername       string `json:"vcenterUsername"`
 		VcenterPassword       string `json:"vcenterPassword"`
 		VcenterUrl            string `json:"vcenterUrl"`
+		VcenterDatacenter     string `json:"vcenterDatacenter"`
+		VcenterDatastore      string `json:"vcenterDatastore"`
 		VcenterStorageProfile string `json:"vcenterStorageProfile"`
 		VcenterSupervisor     string `json:"vcenterSupervisor"`
 		VcenterSupervisorZone string `json:"vcenterSupervisorZone"`
