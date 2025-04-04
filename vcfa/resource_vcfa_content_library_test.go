@@ -28,7 +28,8 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 		"Name":                t.Name(),
 		"RegionId":            fmt.Sprintf("%s.id", regionHclRef),
 		"RegionStoragePolicy": testConfig.Tm.StorageClass,
-		"SubscriptionUrl":     testConfig.Tm.SubscriptionContentLibraryUrl,
+		"VsphereDatacenter":   testConfig.Tm.VcenterDatacenter,
+		"VsphereDatastore":    testConfig.Tm.VcenterDatastore,
 		"Tags":                "tm contentlibrary",
 	}
 	testParamsNotEmpty(t, params)
@@ -66,6 +67,12 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
+		ExternalProviders: map[string]resource.ExternalProvider{
+			"vsphere": {
+				VersionConstraint: vsphereProviderVersion,
+				Source:            "hashicorp/vsphere",
+			},
+		},
 		Steps: []resource.TestStep{
 			{
 				Config: configText0,
@@ -113,7 +120,7 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceNameSubscribed, "is_subscribed", "true"),
 					resource.TestCheckResourceAttr(resourceNameSubscribed, "library_type", "PROVIDER"),
 					resource.TestCheckResourceAttr(resourceNameSubscribed, "subscription_config.#", "1"),
-					resource.TestCheckResourceAttr(resourceNameSubscribed, "subscription_config.0.subscription_url", params["SubscriptionUrl"].(string)),
+					resource.TestCheckResourceAttrPair(resourceNameSubscribed, "subscription_config.0.subscription_url", "vsphere_content_library.publisher_content_library", "publication.0.publish_url"),
 					resource.TestCheckResourceAttr(resourceNameSubscribed, "subscription_config.0.password", "******"),
 					resource.TestMatchResourceAttr(resourceNameSubscribed, "version_number", regexp.MustCompile("[0-9]")),
 				),
@@ -156,7 +163,28 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 	})
 }
 
-const testAccVcfaContentLibraryProviderStep1 = `
+const testAccVcfaContentLibraryPrerequisites = `
+data "vsphere_datacenter" "dc" {
+  name = "{{.VsphereDatacenter}}"
+}
+
+data "vsphere_datastore" "ds" {
+  name          = "{{.VsphereDatastore}}"
+  datacenter_id = data.vsphere_datacenter.dc.id
+}
+
+resource "vsphere_content_library" "publisher_content_library" {
+  name            = "{{.Name}}"
+  description     = "A publishing content library for {{.Name}} Terraform test"
+  storage_backing = [data.vsphere_datastore.ds.id]
+  publication {
+    authentication_method = "NONE"
+    published             = true
+  }
+}
+`
+
+const testAccVcfaContentLibraryProviderStep1 = testAccVcfaContentLibraryPrerequisites + `
 data "vcfa_org" "system" {
   name = "System"
 }
@@ -189,7 +217,7 @@ resource "vcfa_content_library" "cl_subscribed" {
     data.vcfa_storage_class.sc.id
   ]
   subscription_config {
-    subscription_url = "{{.SubscriptionUrl}}"
+    subscription_url = vsphere_content_library.publisher_content_library.publication[0].publish_url
   }
   delete_force = true
   delete_recursive = true
@@ -231,10 +259,11 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 		"SupervisorZoneName":  testConfig.Tm.VcenterSupervisorZone,
 		"StorageClass":        testConfig.Tm.StorageClass,
 		"VcenterRef":          vCenterHclRef,
+		"VsphereDatacenter":   testConfig.Tm.VcenterDatacenter,
+		"VsphereDatastore":    testConfig.Tm.VcenterDatastore,
 		"RegionStoragePolicy": testConfig.Tm.StorageClass,
 		"RegionVmClassRefs":   strings.Join(vmClassesRefs, ".id,\n    ") + ".id",
 		"VcfaUrl":             testConfig.Provider.Url,
-		"SubscriptionUrl":     testConfig.Tm.SubscriptionContentLibraryUrl,
 		"Tags":                "tm contentlibrary",
 	}
 	testParamsNotEmpty(t, params)
@@ -294,6 +323,12 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 	defer cachedVCDClients.reset()
 
 	resource.Test(t, resource.TestCase{
+		ExternalProviders: map[string]resource.ExternalProvider{
+			"vsphere": {
+				VersionConstraint: vsphereProviderVersion,
+				Source:            "hashicorp/vsphere",
+			},
+		},
 		Steps: []resource.TestStep{
 			{
 				ProviderFactories: testAccProviders,
@@ -341,7 +376,7 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 					resource.TestCheckResourceAttr(clSubscribed, "is_subscribed", "true"),
 					resource.TestCheckResourceAttr(clSubscribed, "library_type", "TENANT"),
 					resource.TestCheckResourceAttr(clSubscribed, "subscription_config.#", "1"),
-					resource.TestCheckResourceAttr(clSubscribed, "subscription_config.0.subscription_url", params["SubscriptionUrl"].(string)),
+					resource.TestCheckResourceAttrPair(clSubscribed, "subscription_config.0.subscription_url", "vsphere_content_library.publisher_content_library", "publication.0.publish_url"),
 					resource.TestCheckResourceAttr(clSubscribed, "subscription_config.0.password", "******"),
 					resource.TestMatchResourceAttr(clSubscribed, "version_number", regexp.MustCompile("[0-9]")),
 				),
@@ -420,7 +455,7 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 	})
 }
 
-const testAccVcfaContentLibraryTenantPrerequisites = `
+const testAccVcfaContentLibraryTenantPrerequisites = testAccVcfaContentLibraryPrerequisites + `
 resource "vcfa_org" "test" {
   provider     = vcfa
   name         = "{{.Org}}"
@@ -532,7 +567,7 @@ resource "vcfa_content_library" "cl_subscribed" {
     data.vcfa_storage_class.sc.id
   ]
   subscription_config {
-    subscription_url = "{{.SubscriptionUrl}}"
+    subscription_url = vsphere_content_library.publisher_content_library.publication[0].publish_url
   }
   delete_force = true
   delete_recursive = true
