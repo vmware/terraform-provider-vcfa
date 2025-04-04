@@ -4,6 +4,7 @@ package vcfa
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 	"strings"
 	"testing"
@@ -28,6 +29,9 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 		"Name":                t.Name(),
 		"RegionId":            fmt.Sprintf("%s.id", regionHclRef),
 		"RegionStoragePolicy": testConfig.Tm.StorageClass,
+		"VsphereUsername":     testConfig.Tm.VcenterUsername,
+		"VspherePassword":     testConfig.Tm.VcenterPassword,
+		"VsphereUrl":          strings.Split(testConfig.Tm.VcenterUrl, "://")[1],
 		"VsphereDatacenter":   testConfig.Tm.VcenterDatacenter,
 		"VsphereDatastore":    testConfig.Tm.VcenterDatastore,
 		"Tags":                "tm contentlibrary",
@@ -121,7 +125,7 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceNameSubscribed, "library_type", "PROVIDER"),
 					resource.TestCheckResourceAttr(resourceNameSubscribed, "subscription_config.#", "1"),
 					resource.TestCheckResourceAttrPair(resourceNameSubscribed, "subscription_config.0.subscription_url", "vsphere_content_library.publisher_content_library", "publication.0.publish_url"),
-					resource.TestCheckResourceAttr(resourceNameSubscribed, "subscription_config.0.password", "******"),
+					resource.TestCheckResourceAttr(resourceNameSubscribed, "subscription_config.0.password", "password"),
 					resource.TestMatchResourceAttr(resourceNameSubscribed, "version_number", regexp.MustCompile("[0-9]")),
 				),
 			},
@@ -141,11 +145,15 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 						"%", // Does not have delete_recursive, delete_force
 						"delete_recursive",
 						"delete_force",
+						"subscription_config.0.%", // Does not have password
+						"subscription_config.0.password",
 					}),
 					resourceFieldsEqual(resourceNameSubscribed, "data.vcfa_content_library.cl_subscribed_ds", []string{
 						"%", // Does not have delete_recursive, delete_force
 						"delete_recursive",
 						"delete_force",
+						"subscription_config.0.%", // Does not have password
+						"subscription_config.0.password",
 					}),
 				),
 			},
@@ -164,6 +172,13 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 }
 
 const testAccVcfaContentLibraryPrerequisites = `
+provider "vsphere" {
+  user                 = "{{.VsphereUsername}}"
+  password             = "{{.VspherePassword}}"
+  vsphere_server       = "{{.VsphereUrl}}"
+  allow_unverified_ssl = true
+}
+
 data "vsphere_datacenter" "dc" {
   name = "{{.VsphereDatacenter}}"
 }
@@ -173,12 +188,18 @@ data "vsphere_datastore" "ds" {
   datacenter_id = data.vsphere_datacenter.dc.id
 }
 
+locals {
+  vsphere_content_library_password = "password"
+}
+
 resource "vsphere_content_library" "publisher_content_library" {
-  name            = "{{.Name}}"
+  name            = "{{.Name}}Publisher"
   description     = "A publishing content library for {{.Name}} Terraform test"
   storage_backing = [data.vsphere_datastore.ds.id]
   publication {
     authentication_method = "NONE"
+    username              = "vcsp"
+    password              = local.vsphere_content_library_password
     published             = true
   }
 }
@@ -217,6 +238,7 @@ resource "vcfa_content_library" "cl_subscribed" {
     data.vcfa_storage_class.sc.id
   ]
   subscription_config {
+    password         = local.vsphere_content_library_password
     subscription_url = vsphere_content_library.publisher_content_library.publication[0].publish_url
   }
   delete_force = true
@@ -259,6 +281,9 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 		"SupervisorZoneName":  testConfig.Tm.VcenterSupervisorZone,
 		"StorageClass":        testConfig.Tm.StorageClass,
 		"VcenterRef":          vCenterHclRef,
+		"VsphereUsername":     testConfig.Tm.VcenterUsername,
+		"VspherePassword":     testConfig.Tm.VcenterPassword,
+		"VsphereUrl":          strings.Split(testConfig.Tm.VcenterUrl, "://")[1],
 		"VsphereDatacenter":   testConfig.Tm.VcenterDatacenter,
 		"VsphereDatastore":    testConfig.Tm.VcenterDatastore,
 		"RegionStoragePolicy": testConfig.Tm.StorageClass,
@@ -316,6 +341,12 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 			},
 		}
 	}
+	externalProviders := map[string]resource.ExternalProvider{
+		"vsphere": {
+			VersionConstraint: vsphereProviderVersion,
+			Source:            "hashicorp/vsphere",
+		},
+	}
 
 	// Before this test ends we need to clean up the clients cache, because we create an Org user
 	// and use it to login with the provider. Using same credentials and org name could lead to errors if this user
@@ -323,19 +354,15 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 	defer cachedVCDClients.reset()
 
 	resource.Test(t, resource.TestCase{
-		ExternalProviders: map[string]resource.ExternalProvider{
-			"vsphere": {
-				VersionConstraint: vsphereProviderVersion,
-				Source:            "hashicorp/vsphere",
-			},
-		},
 		Steps: []resource.TestStep{
 			{
 				ProviderFactories: testAccProviders,
+				ExternalProviders: externalProviders,
 				Config:            configText0,
 			},
 			{
 				ProviderFactories: testAccProviders,
+				ExternalProviders: externalProviders,
 				Config:            configText1,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					// First content library
@@ -377,12 +404,13 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 					resource.TestCheckResourceAttr(clSubscribed, "library_type", "TENANT"),
 					resource.TestCheckResourceAttr(clSubscribed, "subscription_config.#", "1"),
 					resource.TestCheckResourceAttrPair(clSubscribed, "subscription_config.0.subscription_url", "vsphere_content_library.publisher_content_library", "publication.0.publish_url"),
-					resource.TestCheckResourceAttr(clSubscribed, "subscription_config.0.password", "******"),
+					resource.TestCheckResourceAttr(clSubscribed, "subscription_config.0.password", "password"),
 					resource.TestMatchResourceAttr(clSubscribed, "version_number", regexp.MustCompile("[0-9]")),
 				),
 			},
 			{
 				ProviderFactories: testAccProviders,
+				ExternalProviders: externalProviders,
 				Config:            configText2,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					cachedId.testCheckCachedResourceFieldValue(cl1, "id"),
@@ -393,6 +421,7 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 			},
 			{
 				ProviderFactories: multipleFactories(),
+				ExternalProviders: externalProviders,
 				Config:            configText3,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					// Tenant content library
@@ -411,37 +440,72 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 			},
 			{
 				ProviderFactories: multipleFactories(),
+				ExternalProviders: externalProviders,
 				Config:            configText4,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resourceFieldsEqual(cl1, "data.vcfa_content_library.cl_ds1", []string{
 						"%", // Does not have delete_recursive, delete_force
 						"delete_recursive",
 						"delete_force",
+						"subscription_config.0.%", // Does not have password
+						"subscription_config.0.password",
 					}),
 					resourceFieldsEqual(cl2, "data.vcfa_content_library.cl_ds2", []string{
 						"%",
 						"delete_recursive",
 						"delete_force",
+						"subscription_config.0.%", // Does not have password
+						"subscription_config.0.password",
 					}),
 					resourceFieldsEqual(cl3, "data.vcfa_content_library.cl_ds3", []string{
 						"%",
 						"delete_recursive",
 						"delete_force",
+						"subscription_config.0.%", // Does not have password
+						"subscription_config.0.password",
 					}),
 					resourceFieldsEqual(cl3, "data.vcfa_content_library.cl_ds3tenant", []string{
 						"%",
 						"delete_recursive",
 						"delete_force",
+						"subscription_config.0.%", // Does not have password
+						"subscription_config.0.password",
 					}),
 					resourceFieldsEqual(clSubscribed, "data.vcfa_content_library.cl_subscribed_ds", []string{
 						"%",
 						"delete_recursive",
 						"delete_force",
+						"subscription_config.0.%", // Does not have password
+						"subscription_config.0.password",
 					}),
 				),
 			},
 			{
+				// Note: Without environment variables, this does not work. It complains about
+				// arguments not set in the "vsphere" provider, and could not find a way to fix it.
+				// I believe it's some interference with multiple ProviderFactories, as this does not happen
+				// in TestAccVcfaContentLibraryProvider test above, which does pretty much the same but doesn't rely
+				// on multiple ProviderFactories.
+				PreConfig: func() {
+					err := os.Setenv("VSPHERE_USER", testConfig.Tm.VcenterUsername)
+					if err != nil {
+						t.Fatal(err)
+					}
+					err = os.Setenv("VSPHERE_PASSWORD", testConfig.Tm.VcenterPassword)
+					if err != nil {
+						t.Fatal(err)
+					}
+					err = os.Setenv("VSPHERE_SERVER", strings.Split(testConfig.Tm.VcenterUrl, "://")[1])
+					if err != nil {
+						t.Fatal(err)
+					}
+					err = os.Setenv("VSPHERE_ALLOW_UNVERIFIED_SSL", "true")
+					if err != nil {
+						t.Fatal(err)
+					}
+				},
 				ProviderFactories: multipleFactories(),
+				ExternalProviders: externalProviders,
 				ResourceName:      cl1,
 				ImportState:       true,
 				ImportStateVerify: true,
@@ -567,6 +631,7 @@ resource "vcfa_content_library" "cl_subscribed" {
     data.vcfa_storage_class.sc.id
   ]
   subscription_config {
+    password         = local.vsphere_content_library_password
     subscription_url = vsphere_content_library.publisher_content_library.publication[0].publish_url
   }
   delete_force = true

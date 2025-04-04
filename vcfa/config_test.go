@@ -473,6 +473,20 @@ func templateFill(tmpl string, inputData StringMap) string {
 				templateText = strings.Replace(templateText, providerVcfaSystem2, providerVcfaSys2Alias, -1)
 			}
 		}
+
+		if strings.Contains(tmpl, "provider \"vsphere\"") {
+			templateText = fmt.Sprintf(`
+terraform {
+  required_providers {
+    vcfa = {
+      source  = "hashicorp/vsphere"
+      version = "%s"
+    }
+  }
+}
+`, vsphereProviderVersion) + templateText
+		}
+
 		resourceFile := path.Join(testArtifactsDirectory, caller) + ".tf"
 		storedFunc, alreadyWritten := testArtifactNames[resourceFile]
 		if alreadyWritten {
