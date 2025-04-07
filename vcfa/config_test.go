@@ -1,4 +1,4 @@
-//go:build api || functional || tm || cci || ALL
+//go:build api || functional || tm || cci || contentlibrary || org || ALL
 
 package vcfa
 
