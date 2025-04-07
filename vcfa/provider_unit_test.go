@@ -306,21 +306,13 @@ func TestVcfaSchemaFilter(t *testing.T) {
 
 // TestDocsNames checks that all documentation files are named "filename.html.markdown'
 func TestDocsNames(t *testing.T) {
-	type dirType struct {
-		name        string
-		description string
-	}
-	var docsDirectories = []dirType{
-		{"d", "data sources"},
-		{"r", "resources"},
-		{"guides", "guides"},
-	}
+	docsDirectories := []string{"data-sources", "resources", "guides"}
 
-	for _, dirDef := range docsDirectories {
-		dir := path.Join(getCurrentDir(), "..", "website", "docs", dirDef.name)
+	for _, d := range docsDirectories {
+		dir := path.Join(getCurrentDir(), "..", "docs", d)
 		_, err := os.Stat(dir)
 		if os.IsNotExist(err) {
-			t.Errorf("Could not find directory %s (%s)\n", dirDef.name, dirDef.description)
+			t.Errorf("Could not find directory %s\n", d)
 			continue
 		}
 
@@ -330,8 +322,8 @@ func TestDocsNames(t *testing.T) {
 			continue
 		}
 		for _, f := range files {
-			if !strings.Contains(f.Name(), ".html.markdown") {
-				t.Errorf("file \"%s/%s\" doesn't end with '.html.markdown'", dir, f.Name())
+			if !strings.Contains(f.Name(), ".md") {
+				t.Errorf("file \"%s/%s\" doesn't end with '.md'", dir, f.Name())
 			}
 		}
 	}
