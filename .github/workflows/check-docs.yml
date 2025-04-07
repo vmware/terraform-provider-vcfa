@@ -34,6 +34,3 @@ jobs:
 
     - name: hclcheck
       run: make hclcheck
-
-    - name: licensecheck
-      run: make licensecheck

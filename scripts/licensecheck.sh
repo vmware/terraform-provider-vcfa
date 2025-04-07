@@ -8,5 +8,3 @@ else
   echo ${missing_license_files}
   exit 1
 fi
-
-
