@@ -1,8 +1,8 @@
+//go:build tm || contentlibrary || ALL || functional
+
 // © Broadcom. All Rights Reserved.
 // The term “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
 // SPDX-License-Identifier: MPL-2.0
-
-//go:build tm || contentlibrary || ALL || functional
 
 package vcfa
 
