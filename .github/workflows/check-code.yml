@@ -43,3 +43,6 @@ jobs:
           set +e
           grep --exclude-dir=.git -ERin "Director|VCD|ources\/tm|labelTm|vcd_tm" . | grep -Eiv "VCDClient|.log:|govcdClient|vcdClient|GOVCD_|govcd.|/director/|directory|github|go-vcloud-director|Directories|Version|VCDHREF|VCDToken"
           if [ "$?" -eq 0 ]; then echo "ERROR: Found some VCD references"; exit 1; else exit 0; fi
+
+      - name: licensecheck
+        run: make licensecheck

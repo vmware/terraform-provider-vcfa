@@ -145,7 +145,7 @@ fmtcheck:
 	@sh -c "'$(CURDIR)/scripts/gofmtcheck.sh'"
 
 licensecheck:
-	@sh -c "'$(CURDIR)/scripts/license.sh'"
+	@sh -c "'$(CURDIR)/scripts/licensecheck.sh'"
 
 # runs HCL validation
 hclcheck:
