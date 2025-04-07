@@ -2,10 +2,10 @@ name: check-docs
 on:
   push:
     paths:
-      - 'website/**'
+      - 'docs/**'
   pull_request:
     paths:
-      - 'website/**'
+      - 'docs/**'
 
 jobs:
   build:

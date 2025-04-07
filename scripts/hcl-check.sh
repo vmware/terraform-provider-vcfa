@@ -138,11 +138,7 @@ terraform {
       source  = \"vmware/vcfa\"
       version = \"= ${provider_version:1}\"
     }
-    nsxt = {
-      source = \"vmware/nsxt\"
-    }
   }
-  required_version = \">= 0.13\"
 }" > provider_setup.tf
 
         terraform_result="$(terraform init -no-color > /dev/null 2>&1)"
@@ -245,9 +241,9 @@ function print_summary {
     echo ""
 }
 
-if [ ! -d "website" ] 
+if [ ! -d "docs" ]
 then
-    echo "(!) ERROR: Expected to find 'website' directory. Please run the script from project root directory"
+    echo "(!) ERROR: Expected to find 'docs' directory. Please run the script from project root directory"
     exit 1
 fi
 
