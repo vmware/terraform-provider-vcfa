@@ -519,7 +519,7 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 	})
 }
 
-const testAccVcfaContentLibraryTenantPrerequisites = testAccVcfaContentLibraryPrerequisites + `
+const testAccVcfaContentLibraryTenantPrerequisites = `
 resource "vcfa_org" "test" {
   provider     = vcfa
   name         = "{{.Org}}"
@@ -592,7 +592,7 @@ resource "vcfa_org_region_quota" "test" {
 }
 `
 
-const testAccVcfaContentLibraryTenantStep1 = testAccVcfaContentLibraryTenantPrerequisites + `
+const testAccVcfaContentLibraryTenantStep1 = testAccVcfaContentLibraryPrerequisites + testAccVcfaContentLibraryTenantPrerequisites + `
 data "vcfa_storage_class" "sc" {
   provider  = vcfa
   region_id = {{.RegionId}}
