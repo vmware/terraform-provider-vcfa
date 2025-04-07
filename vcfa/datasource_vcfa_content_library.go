@@ -75,11 +75,6 @@ func datasourceVcfaContentLibrary() *schema.Resource {
 							Computed:    true,
 							Description: fmt.Sprintf("Subscription url of this %s", labelVcfaContentLibrary),
 						},
-						"password": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: "Password to use to authenticate with the publisher",
-						},
 					},
 				},
 			},
@@ -103,7 +98,9 @@ func datasourceVcfaContentLibraryRead(ctx context.Context, d *schema.ResourceDat
 			}
 			return tmClient.GetContentLibraryByName(name, tenantContext)
 		},
-		stateStoreFunc: setContentLibraryData,
+		stateStoreFunc: func(tmClient *VCDClient, d *schema.ResourceData, outerType *govcd.ContentLibrary) error {
+			return setContentLibraryData(tmClient, d, outerType, "datasource")
+		},
 	}
 	return readDatasource(ctx, d, meta, c)
 }
