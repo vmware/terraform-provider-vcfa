@@ -6,11 +6,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -47,6 +48,22 @@ func testParamsNotEmpty(t *testing.T, params StringMap) {
 			t.Skipf("[%s] %s must be set for acceptance tests", t.Name(), key)
 		}
 	}
+}
+
+func createTemporaryOrgConnection(orgName, username, password string) *VCDClient {
+	config := Config{
+		User:         username,
+		Password:     password,
+		SysOrg:       orgName,
+		Org:          orgName,
+		Href:         testConfig.Provider.Url,
+		InsecureFlag: testConfig.Provider.AllowInsecure,
+	}
+	conn, err := config.Client()
+	if err != nil {
+		panic("unable to initialize VCFA connection :" + err.Error())
+	}
+	return conn
 }
 
 // createTemporaryVCFAConnection is meant to create a VCDClient to check environment before executing specific acceptance

@@ -61,4 +61,4 @@ The following arguments are supported:
 ## Attribute reference
 
 All arguments and attributes defined in [`vcfa_content_library` resource](/providers/vmware/vcfa/latest/docs/resources/content_library) are supported
-as read-only (Computed) values.
+as read-only (Computed) values, except `password` in `subscription_config`.
