@@ -27,7 +27,7 @@ terraform {
   required_providers {
     vcfa = {
       source  = "vmware/vcfa"
-      version = "= 0.1.0"
+      version = "= 1.0.0"
     }
   }
 }
@@ -171,5 +171,3 @@ environment variable. When enabled, the provider will not reconnect, but reuse a
 minutes, and then connect again.
 
 [service-account]: /providers/vmware/vcfa/latest/docs/resources/service_account
-[service-account-script]: https://github.com/vmware/terraform-provider-vcfa/blob/main/scripts/create_service_account.sh
-[api-token]: /providers/vmware/vcfa/latest/docs/resource/api_token
