@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_org"
+subcategory: ""
 description: |-
   Provides a resource to manage Organizations in VMware Cloud Foundation Automation.
 ---

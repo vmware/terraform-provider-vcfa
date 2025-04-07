@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_kubeconfig"
+subcategory: ""
 description: |-
   Provides a data source to fetch the kubeconfig data from VMware Cloud Foundation Automation.
 ---

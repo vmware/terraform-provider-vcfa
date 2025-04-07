@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_provider_ldap"
+subcategory: ""
 description: |-
   Provides a LDAP resource for the Provider (System) Organization in VMware Cloud Foundation Automation.
   This can be used to create, delete, and update the Provider (System) LDAP configuration.

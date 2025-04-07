@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_edge_cluster_qos"
+subcategory: ""
 description: |-
   Provides a VMware Cloud Foundation Automation Edge Cluster QoS data source.
 ---

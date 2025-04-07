@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_right"
+subcategory: ""
 description: |-
   Provides a data source to read available Rights in VMware Cloud Foundation Automation.
 ---

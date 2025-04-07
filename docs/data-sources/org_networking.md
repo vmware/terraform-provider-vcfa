@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_org_networking"
+subcategory: ""
 description: |-
   Provides a data source to read the Networking Settings from an Organization in VMware Cloud Foundation Automation.
 ---

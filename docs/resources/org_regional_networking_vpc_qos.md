@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_org_regional_networking_vpc_qos"
+subcategory: ""
 description: |-
   Provides a resource to manage Organization Regional Networking VPC QoS settings in VMware Cloud Foundation Automation.
 ---

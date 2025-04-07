@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_region"
+subcategory: ""
 description: |-
   Provides a data source to read a Region in VMware Cloud Foundation Automation.
 ---

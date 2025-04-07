@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_provider_gateway"
+subcategory: ""
 description: |-
   Provides a data source to read a Provider Gateway in VMware Cloud Foundation Automation.
 ---

@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: Importing resources"
+subcategory: ""
 description: |-
  Provides guidance to import resources that already exist on VMware Cloud Foundation Automation 
 ---

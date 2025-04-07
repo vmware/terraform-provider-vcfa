@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_region_vm_class"
+subcategory: ""
 description: |-
   Provides a data source to read Region Virtual Machine Classes in VMware Cloud Foundation Automation. These are useful
   when configuring an Organization Region Quota "region_vm_class_ids" argument.

@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_org_settings"
+subcategory: ""
 description: |-
   Provides a data source to read the General Settings from an Organization in VMware Cloud Foundation Automation.
 ---

@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_certificate"
+subcategory: ""
 description: |-
   Provides a data source to read a Certificate in VMware Cloud Foundation Automation. This can be used to read the certificates that
   VCF Automation provides to others. They can be used when creating services that must be secured.

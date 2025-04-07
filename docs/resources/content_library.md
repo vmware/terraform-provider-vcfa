@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_content_library"
+subcategory: ""
 description: |-
   Provides a resource to manage Content Libraries in VMware Cloud Foundation Automation. It can be used to host
   Content Library Items such as ISO files, OVAs and OVFs.

@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_supervisor"
+subcategory: ""
 description: |-
   Provides a data source to read a Supervisor in VMware Cloud Foundation Automation.
 ---

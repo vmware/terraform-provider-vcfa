@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_tier0_gateway"
+subcategory: ""
 description: |-
   Provides a data source to read a Tier-0 Gateway from VMware Cloud Foundation Automation.
 ---

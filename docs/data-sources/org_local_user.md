@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_org_local_user"
+subcategory: ""
 description: |-
   Provides a data source to read a local User from an Organization in VMware Cloud Foundation Automation.
 ---

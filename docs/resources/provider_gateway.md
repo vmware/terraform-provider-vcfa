@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_provider_gateway"
+subcategory: ""
 description: |-
   Provides a resource to manage Provider Gateways in VMware Cloud Foundation Automation. These allow to
   establish external network connectivity for Organizations. A Provider Gateway leverages Tier-0s or Tier-0 VRFs,

@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_vcenter"
+subcategory: ""
 description: |-
   Provides a resource to manage vCenter servers in VMware Cloud Foundation Automation.
 ---

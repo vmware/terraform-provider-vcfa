@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_role"
+subcategory: ""
 description: |-
   Provides a resource to manage Roles in VMware Cloud Foundation Automation.
 ---

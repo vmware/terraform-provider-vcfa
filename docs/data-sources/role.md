@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_role"
+subcategory: ""
 description: |-
   Provides a data source to read a Role from VMware Cloud Foundation Automation.
 ---

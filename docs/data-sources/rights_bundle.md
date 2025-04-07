@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_rights_bundle"
+subcategory: ""
 description: |-
   Provides a data source to read a Rights Bundle from VMware Cloud Foundation Automation.
 ---

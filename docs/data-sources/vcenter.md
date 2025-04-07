@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_vcenter"
+subcategory: ""
 description: |-
   Provides a data source to read a vCenter server attached to VMware Cloud Foundation Automation.
 ---

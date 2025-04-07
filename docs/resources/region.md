@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_region"
+subcategory: ""
 description: |-
   Provides a resource to manage Regions in VMware Cloud Foundation Automation.
 ---

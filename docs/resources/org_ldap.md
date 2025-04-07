@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_org_ldap"
+subcategory: ""
 description: |-
   Provides a LDAP resource for Organizations in VMware Cloud Foundation Automation.
   This can be used to create, update and delete LDAP configuration for an Organization.

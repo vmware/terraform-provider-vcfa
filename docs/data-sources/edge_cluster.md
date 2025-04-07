@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_edge_cluster"
+subcategory: ""
 description: |-
   Provides a data source to read an Edge Cluster in VMware Cloud Foundation Automation.
 ---

@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_org_region_quota"
+subcategory: ""
 description: |-
   Provides a resource to manage Region Quotas from an Organization in VMware Cloud Foundation Automation.
 ---

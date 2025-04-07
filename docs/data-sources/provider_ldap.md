@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_provider_ldap"
+subcategory: ""
 description: |-
   Provides a data source to read the LDAP configuration of the Provider (System).
 ---

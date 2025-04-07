@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_ip_space"
+subcategory: ""
 description: |-
   Provides a data source to read an IP Space in VMware Cloud Foundation Automation.
 ---

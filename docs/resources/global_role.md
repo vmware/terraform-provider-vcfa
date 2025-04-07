@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_global_role"
+subcategory: ""
 description: |-
  Provides a VMware Cloud Foundation Automation Global Role. This can be used to create, modify, and delete Global Roles.
 ---

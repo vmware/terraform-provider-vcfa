@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_ip_space"
+subcategory: ""
 description: |-
   Provides a resource to manage IP Spaces in VMware Cloud Foundation Automation. IP spaces offer a structured approach for
   administrators to allocate IP addresses to different Organizations, enabling connectivity to external networks.

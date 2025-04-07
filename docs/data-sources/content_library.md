@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_content_library"
+subcategory: ""
 description: |-
   Provides a data source to read a Content Library in VMware Cloud Foundation Automation. This can be used to obtain the details
   of Content Libraries, such as description, creation date, etc.

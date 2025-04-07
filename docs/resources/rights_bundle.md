@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_rights_bundle"
+subcategory: ""
 description: |-
   Provides a resource to manage Right Bundles in VMware Cloud Foundation Automation.
 ---

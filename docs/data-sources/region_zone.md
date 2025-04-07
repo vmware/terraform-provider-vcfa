@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_region_zone"
+subcategory: ""
 description: |-
   Provides a data source to read VMware Cloud Foundation Automation Region Zone that can be used when creating a Region Quota.
 ---

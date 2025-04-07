@@ -1,5 +1,6 @@
 ---
 page_title: "VMware Cloud Foundation Automation: vcfa_supervisor_namespace"
+subcategory: ""
 description: |-
   Provides a data source to read a Supervisor Namespace from VMware Cloud Foundation Automation.
 ---
