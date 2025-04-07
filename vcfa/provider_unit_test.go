@@ -21,14 +21,14 @@ func init() {
 	testingTags["unit"] = "provider_unit_test.go"
 }
 
-// Checks that the provider header in index.html.markdown
+// Checks that the provider header in index.md
 // has the version defined in the VERSION file
 func TestProviderVersion(t *testing.T) {
-	indexFile := path.Join(getCurrentDir(), "..", "website", "docs", "index.html.markdown")
+	indexFile := path.Join(getCurrentDir(), "..", "docs", "index.md")
 	_, err := os.Stat(indexFile)
 	if os.IsNotExist(err) {
 		fmt.Printf("%s\n", indexFile)
-		panic("Could not find index.html.markdown file")
+		panic("Could not find index.md file")
 	}
 
 	indexText, err := os.ReadFile(filepath.Clean(indexFile))
@@ -42,7 +42,7 @@ func TestProviderVersion(t *testing.T) {
 	reFoundVersion := regexp.MustCompile(`(?m)^` + vcfaHeader + ` \d+\.\d+`)
 	if reExpectedVersion.MatchString(string(indexText)) {
 		if vcfaTestVerbose {
-			t.Logf("Found expected version <%s> in index.html.markdown", currentProviderVersion)
+			t.Logf("Found expected version <%s> in index.md", currentProviderVersion)
 		}
 	} else {
 		foundList := reFoundVersion.FindAllStringSubmatch(string(indexText), -1)
@@ -50,9 +50,9 @@ func TestProviderVersion(t *testing.T) {
 		if len(foundList) > 0 && len(foundList[0]) > 0 {
 			foundText = foundList[0][0]
 			t.Logf("Expected text: <%s>", expectedText)
-			t.Logf("Found text   : <%s> in index.html.markdown", foundText)
+			t.Logf("Found text   : <%s> in index.md", foundText)
 		} else {
-			t.Logf("No version found in index.html.markdown")
+			t.Logf("No version found in index.md")
 		}
 		t.Fail()
 	}
