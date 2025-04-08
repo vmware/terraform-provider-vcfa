@@ -9,6 +9,9 @@ on:
       - '**.md'
       - 'website/**'
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Check
