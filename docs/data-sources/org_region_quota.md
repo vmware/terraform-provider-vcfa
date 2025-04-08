@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read a Region Quota from an Organization in VMware Cloud Foundation Automation.
 ---
 
-# vcfa_org_region_quota
+# Data Source: vcfa_org_region_quota
 
 Provides a data source to read a Region Quota from an [Organization][vcfa_org-ds] in VMware Cloud Foundation Automation.
 

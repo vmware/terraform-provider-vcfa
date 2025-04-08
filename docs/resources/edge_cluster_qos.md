@@ -5,7 +5,7 @@ description: |-
   Provides a resource to define Quality of Service (QoS) settings of an Edge Cluster in VMware Cloud Foundation Automation.
 ---
 
-# vcfa\_edge\_cluster\_qos
+# Resource: vcfa_edge_cluster_qos
 
 Provides a resource to define Quality of Service (QoS) settings of an Edge Cluster in VMware Cloud Foundation Automation.
 

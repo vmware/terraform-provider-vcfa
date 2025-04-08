@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read a Supervisor in VMware Cloud Foundation Automation.
 ---
 
-# vcfa_supervisor
+# Data Source: vcfa_supervisor
 
 Provides a data source to read a Supervisor in VMware Cloud Foundation Automation.
 

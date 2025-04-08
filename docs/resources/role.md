@@ -5,7 +5,7 @@ description: |-
   Provides a resource to manage Roles in VMware Cloud Foundation Automation.
 ---
 
-# vcfa\_role
+# Resource: vcfa_role
 
 Provides a resource to manage Roles in VMware Cloud Foundation Automation.
 

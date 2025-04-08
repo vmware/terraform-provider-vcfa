@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read the General Settings from an Organization in VMware Cloud Foundation Automation.
 ---
 
-# vcfa_org_settings
+# Data Source: vcfa_org_settings
 
 Provides a data source to read the General Settings from an [Organization][vcfa_org-ds] in VMware Cloud Foundation Automation.
 

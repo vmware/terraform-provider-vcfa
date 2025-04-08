@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read an IP Space in VMware Cloud Foundation Automation.
 ---
 
-# vcfa_ip_space
+# Data Source: vcfa_ip_space
 
 Provides a data source to read an IP Space in VMware Cloud Foundation Automation.
 

@@ -6,7 +6,7 @@ description: |-
   of Content Library Items, such as description, creation date, subscription details, etc.
 ---
 
-# vcfa_content_library_item
+# Data Source: vcfa_content_library_item
 
 Provides a data source to read a Content Library Item in VMware Cloud Foundation Automation. This can be used to obtain the details
 of Content Library Items, such as description, creation date, subscription details, etc.

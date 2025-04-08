@@ -7,7 +7,7 @@ description: |-
   credentials of other servers.
 ---
 
-# vcfa\_certificate
+# Resource: vcfa_certificate
 
 Provides a resource to manage Certificates in VMware Cloud Foundation Automation. It can be used to manage the certificates of
 servers that VCF Automation has trusted communication with. These certificates are used for verification of the

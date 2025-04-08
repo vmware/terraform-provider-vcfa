@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read a Provider Gateway in VMware Cloud Foundation Automation.
 ---
 
-# vcfa_provider_gateway
+# Data Source: vcfa_provider_gateway
 
 Provides a data source to read a Provider Gateway in VMware Cloud Foundation Automation.
 

@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read a local User from an Organization in VMware Cloud Foundation Automation.
 ---
 
-# vcfa_org_local_user
+# Data Source: vcfa_org_local_user
 
 Provides a data source to read a local User from an [Organization][vcfa_org-ds] in VMware Cloud Foundation Automation.
 

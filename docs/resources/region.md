@@ -5,7 +5,7 @@ description: |-
   Provides a resource to manage Regions in VMware Cloud Foundation Automation.
 ---
 
-# vcfa\_region
+# Resource: vcfa_region
 
 Provides a resource to manage Regions in VMware Cloud Foundation Automation.
 

@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read a Tier-0 Gateway from VMware Cloud Foundation Automation.
 ---
 
-# vcfa_tier0_gateway
+# Data Source: vcfa_tier0_gateway
 
 Provides a data source to read a Tier-0 Gateway from VMware Cloud Foundation Automation.
 

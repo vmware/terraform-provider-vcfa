@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read VMware Cloud Foundation Automation Organization Regional Networking VPC QoS settings.
 ---
 
-# vcfa_org_regional_networking_vpc_qos
+# Data Source: vcfa_org_regional_networking_vpc_qos
 
 Provides a data source to read [Organization Regional Networking][vcfa_org_regional_networking-ds] VPC QoS settings in VMware Cloud Foundation Automation.
 

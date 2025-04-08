@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read a vCenter server attached to VMware Cloud Foundation Automation.
 ---
 
-# vcfa_vcenter
+# Data Source: vcfa_vcenter
 
 Provides a data source to read a vCenter server attached to VMware Cloud Foundation Automation.
 

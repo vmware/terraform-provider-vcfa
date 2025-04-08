@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read an Organization in VMware Cloud Foundation Automation.
 ---
 
-# vcfa_org
+# Data Source: vcfa_org
 
 Provides a data source to read an Organization in VMware Cloud Foundation Automation.
 

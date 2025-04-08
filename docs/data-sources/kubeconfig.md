@@ -5,7 +5,7 @@ description: |-
   Provides a data source to fetch the kubeconfig data from VMware Cloud Foundation Automation.
 ---
 
-# vcfa_kubeconfig
+# Data Source: vcfa_kubeconfig
 
 Provides a data source to fetch the [kubeconfig](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/) data from VMware Cloud Foundation Automation.
 

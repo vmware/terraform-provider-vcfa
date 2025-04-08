@@ -5,7 +5,7 @@ description: |-
   Provides a data source for reading available NSX Managers attached to VMware Cloud Foundation Automation.
 ---
 
-# vcfa_nsx_manager
+# Data Source: vcfa_nsx_manager
 
 Provides a data source for reading available NSX Managers attached to VMware Cloud Foundation Automation.
 

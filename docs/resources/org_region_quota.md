@@ -5,7 +5,7 @@ description: |-
   Provides a resource to manage Region Quotas from an Organization in VMware Cloud Foundation Automation.
 ---
 
-# vcfa\_org\_region\_quota
+# Resource: vcfa_org_region_quota
 
 Provides a resource to manage Region Quotas from an Organization in VMware Cloud Foundation Automation.
 

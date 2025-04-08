@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read the Regional Networking Settings from an Organization in VMware Cloud Foundation Automation.
 ---
 
-# vcfa_org_regional_networking
+# Data Source: vcfa_org_regional_networking
 
 Provides a data source to read the Regional Networking Settings from an [Organization][vcfa_org-ds] in VMware Cloud Foundation Automation.
 

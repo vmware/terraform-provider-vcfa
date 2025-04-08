@@ -5,7 +5,7 @@ description: |-
   Provides a resource to manage Organization Networking Settings in VMware Cloud Foundation Automation.
 ---
 
-# vcfa_org_networking
+# Resource: vcfa_org_networking
 
 Provides a resource to manage Organization Networking Settings in VMware Cloud Foundation Automation.
 
