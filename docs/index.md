@@ -28,7 +28,7 @@ terraform {
   required_providers {
     vcfa = {
       source  = "vmware/vcfa"
-      version = "= x.y.z"
+      version = "~> 1.0.0"
     }
   }
 }
