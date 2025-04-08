@@ -146,7 +146,7 @@ The following arguments are used to configure the VMware Cloud Foundation Automa
   Note: `org` value is case-sensitive.
 
 - `url` - (Required) This is the URL for the VCFA endpoint hostname e.g.
-  https://server.domain.com. Can also be specified with the `VCFA_URL` environment variable.
+  <https://server.domain.com>. Can also be specified with the `VCFA_URL` environment variable.
 
 - `allow_unverified_ssl` - (Optional) Boolean that can be set to `true` to
   disable SSL certificate verification. This should be used with care as it

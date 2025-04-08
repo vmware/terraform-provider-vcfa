@@ -1,6 +1,6 @@
 # Coding guidelines
 
-## Selecting schema types for fields 
+## Selecting schema types for fields
 
 Terraform has a built-in schema types as per [official documentation](https://www.terraform.io/docs/extend/schemas/schema-types.html)
 The types are pretty much obvious but sometimes a question may arise whether to use
@@ -42,10 +42,10 @@ code:
 ...
 func datasourceEntityRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 ...
-  entity, err = vcdClient.GetEntityByNameOrId(identifier, false)
-  if err != nil {
-  	return nil, diag.Errorf("entity %s not found: %s", identifier, err)
-  }
+    entity, err = vcdClient.GetEntityByNameOrId(identifier, false)
+    if err != nil {
+        return nil, diag.Errorf("entity %s not found: %s", identifier, err)
+    }
 ...
 }
 ```
@@ -75,11 +75,11 @@ func resourceEntityRead(_ context.Context, d *schema.ResourceData, meta interfac
 ...
 entity, err := vcdClient.GetEntityById(identifier, false)
 if err != nil {
-	if govcd.ContainsNotFound(err) {
-		d.SetId("")
-		return nil
-	}
-	return diag.Errorf("unable to find entity %s, err: %s", identifier, err)
+ if govcd.ContainsNotFound(err) {
+  d.SetId("")
+  return nil
+ }
+ return diag.Errorf("unable to find entity %s, err: %s", identifier, err)
 }
 ...
 ```
@@ -91,7 +91,7 @@ makes it possible for maintainers to understand the changes and expand on them.
 
 The documentation comes in three flavors:
 
-* One [article per resource](#documenting-data-sources-and-resources), located in the directory `./website/docs/r`, and one for the corresponding data source, located 
+* One [article per resource](#documenting-data-sources-and-resources), located in the directory `./website/docs/r`, and one for the corresponding data source, located
   in `./website/docs/d`.
 * One article about [topics that involve more than one resource](#documenting-broad-topics-guides), and need a wider breadth of documentation to be properly
   explained, located in `./website/guides` (for example: the article **roles management** includes operations with **Roles**,
@@ -142,14 +142,14 @@ To avoid conflicts, but still keep recording detailed information about the chan
    * `###-removals.md` containing the list of resources, data sources, or properties that have been removed
    * `###-notes.md`, containing changes that don't fit into the above categories
 
-In the above list, the placeholder `###` stands for the PR number. Each line in each file will have at its end the 
+In the above list, the placeholder `###` stands for the PR number. Each line in each file will have at its end the
 indication of the PR itself, with the format `[GH-###]`.
 
 Before the release, we use two scripts:
+
 * `./scripts/make-changelog.sh`, which collects all the files in `./.changes/v#.#.#` and produces a nicely formatted text
   that we paste into `CHANGELOG.md`
 * `./scripts/changelog-links.sh`, which parses `CHANGELOG.md` and produces the URLs that replace every occurrence of `[GH-###]`
 
 As a last operation before the release, we open a PR with the updated `CHANGELOG.md`, giving the team a final chance to review
 the text of what will mostly constitute the release notes.
-

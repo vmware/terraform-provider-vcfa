@@ -23,7 +23,7 @@ which allows us to further manipulate the resource, such as changing its content
 
 In order to import a resource, we need to issue a command, containing several elements, which are explained below.
 
-- A **command** is a keyword of the Terraform command line tool, like the `import` in the _import command_ above.
+- A **command** is a keyword of the Terraform command line tool, like the `import` in the *import command* above.
 - The resource **type** is the type of resource, such as `vcfa_org`, `vcfa_content_library`, etc.
 - The **local name** (or resource **definer**) is the name given to the resource, right next to the resource type. Not to be confused with the `name`.
 - The **import path** is the identification of the resource, given as the name of its ancestors, followed by the name of the resource itself.
@@ -64,10 +64,11 @@ In the two snippets above:
 ## Basic importing
 
 Up to Terraform 1.4.x, importing meant the conjunction of two operations:
+
 1. Writing the resource definition into an HCL script
 2. Running the command below, also known as "**the import command**"
 
-```
+```shell
 terraform import vcfa_resource_type.resource_definer path_to_resource
 ```
 
@@ -83,7 +84,7 @@ of the resource and fill the `state` with the resource information.
 That completes the **import** stage, but it doesn't mean that the code is usable from now on.
 In fact, running `terraform plan` after the import, would result in an error.
 
-```
+```shell
 ╷
 │ Error: Missing required argument
 │
@@ -117,6 +118,7 @@ import {
 ```
 
 There are two differences between the old and new import methods:
+
 - the import happens as part of the `apply` stage, rather than on a separate command;
 - Although we could write the resource block ourselves, we can now generate the HCL code using a Terraform command.
 
@@ -128,7 +130,7 @@ terraform plan -generate-config-out=generated_resources.tf
 
 The above command, and the next `terraform plan` or `terraform apply` will show one more set of actions to perform
 
-```
+```shell
  10 to import, 0 to add, 9 to change, 0 to destroy.
 ```
 

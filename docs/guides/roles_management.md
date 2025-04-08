@@ -96,9 +96,9 @@ by the same principles:
 This operation is different from what we do in the UI, where when we select a right, the implied rights are added automatically.
 In Terraform operations, we need to enter every right explicitly. This matter of implied rights may be confusing: rights
 are not regular or implied per se: it depends on their relative status. For example, if you create a role with only
-right "*Content Library Item: View*", it will work. This is the main right, and it is accepted as such.
-But if you want to create a role with only right "*Content Library Item: Manage*", then it complains that you are missing
-the implied right "*Content Library Item: View*". Consequently, if you know that to edit a content library you
+right "_Content Library Item: View_", it will work. This is the main right, and it is accepted as such.
+But if you want to create a role with only right "_Content Library Item: Manage_", then it complains that you are missing
+the implied right "_Content Library Item: View_". Consequently, if you know that to edit a content library you
 first need to see it, you add both rights, and don't consider either of them to be implied.
 
 For example, lets say, for the sake of simplicity, that you want to create a role with just two rights, as listed below:
@@ -120,7 +120,7 @@ resource "vcfa_role" "new-role" {
 
 When you run `terraform apply`, you get this error:
 
-```
+```shell
 ╷
 │ Error: The Rights set requires the following implied Rights to be added:
 │ "Content Library Item: View",
@@ -132,6 +132,7 @@ When you run `terraform apply`, you get this error:
 │
 ╵
 ```
+
 Thus, you update the script to include the rights mentioned in the error message
 
 ```hcl
@@ -203,6 +204,7 @@ resource "vcfa_global_role" "new-global-role" {
   publish_to_all_orgs = true
 }
 ```
+
 This global role will be published to all tenants, including the ones that will be created after this resource.
 
 Now we modify it:
@@ -253,7 +255,8 @@ set of tenants, while you will create a separate rights bundle for other tenants
 
 The import procedure works in three steps:
 
-(1)<br>
+(1)
+
 Create a data source for the rights bundle, and a resource that takes all its attributes from the data source:
 
 ```hcl
@@ -279,14 +282,16 @@ It will also make the script work across different versions, where the list of r
 in changing the rights themselves, you could add an `output` block for the data source, copy the rights to the resource
 definition, and then remove or add what you need.
 
-(2)<br>
+(2)
+
 Import the rights bundle into terraform:
 
-```
-$ terraform import vcfa_rights_bundle.new-rb "Default Tenant Rights Bundle"
+```shell
+terraform import vcfa_rights_bundle.new-rb "Default Tenant Rights Bundle"
 ```
 
-(3)<br>
+(3)
+
 Now you can run `terraform apply`, which will remove the default condition of "publish to all tenants", replacing it
 with "publish to a single tenant".
 
@@ -296,7 +301,8 @@ In the UI, there is a "clone" button that lets us create a new role, global role
 In Terraform, we need to take a different approach, as there is no such thing as cloning a resource.
 The operation requires three steps:
 
-(1)<br>
+(1)
+
 Create a data source for the rights container, with an `output` structure that shows the full contents. For example,
 to clone a global role:
 
@@ -310,12 +316,13 @@ output "role-to-clone" {
 }
 ```
 
-(2)<br>
+(2)
+
 Using the data from the output, copy the rights section into a new resource
 
 From this:
 
-```
+```shell
 role-to-clone = {
   "bundle_key" = "ROLE_ORGANIZATION_USER"
   "description" = "Rights given to an organization user"

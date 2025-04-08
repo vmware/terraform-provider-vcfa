@@ -32,7 +32,6 @@ The following arguments are supported:
 - `region_id` - (Required) An ID of Region. Can be looked up using
   [vcfa_region](/providers/vmware/vcfa/latest/docs/data-sources/region) data source
 
-
 ## Attribute Reference
 
 All the arguments and attributes defined in

@@ -24,6 +24,7 @@ output "some-right" {
 ```
 
 Sample output:
+
 ```
 some-right = {
   "bundle_key" = "RIGHT_ORG_OPERATIONS_LIMIT_EDIT"
