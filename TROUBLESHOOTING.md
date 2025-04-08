@@ -47,7 +47,7 @@ page][terraform-debugging].
 
 In a nutshell, these are the main variables, but the [debugging page][terraform-debugging] has more details:
 
-```
+```shell
 TF_LOG=trace
 TF_LOG_PATH=tf.log
 ```
@@ -63,7 +63,7 @@ installed.
 Terraform provider plugins follow [semantic versioning][semver] pattern and
 [MAJOR.MINOR.PATCH][provider-semver].
 
-```
+```hcl
 terraform {
   required_providers {
     vcfa = {
@@ -81,41 +81,42 @@ provider "vcfa" {
 ### Terraform architecture and responsibility boundaries
 
 Terraform consists of three main components:
-* Core (`terraform` binary)
-* Plugins (called providers) e.g. Terraform Provider VCFA
-* Upstream APIs (some Go SDK for the platform)
+
+- Core (`terraform` binary)
+- Plugins (called providers) e.g. Terraform Provider VCFA
+- Upstream APIs (some Go SDK for the platform)
 
 #### Terraform Core responsibilities
 
 The **Core** that is best identified by `terraform` binary in the consumer's system, is developed by
 Hashicorp. It provides:
 
-* HCL (Hashicorp Configuration Language) engine and syntax
-* Schema diff that is being shown when performing operations
-* Dependency graph for the entities
-* All the tooling, including:
-  * Terraform enterprise
-  * Workspaces
-  * CDK
-  * Registry and documentation format
-* Some fields in any resource:
-  * `lifecycle`
-  * `provisioner`
+- HCL (Hashicorp Configuration Language) engine and syntax
+- Schema diff that is being shown when performing operations
+- Dependency graph for the entities
+- All the tooling, including:
+  - Terraform enterprise
+  - Workspaces
+  - CDK
+  - Registry and documentation format
+- Some fields in any resource:
+  - `lifecycle`
+  - `provisioner`
 
 #### Terraform Provider plugin responsibilities
 
 Plugin responsibilities, **Terraform provider VCFA** in this case:
 
-* Communication with the platform API (VCFA)
-* Implementation of provider plugin using Terraform plugin SDK
-  * Architecture (entity schema and granularity of resources/data sources)
-  * Implementation of Create, Read, Update, Delete and Import (CRUD+I for each resource
-  * Implementation of Read (R) for each data source
-* Maintenance of [Go SDK][go-vcloud-director]
-* Releasing the provider to [Terraform registry][registry-vcfa]
-* Documentation (published to registry)
-* Maintenance and support
-* Respecting SemVer for the releases
+- Communication with the platform API (VCFA)
+- Implementation of provider plugin using Terraform plugin SDK
+  - Architecture (entity schema and granularity of resources/data sources)
+  - Implementation of Create, Read, Update, Delete and Import (CRUD+I for each resource
+  - Implementation of Read (R) for each data source
+- Maintenance of [Go SDK][go-vcloud-director]
+- Releasing the provider to [Terraform registry][registry-vcfa]
+- Documentation (published to registry)
+- Maintenance and support
+- Respecting SemVer for the releases
 
 ## Terraform provider VCFA
 
@@ -134,7 +135,7 @@ provider "vcfa" {
 When logs are enabled, all the requests to VCFA and its responses are written into the specified file. Each log entry registers
 the following:
 
-- Method call sequence (who called who) to perform the request. This helps to trace the methods that triggered the request to VCFA. 
+- Method call sequence (who called who) to perform the request. This helps to trace the methods that triggered the request to VCFA.
   - If the method is from `vcfa` package, the call is present in the VCFA Provider source code.
   - If the method is from `govcd` package, the source code is in [go-vcloud-director SDK](https://github.com/vmware/go-vcloud-director).
 - HTTP method, request URL and query parameters that were sent to VCFA.
@@ -154,29 +155,29 @@ Example taken from a real log:
 2025/03/12 14:14:00 GET https://my-vcfa-url.com/cloudapi/vcf/regions/?filter=name%3D%3Dtest-region&pageSize=128
 2025/03/12 14:14:00 --------------------------------------------------------------------------------
 2025/03/12 14:14:00 Req header:
-2025/03/12 14:14:00 	User-Agent: [terraform-provider-vcfa/test (darwin/amd64; isProvider:true)]
-2025/03/12 14:14:00 	X-Vmware-Vcloud-Client-Request-Id: [41-2025-03-12-14-14-00-054-]
-2025/03/12 14:14:00 	X-Vmware-Vcloud-Access-Token: [********]
-2025/03/12 14:14:00 	Authorization: [********]
-2025/03/12 14:14:00 	X-Vmware-Vcloud-Token-Type: [Bearer]
-2025/03/12 14:14:00 	Accept: [application/json;version=40.0]
-2025/03/12 14:14:00 	Content-Type: [application/json]
+2025/03/12 14:14:00     User-Agent: [terraform-provider-vcfa/test (darwin/amd64; isProvider:true)]
+2025/03/12 14:14:00     X-Vmware-Vcloud-Client-Request-Id: [41-2025-03-12-14-14-00-054-]
+2025/03/12 14:14:00     X-Vmware-Vcloud-Access-Token: [********]
+2025/03/12 14:14:00     Authorization: [********]
+2025/03/12 14:14:00     X-Vmware-Vcloud-Token-Type: [Bearer]
+2025/03/12 14:14:00     Accept: [application/json;version=40.0]
+2025/03/12 14:14:00     Content-Type: [application/json]
 2025/03/12 14:14:00 ################################################################################
 2025/03/12 14:14:00 Response caller vcfa.getRegionHcl-->govcd.(*VCDClient).GetRegionByName-->govcd.(*VCDClient).GetAllRegions-->govcd.getAllOuterEntities[...]-->govcd.getAllInnerEntities[...]-->govcd.(*Client).OpenApiGetAllItems-->govcd.(*Client).openApiGetAllPages-->govcd.decodeBody
 2025/03/12 14:14:00 Response status 200 OK
 2025/03/12 14:14:00 ################################################################################
 2025/03/12 14:14:00 Response header:
-2025/03/12 14:14:00 	Content-Type: [application/json;version=40.0]
-2025/03/12 14:14:00 	X-Vmware-Vcloud-Request-Id: [41-2025-03-12-14-14-00-054--772d833f-bb60-49c9-8a78-5552c87448de]
-2025/03/12 14:14:00 	Link: [<https://my-vcfa-url.com/cloudapi/vcf/regions/monitoringToken>;rel="add";type="application/json";model="MonitoringToken" <https://my-vcfa-url.com/cloudapi/vcf/regions>;rel="add";type="application/json";model="Region" <https://my-vcfa-url.com/cloudapi/>;rel="up";type="*/*"]
-2025/03/12 14:14:00 	Date: [Wed, 12 Mar 2025 13:14:00 GMT]
-2025/03/12 14:14:00 	X-Frame-Options: [SAMEORIGIN]
-2025/03/12 14:14:00 	Cache-Control: [no-store, must-revalidate]
-2025/03/12 14:14:00 	Vary: [Accept-Encoding]
-2025/03/12 14:14:00 	Content-Location: [https://my-vcfa-url.com/cloudapi/vcf/regions/]
-2025/03/12 14:14:00 	Strict-Transport-Security: [max-age=63072000; includeSubDomains; preload]
-2025/03/12 14:14:00 	X-Vmware-Vcloud-Ceip-Id: [d9dba2ea-6a9e-4424-b3c8-06de619870b8]
-2025/03/12 14:14:00 	X-Vmware-Vcloud-Request-Execution-Time: [34]
+2025/03/12 14:14:00     Content-Type: [application/json;version=40.0]
+2025/03/12 14:14:00     X-Vmware-Vcloud-Request-Id: [41-2025-03-12-14-14-00-054--772d833f-bb60-49c9-8a78-5552c87448de]
+2025/03/12 14:14:00     Link: [<https://my-vcfa-url.com/cloudapi/vcf/regions/monitoringToken>;rel="add";type="application/json";model="MonitoringToken" <https://my-vcfa-url.com/cloudapi/vcf/regions>;rel="add";type="application/json";model="Region" <https://my-vcfa-url.com/cloudapi/>;rel="up";type="*/*"]
+2025/03/12 14:14:00     Date: [Wed, 12 Mar 2025 13:14:00 GMT]
+2025/03/12 14:14:00     X-Frame-Options: [SAMEORIGIN]
+2025/03/12 14:14:00     Cache-Control: [no-store, must-revalidate]
+2025/03/12 14:14:00     Vary: [Accept-Encoding]
+2025/03/12 14:14:00     Content-Location: [https://my-vcfa-url.com/cloudapi/vcf/regions/]
+2025/03/12 14:14:00     Strict-Transport-Security: [max-age=63072000; includeSubDomains; preload]
+2025/03/12 14:14:00     X-Vmware-Vcloud-Ceip-Id: [d9dba2ea-6a9e-4424-b3c8-06de619870b8]
+2025/03/12 14:14:00     X-Vmware-Vcloud-Request-Execution-Time: [34]
 2025/03/12 14:14:00 Response text: [112]
 {
   "resultTotal": 0,
@@ -204,14 +205,14 @@ if you need to troubleshoot unexpected behaviors from Terraform.
 
 #### Login does not work
 
-```
+```shell
 Error: something went wrong during authentication: error finding LoginUrl: could not find valid version for login: could not retrieve supported versions: error fetching versions: Get "https://my-vcfa-url.com/api/versions": dial tcp: lookup my-vcfa-url.com: no such host
 ```
 
 This error is thrown when the VCFA URL is incorrect or can't be reached. Verify that the `url` argument in the VCFA provider
 configuration is correct and try again.
 
-```
+```shell
 Error: something went wrong during authentication: error authorizing: received response HTTP 401 (Unauthorized). Please check if your credentials are valid
 ```
 
@@ -220,11 +221,13 @@ Also, verify that `org` is correctly set and the provided user has enough permis
 
 If you are using an API Token, verify that it is valid and not expired. Set a valid token in `api_token`.
 
-If you are using an API Token from `vcfa_api_token`(https://github.com/vmware/terraform-provider-vcfa/blob/main/providers/vmware/vcfa/latest/docs/resources/api_token), verify that it is valid, not expired and the syntax is correct. Set a valid token file in `api_token_file`.
+If you are using an API Token from
+[`vcfa_api_token`](https://github.com/vmware/terraform-provider-vcfa/blob/main/providers/vmware/vcfa/latest/docs/resources/api_token),
+verify that it is valid, not expired and the syntax is correct. Set a valid token file in `api_token_file`.
 
 #### Entity Not Found error
 
-```
+```shell
 Error: error getting Organization by Name 'not-exist': [ENF] entity not found: got zero entities by name 'not-exist'
 ```
 
@@ -265,15 +268,14 @@ boolean field that can be used to leveraged trusting the certificate automatical
 #### Created vcfa_rights_bundle does not appear in UI
 
 If the `vcfa_rights_bundle` resource was created successfully after a `terraform apply` and it cannot be seen
-in the UI (_Provider > Access Control > Rights Bundles_), you may need to enable the `Advanced Rights Bundle Mode` feature flag
-that can be located at: _Provider > Feature Flags_.
+in the UI (*Provider > Access Control > Rights Bundles*), you may need to enable the `Advanced Rights Bundle Mode`
+feature flag that can be located at: *Provider > Feature Flags*.
 
 After turning it on (`true`), the created `vcfa_rights_bundle` should appear listed.
 
 [terraform]: https://www.terraform.io/
 [terraform-state]: https://developer.hashicorp.com/terraform/language/state
 [hashicorp]: https://www.hashicorp.com/
-[terraform-provider-docs]: https://developer.hashicorp.com/terraform/language/providers
 [terraform-debugging]: https://developer.hashicorp.com/terraform/internals/debugging
 [state-storage]: https://developer.hashicorp.com/terraform/language/state/remote
 [state-sensitive-data]: https://developer.hashicorp.com/terraform/language/state/sensitive-data
