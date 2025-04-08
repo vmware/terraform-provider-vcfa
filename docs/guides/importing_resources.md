@@ -2,7 +2,7 @@
 page_title: "VMware Cloud Foundation Automation: Importing resources"
 subcategory: ""
 description: |-
- Provides guidance to import resources that already exist on VMware Cloud Foundation Automation 
+ Provides guidance to import resources that already exist on VMware Cloud Foundation Automation
 ---
 
 # Importing resources
@@ -101,7 +101,7 @@ data from the state file (`terraform.tfstate`) to supply the missing properties.
 ~> Terraform warns that this procedure is considered **experimental**.
 
 Terraform v1.5 introduces the concept of an [import block][terraform-import], which replaces the `import` command.
-Instead of 
+Instead of
 
 ```shell
 terraform import vcfa_org_local_user.admin_org_user my-org.philip
@@ -133,7 +133,7 @@ The above command, and the next `terraform plan` or `terraform apply` will show 
 ```
 
 Here we see that the import is an operation that will happen during `apply`.
-  
+
 ## Troubleshooting
 
 -> Since we refer to an experimental feature, issues and relative advice given in this section may change in future

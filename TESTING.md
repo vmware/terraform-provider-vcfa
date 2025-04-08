@@ -31,23 +31,23 @@ example) configuration that can be either be put into working directory or its p
 
 In order to test the provider, you can simply run `make test`.
 
-```sh
-$ make test
+```shell
+make test
 ```
 
 In order to run the full suite of Acceptance tests for **VCFA**, run `make testacc`.
 
 *Note:* Acceptance tests create real resources, and often cost money to run.
 
-```sh
-$ make testacc
+```shell
+make testacc
 ```
 
 ### Unit tests
 
 You can run the unit tests directly with
 
-```sh
+```shell
 make testunit
 ```
 
@@ -128,16 +128,16 @@ Tests that integrate in the functional suite use the tag `functional`. Using tha
 all functional tests at once.
 We define as `functional` the tests that need a live *VCFA* to run.
 
-1. The test should always define the `ALL` tag:
+The test should always define the `ALL` tag:
 
 - ALL :       Runs all the tests
 
-2. The test should also always define either the `unit` or `functional` tag:
+The test should also always define either the `unit` or `functional` tag:
 
 - functional: Runs all the tests that use a live VCFA (acceptance tests)
 - unit:       Runs unit tests that do not need a live VCFA
 
-3. Finally, the test could define the feature tag. For example:
+Finally, the test could define the feature tag. For example:
 
 - contentlibrary: Runs content library related tests
 - region:         Runs region related tests
@@ -152,7 +152,7 @@ This information is used by the main tag test in `api_test.go` to determine whic
 
 ```go
 func init() {
-	testingTags["newtag"] = "filename_test.go"
+    testingTags["newtag"] = "filename_test.go"
 }
 ```
 
@@ -190,18 +190,17 @@ make test-binary
 All the tests run unattended, stopping only if there is an error.
 
 It is possible to customise running of the binary tests by preparing them and then running the test
-script from the `tests-artifacts` directory. 
+script from the `tests-artifacts` directory.
 
 The command to prepare binary test snippets is:
 
-```
+```shell
 make test-binary-prepare
 ```
 
-
 The following commands can be used to run tests with the generated binary test snippets:
 
-```
+```shell
 cd ./vcfa/test-artifacts
 ./test-binary.sh help
 
@@ -221,7 +220,7 @@ for user input.
 ## Handling failures in binary tests
 
 When one test fails, the binary test script will attempt to recover it, by running `terraform destroy`. If the recovery
-fails, the whole test halts. If recovery succeeds, the names of the failed test are recorded inside 
+fails, the whole test halts. If recovery succeeds, the names of the failed test are recorded inside
 `./vcfa/test-artifacts/failed_tests.txt` and the summary at the end of the test will show them.
 
 If the test runs with `make test-binary`, the output is captured inside `./vcfa/test-artifacts/test-binary-TIME.txt` (where
@@ -251,7 +250,6 @@ Thu Mar 12 14:11:36 CET 2020 - vcfa.TestAccVcfaGlobalRole.tf (plancheck)
 In the output file (in the directory `./vcfa/test-artifacts`), look for `vcfa.TestAccVcfaContentLibraryItemProvider.tf`
 and you will see the operations occurring with the actual errors.
 
-
 ## Conditional running of tests
 
 The whole test suite takes several hours to run. If some errors happen during the run, we need to clean up and try again
@@ -272,7 +270,7 @@ When `-vcfa-pre-post-checks` is used, we have several advantages:
    test goes to `VCFA_test_fail_list_{vcfa_IP}.txt`. When running the suite on the same vcfa a second time, all tests in
    the `pass` list are skipped. If the test run was interrupted (see #2 below), we can only run the tests that did not
    run in the previous attempt.
-2. We can **gracefully** interrupt the tests by creating a file `skip_vcfa_tests` in the `./vcfa` directory. 
+2. We can **gracefully** interrupt the tests by creating a file `skip_vcfa_tests` in the `./vcfa` directory.
    When this file is found by the pre-run routine, all the tests are skipped. The file `skip_vcfa_tests` will be removed
    automatically at the next run.
 3. We can skip one or more tests conditionally, using `-vcfa-skip-pattern="{REGEXP}"`. All the test with a name that
@@ -296,8 +294,8 @@ details of the scanning, you can use `-vcfa-silent-leftovers-removal`.
 
 To run the removal only, without running the full suite, use the command
 
-```
-$ make cleanup
+```shell
+make cleanup
 ```
 
 ## Environment variables and corresponding flags

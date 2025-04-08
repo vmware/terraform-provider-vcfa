@@ -68,7 +68,7 @@ The following arguments are supported:
 - `last_successful_sync` - The ISO-8601 timestamp representing when this Content Library Item was last synced if subscribed
 - `owner_org_id` - The reference to the organization that the Content Library Item belongs to
 - `status` - Status of this Content Library Item
-- `version` - The version of this Content Library Item. For a subscribed library, this version is same as in publisher library 
+- `version` - The version of this Content Library Item. For a subscribed library, this version is same as in publisher library
 
 ## Importing
 
@@ -87,13 +87,13 @@ resource "vcfa_content_library" "cl" {
 
 You can import such Content Library Item into terraform state:
 
-```
+```shell
 terraform import vcfa_content_library_item.cli "My existing Org"."My Already Existing Library"."My Already Existing Item"
 ```
 
 If the Content Library Item is a `PROVIDER` one (System org):
 
-```
+```shell
 terraform import vcfa_content_library_item.cli System."My Already Existing Library"."My Already Existing Item"
 ```
 

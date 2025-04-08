@@ -31,7 +31,7 @@ to all tenants without providing a list. In this later case, the resource will b
 **Rights** ([`vcfa_right`](/providers/vmware/vcfa/latest/docs/data-sources/right)) are available as data sources. They can't be created by either provider or tenants.
 They are building blocks for the other three entities (Roles, Global Roles, Rights Bundles), and can be used by simply
 stating their name within the containing entity. You can also use data sources, but it would make for a crowded HCL
-script, and would also increase the amount of computing needed to run a script. 
+script, and would also increase the amount of computing needed to run a script.
 
 Examples:
 
@@ -78,7 +78,7 @@ be sure to enable the `Advanced Rights Bundle Mode` feature flag in _Provider > 
 An example is necessary to understand the concept.
 
 Let's say that, as a provider, you change the publishing of the rights bundle `Default Tenant Rights Bundle` and restrict its
-usage to a single tenant (called `first-org`). Then, you create another rights bundle, similar to `Default Tenant Rights Bundle`, 
+usage to a single tenant (called `first-org`). Then, you create another rights bundle, similar to `Default Tenant Rights Bundle`,
 but with only _view_ rights, and publish this bundle to another tenant (`second-org`). With this change, an Org administrator
 in `first-org` will see the usual roles, with the usual sets of rights. The Org administrator in `second-role`, meanwhile,
 will see the same roles, but with only half the rights, as the _managing_ rights will be missing. While this is an extreme
@@ -124,12 +124,12 @@ When you run `terraform apply`, you get this error:
 ╷
 │ Error: The Rights set requires the following implied Rights to be added:
 │ "Content Library Item: View",
-│ 
-│ 
+│
+│
 │   with vcfa_role.new-role,
 │   on main.tf line 448, in resource "vcfa_role" "new-role":
 │  448: resource "vcfa_role" "new-role" {
-│ 
+│
 ╵
 ```
 Thus, you update the script to include the rights mentioned in the error message

@@ -82,6 +82,7 @@ The following arguments are supported:
 - `region_storage_policy` - (Required) A set of Region Storage Policies. See [Region Storage Policies](#region-storage-policies)
 
 <a id="zone-resource-allocations-block"></a>
+
 ## Zone Resource Allocations
 
 - `region_zone_id` - (Required) Can be looked up using
@@ -94,6 +95,7 @@ The following arguments are supported:
 A computed attribute `region_zone_name` will be set in each `zone_resource_allocations` block.
 
 <a id="region-storage-policies"></a>
+
 ## Region Storage Policies
 
 - `region_storage_policy_id` - The ID of a Region Storage Policy. It can be fetched with [`vcfa_region_storage_policy` data source](/providers/vmware/vcfa/latest/docs/data-sources/region_storage_policy).
@@ -122,7 +124,7 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing Organization Region Quota configuration can be [imported][docs-import] into this resource
 via supplying path for it. An example is below:
 
-```
+```shell
 terraform import vcfa_org_region_quota.imported my-org-name.my-region-name
 ```
 

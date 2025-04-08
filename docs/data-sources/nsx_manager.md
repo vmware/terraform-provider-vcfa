@@ -11,7 +11,7 @@ Provides a data source for reading available NSX Managers attached to VMware Clo
 
 _Used by: **Provider**_
 
-## Example Usage 
+## Example Usage
 
 ```hcl
 data "vcfa_nsx_manager" "main" {

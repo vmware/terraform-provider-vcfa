@@ -63,6 +63,7 @@ The following arguments are supported:
   networks. See [internal_scope](#internal-scope) for more details.
 
 <a id="internal-scope"></a>
+
 ## internal_scope block
 
 - `cidr` - (Required) CIDR for IP block (e.g. 10.0.0.0/16)
@@ -88,7 +89,7 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing IP Space configuration can be [imported][docs-import] into this resource via supplying
 path for it. An example is below:
 
-```
+```shell
 terraform import vcfa_ip_space.imported my-region-name.my-ip-space-name
 ```
 

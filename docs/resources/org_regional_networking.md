@@ -40,7 +40,7 @@ resource "vcfa_org_networking" "demo" {
 resource "vcfa_org_regional_networking" "demo" {
   name = "net-one"
 
-  # log_name in vcfa_org_networking must be set before therefore using 
+  # log_name in vcfa_org_networking must be set before therefore using
   # vcfa_org_regional_networking.demo.id that also contains Org ID
   # to make correct order of actions
   org_id = vcfa_org_networking.demo.id
@@ -73,7 +73,7 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing Regional Networking Configuration can be [imported][docs-import] into this resource via supplying path
 for it. An example is below:
 
-```
+```shell
 terraform import vcfa_org_regional_networking.imported my-org-name.my-regional-configuration-name
 ```
 

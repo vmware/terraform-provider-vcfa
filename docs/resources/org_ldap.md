@@ -83,6 +83,7 @@ The following arguments are supported:
 - `custom_settings` - (Optional) LDAP server configuration. Becomes mandatory if `ldap_mode` is set to `CUSTOM`. See [Custom Settings](#custom-settings) below for details
 
 <a id="custom-settings"></a>
+
 ## Custom Settings
 
 The `custom_settings` section contains the configuration for the LDAP server
@@ -92,13 +93,14 @@ The `custom_settings` section contains the configuration for the LDAP server
 - `connector_type` - (Required) Type of connector: one of `OPEN_LDAP`, `ACTIVE_DIRECTORY`
 - `base_distinguished_name` - (Required) LDAP search base
 - `is_ssl` - (Optional) `true` if the LDAP service requires an SSL connection. If the certificate is not trusted already, `auto_trust_certificate=true` is needed.
-- `username` - (Optional) _Username_ to use when logging in to LDAP, specified using LDAP attribute=value pairs 
+- `username` - (Optional) _Username_ to use when logging in to LDAP, specified using LDAP attribute=value pairs
   (for example: cn="ldap-admin", c="example", dc="com")
 - `password` - (Optional) _Password_ for the user identified by `username`. This value is never returned on reads
 - `user_attributes` - (Required) User settings when `ldap_mode` is `CUSTOM` See [User Attributes](#user-attributes) below for details
 - `group_attributes` - (Required) Group settings when `ldap_mode` is `CUSTOM` See [Group Attributes](#group-attributes) below for details
 
 <a id="user-attributes"></a>
+
 ### User Attributes
 
 - `object_class` - (Required)  LDAP _objectClass_ of which imported users are members. For example, _"user"_ or _"person"_ attributes
@@ -113,6 +115,7 @@ The `custom_settings` section contains the configuration for the LDAP server
 - `group_back_link_identifier` - (Optional) LDAP attribute that returns the identifiers of all the groups of which the user is a member
 
 <a id="group-attributes"></a>
+
 ### Group Attributes
 
 - `object_class` - (Required) LDAP _objectClass_ of which imported groups are members. For example, the _"group"_ attribute
@@ -143,7 +146,7 @@ resource "vcfa_org_ldap" "my-org-ldap" {
 
 You can import such Organization LDAP configuration into terraform state using one of the following commands
 
-```
+```shell
 terraform import vcfa_org_ldap.my-org-ldap organization_name
 ```
 
