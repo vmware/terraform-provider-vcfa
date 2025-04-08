@@ -1,5 +1,9 @@
 //go:build api || functional || tm || cci || contentlibrary || org || ALL
 
+// © Broadcom. All Rights Reserved.
+// The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
+// SPDX-License-Identifier: MPL-2.0
+
 package vcfa
 
 // This module provides initialization routines for the whole suite
