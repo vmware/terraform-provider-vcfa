@@ -25,14 +25,14 @@ func init() {
 	testingTags["unit"] = "provider_unit_test.go"
 }
 
-// Checks that the provider header in index.html.markdown
+// Checks that the provider header in index.md
 // has the version defined in the VERSION file
 func TestProviderVersion(t *testing.T) {
-	indexFile := path.Join(getCurrentDir(), "..", "website", "docs", "index.html.markdown")
+	indexFile := path.Join(getCurrentDir(), "..", "docs", "index.md")
 	_, err := os.Stat(indexFile)
 	if os.IsNotExist(err) {
 		fmt.Printf("%s\n", indexFile)
-		panic("Could not find index.html.markdown file")
+		panic("Could not find index.md file")
 	}
 
 	indexText, err := os.ReadFile(filepath.Clean(indexFile))
@@ -46,7 +46,7 @@ func TestProviderVersion(t *testing.T) {
 	reFoundVersion := regexp.MustCompile(`(?m)^` + vcfaHeader + ` \d+\.\d+`)
 	if reExpectedVersion.MatchString(string(indexText)) {
 		if vcfaTestVerbose {
-			t.Logf("Found expected version <%s> in index.html.markdown", currentProviderVersion)
+			t.Logf("Found expected version <%s> in index.md", currentProviderVersion)
 		}
 	} else {
 		foundList := reFoundVersion.FindAllStringSubmatch(string(indexText), -1)
@@ -54,9 +54,9 @@ func TestProviderVersion(t *testing.T) {
 		if len(foundList) > 0 && len(foundList[0]) > 0 {
 			foundText = foundList[0][0]
 			t.Logf("Expected text: <%s>", expectedText)
-			t.Logf("Found text   : <%s> in index.html.markdown", foundText)
+			t.Logf("Found text   : <%s> in index.md", foundText)
 		} else {
-			t.Logf("No version found in index.html.markdown")
+			t.Logf("No version found in index.md")
 		}
 		t.Fail()
 	}
@@ -310,21 +310,13 @@ func TestVcfaSchemaFilter(t *testing.T) {
 
 // TestDocsNames checks that all documentation files are named "filename.html.markdown'
 func TestDocsNames(t *testing.T) {
-	type dirType struct {
-		name        string
-		description string
-	}
-	var docsDirectories = []dirType{
-		{"d", "data sources"},
-		{"r", "resources"},
-		{"guides", "guides"},
-	}
+	docsDirectories := []string{"data-sources", "resources", "guides"}
 
-	for _, dirDef := range docsDirectories {
-		dir := path.Join(getCurrentDir(), "..", "website", "docs", dirDef.name)
+	for _, d := range docsDirectories {
+		dir := path.Join(getCurrentDir(), "..", "docs", d)
 		_, err := os.Stat(dir)
 		if os.IsNotExist(err) {
-			t.Errorf("Could not find directory %s (%s)\n", dirDef.name, dirDef.description)
+			t.Errorf("Could not find directory %s\n", d)
 			continue
 		}
 
@@ -334,8 +326,8 @@ func TestDocsNames(t *testing.T) {
 			continue
 		}
 		for _, f := range files {
-			if !strings.Contains(f.Name(), ".html.markdown") {
-				t.Errorf("file \"%s/%s\" doesn't end with '.html.markdown'", dir, f.Name())
+			if !strings.Contains(f.Name(), ".md") {
+				t.Errorf("file \"%s/%s\" doesn't end with '.md'", dir, f.Name())
 			}
 		}
 	}
