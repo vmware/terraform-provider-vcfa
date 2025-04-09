@@ -6,7 +6,7 @@ description: |-
   They are user-based and have the same Role as the user.
 ---
 
-# Resource: vcfa_api_token 
+# vcfa_api_token 
 
 Provides a resource to manage API Tokens. API Tokens are an easy way to authenticate to VMware Cloud Foundation Automation. 
 They are user-based and have the same [Role](/providers/vmware/vcfa/latest/docs/resources/role) as the user.

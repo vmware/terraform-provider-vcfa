@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read available Rights in VMware Cloud Foundation Automation.
 ---
 
-# Data Source: vcfa_right
+# vcfa_right
 
 Provides a data source to read available Rights in VMware Cloud Foundation Automation.
 

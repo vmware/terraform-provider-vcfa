@@ -6,7 +6,7 @@ description: |-
   Content Library Items such as ISO files, OVAs and OVFs.
 ---
 
-# Resource: vcfa_content_library
+# vcfa_content_library
 
 Provides a resource to manage Content Libraries in VMware Cloud Foundation Automation. It can be used to host
 [Content Library Items][vcfa_content_library_item] such as ISO files, OVAs and OVFs.

@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read a Rights Bundle from VMware Cloud Foundation Automation.
 ---
 
-# Data Source: vcfa_rights_bundle
+# vcfa_rights_bundle
 
 Provides a data source to read a Rights Bundle from VMware Cloud Foundation Automation.
 

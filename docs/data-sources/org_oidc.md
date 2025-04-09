@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read the OpenID Connect (OIDC) configuration of an Organization in VMware Cloud Foundation Automation.
 ---
 
-# Data Source: vcfa_org_oidc
+# vcfa_org_oidc
 
 Provides a data source to read the OpenID Connect (OIDC) configuration of an [Organization][vcfa_org-ds] in VMware Cloud Foundation Automation.
 

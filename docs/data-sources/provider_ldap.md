@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read the LDAP configuration of the Provider (System).
 ---
 
-# Data Source: vcfa_provider_ldap
+# vcfa_provider_ldap
 
 Provides a data source to read the LDAP configuration of the **Provider (System)**.
 

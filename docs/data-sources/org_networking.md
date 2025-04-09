@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read the Networking Settings from an Organization in VMware Cloud Foundation Automation.
 ---
 
-# Data Source: vcfa_org_networking
+# vcfa_org_networking
 
 Provides a data source to read the Networking Settings from an [Organization][vcfa_org-ds] in VMware Cloud Foundation Automation.
 

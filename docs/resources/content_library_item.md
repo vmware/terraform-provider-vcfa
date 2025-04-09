@@ -6,7 +6,7 @@ description: |-
   to a Content Library.
 ---
 
-# Resource: vcfa_content_library_item
+# vcfa_content_library_item
 
 Provides a resource to manage Content Library Items in VMware Cloud Foundation Automation. Allows to upload an ISO file, an OVA or an OVF
 to a [Content Library][vcfa_content_library].

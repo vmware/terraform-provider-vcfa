@@ -5,7 +5,7 @@ description: |-
   Provides a resource to manage vCenter servers in VMware Cloud Foundation Automation.
 ---
 
-# Resource: vcfa_vcenter
+# vcfa_vcenter
 
 Provides a resource to manage vCenter servers in VMware Cloud Foundation Automation.
 

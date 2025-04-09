@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read a Role from VMware Cloud Foundation Automation.
 ---
 
-# Data Source: vcfa_role
+# vcfa_role
 
 Provides a data source to read a Role from VMware Cloud Foundation Automation.
 

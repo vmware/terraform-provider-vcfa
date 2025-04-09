@@ -5,7 +5,7 @@ description: |-
   Provides a resource to configure or remove OpenID Connect (OIDC) for an Organization in VMware Cloud Foundation Automation.
 ---
 
-# Resource: vcfa_org_oidc
+# vcfa_org_oidc
 
 Provides a resource to configure or remove OpenID Connect (OIDC) for an [Organization][vcfa_org] in VMware Cloud Foundation Automation.
 

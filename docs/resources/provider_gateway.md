@@ -9,7 +9,7 @@ description: |-
   A Provider Gateways can be assigned to one or more Organizations.
 ---
 
-# Resource: vcfa_provider_gateway
+# vcfa_provider_gateway
 
 Provides a resource to manage Provider Gateways in VMware Cloud Foundation Automation. These allow to
 establish external network connectivity for [Organizations][vcfa_org]. A Provider Gateway leverages [Tier-0s or Tier-0 VRFs][vcfa_tier0_gateway],

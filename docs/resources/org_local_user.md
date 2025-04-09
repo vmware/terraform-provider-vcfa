@@ -5,7 +5,7 @@ description: |-
   Provides a resource to manage local Users from an Organization in VMware Cloud Foundation Automation.
 ---
 
-# Resource: vcfa_org_local_user
+# vcfa_org_local_user
 
 Provides a resource to manage Local Users from an [Organization][vcfa_org] in VMware Cloud Foundation Automation.
 

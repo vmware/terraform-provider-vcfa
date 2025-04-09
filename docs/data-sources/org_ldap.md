@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read LDAP configuration from an Organization.
 ---
 
-# Data Source: vcfa_org_ldap
+# vcfa_org_ldap
 
 Provides a data source to read LDAP configuration from an [Organization][vcfa_org-ds].
 

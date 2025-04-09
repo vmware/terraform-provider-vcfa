@@ -5,7 +5,7 @@ description: |-
   Provides a resource to manage Supervisor Namespaces in VMware Cloud Foundation Automation.
 ---
 
-# Resource: vcfa_supervisor_namespace
+# vcfa_supervisor_namespace
 
 Provides a resource to manage Supervisor Namespaces in VMware Cloud Foundation Automation.
 

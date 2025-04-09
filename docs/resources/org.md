@@ -5,7 +5,7 @@ description: |-
   Provides a resource to manage Organizations in VMware Cloud Foundation Automation.
 ---
 
-# Resource: vcfa_org
+# vcfa_org
 
 Provides a resource to manage Organizations in VMware Cloud Foundation Automation.
 
