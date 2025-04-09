@@ -29,6 +29,9 @@ jobs:
         with:
           go-version-file: 'go.mod'
 
+      - name: licensecheck
+        run: make licensecheck
+
       - name: vet
         run: make vet
 

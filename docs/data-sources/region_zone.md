@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read VMware Cloud Foundation Automation Region Zone that can be used when creating a Region Quota.
 ---
 
-# Data Source: vcfa_region_zone
+# vcfa_region_zone
 
 Provides a data source to read a Region Zone in VMware Cloud Foundation Automation. These are useful when configuring
 a [Organization Region Quota](/providers/vmware/vcfa/latest/docs/resources/org_region_quota).

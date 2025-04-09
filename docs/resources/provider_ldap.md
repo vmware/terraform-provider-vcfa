@@ -6,7 +6,7 @@ description: |-
   This can be used to create, delete, and update the Provider (System) LDAP configuration.
 ---
 
-# Resource: vcfa_provider_ldap
+# vcfa_provider_ldap
 
 Provides a LDAP resource for the Provider (System) Organization in VMware Cloud Foundation Automation.
 This can be used to create, delete, and update the Provider (System) LDAP configuration.
@@ -106,7 +106,7 @@ resource "vcfa_provider_ldap" "existing-ldap" {}
 
 You can import such Provider LDAP configuration into terraform state using one of the following commands
 
-```shell
+```
 terraform import vcfa_provider_ldap.existing-ldap
 ```
 

@@ -2,7 +2,7 @@
 page_title: "VMware Cloud Foundation Automation: Importing resources"
 subcategory: ""
 description: |-
- Provides guidance to import resources that already exist on VMware Cloud Foundation Automation
+ Provides guidance to import resources that already exist on VMware Cloud Foundation Automation 
 ---
 
 # Importing resources
@@ -68,7 +68,7 @@ Up to Terraform 1.4.x, importing meant the conjunction of two operations:
 1. Writing the resource definition into an HCL script
 2. Running the command below, also known as "**the import command**"
 
-```shell
+```
 terraform import vcfa_resource_type.resource_definer path_to_resource
 ```
 
@@ -84,7 +84,7 @@ of the resource and fill the `state` with the resource information.
 That completes the **import** stage, but it doesn't mean that the code is usable from now on.
 In fact, running `terraform plan` after the import, would result in an error.
 
-```shell
+```
 ╷
 │ Error: Missing required argument
 │
@@ -130,12 +130,12 @@ terraform plan -generate-config-out=generated_resources.tf
 
 The above command, and the next `terraform plan` or `terraform apply` will show one more set of actions to perform
 
-```shell
+```
  10 to import, 0 to add, 9 to change, 0 to destroy.
 ```
 
 Here we see that the import is an operation that will happen during `apply`.
-
+  
 ## Troubleshooting
 
 -> Since we refer to an experimental feature, issues and relative advice given in this section may change in future

@@ -7,7 +7,7 @@ description: |-
   credentials of other servers.
 ---
 
-# Resource: vcfa_certificate
+# vcfa_certificate
 
 Provides a resource to manage Certificates in VMware Cloud Foundation Automation. It can be used to manage the certificates of
 servers that VCF Automation has trusted communication with. These certificates are used for verification of the
@@ -75,11 +75,11 @@ An existing Certificate can be [imported][docs-import] into this resource
 via supplying the full dot separated path Certificate. To import certificates in the System (Provider) Organization,
 one can use `System`. An example is below:
 
-```shell
+```
 terraform import vcfa_certificate.imported System.my-system-certificate-alias
 ```
 
-```shell
+```
 terraform import vcfa_certificate.imported my-org.my-certificate-alias
 ```
 

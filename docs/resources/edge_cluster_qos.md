@@ -5,7 +5,7 @@ description: |-
   Provides a resource to define Quality of Service (QoS) settings of an Edge Cluster in VMware Cloud Foundation Automation.
 ---
 
-# Resource: vcfa_edge_cluster_qos
+# vcfa_edge_cluster_qos
 
 Provides a resource to define Quality of Service (QoS) settings of an Edge Cluster in VMware Cloud Foundation Automation.
 
@@ -66,7 +66,7 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing Edge Cluster QoS configuration can be [imported][docs-import] into this resource via supplying
 path for it. An example is below:
 
-```shell
+```
 terraform import vcfa_edge_cluster_qos.imported my-region-name.my-edge-cluster-name
 ```
 

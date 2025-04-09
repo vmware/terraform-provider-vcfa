@@ -5,7 +5,7 @@ description: |-
   Provides a data source to manage NSX Managers attached to VMware Cloud Foundation Automation.
 ---
 
-# Resource: vcfa_nsx_manager
+# vcfa_nsx_manager
 
 Provides a data source to manage NSX Managers attached to VMware Cloud Foundation Automation.
 
@@ -47,11 +47,11 @@ The following attributes are exported on this resource:
   participate in modern constructs such as Regions and Zones. Legacy VRA-style is deprecated and this field exists for
   the purpose of VRA backwards compatibility only
 - `status` - Status of NSX Manager. One of:
-  - `PENDING` - Desired entity configuration has been received by system and is pending realization.
-  - `CONFIGURING` - The system is in process of realizing the entity.
-  - `REALIZED` - The entity is successfully realized in the system.
-  - `REALIZATION_FAILED` - There are some issues and the system is not able to realize the entity.
-  - `UNKNOWN` - Current state of entity is unknown.
+- `PENDING` - Desired entity configuration has been received by system and is pending realization.
+- `CONFIGURING` - The system is in process of realizing the entity.
+- `REALIZED` - The entity is successfully realized in the system.
+- `REALIZATION_FAILED` - There are some issues and the system is not able to realize the entity.
+- `UNKNOWN` - Current state of entity is unknown.
 
 ## Importing
 
@@ -62,7 +62,7 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing NSX Manager configuration can be [imported][docs-import] into this resource via
 supplying path for it. An example is below:
 
-```shell
+```
 terraform import vcfa_nsx_manager.imported my-nsx-manager
 ```
 

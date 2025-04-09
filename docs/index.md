@@ -113,7 +113,7 @@ The following arguments are used to configure the VMware Cloud Foundation Automa
   - `api_token` allows to specify an API token.
   - `api_token_file` allows to specify a file containing an API token.
   - `service_account_token_file` allows to specify a file containing a service account's token.
-
+  
 - `token` - (Optional) This is the bearer token that can be used instead of username
    and password (in combination with field `auth_type=token`). When this is set, username and
    password will be ignored, but should be left in configuration either empty or with any custom
@@ -140,10 +140,10 @@ The following arguments are used to configure the VMware Cloud Foundation Automa
 
 - `org` - (Required) This is the VCFA Org on which to run API
   operations. Can also be specified with the `VCFA_ORG` environment
-  variable.
+  variable.  
   `org` may be set to *"System"* when connection as Sys Admin is desired
-  (set `user` to "administrator" in this case).
-  Note: `org` value is case-sensitive.
+  (set `user` to "administrator" in this case).  
+  Note: `org` value is case sensitive.
 
 - `url` - (Required) This is the URL for the VCFA endpoint hostname e.g.
   <https://server.domain.com>. Can also be specified with the `VCFA_URL` environment variable.
@@ -160,7 +160,7 @@ The following arguments are used to configure the VMware Cloud Foundation Automa
 
 - `logging_file` - (Optional) The name of the log file (when `logging` is enabled). By default is
   `go-vcloud-director` and it can also be changed using the `VCFA_API_LOGGING_FILE` environment variable.
-
+  
 - `import_separator` - (Optional) The string to be used as separator with `terraform import`. By default
   it is a dot (`.`).
 
@@ -170,3 +170,4 @@ VCFA connection calls can be expensive, and if a definition file contains severa
 multiple connections. There is a cache engine, disabled by default, which can be activated by the `VCFA_CACHE`
 environment variable. When enabled, the provider will not reconnect, but reuse an active connection for up to 20
 minutes, and then connect again.
+

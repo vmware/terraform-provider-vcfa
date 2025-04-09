@@ -6,7 +6,7 @@ description: |-
   to a Content Library.
 ---
 
-# Resource: vcfa_content_library_item
+# vcfa_content_library_item
 
 Provides a resource to manage Content Library Items in VMware Cloud Foundation Automation. Allows to upload an ISO file, an OVA or an OVF
 to a [Content Library][vcfa_content_library].
@@ -87,13 +87,13 @@ resource "vcfa_content_library" "cl" {
 
 You can import such Content Library Item into terraform state:
 
-```shell
+```
 terraform import vcfa_content_library_item.cli "My existing Org"."My Already Existing Library"."My Already Existing Item"
 ```
 
 If the Content Library Item is a `PROVIDER` one (System org):
 
-```shell
+```
 terraform import vcfa_content_library_item.cli System."My Already Existing Library"."My Already Existing Item"
 ```
 

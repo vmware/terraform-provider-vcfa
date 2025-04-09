@@ -5,7 +5,7 @@ description: |-
   Provides a resource to manage Organizations in VMware Cloud Foundation Automation.
 ---
 
-# Resource: vcfa_org
+# vcfa_org
 
 Provides a resource to manage Organizations in VMware Cloud Foundation Automation.
 
@@ -60,7 +60,7 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing Organization configuration can be [imported][docs-import] into this resource via supplying path
 for it. An example is below:
 
-```shell
+```
 terraform import vcfa_org.imported my-org-name
 ```
 

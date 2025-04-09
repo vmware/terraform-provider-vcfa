@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read available Rights in VMware Cloud Foundation Automation.
 ---
 
-# Data Source: vcfa_right
+# vcfa_right
 
 Provides a data source to read available Rights in VMware Cloud Foundation Automation.
 
@@ -25,7 +25,7 @@ output "some-right" {
 
 Sample output:
 
-```shell
+```
 some-right = {
   "bundle_key" = "RIGHT_ORG_OPERATIONS_LIMIT_EDIT"
   "category_id" = "urn:vcloud:rightsCategory:d6b25879-2ff0-3f82-933c-74eeb8aef591"

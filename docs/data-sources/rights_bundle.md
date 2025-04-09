@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read a Rights Bundle from VMware Cloud Foundation Automation.
 ---
 
-# Data Source: vcfa_rights_bundle
+# vcfa_rights_bundle
 
 Provides a data source to read a Rights Bundle from VMware Cloud Foundation Automation.
 
@@ -25,7 +25,7 @@ output "default-rb" {
 
 Sample output:
 
-```shell
+```
 default-rb = {
   "bundle_key" = "DEFAULT_TENANT_RIGHTS_BUNDLE"
   "description" = "Default set of tenant rights"

@@ -6,7 +6,7 @@ description: |-
   Content Library Items such as ISO files, OVAs and OVFs.
 ---
 
-# Resource: vcfa_content_library
+# vcfa_content_library
 
 Provides a resource to manage Content Libraries in VMware Cloud Foundation Automation. It can be used to host
 [Content Library Items][vcfa_content_library_item] such as ISO files, OVAs and OVFs.
@@ -246,7 +246,7 @@ resource "vcfa_content_library" "cl" {
 
 You can import such Content Library into terraform state using this command:
 
-```shell
+```
 terraform import vcfa_content_library.cl "my-org"."My Already Existing Library"
 ```
 
@@ -265,7 +265,7 @@ resource "vcfa_content_library" "cl" {
 
 You can import such Content Library into terraform state using this command:
 
-```shell
+```
 terraform import vcfa_content_library.cl "System"."My Already Existing Library"
 ```
 

@@ -6,7 +6,7 @@ description: |-
   administrators to allocate IP addresses to different Organizations, enabling connectivity to external networks.
 ---
 
-# Resource: vcfa_ip_space
+# vcfa_ip_space
 
 Provides a resource to manage IP Spaces in VMware Cloud Foundation Automation. IP spaces offer a structured approach for
 administrators to allocate IP addresses to different [Organizations][vcfa_org], enabling connectivity to external networks.
@@ -89,7 +89,7 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing IP Space configuration can be [imported][docs-import] into this resource via supplying
 path for it. An example is below:
 
-```shell
+```
 terraform import vcfa_ip_space.imported my-region-name.my-ip-space-name
 ```
 

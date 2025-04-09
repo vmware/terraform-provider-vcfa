@@ -6,7 +6,7 @@ description: |-
   create Content Libraries and other objects.
 ---
 
-# Data Source: vcfa_storage_class
+# vcfa_storage_class
 
 Provides a data source to read a Storage Class in VMware Cloud Foundation Automation. Storage Classes can be used to
 create [Content Libraries](/providers/vmware/vcfa/latest/docs/resources/content_library) and other objects.

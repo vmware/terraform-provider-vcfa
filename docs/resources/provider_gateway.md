@@ -9,7 +9,7 @@ description: |-
   A Provider Gateways can be assigned to one or more Organizations.
 ---
 
-# Resource: vcfa_provider_gateway
+# vcfa_provider_gateway
 
 Provides a resource to manage Provider Gateways in VMware Cloud Foundation Automation. These allow to
 establish external network connectivity for [Organizations][vcfa_org]. A Provider Gateway leverages [Tier-0s or Tier-0 VRFs][vcfa_tier0_gateway],
@@ -63,11 +63,11 @@ The following arguments are supported:
 ## Attribute Reference
 
 - `status` - Current status of the entity. Possible values are:
-  - `PENDING` - Desired entity configuration has been received by system and is pending realization
-  - `CONFIGURING` - The system is in process of realizing the entity
-  - `REALIZED` - The entity is successfully realized in the system
-  - `REALIZATION_FAILED` - There are some issues and the system is not able to realize the entity
-  - `UNKNOWN` - Current state of entity is unknown
+- `PENDING` - Desired entity configuration has been received by system and is pending realization
+- `CONFIGURING` - The system is in process of realizing the entity
+- `REALIZED` - The entity is successfully realized in the system
+- `REALIZATION_FAILED` - There are some issues and the system is not able to realize the entity
+- `UNKNOWN` - Current state of entity is unknown
 
 ## Importing
 
@@ -78,7 +78,7 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing Provider Gateway configuration can be [imported][docs-import] into this resource via
 supplying path for it. An example is below:
 
-```shell
+```
 terraform import vcfa_provider_gateway.imported my-region-name.my-provider-gateway
 ```
 

@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read an Edge Cluster in VMware Cloud Foundation Automation.
 ---
 
-# Data Source: vcfa_edge_cluster
+# vcfa_edge_cluster
 
 Provides a data source to read an Edge Cluster in VMware Cloud Foundation Automation. It is useful when configuring
 [`vcfa_org_regional_networking`](/providers/vmware/vcfa/latest/docs/resources/org_regional_networking) or

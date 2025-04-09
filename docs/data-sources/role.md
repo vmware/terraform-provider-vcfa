@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read a Role from VMware Cloud Foundation Automation.
 ---
 
-# Data Source: vcfa_role
+# vcfa_role
 
 Provides a data source to read a Role from VMware Cloud Foundation Automation.
 
@@ -37,7 +37,7 @@ data "vcfa_role" "sysadmin" {
 
 Sample output:
 
-```shell
+```
 sysadmin-out = {
   "bundle_key" = "ROLE_SYSTEM_ADMINISTRATOR"
   "description" = "Built-in rights for administering this installation"

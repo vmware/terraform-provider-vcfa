@@ -5,7 +5,7 @@ description: |-
   Provides a data source to read a Supervisor Namespace from VMware Cloud Foundation Automation.
 ---
 
-# Data Source: vcfa_supervisor_namespace
+# vcfa_supervisor_namespace
 
 Provides a data source to read a Supervisor Namespace from VMware Cloud Foundation Automation.
 

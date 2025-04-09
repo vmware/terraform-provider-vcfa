@@ -5,7 +5,7 @@ description: |-
   Provides a resource to configure or remove OpenID Connect (OIDC) for an Organization in VMware Cloud Foundation Automation.
 ---
 
-# Resource: vcfa_org_oidc
+# vcfa_org_oidc
 
 Provides a resource to configure or remove OpenID Connect (OIDC) for an [Organization][vcfa_org] in VMware Cloud Foundation Automation.
 
@@ -198,7 +198,7 @@ resource "vcfa_org_oidc" "my_org_oidc" {
 
 You can import such OIDC configuration into terraform state using one of the following commands
 
-```shell
+```
 terraform import vcfa_org_oidc.my_org_oidc organization_name
 # OR
 terraform import vcfa_org_oidc.my_org_oidc organization_id

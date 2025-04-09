@@ -5,7 +5,7 @@ description: |-
   Provides a resource to manage Right Bundles in VMware Cloud Foundation Automation.
 ---
 
-# Resource: vcfa_rights_bundle
+# vcfa_rights_bundle
 
 Provides a resource to manage Right Bundles in VMware Cloud Foundation Automation.
 
@@ -75,7 +75,7 @@ resource "vcfa_rights_bundle" "default-set" {
 
 You can import such Rights Bundle into terraform state using this command
 
-```shell
+```
 terraform import vcfa_rights_bundle.default-set "Default Rights Bundle"
 ```
 

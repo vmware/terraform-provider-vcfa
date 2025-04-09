@@ -5,7 +5,7 @@ description: |-
   Provides a resource to manage local Users from an Organization in VMware Cloud Foundation Automation.
 ---
 
-# Resource: vcfa_org_local_user
+# vcfa_org_local_user
 
 Provides a resource to manage Local Users from an [Organization][vcfa_org] in VMware Cloud Foundation Automation.
 
@@ -57,7 +57,7 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing Organization Local User configuration can be [imported][docs-import] into this resource via
 supplying path for it. An example is below:
 
-```shell
+```
 terraform import vcfa_org_local_user.imported my-org-name.my-user-name
 ```
 

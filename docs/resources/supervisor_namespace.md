@@ -5,7 +5,7 @@ description: |-
   Provides a resource to manage Supervisor Namespaces in VMware Cloud Foundation Automation.
 ---
 
-# Resource: vcfa_supervisor_namespace
+# vcfa_supervisor_namespace
 
 Provides a resource to manage Supervisor Namespaces in VMware Cloud Foundation Automation.
 
@@ -173,7 +173,7 @@ resource "vcfa_supervisor_namespace" "existing_supervisor_namespace" {
 
 You can import such Supervisor Namespace into terraform state using this command
 
-```shell
+```
 terraform import vcfa_supervisor_namespace.existing_supervisor_namespace "project_name.supervisor_namespace_name"
 ```
 

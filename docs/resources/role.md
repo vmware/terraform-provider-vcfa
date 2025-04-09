@@ -5,7 +5,7 @@ description: |-
   Provides a resource to manage Roles in VMware Cloud Foundation Automation.
 ---
 
-# Resource: vcfa_role
+# vcfa_role
 
 Provides a resource to manage Roles in VMware Cloud Foundation Automation.
 
@@ -67,7 +67,7 @@ resource "vcfa_role" "my-existing-role" {
 
 You can import such Role into terraform state using this command
 
-```shell
+```
 terraform import vcfa_role.my-existing-role "my-org.Blueprint Publisher"
 ```
 

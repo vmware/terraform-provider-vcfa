@@ -5,7 +5,7 @@ description: |-
  Provides a VMware Cloud Foundation Automation Global Role. This can be used to create, modify, and delete Global Roles.
 ---
 
-# Resource: vcfa_global_role
+# vcfa_global_role
 
 Provides a resource to manage Global Roles in VMware Cloud Foundation Automation. Global Roles define roles that are published to one
 or more [Organizations][vcfa_org].
@@ -73,7 +73,7 @@ resource "vcfa_global_role" "my-global-role" {
 
 You can import such Global Role into terraform state using this command:
 
-```shell
+```
 terraform import vcfa_global_role.my-global-role "My Existing Role"
 ```
 

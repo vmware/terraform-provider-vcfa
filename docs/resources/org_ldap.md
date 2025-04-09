@@ -6,7 +6,7 @@ description: |-
   This can be used to create, update and delete LDAP configuration for an Organization.
 ---
 
-# Resource: vcfa_org_ldap
+# vcfa_org_ldap
 
 Provides a LDAP resource for Organizations in VMware Cloud Foundation Automation.
 This can be used to create, update and delete LDAP configuration for an [Organization][vcfa_org].
@@ -146,7 +146,7 @@ resource "vcfa_org_ldap" "my-org-ldap" {
 
 You can import such Organization LDAP configuration into terraform state using one of the following commands
 
-```shell
+```
 terraform import vcfa_org_ldap.my-org-ldap organization_name
 ```
 

@@ -6,7 +6,7 @@ description: |-
   of an existing Global Role, like the Organizations in which it is published
 ---
 
-# Data Source: vcfa_global_role
+# vcfa_global_role
 
 Provides a data source to read a Global Role in VMware Cloud Foundation Automation, it can be used to retrieve details
 of an existing Global Role, like the [Organizations][vcfa_org] in which it is published.
@@ -27,7 +27,7 @@ output "org_user_out" {
 
 Sample output:
 
-```shell
+```
 org_user_out = {
   "bundle_key" = "ROLE_ORGANIZATION_USER"
   "description" = "Rights given to an organization user"

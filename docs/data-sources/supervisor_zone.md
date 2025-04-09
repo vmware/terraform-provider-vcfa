@@ -6,7 +6,7 @@ description: |-
   when configuring an Organization Region Quota "zone_resource_allocations" argument.
 ---
 
-# Data Source: vcfa_supervisor_zone
+# vcfa_supervisor_zone
 
 Provides a data source to read a Supervisor Zone in VMware Cloud Foundation Automation. These are useful
 when configuring an [Organization Region Quota](/providers/vmware/vcfa/latest/docs/resources/org_region_quota) `zone_resource_allocations` argument.
