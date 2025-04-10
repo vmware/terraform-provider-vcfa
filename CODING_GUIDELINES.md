@@ -70,18 +70,18 @@ not found because it does not exist anymore.
 The expected code behavior for entity lookup in Terraform resource read is:
 
 ```go
-...
+// ...
 func resourceEntityRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-...
-entity, err := vcdClient.GetEntityById(identifier, false)
-if err != nil {
- if govcd.ContainsNotFound(err) {
-  d.SetId("")
-  return nil
- }
- return diag.Errorf("unable to find entity %s, err: %s", identifier, err)
+// ...
+  entity, err := vcdClient.GetEntityById(identifier, false)
+  if err != nil {
+    if govcd.ContainsNotFound(err) {
+    d.SetId("")
+    return nil
+  }
+  return diag.Errorf("unable to find entity %s, err: %s", identifier, err)
 }
-...
+// ...
 ```
 
 ## Documenting your changes
