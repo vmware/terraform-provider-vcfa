@@ -47,7 +47,7 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing Org configuration can be [imported][docs-import] into this resource via supplying path
 for it. An example is below:
 
-```
+```shell
 terraform import vcfa_org_settings.imported my-org-name
 ```
 

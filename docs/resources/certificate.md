@@ -57,7 +57,7 @@ The following arguments are supported:
 - `certificate` - (Required) Content of the Certificate. **Note:** Do not use trailing
   newlines in the Certificate, as VCFA trims them and `plan/apply` reports a difference in such case
 - `private_key` - (Optional) Content of the private key
-- `private_key_passphrase` - (Optional) Private key passphrase 
+- `private_key_passphrase` - (Optional) Private key passphrase
 
 ## Attribute Reference
 
@@ -75,11 +75,11 @@ An existing Certificate can be [imported][docs-import] into this resource
 via supplying the full dot separated path Certificate. To import certificates in the System (Provider) Organization,
 one can use `System`. An example is below:
 
-```
+```shell
 terraform import vcfa_certificate.imported System.my-system-certificate-alias
 ```
 
-```
+```shell
 terraform import vcfa_certificate.imported my-org.my-certificate-alias
 ```
 

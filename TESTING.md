@@ -19,7 +19,7 @@
 
 To run the tests, your VCFA needs to have the following:
 
-* Classic Tenancy feature flag enabled
+- Classic Tenancy feature flag enabled
 
 ## VCFA test environment configuration
 
@@ -31,23 +31,23 @@ example) configuration that can be either be put into working directory or its p
 
 In order to test the provider, you can simply run `make test`.
 
-```sh
-$ make test
+```shell
+make test
 ```
 
 In order to run the full suite of Acceptance tests for **VCFA**, run `make testacc`.
 
 *Note:* Acceptance tests create real resources, and often cost money to run.
 
-```sh
-$ make testacc
+```shell
+make testacc
 ```
 
 ### Unit tests
 
 You can run the unit tests directly with
 
-```sh
+```shell
 make testunit
 ```
 
@@ -128,19 +128,19 @@ Tests that integrate in the functional suite use the tag `functional`. Using tha
 all functional tests at once.
 We define as `functional` the tests that need a live *VCFA* to run.
 
-1. The test should always define the `ALL` tag:
+The test should always define the `ALL` tag:
 
-* ALL :       Runs all the tests
+- ALL :       Runs all the tests
 
-2. The test should also always define either the `unit` or `functional` tag:
+The test should also always define either the `unit` or `functional` tag:
 
-* functional: Runs all the tests that use a live VCFA (acceptance tests)
-* unit:       Runs unit tests that do not need a live VCFA
+- functional: Runs all the tests that use a live VCFA (acceptance tests)
+- unit:       Runs unit tests that do not need a live VCFA
 
-3. Finally, the test could define the feature tag. For example:
+Finally, the test could define the feature tag. For example:
 
-* contentlibrary: Runs content library related tests
-* region:         Runs region related tests
+- contentlibrary: Runs content library related tests
+- region:         Runs region related tests
 
 The `ALL` tag includes tests that use a different framework. At the moment, this is useful to run a global compilation test.
 Depending on which additional tests we will implement, we may change the dependency on the `ALL` tag if we detect
@@ -152,7 +152,7 @@ This information is used by the main tag test in `api_test.go` to determine whic
 
 ```go
 func init() {
-	testingTags["newtag"] = "filename_test.go"
+    testingTags["newtag"] = "filename_test.go"
 }
 ```
 
@@ -175,11 +175,11 @@ By *binary testing* we mean the tests that run using Terraform binary executable
 This test runs the same tasks that run in the acceptance test, but instead of running them directly, they are fed to the
 terraform tool through a shell script, and for every test we run
 
-* `terraform init`
-* `terraform plan`
-* `terraform apply -auto-approve`
-* `terraform plan -detailed-exitcode` (for ensuring that `plan` is empty right after `apply`)
-* `terraform destroy -auto-approve`
+- `terraform init`
+- `terraform plan`
+- `terraform apply -auto-approve`
+- `terraform plan -detailed-exitcode` (for ensuring that `plan` is empty right after `apply`)
+- `terraform destroy -auto-approve`
 
 Running **VCFA** binary tests, using:
 
@@ -190,18 +190,17 @@ make test-binary
 All the tests run unattended, stopping only if there is an error.
 
 It is possible to customise running of the binary tests by preparing them and then running the test
-script from the `tests-artifacts` directory. 
+script from the `tests-artifacts` directory.
 
 The command to prepare binary test snippets is:
 
-```
+```shell
 make test-binary-prepare
 ```
 
-
 The following commands can be used to run tests with the generated binary test snippets:
 
-```
+```shell
 cd ./vcfa/test-artifacts
 ./test-binary.sh help
 
@@ -221,7 +220,7 @@ for user input.
 ## Handling failures in binary tests
 
 When one test fails, the binary test script will attempt to recover it, by running `terraform destroy`. If the recovery
-fails, the whole test halts. If recovery succeeds, the names of the failed test are recorded inside 
+fails, the whole test halts. If recovery succeeds, the names of the failed test are recorded inside
 `./vcfa/test-artifacts/failed_tests.txt` and the summary at the end of the test will show them.
 
 If the test runs with `make test-binary`, the output is captured inside `./vcfa/test-artifacts/test-binary-TIME.txt` (where
@@ -230,7 +229,7 @@ the test that failed.
 
 For example, the test ends with this annotation :
 
-```
+```shell
 # ---------------------------------------------------------
 # Operations dir: /path/to/terraform-provider-vcfa/vcfa/test-artifacts/tmp
 # Started:        Thu Mar 12 14:10:43 CET 2025
@@ -251,20 +250,19 @@ Thu Mar 12 14:11:36 CET 2020 - vcfa.TestAccVcfaGlobalRole.tf (plancheck)
 In the output file (in the directory `./vcfa/test-artifacts`), look for `vcfa.TestAccVcfaContentLibraryItemProvider.tf`
 and you will see the operations occurring with the actual errors.
 
-
 ## Conditional running of tests
 
 The whole test suite takes several hours to run. If some errors happen during the run, we need to clean up and try again
 from the beginning, which is not always convenient.
 There are a few tags that help us gain some control on the flow:
 
-* `-vcfa-pre-post-checks`    Global switch enabling checks before and after tests (false). Also activated by using any of the flags below.
-* `-vcfa-re-run-failed`      Run only tests that failed in a previous run (false)
-* `-vcfa-remove-test-list`   Remove list of test runs (false)
-* `-vcfa-show-count`         Show number of pass/fail tests (false)
-* `-vcfa-show-elapsed-time`  Show elapsed time since the start of the suite in pre and post checks (false)
-* `-vcfa-show-timestamp`     Show timestamp in pre and post checks (false)
-* `-vcfa-skip-pattern`       Skip tests that match the pattern (implies vcfa-pre-post-checks ()
+- `-vcfa-pre-post-checks`    Global switch enabling checks before and after tests (false). Also activated by using any of the flags below.
+- `-vcfa-re-run-failed`      Run only tests that failed in a previous run (false)
+- `-vcfa-remove-test-list`   Remove list of test runs (false)
+- `-vcfa-show-count`         Show number of pass/fail tests (false)
+- `-vcfa-show-elapsed-time`  Show elapsed time since the start of the suite in pre and post checks (false)
+- `-vcfa-show-timestamp`     Show timestamp in pre and post checks (false)
+- `-vcfa-skip-pattern`       Skip tests that match the pattern (implies vcfa-pre-post-checks ()
 
 When `-vcfa-pre-post-checks` is used, we have several advantages:
 
@@ -272,7 +270,7 @@ When `-vcfa-pre-post-checks` is used, we have several advantages:
    test goes to `VCFA_test_fail_list_{vcfa_IP}.txt`. When running the suite on the same vcfa a second time, all tests in
    the `pass` list are skipped. If the test run was interrupted (see #2 below), we can only run the tests that did not
    run in the previous attempt.
-2. We can **gracefully** interrupt the tests by creating a file `skip_vcfa_tests` in the `./vcfa` directory. 
+2. We can **gracefully** interrupt the tests by creating a file `skip_vcfa_tests` in the `./vcfa` directory.
    When this file is found by the pre-run routine, all the tests are skipped. The file `skip_vcfa_tests` will be removed
    automatically at the next run.
 3. We can skip one or more tests conditionally, using `-vcfa-skip-pattern="{REGEXP}"`. All the test with a name that
@@ -296,8 +294,8 @@ details of the scanning, you can use `-vcfa-silent-leftovers-removal`.
 
 To run the removal only, without running the full suite, use the command
 
-```
-$ make cleanup
+```shell
+make cleanup
 ```
 
 ## Environment variables and corresponding flags
@@ -305,37 +303,37 @@ $ make cleanup
 There are several environment variables that can affect the tests. Many of them have a corresponding flag
 that can be used in combination with the `go test` command. You can see them using the `-vcfa-help` flag.
 
-* `TF_ACC=1` enables the acceptance tests. It is also set when you run `make testacc`.
-* `GOVCD_DEBUG=1` (`-govcd-debug`) enables debug output of the test suite
-* `GOVCD_TRACE=1` (`-govcd-trace`) enables function calls tracing
-* `VCFA_SKIP_TEMPLATE_WRITING=1`  (`-vcfa-skip-template-write`) skips the production of test templates into `./vcfa/test-artifacts`
-* `VCFA_ADD_PROVIDER=1` (`-vcfa-add-provider`) Adds the full provider definition to the snippets inside `./vcfa/test-artifacts`.
+- `TF_ACC=1` enables the acceptance tests. It is also set when you run `make testacc`.
+- `GOVCD_DEBUG=1` (`-govcd-debug`) enables debug output of the test suite
+- `GOVCD_TRACE=1` (`-govcd-trace`) enables function calls tracing
+- `VCFA_SKIP_TEMPLATE_WRITING=1`  (`-vcfa-skip-template-write`) skips the production of test templates into `./vcfa/test-artifacts`
+- `VCFA_ADD_PROVIDER=1` (`-vcfa-add-provider`) Adds the full provider definition to the snippets inside `./vcfa/test-artifacts`.
    **WARNING**: the provider definition includes your VCFA credentials.
-* `VCFA_SHORT_TEST=1` (`-vcfa-short`) Will not execute the tests themselves, but only generate snippets in `./vcfa/test-artifacts`.
-* `VCFA_CONFIG=FileName` sets the file name for the test configuration file.
-* `VCFA_TEST_SUITE_CLEANUP=1` will clean up testing resources that were created in previous test runs.
-* `VCFA_TEST_VERBOSE=1` (`-vcfa-test-verbose`) enables verbose output in some tests, such as the list of used tags, or the version
+- `VCFA_SHORT_TEST=1` (`-vcfa-short`) Will not execute the tests themselves, but only generate snippets in `./vcfa/test-artifacts`.
+- `VCFA_CONFIG=FileName` sets the file name for the test configuration file.
+- `VCFA_TEST_SUITE_CLEANUP=1` will clean up testing resources that were created in previous test runs.
+- `VCFA_TEST_VERBOSE=1` (`-vcfa-test-verbose`) enables verbose output in some tests, such as the list of used tags, or the version
 used in the documentation index.
-* `VCFA_TEST_TRACE=1` (`vcfa-test-trace`) enable trace output in some tests that is not shown in verbose mode
-* `VCFA_SKIP_PRIORITY_TESTS=1` (`vcfa-skip-priority-tests`) will disable using test prioritization
+- `VCFA_TEST_TRACE=1` (`vcfa-test-trace`) enable trace output in some tests that is not shown in verbose mode
+- `VCFA_SKIP_PRIORITY_TESTS=1` (`vcfa-skip-priority-tests`) will disable using test prioritization
   and core infrastructure component sharing
-* `VCFA_TEST_ORG_USER=1` (`-vcfa-test-org-user`) will enable tests with Org User, using the credentials from the configuration file
+- `VCFA_TEST_ORG_USER=1` (`-vcfa-test-org-user`) will enable tests with Org User, using the credentials from the configuration file
   (`testEnvBuild.OrgUser` and `testEnvBuild.OrgUserPassword`)
-* `VCFA_TOKEN=string` : specifies the authentication token to use instead of username/password
+- `VCFA_TOKEN=string` : specifies the authentication token to use instead of username/password
    (Use `./scripts/get_token.sh` to retrieve one)
-* `VCFA_TEST_DATA_GENERATION=1` generates some sample catalog items for data source filter engine test
-* `GOVCD_KEEP_TEST_OBJECTS=1` does not delete test objects created with `VCFA_TEST_DATA_GENERATION`
-* `VCFA_MAX_ITEMS=number` during filter engine tests, limits the collection of data sources of a given type to the number
+- `VCFA_TEST_DATA_GENERATION=1` generates some sample catalog items for data source filter engine test
+- `GOVCD_KEEP_TEST_OBJECTS=1` does not delete test objects created with `VCFA_TEST_DATA_GENERATION`
+- `VCFA_MAX_ITEMS=number` during filter engine tests, limits the collection of data sources of a given type to the number
   indicated. The default is 5. The maximum is 100.
-* `VCFA_PRE_POST_CHECKS` (`-vcfa-pre-post-checks`) Perform checks before and after tests (false)
-* `VCFA_RE_RUN_FAILED` (`-vcfa-re-run-failed`) Run only tests that failed in a previous run (false)
-* `VCFA_REMOVE_TEST_LIST` (`-vcfa-remove-test-list`) Remove list of test runs (false)
-* `VCFA_SHOW_COUNT` (`-vcfa-show-count`) Show number of pass/fail tests (false)
-* `VCFA_SHOW_ELAPSED_TIME` (`-vcfa-show-elapsed-time`) Show elapsed time since the start of the suite in pre and post checks (false)
-* `VCFA_SHOW_TIMESTAMP` (`-vcfa-show-timestamp`) Show timestamp in pre and post checks (false)
-* `VCFA_SKIP_PATTERN` (`-vcfa-skip-pattern`) Skip tests that match the pattern (implies vcfa-pre-post-checks ()
-* `VCFA_SKIP_LEFTOVERS_REMOVAL` (`-vcfa-skip-leftover-removal`) Do not run the leftovers removal at the end of the suite
-* `VCFA_SILENT_LEFTOVERS_REMOVAL` (`-vcfa-silent-leftover-removal`) Omit details during leftovers removal.
+- `VCFA_PRE_POST_CHECKS` (`-vcfa-pre-post-checks`) Perform checks before and after tests (false)
+- `VCFA_RE_RUN_FAILED` (`-vcfa-re-run-failed`) Run only tests that failed in a previous run (false)
+- `VCFA_REMOVE_TEST_LIST` (`-vcfa-remove-test-list`) Remove list of test runs (false)
+- `VCFA_SHOW_COUNT` (`-vcfa-show-count`) Show number of pass/fail tests (false)
+- `VCFA_SHOW_ELAPSED_TIME` (`-vcfa-show-elapsed-time`) Show elapsed time since the start of the suite in pre and post checks (false)
+- `VCFA_SHOW_TIMESTAMP` (`-vcfa-show-timestamp`) Show timestamp in pre and post checks (false)
+- `VCFA_SKIP_PATTERN` (`-vcfa-skip-pattern`) Skip tests that match the pattern (implies vcfa-pre-post-checks ()
+- `VCFA_SKIP_LEFTOVERS_REMOVAL` (`-vcfa-skip-leftover-removal`) Do not run the leftovers removal at the end of the suite
+- `VCFA_SILENT_LEFTOVERS_REMOVAL` (`-vcfa-silent-leftover-removal`) Omit details during leftovers removal.
 
 When both the environment variable and the command line option are possible, the environment variable gets evaluated first.
 
@@ -344,17 +342,17 @@ When both the environment variable and the command line option are possible, the
 ### Functions for dumping state and pause during acceptance testing
 
 These functions match signature of Terraform's own `resource.TestCheckResourceAttr` and can be
-dropped in for troubleshooting problems. 
+dropped in for troubleshooting problems.
 
 This function will dump the state at the test run (while executing all field evaluations). It can
 help troubleshooting why some fields fail and find typos, wrong state, etc.
 
 ```go
 func stateDumper() resource.TestCheckFunc {
-	return func(s *terraform.State) error {
-		spew.Dump(s)
-		return nil
-	}
+    return func(s *terraform.State) error {
+        spew.Dump(s)
+        return nil
+    }
 }
 ```
 
@@ -363,11 +361,11 @@ This function can pause test run in the middle which gives the chance to investi
 
 ```go
 func sleepTester(d time.Duration) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
-		fmt.Printf("sleeping %s\n", d.String())
-		time.Sleep(d)
-		fmt.Println("finished sleeping")
-		return nil
-	}
+    return func(s *terraform.State) error {
+        fmt.Printf("sleeping %s\n", d.String())
+        time.Sleep(d)
+        fmt.Println("finished sleeping")
+        return nil
+    }
 }
 ```

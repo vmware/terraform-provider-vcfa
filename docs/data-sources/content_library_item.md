@@ -52,6 +52,5 @@ The following arguments are supported:
 All arguments and attributes defined in [`vcfa_content_library_item`][vcfa_content_library_item] resource are supported
 as read-only (Computed) values.
 
-[vcfa_content_library]: /providers/vmware/vcfa/latest/docs/data-sources/content_library
 [vcfa_content_library-ds]: /providers/vmware/vcfa/latest/docs/data-sources/content_library
 [vcfa_content_library_item]: /providers/vmware/vcfa/latest/docs/resources/content_library_item

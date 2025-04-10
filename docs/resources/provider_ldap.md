@@ -59,13 +59,12 @@ The following arguments are supported:
 - `connector_type` - (Required) Type of connector: one of `OPEN_LDAP`, `ACTIVE_DIRECTORY`
 - `base_distinguished_name` - (Required) LDAP search base
 - `is_ssl` - (Optional) True if the LDAP service requires an SSL connection. If the certificate is not trusted already, `auto_trust_certificate=true` is needed.
-- `username` - (Optional) _Username_ to use when logging in to LDAP, specified using LDAP attribute=value pairs 
+- `username` - (Optional) _Username_ to use when logging in to LDAP, specified using LDAP attribute=value pairs
   (for example: cn="ldap-admin", c="example", dc="com")
 - `password` - (Optional) _Password_ for the user identified by `username`. This value is never returned on reads
 - `user_attributes` - (Required) User settings. See [User Attributes](#user-attributes) below for details
 - `group_attributes` - (Required) Group settings. See [Group Attributes](#group-attributes) below for details
 
-<a id="user-attributes"></a>
 ### User Attributes
 
 - `object_class` - (Required)  LDAP _objectClass_ of which imported users are members. For example, _"user"_ or _"person"_ attributes
@@ -79,7 +78,6 @@ The following arguments are supported:
 - `group_membership_identifier` - (Required) LDAP attribute that identifies a user as a member of a group. For example, the _"dn"_ attribute
 - `group_back_link_identifier` - (Optional) LDAP attribute that returns the identifiers of all the groups of which the user is a member
 
-<a id="group-attributes"></a>
 ### Group Attributes
 
 - `object_class` - (Required) LDAP _objectClass_ of which imported groups are members. For example, the _"group"_ attribute
@@ -104,7 +102,7 @@ resource "vcfa_provider_ldap" "existing-ldap" {}
 
 You can import such Provider LDAP configuration into terraform state using one of the following commands
 
-```
+```shell
 terraform import vcfa_provider_ldap.existing-ldap
 ```
 

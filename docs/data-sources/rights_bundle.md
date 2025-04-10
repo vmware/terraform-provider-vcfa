@@ -24,7 +24,8 @@ output "default-rb" {
 ```
 
 Sample output:
-```
+
+```shell
 default-rb = {
   "bundle_key" = "DEFAULT_TENANT_RIGHTS_BUNDLE"
   "description" = "Default set of tenant rights"

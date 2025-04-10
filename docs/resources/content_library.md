@@ -220,9 +220,9 @@ of the target Organization allows it.
 - `creation_date` - The ISO-8601 timestamp representing when this Content Library was created
 - `is_shared` - Whether this Content Library is shared with other Organziations
 - `is_subscribed` - Whether this Content Library is subscribed from an external published library
-- `library_type` - The type of content library, can be either `PROVIDER` (Content Library that is scoped to a provider) or 
+- `library_type` - The type of content library, can be either `PROVIDER` (Content Library that is scoped to a provider) or
   `TENANT` (Content Library that is scoped to a tenant organization)
-- `version_number` - Version number of this Content library 
+- `version_number` - Version number of this Content library
 
 ## Importing
 
@@ -246,12 +246,11 @@ resource "vcfa_content_library" "cl" {
 
 You can import such Content Library into terraform state using this command:
 
-```
+```shell
 terraform import vcfa_content_library.cl "my-org"."My Already Existing Library"
 ```
 
 For an existing `PROVIDER` Content Library that was **not** created using Terraform:
-
 
 ```hcl
 data "vcfa_org" "org" {
@@ -266,7 +265,7 @@ resource "vcfa_content_library" "cl" {
 
 You can import such Content Library into terraform state using this command:
 
-```
+```shell
 terraform import vcfa_content_library.cl "System"."My Already Existing Library"
 ```
 

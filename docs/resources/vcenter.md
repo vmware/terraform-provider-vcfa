@@ -48,7 +48,7 @@ The following arguments are supported:
   the underlying vCenter once after creation. This might take some time, but can help to load up new
   artifacts from vCenter (e.g. Storage Policies). Update is a no-op. This operation is visible as a
   new task in UI. It may be useful after adding vCenter or if new infrastructure is added to
-  vCenter. Default `false`. 
+  vCenter. Default `false`.
 - `refresh_vcenter_on_read` - (Optional) An optional flag to trigger refresh operation on the
   underlying vCenter on every read. This might take some time, but can help to load up new artifacts
   from vCenter (e.g. [Supervisors][vcfa_supervisor-ds]). This operation is visible as a new task in UI. Update is a no-op.
@@ -58,14 +58,13 @@ The following arguments are supported:
   the underlying vCenter on every read. This might take some time, but can help to load up new
   artifacts from vCenter (e.g. [Storage Policies][vcfa_storage_class-ds]). Update is a no-op. This operation is visible as a
   new task in UI. It may be useful after adding vCenter or if new infrastructure is added to
-  vCenter. Default `false`. 
+  vCenter. Default `false`.
 - `url` - (Required) An URL of vCenter server
 - `auto_trust_certificate` - (Required) Defines if the certificate of a given vCenter server should
   automatically be added to trusted certificate store. **Note:** not having the certificate trusted
   will cause malfunction.
 - `is_enabled` - (Optional) Defines if the vCenter is enabled. Default `true`. The vCenter must
   always be disabled before removal (this resource will disable it automatically on destroy).
-
 
 ## Attribute Reference
 
@@ -94,7 +93,7 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing vCenter configuration can be [imported][docs-import] into this resource via supplying
 path for it. An example is below:
 
-```
+```shell
 terraform import vcfa_vcenter.imported my-vcenter
 ```
 

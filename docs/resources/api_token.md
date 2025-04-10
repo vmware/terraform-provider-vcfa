@@ -6,9 +6,9 @@ description: |-
   They are user-based and have the same Role as the user.
 ---
 
-# vcfa_api_token 
+# vcfa_api_token
 
-Provides a resource to manage API Tokens. API Tokens are an easy way to authenticate to VMware Cloud Foundation Automation. 
+Provides a resource to manage API Tokens. API Tokens are an easy way to authenticate to VMware Cloud Foundation Automation.
 They are user-based and have the same [Role](/providers/vmware/vcfa/latest/docs/resources/role) as the user.
 
 _Used by: **Provider**, **Tenant**_
@@ -52,6 +52,7 @@ The following arguments are supported:
 - `name` - (Required) The unique name of the API Token for a specific user.
 - `file_name` - (Required) The name of the file which will be created containing the API Token. The file will have the following
 JSON contents:
+
 ```json
 {
   "token_type": "API Token",
@@ -60,6 +61,7 @@ JSON contents:
   "updated_on": "2025-01-29T10:00:43+01:00"
  }
 ```
+
 - `allow_token_file` - (Required) An additional check that the user is aware that the file contains
   **SENSITIVE** information. Must be set to `true` or it will return a validation error.
 
@@ -72,7 +74,7 @@ See [Importing resources][importing-resources] for more information.
 An existing API Token can be [imported][docs-import] into this resource via supplying
 the full dot separated path. An example is below:
 
-```
+```shell
 terraform import vcfa_api_token.example_token example_token
 ```
 

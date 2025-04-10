@@ -1,14 +1,16 @@
 # Terraform VMware Cloud Foundation Automation Provider
+
 The official Terraform provider for VMware Cloud Foundation Automation 9+ by Broadcom
 
 - This project is using [go-vcloud-director](https://github.com/vmware/go-vcloud-director) Go SDK for making API calls
 
 ## Part of Terraform
 
-- Website: https://www.terraform.io
+- Website: <https://www.terraform.io>
 - [Hashicorp Discuss](https://discuss.hashicorp.com/c/terraform-core/27)
 
-<img src="https://www.datocms-assets.com/2885/1629941242-logo-terraform-main.svg" width="600px">
+<!-- markdownlint-disable no-inline-html -->
+<img src="https://www.datocms-assets.com/2885/1629941242-logo-terraform-main.svg" alt="Terraform logo" width="600px">
 
 ## Requirements
 
@@ -22,11 +24,11 @@ The official Terraform provider for VMware Cloud Foundation Automation 9+ by Bro
 automatically download officially released binaries of this provider plugin on the first run of `terraform init`
 command.
 
-```
-$ cd ~/mydir
-$ git clone https://github.com/vmware/terraform-provider-vcfa.git
-$ cd terraform-provider-vcfa/
-$ make build
+```shell
+cd ~/mydir
+git clone https://github.com/vmware/terraform-provider-vcfa.git
+cd terraform-provider-vcfa/
+make build
 ```
 
 ## Installing the Provider from source code
@@ -36,11 +38,11 @@ $ make build
 automatically download officially released binaries of this provider plugin on the first run of `terraform init`
 command.
 
-```
-$ cd ~/mydir
-$ git clone https://github.com/vmware/terraform-provider-vcfa.git
-$ cd terraform-provider-vcfa/
-$ make install
+```shell
+cd ~/mydir
+git clone https://github.com/vmware/terraform-provider-vcfa.git
+cd terraform-provider-vcfa/
+make install
 ```
 
 This command will build the plugin and transfer it to
@@ -49,7 +51,7 @@ with a name that includes the version (as taken from the `./VERSION` file).
 
 For example, on **macOS**:
 
-```
+```shell
 $HOME/.terraform.d/
 ├── checkpoint_cache
 ├── checkpoint_signature
@@ -64,7 +66,7 @@ $HOME/.terraform.d/
 
 On **Linux**:
 
-```
+```shell
 ├── checkpoint_cache
 ├── checkpoint_signature
 └── plugins
@@ -93,7 +95,7 @@ directive which can allow you to redirect the import path to your own version of
 ```go
 module github.com/vmware/terraform-provider-vcfa
 require (
-	...
+    ...
     github.com/vmware/go-vcloud-director/v3 v3.1.0-alpha.3
 )
 

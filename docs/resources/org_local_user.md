@@ -43,7 +43,7 @@ resource "vcfa_org_local_user" "demo" {
 
 The following arguments are supported:
 
-- `org_id` - (Required) An [Organization][vcfa_org] ID for this Local User to be created in 
+- `org_id` - (Required) An [Organization][vcfa_org] ID for this Local User to be created in
 - `role_ids` - (Required) A set of [Role][vcfa_global_role] IDs to assign to this Local User
 - `username` - (Required) Username for this Local User
 - `password` - (Required) A password for the Local User
@@ -57,7 +57,7 @@ also code generation. See [Importing resources][importing-resources] for more in
 An existing Organization Local User configuration can be [imported][docs-import] into this resource via
 supplying path for it. An example is below:
 
-```
+```shell
 terraform import vcfa_org_local_user.imported my-org-name.my-user-name
 ```
 

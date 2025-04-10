@@ -123,7 +123,7 @@ The following arguments are supported:
 - `client_secret` - (Required) Client Secret to use with the OIDC provider
 - `enabled` - (Required) Either `true` or `false`, specifies whether the OIDC authentication is enabled for the given organization
 - `wellknown_endpoint` - (Optional) This endpoint retrieves the OIDC provider configuration and automatically sets
-  the following arguments, without setting them explicitly: `issuer_id`, `user_authorization_endpoint`, `access_token_endpoint`, 
+  the following arguments, without setting them explicitly: `issuer_id`, `user_authorization_endpoint`, `access_token_endpoint`,
   `userinfo_endpoint`, the `claims_mapping` block, the `key` blocks, and `scopes`. These mentioned attributes will be computed, and
   can be overridden by setting them explicitly in HCL code
 - `issuer_id` - (Optional) The issuer ID for the OIDC provider.
@@ -198,7 +198,7 @@ resource "vcfa_org_oidc" "my_org_oidc" {
 
 You can import such OIDC configuration into terraform state using one of the following commands
 
-```
+```shell
 terraform import vcfa_org_oidc.my_org_oidc organization_name
 # OR
 terraform import vcfa_org_oidc.my_org_oidc organization_id

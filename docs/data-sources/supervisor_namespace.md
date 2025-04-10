@@ -55,7 +55,6 @@ The following arguments are supported:
 - `zones` - A set of Supervisor Namespace Zones. See [Zones](#zones) section for details
 - `zones_initial_class_config_overrides` - A set of Supervisor Namespace Zones Initial Class Config Overrides. See [Zones Initial Class Config Overrides](#zones-initial-class-config-overrides) section for details
 
-<a id="storage-classes"></a>
 ## Storage Classes
 
 The `storage_classes` is a set of entries that have the following structure:
@@ -63,7 +62,6 @@ The `storage_classes` is a set of entries that have the following structure:
 - `limi` - Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 - `name` - Name of the Storage Class
 
-<a id="storage-classes-initial-class-config-overrides"></a>
 ## Storage Classes Initial Class Config Overrides
 
 The `storage_classes_initial_class_config_overrides` is a set of entries that have the following structure:
@@ -71,14 +69,12 @@ The `storage_classes_initial_class_config_overrides` is a set of entries that ha
 - `limit` - Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 - `name` - Name of the Storage Class
 
-<a id="vm-classes"></a>
 ## VM Classes
 
 The `vm_classes` is a set of entries that have the following structure:
 
 - `name` - Name of the VM Class
 
-<a id="zones"></a>
 ## Zones
 
 The `zones` is a set of entries that have the following structure:
@@ -89,7 +85,6 @@ The `zones` is a set of entries that have the following structure:
 - `memory_reservation` - Memory reservation (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 - `name` - Name of the Zone
 
-<a id="zones-initial-class-config-overrides"></a>
 ## Zones Initial Class Config Overrides
 
 The `zones_initial_class_config_overrides` is a set of entries that have the following structure:
