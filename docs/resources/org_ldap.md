@@ -146,7 +146,7 @@ resource "vcfa_org_ldap" "my-org-ldap" {
 
 You can import such Organization LDAP configuration into terraform state using one of the following commands
 
-```
+```shell
 terraform import vcfa_org_ldap.my-org-ldap organization_name
 ```
 

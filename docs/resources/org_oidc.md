@@ -198,7 +198,7 @@ resource "vcfa_org_oidc" "my_org_oidc" {
 
 You can import such OIDC configuration into terraform state using one of the following commands
 
-```
+```shell
 terraform import vcfa_org_oidc.my_org_oidc organization_name
 # OR
 terraform import vcfa_org_oidc.my_org_oidc organization_id

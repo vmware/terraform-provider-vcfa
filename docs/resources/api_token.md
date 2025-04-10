@@ -74,7 +74,7 @@ See [Importing resources][importing-resources] for more information.
 An existing API Token can be [imported][docs-import] into this resource via supplying
 the full dot separated path. An example is below:
 
-```
+```shell
 terraform import vcfa_api_token.example_token example_token
 ```
 

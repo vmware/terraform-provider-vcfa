@@ -87,13 +87,13 @@ resource "vcfa_content_library" "cl" {
 
 You can import such Content Library Item into terraform state:
 
-```
+```shell
 terraform import vcfa_content_library_item.cli "My existing Org"."My Already Existing Library"."My Already Existing Item"
 ```
 
 If the Content Library Item is a `PROVIDER` one (System org):
 
-```
+```shell
 terraform import vcfa_content_library_item.cli System."My Already Existing Library"."My Already Existing Item"
 ```
 

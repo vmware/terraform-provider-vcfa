@@ -170,4 +170,3 @@ VCFA connection calls can be expensive, and if a definition file contains severa
 multiple connections. There is a cache engine, disabled by default, which can be activated by the `VCFA_CACHE`
 environment variable. When enabled, the provider will not reconnect, but reuse an active connection for up to 20
 minutes, and then connect again.
-

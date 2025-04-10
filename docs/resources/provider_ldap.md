@@ -106,7 +106,7 @@ resource "vcfa_provider_ldap" "existing-ldap" {}
 
 You can import such Provider LDAP configuration into terraform state using one of the following commands
 
-```
+```shell
 terraform import vcfa_provider_ldap.existing-ldap
 ```
 

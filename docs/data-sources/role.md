@@ -37,7 +37,7 @@ data "vcfa_role" "sysadmin" {
 
 Sample output:
 
-```
+```shell
 sysadmin-out = {
   "bundle_key" = "ROLE_SYSTEM_ADMINISTRATOR"
   "description" = "Built-in rights for administering this installation"

@@ -75,11 +75,11 @@ An existing Certificate can be [imported][docs-import] into this resource
 via supplying the full dot separated path Certificate. To import certificates in the System (Provider) Organization,
 one can use `System`. An example is below:
 
-```
+```shell
 terraform import vcfa_certificate.imported System.my-system-certificate-alias
 ```
 
-```
+```shell
 terraform import vcfa_certificate.imported my-org.my-certificate-alias
 ```
 

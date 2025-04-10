@@ -173,7 +173,7 @@ resource "vcfa_supervisor_namespace" "existing_supervisor_namespace" {
 
 You can import such Supervisor Namespace into terraform state using this command
 
-```
+```shell
 terraform import vcfa_supervisor_namespace.existing_supervisor_namespace "project_name.supervisor_namespace_name"
 ```
 

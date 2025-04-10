@@ -75,7 +75,7 @@ resource "vcfa_rights_bundle" "default-set" {
 
 You can import such Rights Bundle into terraform state using this command
 
-```
+```shell
 terraform import vcfa_rights_bundle.default-set "Default Rights Bundle"
 ```
 

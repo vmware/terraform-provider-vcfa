@@ -73,7 +73,7 @@ resource "vcfa_global_role" "my-global-role" {
 
 You can import such Global Role into terraform state using this command:
 
-```
+```shell
 terraform import vcfa_global_role.my-global-role "My Existing Role"
 ```
 

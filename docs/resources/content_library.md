@@ -246,7 +246,7 @@ resource "vcfa_content_library" "cl" {
 
 You can import such Content Library into terraform state using this command:
 
-```
+```shell
 terraform import vcfa_content_library.cl "my-org"."My Already Existing Library"
 ```
 
@@ -265,7 +265,7 @@ resource "vcfa_content_library" "cl" {
 
 You can import such Content Library into terraform state using this command:
 
-```
+```shell
 terraform import vcfa_content_library.cl "System"."My Already Existing Library"
 ```
 

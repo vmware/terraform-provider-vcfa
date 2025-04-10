@@ -27,7 +27,7 @@ output "org_user_out" {
 
 Sample output:
 
-```
+```shell
 org_user_out = {
   "bundle_key" = "ROLE_ORGANIZATION_USER"
   "description" = "Rights given to an organization user"
