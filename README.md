@@ -9,6 +9,7 @@ The official Terraform provider for VMware Cloud Foundation Automation 9+ by Bro
 - Website: <https://www.terraform.io>
 - [Hashicorp Discuss](https://discuss.hashicorp.com/c/terraform-core/27)
 
+<!-- markdownlint-disable no-inline-html -->
 <img src="https://www.datocms-assets.com/2885/1629941242-logo-terraform-main.svg" alt="Terraform logo" width="600px">
 
 ## Requirements
