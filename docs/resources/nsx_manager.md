@@ -47,11 +47,11 @@ The following attributes are exported on this resource:
   participate in modern constructs such as Regions and Zones. Legacy VRA-style is deprecated and this field exists for
   the purpose of VRA backwards compatibility only
 - `status` - Status of NSX Manager. One of:
-- `PENDING` - Desired entity configuration has been received by system and is pending realization.
-- `CONFIGURING` - The system is in process of realizing the entity.
-- `REALIZED` - The entity is successfully realized in the system.
-- `REALIZATION_FAILED` - There are some issues and the system is not able to realize the entity.
-- `UNKNOWN` - Current state of entity is unknown.
+  - `PENDING` - Desired entity configuration has been received by system and is pending realization.
+  - `CONFIGURING` - The system is in process of realizing the entity.
+  - `REALIZED` - The entity is successfully realized in the system.
+  - `REALIZATION_FAILED` - There are some issues and the system is not able to realize the entity.
+  - `UNKNOWN` - Current state of entity is unknown.
 
 ## Importing
 
