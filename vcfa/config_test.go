@@ -902,9 +902,13 @@ func getOrCreateNsxtManager(tmClient *govcd.VCDClient) (*govcd.NsxtManagerOpenAp
 		}
 
 		nsxManager, err := tmClient.GetNsxtManagerOpenApiByName(nsxtCfg.Name)
-		if govcd.ContainsNotFound(err) {
-			return nil // does not exist, nothing to remove
+		if err != nil {
+			if govcd.ContainsNotFound(err) {
+				return nil // does not exist, nothing to remove
+			}
+			return err
 		}
+
 		err = nsxManager.Delete()
 		if err != nil {
 			return err
