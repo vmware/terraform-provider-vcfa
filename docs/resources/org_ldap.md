@@ -82,8 +82,6 @@ The following arguments are supported:
 - `custom_user_ou` - (Optional) If `ldap_mode` is `SYSTEM`, specifies an LDAP `attribute=value` pair to use for OU (organizational unit)
 - `custom_settings` - (Optional) LDAP server configuration. Becomes mandatory if `ldap_mode` is set to `CUSTOM`. See [Custom Settings](#custom-settings) below for details
 
-<a id="custom-settings"></a>
-
 ## Custom Settings
 
 The `custom_settings` section contains the configuration for the LDAP server
@@ -99,8 +97,6 @@ The `custom_settings` section contains the configuration for the LDAP server
 - `user_attributes` - (Required) User settings when `ldap_mode` is `CUSTOM` See [User Attributes](#user-attributes) below for details
 - `group_attributes` - (Required) Group settings when `ldap_mode` is `CUSTOM` See [Group Attributes](#group-attributes) below for details
 
-<a id="user-attributes"></a>
-
 ### User Attributes
 
 - `object_class` - (Required)  LDAP _objectClass_ of which imported users are members. For example, _"user"_ or _"person"_ attributes
@@ -113,8 +109,6 @@ The `custom_settings` section contains the configuration for the LDAP server
 - `telephone` - (Required) LDAP attribute to use for the user's telephone number. For example, the _"telephoneNumber"_ attribute
 - `group_membership_identifier` - (Required) LDAP attribute that identifies a user as a member of a group. For example, the _"dn"_ attribute
 - `group_back_link_identifier` - (Optional) LDAP attribute that returns the identifiers of all the groups of which the user is a member
-
-<a id="group-attributes"></a>
 
 ### Group Attributes
 

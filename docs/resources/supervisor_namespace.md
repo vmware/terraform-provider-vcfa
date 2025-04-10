@@ -88,16 +88,12 @@ The following arguments are supported:
 - `vm_classes` - A set of Supervisor Namespace VM Classes. See [VM Classes](#vm-classes) section for details
 - `zones` - A set of Supervisor Namespace Zones. See [Zones](#zones) section for details
 
-<a id="storage-classes"></a>
-
 ## Storage Classes
 
 The `storage_classes` is a set of entries that have the following structure:
 
 - `limit` - Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 - `name` - Name of the [Storage Class](/providers/vmware/vcfa/latest/docs/data-sources/storage_class)
-
-<a id="storage-classes-initial-class-config-overrides"></a>
 
 ## Storage Classes Initial Class Config Overrides
 
@@ -106,15 +102,11 @@ The `storage_classes_initial_class_config_overrides` is a set of entries that ha
 - `limit` - Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 - `name` - Name of the [Storage Class](/providers/vmware/vcfa/latest/docs/data-sources/storage_class)
 
-<a id="vm-classes"></a>
-
 ## VM Classes
 
 The `vm_classes` is a set of entries that have the following structure:
 
 - `name` - Name of the [VM Class](/providers/vmware/vcfa/latest/docs/data-sources/region_vm_class)
-
-<a id="zones"></a>
 
 ## Zones
 
@@ -125,8 +117,6 @@ The `zones` is a set of entries that have the following structure:
 - `memory_limit` - Memory limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 - `memory_reservation` - Memory reservation (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 - `name` - Name of the Zone
-
-<a id="zones-initial-class-config-overrides"></a>
 
 ## Zones Initial Class Config Overrides
 

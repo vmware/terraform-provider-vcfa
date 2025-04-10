@@ -77,11 +77,9 @@ The following arguments are supported:
 - `region_id` - (Required) A [Region][vcfa_region] ID that this Organization Region Quota should be backed by
 - `supervisor_ids` - (Required) A set of Supervisor] IDs that back this Organization Region Quota. Can be looked up
   using [`vcfa_supervisor`][vcfa_supervisor] data source
-- `zone_resource_allocations` - (Required) A set of Zone Resource Allocation definitions. See [Zone Resource Allocations](#zone-resource-allocations-block)
+- `zone_resource_allocations` - (Required) A set of Zone Resource Allocation definitions. See [Zone Resource Allocations](#zone-resource-allocations)
 - `region_vm_class_ids` - (Required) A set of Region VM Class IDs. These can be fetched with [`vcfa_region_vm_class` data source](/providers/vmware/vcfa/latest/docs/data-sources/region_vm_class)
 - `region_storage_policy` - (Required) A set of Region Storage Policies. See [Region Storage Policies](#region-storage-policies)
-
-<a id="zone-resource-allocations-block"></a>
 
 ## Zone Resource Allocations
 
@@ -93,8 +91,6 @@ The following arguments are supported:
 - `memory_reservation_mib` - (Required) Defines reserved memory capacity in MiB
 
 A computed attribute `region_zone_name` will be set in each `zone_resource_allocations` block.
-
-<a id="region-storage-policies"></a>
 
 ## Region Storage Policies
 

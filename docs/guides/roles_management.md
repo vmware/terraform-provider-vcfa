@@ -367,7 +367,8 @@ resource "vcfa_global_role" "new-vapp-user" {
 }
 ```
 
-(3) <br>
+(3)
+
 Remove the data source and apply the changes.
 
 ## How to clone a rights container - method 2

@@ -60,9 +60,7 @@ The following arguments are supported:
 - `default_quota_max_ip_count` - (Required) Maximum number of floating IPs that can be allocated (`-1` for unlimited)
 - `internal_scope` - (Required) A set of IP Blocks that represent IPs used in this local datacenter,
   south of the [Provider Gateway][vcfa_provider_gateway]. IPs within this scope are used for configuring services and
-  networks. See [internal_scope](#internal-scope) for more details.
-
-<a id="internal-scope"></a>
+  networks. See [internal_scope](#internal_scope-block) for more details.
 
 ## internal_scope block
 
