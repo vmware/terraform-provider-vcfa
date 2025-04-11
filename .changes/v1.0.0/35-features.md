@@ -1,3 +1,3 @@
-- **New Resource:** `vcfa_supervisor_namespace` to manage Supervisor Namespaces [GH-35, GH-58, GH-59]
+- **New Resource:** `vcfa_supervisor_namespace` to manage Supervisor Namespaces [GH-35, GH-58, GH-59, GH-80]
 - **New Data Source:** `vcfa_supervisor_namespace` to read Supervisor Namespaces [GH-35, GH-58, GH-59]
 - **New Data Source:** `vcfa_kubeconfig` to get Kubeconfig [GH-35, GH-59]
