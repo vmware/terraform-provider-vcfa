@@ -1,6 +1,5 @@
 TEST?=$$(go list ./... )
 GOFMT_FILES?=$$(find . -name '*.go' )
-WEBSITE_REPO=github.com/hashicorp/terraform-website
 GIT_DESCRIBE=$(shell git describe --tags)
 PKG_NAME=vcfa
 
@@ -164,21 +163,5 @@ test-compile:
 tagverify:
 	@scripts/test-tags.sh
 
-# builds the website and allows running it from localhost
-website:
-ifeq (,$(wildcard $(GOPATH)/src/$(WEBSITE_REPO)))
-	echo "$(WEBSITE_REPO) not found in your GOPATH (necessary for layouts and assets), get-ting..."
-	git clone https://$(WEBSITE_REPO) $(GOPATH)/src/$(WEBSITE_REPO)
-endif
-	@$(MAKE) -C $(GOPATH)/src/$(WEBSITE_REPO) website-provider PROVIDER_PATH=$(shell pwd) PROVIDER_NAME=$(PKG_NAME)
-
-# tests the website files for broken link
-website-test:
-ifeq (,$(wildcard $(GOPATH)/src/$(WEBSITE_REPO)))
-	echo "$(WEBSITE_REPO) not found in your GOPATH (necessary for layouts and assets), get-ting..."
-	git clone https://$(WEBSITE_REPO) $(GOPATH)/src/$(WEBSITE_REPO)
-endif
-	@$(MAKE) -C $(GOPATH)/src/$(WEBSITE_REPO) website-provider-test PROVIDER_PATH=$(shell pwd) PROVIDER_NAME=$(PKG_NAME)
-
-.PHONY: build test testacc-race-seq testacc vet static fmt fmtcheck tidy-check test-compile website website-test
+.PHONY: build test testacc-race-seq testacc vet static fmt fmtcheck tidy-check test-compile
 

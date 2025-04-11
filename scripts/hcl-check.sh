@@ -27,12 +27,12 @@ function get_help {
     exit 0
 }
 
-# extract_hcl searches for .markdown files by using glob 'website/docs/{*/,?}*markdown' in:
-# * website/docs/*.markdown
-# * website/docs/*/*.markdown
+# extract_hcl searches for .md files by using glob 'docs/{*/,?}*md' in:
+# * docs/*.md
+# * docs/*/*.md
 # It will look for code blocks starting with '```hcl' and extract their contents until closing '```'
 # and store in a file inside a tmp directory. Filename will be "base_filename+total_occurence_number"
-# (e.g. edgegateway.html.markdown-100.tf)
+# (e.g. region.md-100.tf)
 function extract_hcl {
     curdir=$PWD
 
@@ -58,7 +58,7 @@ function extract_hcl {
     }
     flag {
     s = s $0 ORS
-    }' ../website/docs/{*/,?}*markdown
+    }' ../docs/{*/,?}*md
     hcl_number="$(ls | wc -l | tr -d ' ')"
     cd "$curdir" || exit 1
 }

@@ -3,11 +3,11 @@ on:
   push:
     paths-ignore:
       - '**.md'
-      - 'website/**'
+      - 'docs/**'
   pull_request:
     paths-ignore:
       - '**.md'
-      - 'website/**'
+      - 'docs/**'
 
 permissions:
   contents: read
