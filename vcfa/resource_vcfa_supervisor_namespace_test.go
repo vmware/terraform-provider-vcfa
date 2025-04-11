@@ -9,7 +9,6 @@ package vcfa
 import (
 	"fmt"
 	"net/url"
-	"os"
 	"regexp"
 	"testing"
 
@@ -21,10 +20,6 @@ import (
 )
 
 func TestAccVcfaSupervisorNamespace(t *testing.T) {
-	var executeTest = os.Getenv("VCFA_NAMESPACE_TEST") != ""
-	if !executeTest {
-		t.Skipf("TestAccVcfaSupervisorNamespace not enabled by default. Use 'VCFA_NAMESPACE_TEST=1' to enable")
-	}
 
 	preTestChecks(t)
 	defer postTestChecks(t)
