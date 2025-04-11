@@ -1,0 +1,1 @@
+* Change documentation to follow the modern Terraform layout for providers [GH-74, GH-79]
