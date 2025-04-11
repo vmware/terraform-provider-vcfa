@@ -32,7 +32,7 @@ function get_help {
 # * docs/*/*.md
 # It will look for code blocks starting with '```hcl' and extract their contents until closing '```'
 # and store in a file inside a tmp directory. Filename will be "base_filename+total_occurence_number"
-# (e.g. edgegateway.md-100.tf)
+# (e.g. region.md-100.tf)
 function extract_hcl {
     curdir=$PWD
 
