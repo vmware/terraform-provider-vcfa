@@ -91,10 +91,10 @@ makes it possible for maintainers to understand the changes and expand on them.
 
 The documentation comes in three flavors:
 
-* One [article per resource](#documenting-data-sources-and-resources), located in the directory `./website/docs/r`, and one for the corresponding data source, located
-  in `./website/docs/d`.
+* One [article per resource](#documenting-data-sources-and-resources), located in the directory `./docs/resources`, and one for the corresponding data source, located
+  in `./docs/data-sources`.
 * One article about [topics that involve more than one resource](#documenting-broad-topics-guides), and need a wider breadth of documentation to be properly
-  explained, located in `./website/guides` (for example: the article **roles management** includes operations with **Roles**,
+  explained, located in `./docs/guides` (for example: the article **roles management** includes operations with **Roles**,
   **Global Roles**, **Rights**, and **Rights bundles**)
 * One or more [**entries for the change log**](#documenting-each-pull-request-for-the-changelog), explaining what each pull request has contributed.
 
@@ -112,16 +112,12 @@ Each entity, be it a resource or a data source, needs to have its documentation 
 * Resources should also include a section about **importing**, explaining how an existing resource could be imported into
   Terraform state
 
-Each page must then be linked appropriately in the file `./website/docs/vcfa.erb`
-
 ### Documenting broad topics (guides)
 
 When a topic is too wide to be comprised in the description of one resource or data source, we can make a **Guide**, which
 is a free-form article that explains operations including several resources and data sources.
 Such articles should include explanations and examples of workflows, relationship between resources, common cases, and
 troubleshooting methods, when applicable.
-
-Each guide page must also be linked in `./website/docs/vcfa.erb`.
 
 ### Documenting each Pull Request for the CHANGELOG
 
