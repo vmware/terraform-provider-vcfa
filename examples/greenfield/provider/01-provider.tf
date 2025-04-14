@@ -22,3 +22,6 @@ provider "vcfa" {
 data "vcfa_org" "system" {
   name = "System"
 }
+
+# https://registry.terraform.io/providers/vmware/vcd/latest/docs/data-sources/kubeconfig
+data "vcfa_kubeconfig" "example" {}

@@ -1,8 +1,8 @@
 # Configure underlying vCenter and NSX
 
 # https://registry.terraform.io/providers/vmware/vcfa/latest/docs/resources/nsx_manager
-resource "vcfa_nsx_manager" "demo" {
-  name                   = "tf-demo-nsx-manager"
+resource "vcfa_nsx_manager" "example" {
+  name                   = "tf-example-nsx-manager"
   description            = "Created by Terraform VCFA Provider"
   username               = var.nsx_manager_username
   password               = var.nsx_manager_password
@@ -11,9 +11,9 @@ resource "vcfa_nsx_manager" "demo" {
 }
 
 # https://registry.terraform.io/providers/vmware/vcfa/latest/docs/resources/vcenter
-resource "vcfa_vcenter" "demo" {
-  nsx_manager_id             = vcfa_nsx_manager.demo.id
-  name                       = "tf-demo-vcenter"
+resource "vcfa_vcenter" "example" {
+  nsx_manager_id             = vcfa_nsx_manager.example.id
+  name                       = "tf-example-vcenter"
   description                = "Created by Terraform VCFA Provider"
   url                        = var.vcenter_url
   auto_trust_certificate     = true
