@@ -42,11 +42,13 @@ var supervisorNamespaceStorageClassesInitialClassConfigOverridesSchema = &schema
 		"limit": {
 			Type:        schema.TypeString,
 			Required:    true,
+			ForceNew:    true, // Update not supported
 			Description: "Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)",
 		},
 		"name": {
 			Type:        schema.TypeString,
 			Required:    true,
+			ForceNew:    true, // Update not supported
 			Description: "Name of the Storage Class",
 		},
 	},
@@ -97,26 +99,31 @@ var supervisorNamespaceZonesInitialClassConfigOverridesSchema = &schema.Resource
 		"cpu_limit": {
 			Type:        schema.TypeString,
 			Required:    true,
+			ForceNew:    true, // Update not supported
 			Description: "CPU limit (format: `<number><unit>`, where `<unit>` can be `M` or `G`)",
 		},
 		"cpu_reservation": {
 			Type:        schema.TypeString,
 			Required:    true,
+			ForceNew:    true, // Update not supported
 			Description: "CPU reservation (format: `<number><unit>`, where `<unit>` can be `M` or `G`)",
 		},
 		"memory_limit": {
 			Type:        schema.TypeString,
 			Required:    true,
+			ForceNew:    true, // Update not supported
 			Description: "Memory limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)",
 		},
 		"memory_reservation": {
 			Type:        schema.TypeString,
 			Required:    true,
+			ForceNew:    true, // Update not supported
 			Description: "Memory reservation (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)",
 		},
 		"name": {
 			Type:        schema.TypeString,
 			Required:    true,
+			ForceNew:    true, // Update not supported
 			Description: "Name of the Zone",
 		},
 	},
@@ -150,11 +157,13 @@ func resourceVcfaSupervisorNamespace() *schema.Resource {
 			"project_name": {
 				Type:        schema.TypeString,
 				Required:    true,
+				ForceNew:    true, // Update not supported
 				Description: fmt.Sprintf("The name of the Project the %s belongs to", labelSupervisorNamespace),
 			},
 			"class_name": {
 				Type:        schema.TypeString,
 				Required:    true,
+				ForceNew:    true, // Update not supported
 				Description: "The name of the Supervisor Namespace Class",
 			},
 			"description": {
@@ -175,6 +184,7 @@ func resourceVcfaSupervisorNamespace() *schema.Resource {
 			"region_name": {
 				Type:        schema.TypeString,
 				Required:    true,
+				ForceNew:    true, // Update not supported
 				Description: fmt.Sprintf("Name of the %s", labelVcfaRegion),
 			},
 			"storage_classes": {
@@ -186,6 +196,7 @@ func resourceVcfaSupervisorNamespace() *schema.Resource {
 			"storage_classes_initial_class_config_overrides": {
 				Type:        schema.TypeSet,
 				Required:    true,
+				ForceNew:    true, // Update not supported
 				MinItems:    1,
 				Description: "Initial Class Config Overrides for Storage Classes",
 				Elem:        supervisorNamespaceStorageClassesInitialClassConfigOverridesSchema,
@@ -199,6 +210,7 @@ func resourceVcfaSupervisorNamespace() *schema.Resource {
 			"vpc_name": {
 				Type:        schema.TypeString,
 				Required:    true,
+				ForceNew:    true, // Update not supported
 				Description: "Name of the VPC",
 			},
 			"zones": {
@@ -210,6 +222,7 @@ func resourceVcfaSupervisorNamespace() *schema.Resource {
 			"zones_initial_class_config_overrides": {
 				Type:        schema.TypeSet,
 				Required:    true,
+				ForceNew:    true, // Update not supported
 				MinItems:    1,
 				Description: "Initial Class Config Overrides for Zones",
 				Elem:        supervisorNamespaceZonesInitialClassConfigOverridesSchema,
