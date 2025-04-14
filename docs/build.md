@@ -1,4 +1,4 @@
-# Building the Terraform Provider for VMware Cloud on AWS
+# Building the Terraform Provider for VMware Cloud Foundation Automation
 
 The instructions outlined below are specific to macOS and Linux only.
 
