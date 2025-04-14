@@ -1,10 +1,34 @@
+# ---------------------------------------------------
+# Variables from: 01-provider.tf
+# ---------------------------------------------------
+
 url      = "https://HOST"
 username = "serviceadministrator"
 password = "CHANGE-ME"
 
+# ---------------------------------------------------
+# Variables from: 02-sddc.tf
+# ---------------------------------------------------
+
+# vCenter details
 vcenter_url          = "https://HOST"
 vcenter_username     = "administrator@vsphere.local"
 vcenter_password     = "CHANGE-ME"
+
+# NSX details
 nsx_manager_url      = "https://HOST"
 nsx_manager_username = "admin"
 nsx_manager_password = "CHANGE-ME"
+
+# ---------------------------------------------------
+# Variables from: 05-regions_variables.tf
+# ---------------------------------------------------
+
+# The Supervisor name can be looked up in vCenter, "Supervisor Management"
+supervisor_name              = "CHANGE-ME"
+
+# The name of the zone for the Supervisor above.
+supervisor_zone_name         = "CHANGE-ME"
+
+# Some storage policies from vCenter to be assigned to the VCFA Region
+vcenter_storage_policy_names = ["vSAN Default Storage Policy", "..."]
