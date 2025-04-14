@@ -1,0 +1,1 @@
+* Add examples of how to use the VMware Cloud Foundation Automation Terraform Provider, that can be found [here](examples) [GH-81]
