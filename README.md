@@ -1,8 +1,14 @@
 # Terraform VMware Cloud Foundation Automation Provider
 
-The official Terraform provider for VMware Cloud Foundation Automation 9+ by Broadcom
+[![Latest Release](https://img.shields.io/github/v/tag/vmware/terraform-provider-vcfa?label=latest%20release&style=for-the-badge)](https://github.com/vmware/terraform-provider-vcfa/releases/latest) [![License](https://img.shields.io/github/license/vmware/terraform-provider-vcfa.svg?style=for-the-badge)](LICENSE)
 
-- This project is using [go-vcloud-director](https://github.com/vmware/go-vcloud-director) Go SDK for making API calls
+The Terraform Provider for VMware Cloud Foundation Automation is a plugin for Terraform that allows you to interact with
+VMware Cloud Foundation Automation 9+ by Broadcom.
+
+Learn more:
+
+- Read the provider [documentation][provider-documentation]
+- This project is using [go-vcloud-director][go-vcd-sdk] Go SDK for making API calls
 
 ## Part of Terraform
 
@@ -15,76 +21,15 @@ The official Terraform provider for VMware Cloud Foundation Automation 9+ by Bro
 ## Requirements
 
 - [Terraform](https://www.terraform.io/downloads.html)
-- [Go](https://golang.org/doc/install) 1.22 (to build the provider plugin)
+- [Go](https://golang.org/doc/install) 1.23 (to build the provider plugin)
 
-## Building the Provider
+## Documentation
 
-**Note:** You *only* need to build the provider plugin if you want to *develop* it. Refer to
-[documentation](https://registry.terraform.io/providers/vmware/vcfa/latest/docs) for using it. Terraform will
-automatically download officially released binaries of this provider plugin on the first run of `terraform init`
-command.
-
-```shell
-cd ~/mydir
-git clone https://github.com/vmware/terraform-provider-vcfa.git
-cd terraform-provider-vcfa/
-make build
-```
-
-## Installing the Provider from source code
-
-**Note:** You *only* need to install the provider from source code if you want to test unreleased features or to develop it. Refer to
-[documentation](https://registry.terraform.io/providers/vmware/vcfa/latest/docs) for using it in a standard way. Terraform will
-automatically download officially released binaries of this provider plugin on the first run of `terraform init`
-command.
-
-```shell
-cd ~/mydir
-git clone https://github.com/vmware/terraform-provider-vcfa.git
-cd terraform-provider-vcfa/
-make install
-```
-
-This command will build the plugin and transfer it to
-`$HOME/.terraform.d/plugins/registry.terraform.io/vmware/vcfa/${VERSION}/${OS}_${ARCH}/terraform-provider-vcfa_v${VERSION}`,
-with a name that includes the version (as taken from the `./VERSION` file).
-
-For example, on **macOS**:
-
-```shell
-$HOME/.terraform.d/
-├── checkpoint_cache
-├── checkpoint_signature
-└── plugins
-    └── registry.terraform.io
-        └── vmware
-            └── vcfa
-                └── 0.1.0
-                    └── darwin_amd64
-                        └── terraform-provider-vcfa_v0.1.0
-```
-
-On **Linux**:
-
-```shell
-├── checkpoint_cache
-├── checkpoint_signature
-└── plugins
-    └── registry.terraform.io
-        └── vmware
-            └── vcfa
-                └── 0.1.0
-                    └── linux_amd64
-                        └── terraform-provider-vcfa_v0.1.0
-```
-
-Once you have installed the plugin as mentioned above, you can simply create a new `config.tf` as defined in [the manual](https://www.terraform.io/docs/providers/vcfa/index.html) and run
-
-```sh
-terraform init
-terraform plan
-terraform apply
-```
+- Read the official provider documentation [here][provider-documentation]
+- Read how to build the provider [here][provider-build]
+- Read how to install the provider [here][provider-install]
+- Read how to test the provider [here][provider-test]
+- You can find configuration examples [here][examples]
 
 ## Developing the Provider
 
@@ -114,9 +59,27 @@ You can also replace pointer to a branch with relative directory:
 replace github.com/vmware/go-vcloud-director/v3 v3.1.0-alpha.2 => ../go-vcloud-director
 ```
 
-See [CODING_GUIDELINES.md](./CODING_GUIDELINES.md) for more advice on how to write code for this project.
+See [CODING_GUIDELINES.md][coding-guidelines] for more advice on how to write code for this project.
 
 ## Troubleshooting the Provider
 
-Read [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) to learn how to configure and understand logs, and how to
+Read [TROUBLESHOOTING.md][troubleshooting] to learn how to configure and understand logs, and how to
 diagnose common errors.
+
+## License
+
+© Broadcom. All Rights Reserved.
+The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
+
+The Terraform Provider for VMware Cloud Foundation Automation is available under the
+[Mozilla Public License, version 2.0][provider-license] license.
+
+[coding-guidelines]: CODING_GUIDELINES.md
+[examples]: examples
+[go-vcd-sdk]: https://github.com/vmware/go-vcloud-director
+[provider-build]: docs/build.md
+[provider-documentation]: https://registry.terraform.io/providers/vmware/vcfa/latest/docs
+[provider-install]: docs/install.md
+[provider-license]: LICENSE
+[provider-test]: docs/test.md
+[troubleshooting]: TROUBLESHOOTING.md

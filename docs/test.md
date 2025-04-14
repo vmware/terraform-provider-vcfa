@@ -1,4 +1,4 @@
-# Testing terraform-provider-vcfa
+# Testing the Terraform Provider for VMware Cloud Foundation Automation
 
 ## Table of contents
 
