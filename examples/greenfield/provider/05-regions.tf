@@ -14,7 +14,7 @@ data "vcfa_supervisor_zone" "example" {
 
 # https://registry.terraform.io/providers/vmware/vcfa/latest/docs/resources/region
 resource "vcfa_region" "example" {
-  name                 = format("%s-%s", "tf-example-region", substr(md5(var.url), 0, 4))
+  name                 = "tf-example-region"
   description          = "Created by Terraform VCFA Provider"
   nsx_manager_id       = vcfa_nsx_manager.example.id
   supervisor_ids       = [data.vcfa_supervisor.example.id]

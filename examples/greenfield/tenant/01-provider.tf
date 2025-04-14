@@ -22,10 +22,6 @@ provider "vcfa" {
   logging              = true
 }
 
-locals {
-  region_name = format("%s-%s", var.region_name, substr(md5(var.url), 0, 4))
-}
-
 # https://registry.terraform.io/providers/vmware/vcfa/latest/docs/data-sources/org
 data "vcfa_org" "example" {
   name = var.org
@@ -33,7 +29,7 @@ data "vcfa_org" "example" {
 
 # https://registry.terraform.io/providers/vmware/vcfa/latest/docs/data-sources/region
 data "vcfa_region" "example" {
-  name = local.region_name
+  name = var.region_name
 }
 
 # https://registry.terraform.io/providers/vmware/vcfa/latest/docs/data-sources/kubeconfig

@@ -59,11 +59,11 @@ You can also replace pointer to a branch with relative directory:
 replace github.com/vmware/go-vcloud-director/v3 v3.1.0-alpha.2 => ../go-vcloud-director
 ```
 
-See [CODING_GUIDELINES.md][coding-guidelines] for more advice on how to write code for this project.
+Read the [coding guidelines][coding-guidelines] for more advice on how to write code for this project.
 
 ## Troubleshooting the Provider
 
-Read [TROUBLESHOOTING.md][troubleshooting] to learn how to configure and understand logs, and how to
+Read the [troubleshooting][troubleshooting] document to learn how to configure and understand logs, and how to
 diagnose common errors.
 
 ## License

@@ -24,8 +24,8 @@ resource "vcfa_supervisor_namespace" "example" {
   project_name = "tf-tenant-example-project"
   class_name   = "small"
   description  = "Created by Terraform VCFA Provider"
-  region_name  = local.region_name
-  vpc_name     = format("%s-%s", local.region_name, "Default-VPC")
+  region_name  = var.region_name
+  vpc_name     = format("%s-%s", var.region_name, "Default-VPC")
 
   storage_classes_initial_class_config_overrides {
     limit = "200Mi"
