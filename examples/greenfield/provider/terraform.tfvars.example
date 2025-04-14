@@ -1,3 +1,10 @@
 url      = "https://HOST"
 username = "serviceadministrator"
 password = "CHANGE-ME"
+
+vcenter_url          = "https://HOST"
+vcenter_username     = "administrator@vsphere.local"
+vcenter_password     = "CHANGE-ME"
+nsx_manager_url      = "https://HOST"
+nsx_manager_username = "admin"
+nsx_manager_password = "CHANGE-ME"
