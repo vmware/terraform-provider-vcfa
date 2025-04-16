@@ -8,6 +8,7 @@ VMware Cloud Foundation Automation 9+ by Broadcom.
 Learn more:
 
 - Read the provider [documentation][provider-documentation]
+- Have a look at the [configuration examples][examples]
 - This project is using [go-vcloud-director][go-vcd-sdk] Go SDK for making API calls
 
 ## Part of Terraform
@@ -23,13 +24,74 @@ Learn more:
 - [Terraform](https://www.terraform.io/downloads.html)
 - [Go](https://golang.org/doc/install) 1.23 (to build the provider plugin)
 
-## Documentation
+## Building the Provider
 
-- Read the official provider documentation [here][provider-documentation]
-- Read how to build the provider [here][provider-build]
-- Read how to install the provider [here][provider-install]
-- Read how to test the provider [here][provider-test]
-- You can find configuration examples [here][examples]
+**Note:** You *only* need to build the provider plugin if you want to *develop* it. Refer to
+[documentation][provider-documentation] for using it. Terraform will
+automatically download officially released binaries of this provider plugin on the first run of `terraform init`
+command.
+
+```shell
+cd ~/mydir
+git clone https://github.com/vmware/terraform-provider-vcfa.git
+cd terraform-provider-vcfa/
+make build
+```
+
+## Installing the Provider from source code
+
+**Note:** You *only* need to install the provider from source code if you want to test unreleased features or to develop it. Refer to
+[documentation](https://registry.terraform.io/providers/vmware/vcfa/latest/docs) for using it in a standard way. Terraform will
+automatically download officially released binaries of this provider plugin on the first run of `terraform init`
+command.
+
+```shell
+cd ~/mydir
+git clone https://github.com/vmware/terraform-provider-vcfa.git
+cd terraform-provider-vcfa/
+make install
+```
+
+This command will build the plugin and transfer it to
+`$HOME/.terraform.d/plugins/registry.terraform.io/vmware/vcfa/${VERSION}/${OS}_${ARCH}/terraform-provider-vcfa_v${VERSION}`,
+with a name that includes the version (as taken from the `./VERSION` file).
+
+For example, on **macOS**:
+
+```console
+$HOME/.terraform.d/
+├── checkpoint_cache
+├── checkpoint_signature
+└── plugins
+    └── registry.terraform.io
+        └── vmware
+            └── vcfa
+                └── 1.0.0
+                    └── darwin_amd64
+                        └── terraform-provider-vcfa_v1.0.0
+```
+
+On **Linux**:
+
+```console
+├── checkpoint_cache
+├── checkpoint_signature
+└── plugins
+    └── registry.terraform.io
+        └── vmware
+            └── vcfa
+                └── 1.0.0
+                    └── linux_amd64
+                        └── terraform-provider-vcfa_v1.0.0
+```
+
+Once you have installed the plugin as mentioned above, you can simply create a new `config.tf` as defined in [the manual](https://www.terraform.io/docs/providers/vcfa/index.html) and run
+
+```sh
+terraform init
+terraform plan
+terraform apply
+```
 
 ## Developing the Provider
 
@@ -59,11 +121,11 @@ You can also replace pointer to a branch with relative directory:
 replace github.com/vmware/go-vcloud-director/v3 v3.1.0-alpha.2 => ../go-vcloud-director
 ```
 
-Read the [coding guidelines][coding-guidelines] for more advice on how to write code for this project.
+See [CODING_GUIDELINES.md][coding-guidelines] for more advice on how to write code for this project.
 
 ## Troubleshooting the Provider
 
-Read the [troubleshooting][troubleshooting] document to learn how to configure and understand logs, and how to
+Read [TROUBLESHOOTING.md][troubleshooting] to learn how to configure and understand logs, and how to
 diagnose common errors.
 
 ## License
@@ -77,9 +139,6 @@ The Terraform Provider for VMware Cloud Foundation Automation is available under
 [coding-guidelines]: CODING_GUIDELINES.md
 [examples]: examples
 [go-vcd-sdk]: https://github.com/vmware/go-vcloud-director
-[provider-build]: BUILD.md
 [provider-documentation]: https://registry.terraform.io/providers/vmware/vcfa/latest/docs
-[provider-install]: INSTALL.md
 [provider-license]: LICENSE
-[provider-test]: TESTING.md
 [troubleshooting]: TROUBLESHOOTING.md
