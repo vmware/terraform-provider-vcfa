@@ -92,8 +92,8 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 		return
 	}
 
-	// This test uses also a provider config block logged in as a Tenant user, so we can not only test that administrators
-	// can create tenant library items, but also tenant users can. This is a function and not a map to be lazy evaluated, as
+	// This test uses also a provider config block logged in as a Tenant user, as we must create Supervisor namespaces
+	// as tenant user. This is a function and not a map to be lazy evaluated, as
 	// the given user is created after some testing steps.
 	multipleFactories := func() map[string]func() (*schema.Provider, error) {
 		return map[string]func() (*schema.Provider, error){

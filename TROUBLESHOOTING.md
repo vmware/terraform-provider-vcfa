@@ -67,7 +67,7 @@ Terraform provider plugins follow [semantic versioning][semver] pattern and
 terraform {
   required_providers {
     vcfa = {
-      source = "vmware/vcfa"
+      source  = "vmware/vcfa"
       version = "~> 1.0.0" # pins major and minor versions, but will accept new patch versions (e.g. 1.0.1)
     }
   }

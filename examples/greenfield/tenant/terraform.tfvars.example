@@ -1,0 +1,25 @@
+# ---------------------------------------------------
+# Variables from: 01-provider.tf
+# ---------------------------------------------------
+
+url = "https://HOST"
+
+# This user is created in '../provider' Terraform configuration
+username    = "tf-example-local-user"
+password    = "long-change-ME1"
+org         = "tf-example-org"
+region_name = "tf-example-region"
+
+# ---------------------------------------------------
+# Variables from: 02-content_libraries.tf
+# ---------------------------------------------------
+
+# Pick one assigned to the Region above
+storage_class = "vSAN Storage Policy"
+
+# ---------------------------------------------------
+# Variables from: 03-supervisor_namespaces.tf
+# ---------------------------------------------------
+
+# An available zone from the Supervisor
+supervisor_zone = "CHANGE-ME"

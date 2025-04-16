@@ -19,14 +19,12 @@ modules-dev/
 .vscode/
 *.iml
 *.test
-*.iml
 
 # Ignore test coverage files
 *.cover
 
 vcfa_test_config*.json
 vcfa/vcfa_test_config*.json
-vcfa_test_config*.json
 vcfa/go-vcloud-director.log
 vcfa/test-artifacts
 website/vendor

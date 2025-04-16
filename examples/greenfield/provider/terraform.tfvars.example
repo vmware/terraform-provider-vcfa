@@ -1,0 +1,66 @@
+# ---------------------------------------------------
+# Variables from: 01-provider.tf
+# ---------------------------------------------------
+
+url      = "https://HOST"
+username = "serviceadministrator"
+password = "CHANGE-ME"
+
+# ---------------------------------------------------
+# Variables from: 02-sddc.tf
+# ---------------------------------------------------
+
+# vCenter details
+vcenter_url          = "https://HOST"
+vcenter_username     = "administrator@vsphere.local"
+vcenter_password     = "CHANGE-ME"
+
+# NSX details
+nsx_manager_url      = "https://HOST"
+nsx_manager_username = "admin"
+nsx_manager_password = "CHANGE-ME"
+
+# ---------------------------------------------------
+# Variables from: 05-regions_variables.tf
+# ---------------------------------------------------
+
+# The Supervisor name can be looked up in vCenter, "Supervisor Management"
+supervisor_name = "CHANGE-ME"
+
+# The name of the zone for the Supervisor above.
+supervisor_zone_name = "CHANGE-ME"
+
+# Some storage policies from vCenter to be assigned to the VCFA Region
+vcenter_storage_policy_names = ["vSAN Default Storage Policy", "..."]
+
+# ---------------------------------------------------
+# Variables from: 06-region_quotas_variables.tf
+# ---------------------------------------------------
+
+# Some VM classes from vCenter to be assigned to the VCFA Region Quota
+region_vm_class_names = ["best-effort-2xlarge", "best-effort-4xlarge"]
+
+# These must be a subset of 'vcenter_storage_policy_names' (or same)
+region_storage_policy_names = ["vSAN Default Storage Policy", "..."]
+
+# ---------------------------------------------------
+# Variables from: 07-networking.tf
+# ---------------------------------------------------
+
+# An existing Tier-0 Gateway from NSX Manager
+tier0_gateway_name = "CHANGE-ME"
+
+# An existing Edge Cluster from NSX Manager
+nsx_edge_cluster_name = "CHANGE-ME"
+
+# ---------------------------------------------------
+# Variables from: 08-idp.tf
+# ---------------------------------------------------
+
+# LDAP configuration
+ldap_host       = "my-ldap.host.com"
+ldap_port       = 443
+ldap_ssl        = true
+ldap_username   = "CHANGE-ME"
+ldap_password   = "CHANGE-ME"
+ldap_searchbase = "OU=example,DC=sqa,DC=example,DC=my-company,DC=com"
