@@ -77,9 +77,9 @@ The Terraform Provider for VMware Cloud Foundation Automation is available under
 [coding-guidelines]: CODING_GUIDELINES.md
 [examples]: examples
 [go-vcd-sdk]: https://github.com/vmware/go-vcloud-director
-[provider-build]: docs/build.md
+[provider-build]: BUILD.md
 [provider-documentation]: https://registry.terraform.io/providers/vmware/vcfa/latest/docs
-[provider-install]: docs/install.md
+[provider-install]: INSTALL.md
 [provider-license]: LICENSE
-[provider-test]: docs/test.md
+[provider-test]: TESTING.md
 [troubleshooting]: TROUBLESHOOTING.md

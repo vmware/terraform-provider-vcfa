@@ -24,7 +24,7 @@ used when a default hashing function (which calculates hash based on all fields)
 
 ## Testing
 
-Every feature in the provider must include testing. Read [this document](docs/test.md) for more info.
+Every feature in the provider must include testing. Read [TESTING.md](TESTING.md) for more info.
 
 ## Handling Terraform Read of disappeared (removed by other means than Terraform) entities
 
