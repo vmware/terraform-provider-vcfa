@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccVcfaEdgeCluster(t *testing.T) {
@@ -170,7 +170,7 @@ data "vcfa_edge_cluster" "demo" {
 
 data "vcfa_edge_cluster_qos" "demo" {
   edge_cluster_id = data.vcfa_edge_cluster.demo.id
-}  
+}
 `
 
 const testAccVcfaEdgeClusterQosStep2 = testAccVcfaEdgeClusterQosStep1 + `
@@ -193,7 +193,7 @@ data "vcfa_edge_cluster" "demo" {
 
 data "vcfa_edge_cluster_qos" "demo2" {
   edge_cluster_id = data.vcfa_edge_cluster.demo.id
-}  
+}
 `
 
 // egress only

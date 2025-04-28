@@ -10,8 +10,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
 // TestAccVcfaProviderLdap tests Provider (System) LDAP configuration against an LDAP server with the given configuration
@@ -147,7 +147,7 @@ resource "vcfa_provider_ldap" "ldap" {
 	group_membership_identifier = "dn"
 	group_back_link_identifier  = "objectSid"
   }
-  
+
   lifecycle {
     # password value does not get returned by GET
     ignore_changes = [password]
