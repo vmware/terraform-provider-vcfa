@@ -12,8 +12,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
 // TODO: TM: Review whether this test should be skipped when an API Token or service account
@@ -57,7 +57,7 @@ func TestAccVcfaApiToken(t *testing.T) {
 // #nosec G101 -- No hardcoded credentials here
 const testAccVcfaApiToken = `
 resource "vcfa_api_token" "custom" {
-  name = "{{.TokenName}}"		
+  name = "{{.TokenName}}"
 
   file_name        = "{{.FileName}}"
   allow_token_file = true

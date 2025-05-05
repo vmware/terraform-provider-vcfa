@@ -11,8 +11,8 @@ import (
 	"reflect"
 	"slices"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
 // testCachedFieldValue structure with attached functions is useful for testing specific field value

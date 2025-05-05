@@ -10,8 +10,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
 )
 
@@ -185,7 +185,7 @@ data "vcfa_content_library" "content_library" {
 	}
 	return orgDataSource + `
 data "vcfa_storage_class" "storage_class" {
-  region_id = ` + regionHclRef + `.id 
+  region_id = ` + regionHclRef + `.id
   name      = "` + testConfig.Tm.StorageClass + `"
 }
 
@@ -237,7 +237,7 @@ data "vcfa_provider_gateway" "test" {
 	}
 	return `
 data "vcfa_tier0_gateway" "test" {
-  region_id = ` + regionHclRef + `.id 
+  region_id = ` + regionHclRef + `.id
   name      = "` + testConfig.Tm.NsxTier0Gateway + `"
 }
 
