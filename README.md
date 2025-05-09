@@ -22,7 +22,7 @@ Learn more:
 ## Requirements
 
 - [Terraform](https://www.terraform.io/downloads.html)
-- [Go](https://golang.org/doc/install) 1.23 (to build the provider plugin)
+- [Go](https://golang.org/doc/install) 1.24 (to build the provider plugin)
 
 ## Building the Provider
 
