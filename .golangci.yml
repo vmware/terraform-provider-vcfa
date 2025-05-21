@@ -1,0 +1,62 @@
+---
+version: "2"
+
+output:
+  formats:
+    text:
+      path: stdout
+
+linters:
+  default: none
+  enable:
+    - errcheck
+    - gosec
+    - govet
+    - ineffassign
+    - misspell
+    - revive
+    - staticcheck
+    - unconvert
+    - unused
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      # TODO: Setting temporary exclusions for specific linters.
+      - linters:
+          - errcheck
+        text: is not checked
+      - linters:
+          - staticcheck
+        text: QF1008
+      - linters:
+          - misspell
+        text: is a misspelling
+      - linters:
+          - revive
+        text: increment-decrement|redefines-builtin-id|unused-parameter|var-declaration|var-naming
+      - linters:
+          - unused
+        text: is unused
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+
+issues:
+  max-same-issues: 0
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
