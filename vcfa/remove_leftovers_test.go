@@ -38,9 +38,7 @@ var doNotDelete = entityList{
 // alsoDelete contains a list of entities that should be removed , in addition to the ones
 // found by name matching
 // Add to this list if you ever get an entity left behind by a test
-var alsoDelete = entityList{
-	// {Type: "vcfa_xxx", Name: "custom-name", Comment: "manually created"},
-}
+var alsoDelete = entityList{}
 
 // isTest is a regular expression that tells if an entity needs to be deleted
 var isTest = regexp.MustCompile(`^[Tt]est`)
