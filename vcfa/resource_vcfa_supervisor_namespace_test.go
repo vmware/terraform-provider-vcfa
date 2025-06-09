@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -117,19 +118,16 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				ProviderFactories: testAccProviders,
-				ExternalProviders: map[string]resource.ExternalProvider{
-					"time": {
-						Source:            "hashicorp/time",
-						VersionConstraint: timeProviderVersion,
-					},
-				},
-				Config: configText1,
-				Check:  resource.ComposeTestCheckFunc(),
+				Config:            configText1,
+				Check:             resource.ComposeTestCheckFunc(),
 			},
 			{
 				ProviderFactories: multipleFactories(),
-				PreConfig:         func() { createProject(t, params) }, //Setup project
-				Config:            configText2,
+				PreConfig: func() {
+					time.Sleep(25 * time.Second) // Give time for Namespace Classes to be allocated after the Organization is created
+					createProject(t, params)
+				}, //Setup project
+				Config: configText2,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestMatchResourceAttr("vcfa_supervisor_namespace.test", "id", regexp.MustCompile(fmt.Sprintf(`^%s:terraform-test`, params["ProjectName"].(string)))),
 					resource.TestMatchResourceAttr("vcfa_supervisor_namespace.test", "name", regexp.MustCompile(`^terraform-test`)),
@@ -229,12 +227,6 @@ resource "vcfa_org" "test" {
   display_name = "terraform-test"
   description  = "terraform test"
   is_enabled   = true
-}
-
-# Take some time so the Organization can populate Namespace Classes
-resource "time_sleep" "org_wait" {
-  depends_on      = [vcfa_org.test]
-  create_duration = "30s"
 }
 
 data "vcfa_role" "org-admin" {
