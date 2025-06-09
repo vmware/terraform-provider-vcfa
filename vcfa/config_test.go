@@ -45,6 +45,9 @@ const (
 // vsphereProviderVersion specifies the version of vSphere Terraform Provider
 var vsphereProviderVersion = "~> 2.11"
 
+// timeProviderVersion specifies the version of Time Terraform Provider
+var timeProviderVersion = "~> 0.13"
+
 func init() {
 
 	// To list the flags when we run "go test -tags functional -vcfa-help", the flag name must start with "vcfa"

@@ -117,8 +117,14 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				ProviderFactories: testAccProviders,
-				Config:            configText1,
-				Check:             resource.ComposeTestCheckFunc(),
+				ExternalProviders: map[string]resource.ExternalProvider{
+					"time": {
+						Source:            "hashicorp/time",
+						VersionConstraint: timeProviderVersion,
+					},
+				},
+				Config: configText1,
+				Check:  resource.ComposeTestCheckFunc(),
 			},
 			{
 				ProviderFactories: multipleFactories(),
@@ -223,6 +229,12 @@ resource "vcfa_org" "test" {
   display_name = "terraform-test"
   description  = "terraform test"
   is_enabled   = true
+}
+
+# Take some time so the Organization can populate Namespace Classes
+resource "time_sleep" "org_wait" {
+  depends_on      = [vcfa_org.test]
+  create_duration = "10s"
 }
 
 data "vcfa_role" "org-admin" {
