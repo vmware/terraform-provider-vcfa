@@ -124,6 +124,7 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 			{
 				ProviderFactories: multipleFactories(),
 				PreConfig: func() {
+					// TODO: Introduce retries when Supervisor Namespace is created, instead of a patch in the test
 					time.Sleep(25 * time.Second) // Give time for Namespace Classes to be allocated after the Organization is created
 					createProject(t, params)
 				}, //Setup project
