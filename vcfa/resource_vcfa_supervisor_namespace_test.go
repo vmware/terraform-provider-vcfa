@@ -234,7 +234,7 @@ resource "vcfa_org" "test" {
 # Take some time so the Organization can populate Namespace Classes
 resource "time_sleep" "org_wait" {
   depends_on      = [vcfa_org.test]
-  create_duration = "10s"
+  create_duration = "30s"
 }
 
 data "vcfa_role" "org-admin" {
