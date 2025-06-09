@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -122,8 +123,12 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 			},
 			{
 				ProviderFactories: multipleFactories(),
-				PreConfig:         func() { createProject(t, params) }, //Setup project
-				Config:            configText2,
+				PreConfig: func() {
+					// TODO: Introduce retries when Supervisor Namespace is created, instead of a patch in the test
+					time.Sleep(25 * time.Second) // Give time for Namespace Classes to be allocated after the Organization is created
+					createProject(t, params)
+				}, //Setup project
+				Config: configText2,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestMatchResourceAttr("vcfa_supervisor_namespace.test", "id", regexp.MustCompile(fmt.Sprintf(`^%s:terraform-test`, params["ProjectName"].(string)))),
 					resource.TestMatchResourceAttr("vcfa_supervisor_namespace.test", "name", regexp.MustCompile(`^terraform-test`)),
