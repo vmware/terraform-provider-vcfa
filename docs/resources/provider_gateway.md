@@ -42,11 +42,11 @@ data "vcfa_ip_space" "demo2" {
 }
 
 resource "vcfa_provider_gateway" "demo" {
-  name                  = "Demo Provider Gateway"
-  description           = "Terraform Provider Gateway"
-  region_id             = data.vcfa_region.demo.id
-  nsxt_tier0_gateway_id = data.vcfa_tier0_gateway.demo.id
-  ip_space_ids          = [data.vcfa_ip_space.demo.id, data.vcfa_ip_space.demo2.id]
+  name             = "Demo Provider Gateway"
+  description      = "Terraform Provider Gateway"
+  region_id        = data.vcfa_region.demo.id
+  tier0_gateway_id = data.vcfa_tier0_gateway.demo.id
+  ip_space_ids     = [data.vcfa_ip_space.demo.id, data.vcfa_ip_space.demo2.id]
 }
 ```
 
