@@ -1,1 +1,1 @@
-- Add `vcfa_version` data source to read version details from VCFA [GH-1, GH-66]
+- **New Data Source:** `vcfa_version` to read version details from VCFA [GH-1, GH-66]

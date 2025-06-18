@@ -1,7 +1,7 @@
 ## 1.0.0 (June 18, 2025)
 
 ### FEATURES
-- Add `vcfa_version` data source to read version details from VCFA ([#1](https://github.com/vmware/terraform-provider-vcfa/pull/1), [#66](https://github.com/vmware/terraform-provider-vcfa/pull/66))
+- **New Data Source:** `vcfa_version` to read version details from VCFA ([#1](https://github.com/vmware/terraform-provider-vcfa/pull/1), [#66](https://github.com/vmware/terraform-provider-vcfa/pull/66))
 - **New Resource:** `vcfa_org` to manage Organizations ([#3](https://github.com/vmware/terraform-provider-vcfa/pull/3))
 - **New Data Source:** `vcfa_org` to read Organizations ([#3](https://github.com/vmware/terraform-provider-vcfa/pull/3))
 - **New Resource:** `vcfa_nsx_manager` to manage VMware Cloud Foundation Automation NSX Managers
