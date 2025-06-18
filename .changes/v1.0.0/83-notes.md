@@ -1,1 +1,1 @@
-* Migrate tests to `hashicorp/terraform-plugin-testing` [GH-83]
+- Migrate tests to `hashicorp/terraform-plugin-testing` [GH-83]
