@@ -1,6 +1,7 @@
 ## 1.0.0 (June 18, 2025)
 
 ### FEATURES
+
 - **New Data Source:** `vcfa_version` to read version details from VCFA ([#1](https://github.com/vmware/terraform-provider-vcfa/pull/1), [#66](https://github.com/vmware/terraform-provider-vcfa/pull/66))
 - **New Resource:** `vcfa_org` to manage Organizations ([#3](https://github.com/vmware/terraform-provider-vcfa/pull/3))
 - **New Data Source:** `vcfa_org` to read Organizations ([#3](https://github.com/vmware/terraform-provider-vcfa/pull/3))
@@ -61,6 +62,7 @@
 - **New Data Source:** `vcfa_org_settings` to read Organization general settings ([#50](https://github.com/vmware/terraform-provider-vcfa/pull/50), [#61](https://github.com/vmware/terraform-provider-vcfa/pull/61))
 
 ### IMPROVEMENTS
+
 - The `url` field in `provider` configuration does not require specifying API endpoint '/api/
   ([#47](https://github.com/vmware/terraform-provider-vcfa/pull/47))
 
@@ -86,4 +88,3 @@
 - Change documentation to follow the modern Terraform layout for providers ([#74](https://github.com/vmware/terraform-provider-vcfa/pull/74), [#79](https://github.com/vmware/terraform-provider-vcfa/pull/79))
 - Add examples of how to use the VMware Cloud Foundation Automation Terraform Provider, that can be found [here](examples) ([#81](https://github.com/vmware/terraform-provider-vcfa/pull/81))
 - Migrate tests to `hashicorp/terraform-plugin-testing` ([#83](https://github.com/vmware/terraform-provider-vcfa/pull/83))
-
