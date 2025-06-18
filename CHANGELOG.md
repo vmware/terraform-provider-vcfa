@@ -65,6 +65,8 @@
   ([#47](https://github.com/vmware/terraform-provider-vcfa/pull/47))
 
 ### NOTES
+
+- Consume go-vcloud-director v3.0.0 (SDK this provider uses for low level access to Tenant Manager side of VCFA) ([#100](https://github.com/vmware/terraform-provider-vcfa/pull/100))
 - Initialize the VCFA Provider repository ([#1](https://github.com/vmware/terraform-provider-vcfa/pull/1))
 - Add generic resource management functionality in `resource_generic_crud.go` ([#2](https://github.com/vmware/terraform-provider-vcfa/pull/2))
 - Add leftover removal mechanism that makes `make cleanup` work ([#2](https://github.com/vmware/terraform-provider-vcfa/pull/2))
