@@ -63,12 +63,11 @@
 
 ### IMPROVEMENTS
 
-- The `url` field in `provider` configuration does not require specifying API endpoint '/api/
+- The `url` field in `provider` configuration does not require specifying API endpoint `/api/`
   ([#47](https://github.com/vmware/terraform-provider-vcfa/pull/47))
 
 ### NOTES
 
-- Consume go-vcloud-director v3.0.0 (SDK this provider uses for low level access to Tenant Manager side of VCFA) ([#100](https://github.com/vmware/terraform-provider-vcfa/pull/100))
 - Initialize the VCFA Provider repository ([#1](https://github.com/vmware/terraform-provider-vcfa/pull/1))
 - Add generic resource management functionality in `resource_generic_crud.go` ([#2](https://github.com/vmware/terraform-provider-vcfa/pull/2))
 - Add leftover removal mechanism that makes `make cleanup` work ([#2](https://github.com/vmware/terraform-provider-vcfa/pull/2))
@@ -88,3 +87,4 @@
 - Change documentation to follow the modern Terraform layout for providers ([#74](https://github.com/vmware/terraform-provider-vcfa/pull/74), [#79](https://github.com/vmware/terraform-provider-vcfa/pull/79))
 - Add examples of how to use the VMware Cloud Foundation Automation Terraform Provider, that can be found [here](examples) ([#81](https://github.com/vmware/terraform-provider-vcfa/pull/81))
 - Migrate tests to `hashicorp/terraform-plugin-testing` ([#83](https://github.com/vmware/terraform-provider-vcfa/pull/83))
+- Consume go-vcloud-director v3.0.0 (SDK this provider uses for low level access to Tenant Manager side of VCFA) ([#100](https://github.com/vmware/terraform-provider-vcfa/pull/100))
