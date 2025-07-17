@@ -1,1 +1,1 @@
-- Increase sleep for `TestAccVcfaSupervisorNamespace` test so it does not fail intermittently [GH-104]
+- Increase sleep for `TestAccVcfaSupervisorNamespace` test so it does not fail intermittently [GH-104, GH-105]
