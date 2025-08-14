@@ -32,7 +32,7 @@
 "cci": {
     "//": "existing entity configuration that are available in the above defined Org",
     "region": "terraform-demo",
-    "vpc": "terraform-demo-Default-VPC",
+    "vpc": "terraform-demo-default-vpc",
     "storagePolicy": "vSAN Default Storage Policy",
     "supervisorZone": "vcfa-gen-wl-vc08-cl1-zone1"
 },
