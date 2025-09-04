@@ -201,7 +201,7 @@ resource "vcfa_content_library" "content_library" {
 }
 
 func getIpSpaceHcl(t *testing.T, regionHclRef, nameSuffix, octet3 string) (string, string) {
-	k8sCompliantName := strings.ReplaceAll(strings.Split(strings.ToLower(t.Name()+nameSuffix), ".")[1], "_", "-")
+	k8sCompliantName := strings.ReplaceAll(strings.ToLower(t.Name()), "_", "-")
 
 	return `
 resource "vcfa_ip_space" "test-` + nameSuffix + `" {

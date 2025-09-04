@@ -25,7 +25,7 @@ func TestAccVcfaIpSpace(t *testing.T) {
 	vCenterHcl, vCenterHclRef := getVCenterHcl(t, nsxManagerHclRef)
 	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
 
-	k8sCompliantName := strings.ReplaceAll(strings.Split(strings.ToLower(t.Name()), ".")[1], "_", "-")
+	k8sCompliantName := strings.ReplaceAll(strings.ToLower(t.Name()), "_", "-")
 
 	var params = StringMap{
 		"Testname":      k8sCompliantName,
