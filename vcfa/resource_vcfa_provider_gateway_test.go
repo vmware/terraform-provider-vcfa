@@ -8,6 +8,7 @@ package vcfa
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -24,8 +25,10 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 	ipSpace1Hcl, ipSpace1HclRef := getIpSpaceHcl(t, regionHclRef, "1", "1")
 	ipSpace2Hcl, ipSpace2HclRef := getIpSpaceHcl(t, regionHclRef, "2", "2")
 
+	k8sCompliantName := strings.ReplaceAll(strings.ToLower(t.Name()), "_", "-")
+
 	var params = StringMap{
-		"Testname":     t.Name(),
+		"Testname":     k8sCompliantName,
 		"VcenterRef":   vCenterHclRef,
 		"RegionId":     fmt.Sprintf("%s.id", regionHclRef),
 		"RegionName":   t.Name(),
@@ -76,7 +79,7 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "region_id"),
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "tier0_gateway_id"),
-					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "name", t.Name()),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "name", k8sCompliantName),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "description", "Made using Terraform"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "ip_space_ids.#", "2"),
 				),
@@ -88,7 +91,7 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "region_id"),
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "tier0_gateway_id"),
-					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "name", t.Name()),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "name", k8sCompliantName),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "description", "Made using Terraform updated"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "ip_space_ids.#", "1"),
 				),
@@ -100,7 +103,7 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "id"),
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "region_id"),
 					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "tier0_gateway_id"),
-					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "name", t.Name()+"-updated"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "name", k8sCompliantName+"-updated"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "description", ""),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "ip_space_ids.#", "3"),
 				),
