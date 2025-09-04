@@ -1,0 +1,1 @@
+- Amend IP Space names in tests to be compatible with Kubernetes naming convention [GH-118]
