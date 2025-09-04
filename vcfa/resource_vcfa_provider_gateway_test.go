@@ -8,6 +8,7 @@ package vcfa
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -24,8 +25,10 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 	ipSpace1Hcl, ipSpace1HclRef := getIpSpaceHcl(t, regionHclRef, "1", "1")
 	ipSpace2Hcl, ipSpace2HclRef := getIpSpaceHcl(t, regionHclRef, "2", "2")
 
+	k8sCompliantName := strings.ReplaceAll(strings.Split(strings.ToLower(t.Name()), ".")[1], "_", "-")
+
 	var params = StringMap{
-		"Testname":     t.Name(),
+		"Testname":     k8sCompliantName,
 		"VcenterRef":   vCenterHclRef,
 		"RegionId":     fmt.Sprintf("%s.id", regionHclRef),
 		"RegionName":   t.Name(),

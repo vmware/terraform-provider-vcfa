@@ -10,6 +10,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -23,8 +24,11 @@ func TestAccVcfaIpSpace(t *testing.T) {
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
 	vCenterHcl, vCenterHclRef := getVCenterHcl(t, nsxManagerHclRef)
 	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
+
+	k8sCompliantName := strings.ReplaceAll(strings.Split(strings.ToLower(t.Name()), ".")[1], "_", "-")
+
 	var params = StringMap{
-		"Testname":      t.Name(),
+		"Testname":      k8sCompliantName,
 		"VcenterRef":    vCenterHclRef,
 		"RegionId":      fmt.Sprintf("%s.id", regionHclRef),
 		"RegionName":    t.Name(),

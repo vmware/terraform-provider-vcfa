@@ -8,6 +8,7 @@ package vcfa
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -200,9 +201,11 @@ resource "vcfa_content_library" "content_library" {
 }
 
 func getIpSpaceHcl(t *testing.T, regionHclRef, nameSuffix, octet3 string) (string, string) {
+	k8sCompliantName := strings.ReplaceAll(strings.Split(strings.ToLower(t.Name()+nameSuffix), ".")[1], "_", "-")
+
 	return `
 resource "vcfa_ip_space" "test-` + nameSuffix + `" {
-  name                          = "` + t.Name() + nameSuffix + `"
+  name                          = "` + k8sCompliantName + `"
   description                   = "Made using Terraform"
   region_id                     = ` + regionHclRef + `.id
   external_scope                = "43.12.` + octet3 + `.0/30"
