@@ -205,7 +205,7 @@ func getIpSpaceHcl(t *testing.T, regionHclRef, nameSuffix, octet3 string) (strin
 
 	return `
 resource "vcfa_ip_space" "test-` + nameSuffix + `" {
-  name                          = "` + k8sCompliantName + `"
+  name                          = "` + k8sCompliantName + nameSuffix + `"
   description                   = "Made using Terraform"
   region_id                     = ` + regionHclRef + `.id
   external_scope                = "43.12.` + octet3 + `.0/30"
