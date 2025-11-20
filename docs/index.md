@@ -18,6 +18,7 @@ to track feature additions.
 The following VCFA versions are supported by this provider:
 
 - 9.0
+- 9.1
 
 ## Connecting as System Administrator
 
@@ -28,7 +29,7 @@ terraform {
   required_providers {
     vcfa = {
       source  = "vmware/vcfa"
-      version = "~> 1.0.0"
+      version = "~> 1.1.0"
     }
   }
 }
