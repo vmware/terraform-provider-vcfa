@@ -1,0 +1,1 @@
+- Fix Supervisor Namespace tests by setting the proper dependency on region network settings [GH-144]
