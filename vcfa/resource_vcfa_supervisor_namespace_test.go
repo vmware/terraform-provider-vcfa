@@ -259,7 +259,9 @@ resource "vcfa_org_regional_networking" "test" {
   region_id           = vcfa_region.region.id
   edge_cluster_id     = data.vcfa_edge_cluster.test.id
 
-  depends_on = [vcfa_org_networking.test]
+  # The explicit dependency for vcfa_org_region_quota prevents removing
+  # the region quota before the regional networking settings
+  depends_on = [vcfa_org_networking.test, vcfa_org_region_quota.test]
 }
 `
 
