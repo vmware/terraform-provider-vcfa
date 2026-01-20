@@ -1,0 +1,1 @@
+- Make VPC name configurable in SupervisorNamespace tests [GH-146]

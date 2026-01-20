@@ -114,6 +114,7 @@ type TestConfig struct {
 		StorageClass    string   `json:"storageClass"`
 		RegionVmClasses []string `json:"regionVmClasses"`
 		ContentLibrary  string   `json:"contentLibrary"`
+		Vpc             string   `json:"vpc"`
 
 		CreateNsxManager   bool   `json:"createNsxManager"`
 		NsxManagerUsername string `json:"nsxManagerUsername"`

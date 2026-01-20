@@ -43,6 +43,7 @@
     "storageClass": "vSAN Default Storage Policy",
     "vdc": "one-vdc",
     "contentLibrary": "content-library-one",
+    "vpc": "default-one-region",
 
     "createVcenter": true,
     "vcenterUsername": "user@vsphere.local",

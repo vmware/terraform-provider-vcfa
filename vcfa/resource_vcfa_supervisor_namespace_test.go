@@ -58,7 +58,7 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 
 		"Supervisor":     testConfig.Tm.VcenterSupervisor,
 		"RegionName":     testConfig.Tm.Region,
-		"VpcName":        testConfig.Tm.Region + "-default-vpc",
+		"VpcName":        testConfig.Tm.Vpc,
 		"Tier0Gateway":   testConfig.Tm.NsxTier0Gateway,
 		"NsxEdgeCluster": testConfig.Tm.NsxEdgeCluster,
 		"RegionVmClass":  "best-effort-2xlarge",
