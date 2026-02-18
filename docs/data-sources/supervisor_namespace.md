@@ -44,27 +44,68 @@ The following arguments are supported:
 ## Attribute Reference
 
 - `class_name` - The name of the Supervisor Namespace Class
+- `conditions` - Detailed conditions tracking Supervisor Namespace health and lifecycle events. See [Conditions](#conditions)
+- `content_libraries` - Content libraries currently available in the Supervisor Namespace. See [Content Libraries](#content-libraries)
+- `content_sources_class_config_overrides` - Class Config Overrides for Content Sources. See [Content Sources Class Config Overrides](#content-sources-class-config-overrides)
 - `description` - Description
+- `infra_policies` - List of Infra Policies associated with the Supervisor Namespace. See [Infra Policies](#infra-policies)
+- `infra_policy_names` - List of non-mandatory Infra Policy names
 - `phase` - Phase of the Supervisor Namespace
 - `ready` - Whether the Supervisor Namespace is in a ready status or not
 - `region_name` - Name of the Region
-- `storage_classes` - A set of Supervisor Namespace Storage Classes. See [Storage Classes](#storage-classes) section for details
-- `storage_classes_initial_class_config_overrides` - A set of Supervisor Namespace Storage Classes Initial Class Config Overrides. See [Storage Classes Initial Class Config Overridess](#storage-classes-initial-class-config-overrides) section for details
+- `seg_name` - Service Engine Group associated with the Supervisor Namespace
+- `shared_subnet_names` - Shared subnets associated with the Supervisor Namespace
+- `storage_classes` - A set of Supervisor Namespace Storage Classes. See [Storage Classes](#storage-classes)
+- `storage_classes_class_config_overrides` - Class Config Overrides for Storage Classes. See [Storage Classes Class Config Overrides](#storage-classes-class-config-overrides)
+- `storage_classes_initial_class_config_overrides` - (**Deprecated**) Use `storage_classes_class_config_overrides` instead. See [Storage Classes Class Config Overrides](#storage-classes-class-config-overrides)
 - `vpc_name` - Name of the VPC
-- `vm_classes` - A set of Supervisor Namespace VM Classes. See [VM Classes](#vm-classes) section for details
-- `zones` - A set of Supervisor Namespace Zones. See [Zones](#zones) section for details
-- `zones_initial_class_config_overrides` - A set of Supervisor Namespace Zones Initial Class Config Overrides. See [Zones Initial Class Config Overrides](#zones-initial-class-config-overrides) section for details
+- `vm_classes` - A set of Supervisor Namespace VM Classes. See [VM Classes](#vm-classes)
+- `vm_classes_class_config_overrides` - Class Config Overrides for VM Classes. See [VM Classes Class Config Overrides](#vm-classes-class-config-overrides)
+- `zones` - A set of Supervisor Namespace Zones. See [Zones](#zones)
+- `zones_class_config_overrides` - Class Config Overrides for Zones. See [Zones Class Config Overrides](#zones-class-config-overrides)
+- `zones_initial_class_config_overrides` - (**Deprecated**) Use `zones_class_config_overrides` instead. See [Zones Class Config Overrides](#zones-class-config-overrides)
+
+## Conditions
+
+The `conditions` attribute is a set of entries with the following structure:
+
+- `message` - Human-readable message with details about the condition
+- `reason` - Machine-readable CamelCase reason code
+- `severity` - Severity level: `Info`, `Warning`, `Error`
+- `status` - Condition status: `True`, `False`, `Unknown`
+- `type` - Condition type identifier (e.g. `Ready`, `Realized`)
+
+## Content Libraries
+
+The `content_libraries` attribute is a set of entries with the following structure:
+
+- `name` - Name of the content library
+- `type` - Type of content source
+
+## Content Sources Class Config Overrides
+
+The `content_sources_class_config_overrides` is a set of entries that have the following structure:
+
+- `name` - Name of the content library
+- `type` - Type of content source
+
+## Infra Policies
+
+The `infra_policies` attribute is a set of entries with the following structure:
+
+- `name` - Name of the Infra Policy
+- `mandatory` - Whether the Infra Policy is auto-enforced when mandatory
 
 ## Storage Classes
 
 The `storage_classes` is a set of entries that have the following structure:
 
-- `limi` - Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
+- `limit` - Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 - `name` - Name of the Storage Class
 
-## Storage Classes Initial Class Config Overrides
+## Storage Classes Class Config Overrides
 
-The `storage_classes_initial_class_config_overrides` is a set of entries that have the following structure:
+The `storage_classes_class_config_overrides` is a set of entries that have the following structure:
 
 - `limit` - Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 - `name` - Name of the Storage Class
@@ -75,19 +116,26 @@ The `vm_classes` is a set of entries that have the following structure:
 
 - `name` - Name of the VM Class
 
+## VM Classes Class Config Overrides
+
+The `vm_classes_class_config_overrides` is a set of entries that have the following structure:
+
+- `name` - Name of the VM Class
+
 ## Zones
 
 The `zones` is a set of entries that have the following structure:
 
 - `cpu_limit` - CPU limit (format: `<number><unit>`, where `<unit>` can be `M` or `G`)
 - `cpu_reservation` - CPU reservation (format: `<number><unit>`, where `<unit>` can be `M` or `G`)
+- `marked_for_removal` - Indicates if this zone is scheduled for removal during a scale-down operation
 - `memory_limit` - Memory limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 - `memory_reservation` - Memory reservation (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 - `name` - Name of the Zone
 
-## Zones Initial Class Config Overrides
+## Zones Class Config Overrides
 
-The `zones_initial_class_config_overrides` is a set of entries that have the following structure:
+The `zones_class_config_overrides` is a set of entries that have the following structure:
 
 - `cpu_limit` - CPU limit (format: `<number><unit>`, where `<unit>` can be `M` or `G`)
 - `cpu_reservation` - CPU reservation (format: `<number><unit>`, where `<unit>` can be `M` or `G`)

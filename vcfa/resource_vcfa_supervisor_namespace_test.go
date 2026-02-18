@@ -135,7 +135,10 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "description", "Supervisor Namespace created by Terraform"),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "region_name", params["RegionName"].(string)),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "vpc_name", params["VpcName"].(string)),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "storage_classes_class_config_overrides.#", "1"),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "storage_classes_initial_class_config_overrides.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "vm_classes_class_config_overrides.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "zones_class_config_overrides.#", "1"),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "zones_initial_class_config_overrides.#", "1"),
 					cachedNamespaceName.cacheTestResourceFieldValue("vcfa_supervisor_namespace.test", "name"), // capturing computed 'name' to use for other test steps
 				),
@@ -177,7 +180,7 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 				Check:             resource.ComposeTestCheckFunc(),
 			},
 			{
-				// Namespace already removed, removing project using SDK and leaveing for Terarform to teardwon
+				// Namespace already removed, removing project using SDK and leaving for Terraform to teardwon
 				PreConfig:         func() { removeProject(t, params) },
 				ProviderFactories: multipleFactories(),
 				Config:            configText1,
@@ -277,12 +280,16 @@ resource "vcfa_supervisor_namespace" "test" {
   region_name  = "{{.RegionName}}"
   vpc_name     = "{{.VpcName}}"
 
-  storage_classes_initial_class_config_overrides {
+  storage_classes_class_config_overrides {
     limit     = "90Mi"
     name      = "{{.StorageClass}}"
   }
 
-  zones_initial_class_config_overrides {
+  vm_classes_class_config_overrides {
+    name = "{{.RegionVmClass}}"
+  }
+
+  zones_class_config_overrides {
     cpu_limit          = "100M"
     cpu_reservation    = "1M"
     memory_limit       = "200Mi"

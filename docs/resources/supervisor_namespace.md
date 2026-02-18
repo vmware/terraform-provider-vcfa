@@ -47,12 +47,12 @@ resource "vcfa_supervisor_namespace" "supervisor_namespace" {
   region_name  = data.vcfa_region.demo.name
   vpc_name     = "default-vpc"
 
-  storage_classes_initial_class_config_overrides {
+  storage_classes_class_config_overrides {
     limit = "10000Mi"
     name  = "vSAN Default Storage Policy"
   }
 
-  zones_initial_class_config_overrides {
+  zones_class_config_overrides {
     cpu_limit          = "1000M"
     cpu_reservation    = "0M"
     memory_limit       = "1000Mi"
@@ -66,7 +66,7 @@ resource "vcfa_supervisor_namespace" "supervisor_namespace" {
 
 The following arguments are supported:
 
-- `name_prefix` (Required) Prefix for the Supervisor Namespace name. It must match RFC 1123 Label name (lower-case alphabet,
+- `name_prefix` - (Required) Prefix for the Supervisor Namespace name. It must match RFC 1123 Label name (lower-case alphabet,
   numbers between 0 and 9 and hyphen `-`)
 - `project_name` - (Required) The name of the Project where the Supervisor Namespace belongs to. Can be fetched
   with the Kubernetes provider [`kubernetes_resource`](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/resource) data source
@@ -74,53 +74,101 @@ The following arguments are supported:
   if the Project is managed in the same Terraform configuration
 - `class_name` - (Required) The name of the Supervisor Namespace Class
 - `description` - (Optional) Description
-- `storage_classes_initial_class_config_overrides` - (Required) A set of Supervisor Namespace Storage Classes Initial Class Config Overrides. At least one is required. See [Storage Classes Initial Class Config Overrides](#storage-classes-initial-class-config-overrides) section for details
 - `region_name` - (Required) Name of the [Region](/providers/vmware/vcfa/latest/docs/data-sources/region)
 - `vpc_name` - (Required) Name of the VPC
-- `zones_initial_class_config_overrides` - (Required) A set of Supervisor Namespace Zones Initial Class Config Overrides. At least one is required. See [Zones Initial Class Config Overrides](#zones-initial-class-config-overrides) section for details
+- `content_sources_class_config_overrides` - (Optional) Class Config Overrides for Content Sources. Each entry has `name` and `type` (e.g. `ContentLibrary`). Update not supported. See [Content Sources Class Config Overrides](#content-sources-class-config-overrides)
+- `infra_policy_names` - (Optional) List of non-mandatory Infra Policies to associate with the Supervisor Namespace
+- `seg_name` - (Optional) Service Engine Group associated with the Supervisor Namespace
+- `shared_subnet_names` - (Optional) List of shared subnets associated with the Supervisor Namespace
+- `storage_classes_class_config_overrides` - (Optional) Class Config Overrides for Storage Classes. At least one of this or `storage_classes_initial_class_config_overrides` is required. See [Storage Classes Class Config Overrides](#storage-classes-class-config-overrides)
+- `storage_classes_initial_class_config_overrides` - (Optional, **Deprecated**) Use `storage_classes_class_config_overrides` instead. Exactly one of this or `storage_classes_class_config_overrides` must be set. See [Storage Classes Class Config Overrides](#storage-classes-class-config-overrides)
+- `vm_classes_class_config_overrides` - (Optional) Class Config Overrides for VM Classes. See [VM Classes Class Config Overrides](#vm-classes-class-config-overrides)
+- `zones_class_config_overrides` - (Optional) Class Config Overrides for Zones. At least one of this or `zones_initial_class_config_overrides` is required. See [Zones Class Config Overrides](#zones-class-config-overrides)
+- `zones_initial_class_config_overrides` - (Optional, **Deprecated**) Use `zones_class_config_overrides` instead. Exactly one of this or `zones_class_config_overrides` must be set. See [Zones Class Config Overrides](#zones-class-config-overrides)
 
 ## Attribute Reference
 
 - `name` - The name of the Supervisor Namespace
 - `phase` - Phase of the Supervisor Namespace
 - `ready` - Whether the Supervisor Namespace is in a ready status or not
-- `storage_classes` - A set of Supervisor Namespace Storage Classes. See [Storage Classes](#storage-classes) section for details
-- `vm_classes` - A set of Supervisor Namespace VM Classes. See [VM Classes](#vm-classes) section for details
-- `zones` - A set of Supervisor Namespace Zones. See [Zones](#zones) section for details
+- `conditions` - Detailed conditions tracking Supervisor Namespace health and lifecycle events. See [Conditions](#conditions)
+- `content_libraries` - Content libraries currently available in the Supervisor Namespace. See [Content Libraries](#content-libraries)
+- `infra_policies` - List of Infra Policies associated with the Supervisor Namespace. See [Infra Policies](#infra-policies)
+- `storage_classes` - A set of Supervisor Namespace Storage Classes. See [Storage Classes](#storage-classes)
+- `vm_classes` - A set of Supervisor Namespace VM Classes. See [VM Classes](#vm-classes)
+- `zones` - A set of Supervisor Namespace Zones. See [Zones](#zones)
+
+## Conditions
+
+The `conditions` attribute is a set of entries with the following structure:
+
+- `message` - Human-readable message with details about the condition
+- `reason` - Machine-readable CamelCase reason code
+- `severity` - Severity level: `Info`, `Warning`, `Error`
+- `status` - Condition status: `True`, `False`, `Unknown`
+- `type` - Condition type identifier (e.g. `Ready`, `Realized`)
+
+## Content Libraries
+
+The `content_libraries` attribute is a set of entries with the following structure:
+
+- `name` - Name of the content library
+- `type` - Type of content source
+
+## Content Sources Class Config Overrides
+
+The `content_sources_class_config_overrides` is a set of entries that have the following structure:
+
+- `name` - (Required) Name of the content library
+- `type` - (Required) Type of content source (e.g. `ContentLibrary`). Update not supported.
+
+## Infra Policies
+
+The `infra_policies` attribute is a set of entries with the following structure:
+
+- `name` - Name of the Infra Policy
+- `mandatory` - Whether the Infra Policy is auto-enforced when mandatory
 
 ## Storage Classes
 
-The `storage_classes` is a set of entries that have the following structure:
+The `storage_classes` attribute is a set of entries that have the following structure:
 
 - `limit` - Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 - `name` - Name of the [Storage Class](/providers/vmware/vcfa/latest/docs/data-sources/storage_class)
 
-## Storage Classes Initial Class Config Overrides
+## Storage Classes Class Config Overrides
 
-The `storage_classes_initial_class_config_overrides` is a set of entries that have the following structure:
+The `storage_classes_class_config_overrides` is a set of entries that have the following structure:
 
 - `limit` - Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 - `name` - Name of the [Storage Class](/providers/vmware/vcfa/latest/docs/data-sources/storage_class)
 
 ## VM Classes
 
-The `vm_classes` is a set of entries that have the following structure:
+The `vm_classes` attribute is a set of entries that have the following structure:
 
 - `name` - Name of the [VM Class](/providers/vmware/vcfa/latest/docs/data-sources/region_vm_class)
 
+## VM Classes Class Config Overrides
+
+The `vm_classes_class_config_overrides` is a set of entries that have the following structure:
+
+- `name` - (Required) Name of the VM Class
+
 ## Zones
 
-The `zones` is a set of entries that have the following structure:
+The `zones` attribute is a set of entries that have the following structure:
 
 - `cpu_limit` - CPU limit (format: `<number><unit>`, where `<unit>` can be `M` or `G`)
 - `cpu_reservation` - CPU reservation (format: `<number><unit>`, where `<unit>` can be `M` or `G`)
+- `marked_for_removal` - Indicates if this zone is scheduled for removal during a scale-down operation
 - `memory_limit` - Memory limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 - `memory_reservation` - Memory reservation (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)
 - `name` - Name of the Zone
 
-## Zones Initial Class Config Overrides
+## Zones Class Config Overrides
 
-The `zones_initial_class_config_overrides` is a set of entries that have the following structure:
+The `zones_class_config_overrides` is a set of entries that have the following structure:
 
 - `cpu_limit` - CPU limit (format: `<number><unit>`, where `<unit>` can be `M` or `G`)
 - `cpu_reservation` - CPU reservation (format: `<number><unit>`, where `<unit>` can be `M` or `G`)
@@ -146,12 +194,12 @@ resource "vcfa_supervisor_namespace" "existing_supervisor_namespace" {
   region_name  = "default-region"
   vpc_name     = "default-vpc"
 
-  storage_classes_initial_class_config_overrides {
+  storage_classes_class_config_overrides {
     limit = "10000Mi"
     name  = "vSAN Default Storage Policy"
   }
 
-  zones_initial_class_config_overrides {
+  zones_class_config_overrides {
     cpu_limit          = "1000M"
     cpu_reservation    = "0M"
     memory_limit       = "1000Mi"
