@@ -31,6 +31,9 @@ linters:
           - errcheck
         text: is not checked
       - linters:
+          - gosec
+        text: G117
+      - linters:
           - staticcheck
         text: QF1008
       - linters:

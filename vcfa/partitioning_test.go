@@ -185,11 +185,11 @@ func getMapOfTests(vcfaVersion, providerUrl string) map[string]partitionInfo {
 
 	plannedTestsFileName := getTestFileName("planned", vcfaVersion)
 	var testList strings.Builder
-	testList.WriteString(fmt.Sprintf("# VCFA: %s \n", strings.Replace(providerUrl, "/api", "", 1)))
-	testList.WriteString(fmt.Sprintf("# version: %s \n", vcfaVersion))
-	testList.WriteString(fmt.Sprintf("# node N.: %d \n", partitionNode))
+	fmt.Fprintf(&testList, "# VCFA: %s \n", strings.Replace(providerUrl, "/api", "", 1))
+	fmt.Fprintf(&testList, "# version: %s \n", vcfaVersion)
+	fmt.Fprintf(&testList, "# node N.: %d \n", partitionNode)
 	for _, tn := range listOfTestForNode {
-		testList.WriteString(fmt.Sprintf("%s\n", tn))
+		fmt.Fprintf(&testList, "%s\n", tn)
 	}
 	_ = os.WriteFile(plannedTestsFileName, []byte(testList.String()), 0600)
 	return testMap
