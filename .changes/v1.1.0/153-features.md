@@ -1,0 +1,1 @@
+* Update `vcfa_supervisor_namespace` resource and datasource to support the latest `v1alpha3` CCI changes [GH-153]. Added the new attributes `conditions`, `content_libraries`, `content_sources_class_config_overrides`, `infra_policies`, `infra_policy_names`, `seg_name`, `shared_subnet_names`, `storage_classes`, `vm_classes`, `vm_classes_class_config_overrides`, and `zones`.

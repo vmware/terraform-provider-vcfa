@@ -1,0 +1,1 @@
+* Deprecate `storage_classes_initial_class_config_overrides` in favor of `storage_classes_class_config_overrides` and `zones_initial_class_config_overrides` in favor of `zones_class_config_overrides` in `vcfa_supervisor_namespace` resource and datasource [GH-153]
