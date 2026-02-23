@@ -67,6 +67,11 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 		"ProviderGatewayId": fmt.Sprintf("%s.id", providerGatewayHclRef),
 
 		"Tags": "tm org regionQuota",
+
+		"Description":         "Supervisor Namespace created by Terraform",
+		"DescriptionUpdated":  "Supervisor Namespace updated by Terraform",
+		"StorageLimit":        "90Mi",
+		"StorageLimitUpdated": "100Mi",
 	}
 	testParamsNotEmpty(t, params)
 
@@ -78,15 +83,17 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 	params["FuncName"] = t.Name() + "-step2"
 	configText2 := templateFill(configTextPrerequisites+testAccVcfaSupervisorNamespaceStep2, params)
 	params["FuncName"] = t.Name() + "-step3"
-	configText3 := templateFill(configTextPrerequisites+testAccVcfaSupervisorNamespaceStep3DS, params)
-
+	configText3 := templateFill(configTextPrerequisites+testAccVcfaSupervisorNamespaceStep3Update, params)
 	params["FuncName"] = t.Name() + "-step4"
-	configText4 := templateFill(configTextPrerequisites+testAccVcfaSupervisorNamespaceStep4, params)
+	configText4 := templateFill(configTextPrerequisites+testAccVcfaSupervisorNamespaceStep4DS, params)
+	params["FuncName"] = t.Name() + "-step6"
+	configText6 := templateFill(configTextPrerequisites+testAccVcfaSupervisorNamespaceStep6, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
 	debugPrintf("#[DEBUG] CONFIGURATION step3: %s\n", configText3)
 	debugPrintf("#[DEBUG] CONFIGURATION step4: %s\n", configText4)
+	debugPrintf("#[DEBUG] CONFIGURATION step6: %s\n", configText6)
 
 	if vcfaShortTest {
 		t.Skip(acceptanceTestsSkipped)
@@ -132,10 +139,11 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestMatchResourceAttr("vcfa_supervisor_namespace.test", "id", regexp.MustCompile(fmt.Sprintf(`^%s:terraform-test`, params["ProjectName"].(string)))),
 					resource.TestMatchResourceAttr("vcfa_supervisor_namespace.test", "name", regexp.MustCompile(`^terraform-test`)),
-					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "description", "Supervisor Namespace created by Terraform"),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "description", params["Description"].(string)),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "region_name", params["RegionName"].(string)),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "vpc_name", params["VpcName"].(string)),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "storage_classes_class_config_overrides.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "storage_classes_class_config_overrides.0.limit", params["StorageLimit"].(string)),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "storage_classes_initial_class_config_overrides.#", "1"),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "vm_classes_class_config_overrides.#", "1"),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "zones_class_config_overrides.#", "1"),
@@ -146,6 +154,21 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 			{
 				ProviderFactories: multipleFactories(),
 				Config:            configText3,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "description", params["DescriptionUpdated"].(string)),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "region_name", params["RegionName"].(string)),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "vpc_name", params["VpcName"].(string)),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "storage_classes_class_config_overrides.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "storage_classes_class_config_overrides.0.limit", params["StorageLimitUpdated"].(string)),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "storage_classes_initial_class_config_overrides.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "vm_classes_class_config_overrides.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "zones_class_config_overrides.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "zones_initial_class_config_overrides.#", "1"),
+				),
+			},
+			{
+				ProviderFactories: multipleFactories(),
+				Config:            configText4,
 				Check: resource.ComposeTestCheckFunc(
 					// Data source does not have 'name_prefix' therefore field count (%) differs
 					resourceFieldsEqual("data.vcfa_supervisor_namespace.test", "vcfa_supervisor_namespace.test", []string{"%"}),
@@ -163,7 +186,7 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 			},
 			{
 				ProviderFactories: multipleFactories(),
-				Config:            configText4,
+				Config:            configText6,
 				Check: resource.ComposeTestCheckFunc(
 					cachedNamespaceName.testCheckCachedResourceFieldValuePattern("data.vcfa_kubeconfig.test-namespace", "id", fmt.Sprintf("%s:%%s:%s", params["OrgName"].(string), params["ProjectName"].(string))),
 					cachedNamespaceName.testCheckCachedResourceFieldValuePattern("data.vcfa_kubeconfig.test-namespace", "context_name", fmt.Sprintf("%s:%%s:%s", params["OrgName"].(string), params["ProjectName"].(string))),
@@ -276,12 +299,12 @@ resource "vcfa_supervisor_namespace" "test" {
   name_prefix  = "terraform-test"
   project_name = "{{.ProjectName}}"
   class_name   = "small"
-  description  = "Supervisor Namespace created by Terraform"
+  description  = "{{.Description}}"
   region_name  = "{{.RegionName}}"
   vpc_name     = "{{.VpcName}}"
 
   storage_classes_class_config_overrides {
-    limit     = "90Mi"
+    limit     = "{{.StorageLimit}}"
     name      = "{{.StorageClass}}"
   }
 
@@ -299,7 +322,37 @@ resource "vcfa_supervisor_namespace" "test" {
 }
 `
 
-const testAccVcfaSupervisorNamespaceStep3DS = testAccVcfaSupervisorNamespaceStep2 + `
+const testAccVcfaSupervisorNamespaceStep3Update = testAccVcfaSupervisorNamespaceStep1 + `
+resource "vcfa_supervisor_namespace" "test" {
+  provider = vcfatenant
+
+  name_prefix  = "terraform-test"
+  project_name = "{{.ProjectName}}"
+  class_name   = "small"
+  description  = "{{.DescriptionUpdated}}"
+  region_name  = "{{.RegionName}}"
+  vpc_name     = "{{.VpcName}}"
+
+  storage_classes_class_config_overrides {
+    limit     = "{{.StorageLimitUpdated}}"
+    name      = "{{.StorageClass}}"
+  }
+
+  vm_classes_class_config_overrides {
+    name = "{{.RegionVmClass}}"
+  }
+
+  zones_class_config_overrides {
+    cpu_limit          = "100M"
+    cpu_reservation    = "1M"
+    memory_limit       = "200Mi"
+    memory_reservation = "2Mi"
+    name               = "{{.SupervisorZoneName}}"
+  }
+}
+`
+
+const testAccVcfaSupervisorNamespaceStep4DS = testAccVcfaSupervisorNamespaceStep3Update + `
 data "vcfa_supervisor_namespace" "test" {
   provider = vcfatenant
 
@@ -308,7 +361,7 @@ data "vcfa_supervisor_namespace" "test" {
 }
 `
 
-const testAccVcfaSupervisorNamespaceStep4 = testAccVcfaSupervisorNamespaceStep2 + `
+const testAccVcfaSupervisorNamespaceStep6 = testAccVcfaSupervisorNamespaceStep3Update + `
 data "vcfa_kubeconfig" "test-namespace" {
   provider = vcfatenant
 

@@ -69,6 +69,7 @@ The following arguments are supported:
 
 The `conditions` attribute is a set of entries with the following structure:
 
+- `last_transition_time` - Timestamp when the condition last transitioned (RFC3339)
 - `message` - Human-readable message with details about the condition
 - `reason` - Machine-readable CamelCase reason code
 - `severity` - Severity level: `Info`, `Warning`, `Error`

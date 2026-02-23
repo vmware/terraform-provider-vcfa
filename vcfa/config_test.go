@@ -109,7 +109,8 @@ type TestConfig struct {
 		ContentLibrary   string `json:"contentLibrary"`
 		InfraPolicyName  string `json:"infraPolicyName"`
 		SharedSubnetName string `json:"sharedSubnetName"`
-		VmClass          string `json:"vmClass"`
+		VmClass1         string `json:"vmClass1"`
+		VmClass2         string `json:"vmClass2"`
 	} `json:"cci"`
 	Tm struct {
 		Org             string   `json:"org"`
