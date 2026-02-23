@@ -39,6 +39,10 @@ func TestAccVcfaSupervisorNamespaceExternal(t *testing.T) {
 		"VpcName":            testConfig.Cci.Vpc,
 		"StorageClassName":   testConfig.Cci.StoragePolicy,
 		"SupervisorZoneName": testConfig.Cci.SupervisorZone,
+		"ContentLibrary":     testConfig.Cci.ContentLibrary,
+		"InfraPolicyName":    testConfig.Cci.InfraPolicyName,
+		"SharedSubnetName":   testConfig.Cci.SharedSubnetName,
+		"VmClass":            testConfig.Cci.VmClass,
 
 		"Tags": "cci",
 	}
@@ -72,7 +76,13 @@ func TestAccVcfaSupervisorNamespaceExternal(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "description", "Supervisor Namespace created by Terraform"),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "region_name", params["RegionName"].(string)),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "vpc_name", params["VpcName"].(string)),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "content_sources_class_config_overrides.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "infra_policy_names.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "shared_subnet_names.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "storage_classes_class_config_overrides.#", "1"),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "storage_classes_initial_class_config_overrides.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "vm_classes_class_config_overrides.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "zones_class_config_overrides.#", "1"),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "zones_initial_class_config_overrides.#", "1"),
 					cachedNamespaceName.cacheTestResourceFieldValue("vcfa_supervisor_namespace.test", "name"), // capturing computed 'name' to use for other test steps
 				),
@@ -112,19 +122,30 @@ func TestAccVcfaSupervisorNamespaceExternal(t *testing.T) {
 
 const testAccVcfaSupervisorNamespaceExternalStep1 = `
 resource "vcfa_supervisor_namespace" "test" {
-  name_prefix  = "terraform-test"
-  project_name = "{{.ProjectName}}"
-  class_name   = "small"
-  description  = "Supervisor Namespace created by Terraform"
-  region_name  = "{{.RegionName}}"
-  vpc_name     = "{{.VpcName}}"
+  name_prefix         = "terraform-test"
+  project_name        = "{{.ProjectName}}"
+  class_name          = "small"
+  description         = "Supervisor Namespace created by Terraform"
+  infra_policy_names  = [ "{{.InfraPolicyName}}" ]
+  region_name         = "{{.RegionName}}"
+  shared_subnet_names = [ "{{.SharedSubnetName}}" ]
+  vpc_name            = "{{.VpcName}}"
 
-  storage_classes_initial_class_config_overrides {
-    limit     = "200Mi"
-    name      = "{{.StorageClassName}}"
+  content_sources_class_config_overrides {
+    name = "{{.ContentLibrary}}"
+	type = "ContentLibrary"
   }
 
-  zones_initial_class_config_overrides {
+  storage_classes_class_config_overrides {
+    limit = "200Mi"
+    name  = "{{.StorageClassName}}"
+  }
+
+  vm_classes_class_config_overrides {
+    name = "{{.VmClass}}"
+  }
+
+  zones_class_config_overrides {
     cpu_limit          = "100M"
     cpu_reservation    = "1M"
     memory_limit       = "200Mi"

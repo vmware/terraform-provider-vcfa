@@ -102,10 +102,14 @@ type TestConfig struct {
 		Password string `json:"password"`
 	} `json:"org"`
 	Cci struct {
-		Region         string `json:"region"`
-		Vpc            string `json:"vpc"`
-		StoragePolicy  string `json:"storagePolicy"`
-		SupervisorZone string `json:"supervisorZone"`
+		Region           string `json:"region"`
+		Vpc              string `json:"vpc"`
+		StoragePolicy    string `json:"storagePolicy"`
+		SupervisorZone   string `json:"supervisorZone"`
+		ContentLibrary   string `json:"contentLibrary"`
+		InfraPolicyName  string `json:"infraPolicyName"`
+		SharedSubnetName string `json:"sharedSubnetName"`
+		VmClass          string `json:"vmClass"`
 	} `json:"cci"`
 	Tm struct {
 		Org             string   `json:"org"`
