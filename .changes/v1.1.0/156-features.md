@@ -1,0 +1,1 @@
+- Add support for vcfa_supervisor_namespace resource updates [GH-156]
