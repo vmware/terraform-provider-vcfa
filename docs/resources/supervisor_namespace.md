@@ -76,7 +76,7 @@ The following arguments are supported:
 - `description` - (Optional) Description
 - `region_name` - (Required) Name of the [Region](/providers/vmware/vcfa/latest/docs/data-sources/region)
 - `vpc_name` - (Required) Name of the VPC
-- `content_sources_class_config_overrides` - (Optional) Class Config Overrides for Content Sources. Each entry has `name` and `type` (e.g. `ContentLibrary`). Update not supported. See [Content Sources Class Config Overrides](#content-sources-class-config-overrides)
+- `content_sources_class_config_overrides` - (Optional) Class Config Overrides for Content Sources. Each entry has `name` and `type` (e.g. `ContentLibrary`). See [Content Sources Class Config Overrides](#content-sources-class-config-overrides)
 - `infra_policy_names` - (Optional) List of non-mandatory Infra Policies to associate with the Supervisor Namespace
 - `seg_name` - (Optional) Service Engine Group associated with the Supervisor Namespace
 - `shared_subnet_names` - (Optional) List of shared subnets associated with the Supervisor Namespace
@@ -102,6 +102,7 @@ The following arguments are supported:
 
 The `conditions` attribute is a set of entries with the following structure:
 
+- `last_transition_time` - Timestamp when the condition last transitioned (RFC3339)
 - `message` - Human-readable message with details about the condition
 - `reason` - Machine-readable CamelCase reason code
 - `severity` - Severity level: `Info`, `Warning`, `Error`
@@ -120,7 +121,7 @@ The `content_libraries` attribute is a set of entries with the following structu
 The `content_sources_class_config_overrides` is a set of entries that have the following structure:
 
 - `name` - (Required) Name of the content library
-- `type` - (Required) Type of content source (e.g. `ContentLibrary`). Update not supported.
+- `type` - (Required) Type of content source (e.g. `ContentLibrary`)
 
 ## Infra Policies
 

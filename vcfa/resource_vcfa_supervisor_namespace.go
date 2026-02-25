@@ -24,6 +24,11 @@ const labelSupervisorNamespace = "Supervisor Namespace"
 
 var supervisorNamespaceConditionsSchema = &schema.Resource{
 	Schema: map[string]*schema.Schema{
+		"last_transition_time": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Timestamp of the last status transition",
+		},
 		"message": {
 			Type:        schema.TypeString,
 			Computed:    true,
@@ -71,13 +76,11 @@ var supervisorNamespaceContentSourcesClassConfigOverridesSchema = &schema.Resour
 		"name": {
 			Type:        schema.TypeString,
 			Required:    true,
-			ForceNew:    true, // Update not supported
 			Description: "Name of the content library",
 		},
 		"type": {
 			Type:        schema.TypeString,
 			Required:    true,
-			ForceNew:    true, // Update not supported
 			Description: "Type of content source",
 		},
 	},
@@ -118,13 +121,11 @@ var supervisorNamespaceStorageClassesClassConfigOverridesSchema = &schema.Resour
 		"limit": {
 			Type:        schema.TypeString,
 			Required:    true,
-			ForceNew:    true, // Update not supported
 			Description: "Limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)",
 		},
 		"name": {
 			Type:        schema.TypeString,
 			Required:    true,
-			ForceNew:    true, // Update not supported
 			Description: "Name of the Storage Class",
 		},
 	},
@@ -190,31 +191,26 @@ var supervisorNamespaceZonesClassConfigOverridesSchema = &schema.Resource{
 		"cpu_limit": {
 			Type:        schema.TypeString,
 			Required:    true,
-			ForceNew:    true, // Update not supported
 			Description: "CPU limit (format: `<number><unit>`, where `<unit>` can be `M` or `G`)",
 		},
 		"cpu_reservation": {
 			Type:        schema.TypeString,
 			Required:    true,
-			ForceNew:    true, // Update not supported
 			Description: "CPU reservation (format: `<number><unit>`, where `<unit>` can be `M` or `G`)",
 		},
 		"memory_limit": {
 			Type:        schema.TypeString,
 			Required:    true,
-			ForceNew:    true, // Update not supported
 			Description: "Memory limit (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)",
 		},
 		"memory_reservation": {
 			Type:        schema.TypeString,
 			Required:    true,
-			ForceNew:    true, // Update not supported
 			Description: "Memory reservation (format: `<number><unit>`, where `<unit>` can be `Mi`, `Gi`, or `Ti`)",
 		},
 		"name": {
 			Type:        schema.TypeString,
 			Required:    true,
-			ForceNew:    true, // Update not supported
 			Description: "Name of the Zone",
 		},
 	},
@@ -328,7 +324,6 @@ func resourceVcfaSupervisorNamespace() *schema.Resource {
 			"storage_classes_class_config_overrides": {
 				Type:         schema.TypeSet,
 				Optional:     true,
-				ForceNew:     true, // Update not supported
 				MinItems:     1,
 				Computed:     true,
 				Description:  "Class Config Overrides for Storage Classes",
@@ -338,7 +333,6 @@ func resourceVcfaSupervisorNamespace() *schema.Resource {
 			"storage_classes_initial_class_config_overrides": {
 				Type:         schema.TypeSet,
 				Optional:     true,
-				ForceNew:     true, // Update not supported
 				MinItems:     1,
 				Computed:     true,
 				Deprecated:   "Please use `storage_classes_class_config_overrides` instead",
@@ -373,7 +367,6 @@ func resourceVcfaSupervisorNamespace() *schema.Resource {
 			"zones_class_config_overrides": {
 				Type:         schema.TypeSet,
 				Optional:     true,
-				ForceNew:     true, // Update not supported
 				MinItems:     1,
 				Computed:     true,
 				Description:  "Class Config Overrides for Zones",
@@ -383,7 +376,6 @@ func resourceVcfaSupervisorNamespace() *schema.Resource {
 			"zones_initial_class_config_overrides": {
 				Type:         schema.TypeSet,
 				Optional:     true,
-				ForceNew:     true, // Update not supported
 				MinItems:     1,
 				Computed:     true,
 				Deprecated:   "Please use `zones_class_config_overrides` instead",
@@ -406,93 +398,7 @@ func resourceVcfaSupervisorNamespaceCreate(ctx context.Context, d *schema.Resour
 		return diag.Errorf("project_name not specified")
 	}
 
-	supervisorNamespace := ccitypes.SupervisorNamespace{
-		TypeMeta: v1.TypeMeta{
-			Kind:       ccitypes.SupervisorNamespaceKind,
-			APIVersion: ccitypes.SupervisorNamespaceAPI + "/" + ccitypes.SupervisorNamespaceVersion,
-		},
-		ObjectMeta: v1.ObjectMeta{
-			GenerateName: namePrefix.(string),
-			Namespace:    projectName.(string),
-		},
-		Spec: ccitypes.SupervisorNamespaceSpec{
-			ClassName:            d.Get("class_name").(string),
-			Description:          d.Get("description").(string),
-			ClassConfigOverrides: ccitypes.SupervisorNamespaceSpecClassConfigOverrides{},
-			InfraPolicyNames:     convertSchemaSetToSliceOfStrings(d.Get("infra_policy_names").(*schema.Set)),
-			RegionName:           d.Get("region_name").(string),
-			SegName:              d.Get("seg_name").(string),
-			SharedSubnetNames:    convertSchemaSetToSliceOfStrings(d.Get("shared_subnet_names").(*schema.Set)),
-			VpcName:              d.Get("vpc_name").(string),
-		},
-	}
-
-	contentSourcesClassConfigOverridesList := d.Get("content_sources_class_config_overrides").(*schema.Set).List()
-	if len(contentSourcesClassConfigOverridesList) > 0 {
-		contentSourcesClassConfigOverrides := make([]ccitypes.SupervisorNamespaceSpecClassConfigOverridesContentSources, len(contentSourcesClassConfigOverridesList))
-		for i, k := range contentSourcesClassConfigOverridesList {
-			storageClass := k.(map[string]interface{})
-			contentSourcesClassConfigOverrides[i] = ccitypes.SupervisorNamespaceSpecClassConfigOverridesContentSources{
-				Name: storageClass["name"].(string),
-				Type: storageClass["type"].(string),
-			}
-		}
-		supervisorNamespace.Spec.ClassConfigOverrides.ContentSources = contentSourcesClassConfigOverrides
-	}
-
-	// Deprecation compatibility: If `storage_classes_class_config_overrides` is not set, fallback to deprecated one.
-	var storageClassesClassConfigOverridesList []any
-	if storageClassesClassConfigOverrides, ok := d.GetOk("storage_classes_class_config_overrides"); ok {
-		storageClassesClassConfigOverridesList = storageClassesClassConfigOverrides.(*schema.Set).List()
-	} else {
-		storageClassesClassConfigOverridesList = d.Get("storage_classes_initial_class_config_overrides").(*schema.Set).List()
-	}
-	if len(storageClassesClassConfigOverridesList) > 0 {
-		storageClassesClassConfigOverrides := make([]ccitypes.SupervisorNamespaceSpecClassConfigOverridesStorageClass, len(storageClassesClassConfigOverridesList))
-		for i, k := range storageClassesClassConfigOverridesList {
-			storageClass := k.(map[string]interface{})
-			storageClassesClassConfigOverrides[i] = ccitypes.SupervisorNamespaceSpecClassConfigOverridesStorageClass{
-				Limit: storageClass["limit"].(string),
-				Name:  storageClass["name"].(string),
-			}
-		}
-		supervisorNamespace.Spec.ClassConfigOverrides.StorageClasses = storageClassesClassConfigOverrides
-	}
-
-	vmClassesClassConfigOverridesList := d.Get("vm_classes_class_config_overrides").(*schema.Set).List()
-	if len(vmClassesClassConfigOverridesList) > 0 {
-		vmClassesClassConfigOverrides := make([]ccitypes.SupervisorNamespaceSpecClassConfigOverridesVmClass, len(vmClassesClassConfigOverridesList))
-		for i, k := range vmClassesClassConfigOverridesList {
-			storageClass := k.(map[string]interface{})
-			vmClassesClassConfigOverrides[i] = ccitypes.SupervisorNamespaceSpecClassConfigOverridesVmClass{
-				Name: storageClass["name"].(string),
-			}
-		}
-		supervisorNamespace.Spec.ClassConfigOverrides.VmClasses = vmClassesClassConfigOverrides
-	}
-
-	// Deprecation compatibility: If `zones_class_config_overrides` is not set, fallback to deprecated one.
-	var zonesClassConfigOverridesList []any
-	if zonesClassConfigOverrides, ok := d.GetOk("zones_class_config_overrides"); ok {
-		zonesClassConfigOverridesList = zonesClassConfigOverrides.(*schema.Set).List()
-	} else {
-		zonesClassConfigOverridesList = d.Get("zones_initial_class_config_overrides").(*schema.Set).List()
-	}
-	if len(zonesClassConfigOverridesList) > 0 {
-		zonesClassConfigOverrides := make([]ccitypes.SupervisorNamespaceSpecClassConfigOverridesZone, len(zonesClassConfigOverridesList))
-		for i, k := range zonesClassConfigOverridesList {
-			zone := k.(map[string]interface{})
-			zonesClassConfigOverrides[i] = ccitypes.SupervisorNamespaceSpecClassConfigOverridesZone{
-				CpuLimit:          zone["cpu_limit"].(string),
-				CpuReservation:    zone["cpu_reservation"].(string),
-				MemoryLimit:       zone["memory_limit"].(string),
-				MemoryReservation: zone["memory_reservation"].(string),
-				Name:              zone["name"].(string),
-			}
-		}
-		supervisorNamespace.Spec.ClassConfigOverrides.Zones = zonesClassConfigOverrides
-	}
-
+	supervisorNamespace := supervisorNamespaceFromResourceData(d, projectName.(string), namePrefix.(string), "")
 	supervisorNamespaceOut, err := createSupervisorNamespace(tmClient, projectName.(string), supervisorNamespace)
 	if err != nil {
 		return diag.Errorf("error creating %s: %s", labelSupervisorNamespace, err)
@@ -528,7 +434,48 @@ func resourceVcfaSupervisorNamespaceCreate(ctx context.Context, d *schema.Resour
 }
 
 func resourceVcfaSupervisorNamespaceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return diag.Errorf("%s updates are not supported", labelSupervisorNamespace)
+	tmClient := meta.(ClientContainer).tmClient
+	projectName, name, err := parseResourceId(d.Id())
+	if err != nil {
+		return diag.Errorf("error parsing %s resource id %s: %s", labelSupervisorNamespace, d.Id(), err)
+	}
+
+	supervisorNamespace := supervisorNamespaceFromResourceData(d, projectName, "", name)
+	if _, err = updateSupervisorNamespace(tmClient, projectName, name, supervisorNamespace); err != nil {
+		return diag.Errorf("error updating %s: %s", labelSupervisorNamespace, err)
+	}
+
+	stateChangeFunc := retry.StateChangeConf{
+		Pending: []string{"UPDATING", "WAITING"},
+		Target:  []string{"REALIZED"},
+		Refresh: func() (any, string, error) {
+			supervisorNamespace, err := readSupervisorNamespace(tmClient, projectName, name)
+			if err != nil {
+				return nil, "", err
+			}
+			if strings.ToUpper(supervisorNamespace.Status.Phase) == "ERROR" {
+				return nil, "", fmt.Errorf("%s %s is in an ERROR state", labelSupervisorNamespace, name)
+			}
+			for _, c := range supervisorNamespace.Status.Conditions {
+				if strings.EqualFold(c.Type, "Realized") {
+					log.Printf("[DEBUG] %s %s current Realized condition is %s", labelSupervisorNamespace, name, c.Status)
+					if strings.EqualFold(c.Status, "True") {
+						return supervisorNamespace, "REALIZED", nil
+					}
+					return supervisorNamespace, "UPDATING", nil
+				}
+			}
+			return supervisorNamespace, "WAITING", nil
+		},
+		Timeout:    d.Timeout(schema.TimeoutUpdate),
+		Delay:      5 * time.Second,
+		MinTimeout: 5 * time.Second,
+	}
+	if _, err = stateChangeFunc.WaitForStateContext(ctx); err != nil {
+		return diag.Errorf("error waiting for %s %s in Project %s to be realized after update: %s", labelSupervisorNamespace, name, projectName, err)
+	}
+
+	return resourceVcfaSupervisorNamespaceRead(ctx, d, meta)
 }
 
 func resourceVcfaSupervisorNamespaceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -622,6 +569,18 @@ func createSupervisorNamespace(tmClient *VCDClient, projectName string, supervis
 	return supervisorNamespaceOut, nil
 }
 
+func updateSupervisorNamespace(tmClient *VCDClient, projectName string, supervisorNamespaceName string, supervisorNamespace ccitypes.SupervisorNamespace) (ccitypes.SupervisorNamespace, error) {
+	var supervisorNamespaceOut ccitypes.SupervisorNamespace
+	supervisorNamespaceURL, err := buildSupervisorNamespaceURL(tmClient, projectName, supervisorNamespaceName)
+	if err != nil {
+		return supervisorNamespaceOut, fmt.Errorf("error building %s URL: %s", labelSupervisorNamespace, err)
+	}
+	if err := tmClient.VCDClient.Client.PutEntity(supervisorNamespaceURL, nil, &supervisorNamespace, &supervisorNamespaceOut, nil); err != nil {
+		return supervisorNamespaceOut, fmt.Errorf("error updating %s %s in Project %s: %s", labelSupervisorNamespace, supervisorNamespaceName, projectName, err)
+	}
+	return supervisorNamespaceOut, nil
+}
+
 func readSupervisorNamespace(tmClient *VCDClient, projectName string, supervisorNamespaceName string) (ccitypes.SupervisorNamespace, error) {
 	var supervisorNamespace ccitypes.SupervisorNamespace
 	supervisorNamespaceURL, err := buildSupervisorNamespaceURL(tmClient, projectName, supervisorNamespaceName)
@@ -639,7 +598,7 @@ func deleteSupervisorNamespace(tmClient *VCDClient, projectName string, supervis
 	if err != nil {
 		return fmt.Errorf("error building %s URL: %s", labelSupervisorNamespace, err)
 	}
-	if err := tmClient.Client.DeleteEntity(supervisorNamespaceURL, nil, nil); err != nil {
+	if err := tmClient.VCDClient.Client.DeleteEntity(supervisorNamespaceURL, nil, nil); err != nil {
 		return fmt.Errorf("error deleting %s %s in Project %s: %s", labelSupervisorNamespace, supervisorNamespaceName, projectName, err)
 	}
 	return nil
@@ -651,7 +610,7 @@ func buildSupervisorNamespaceURL(tmClient *VCDClient, projectName string, superv
 		supervisorNamespaceRawURL = supervisorNamespaceRawURL + "/" + supervisorNamespaceName
 	}
 
-	return tmClient.Client.GetEntityUrl(supervisorNamespaceRawURL)
+	return tmClient.VCDClient.Client.GetEntityUrl(supervisorNamespaceRawURL)
 }
 
 func buildResourceId(projectName string, supervisorNamespaceName string) string {
@@ -664,6 +623,100 @@ func parseResourceId(id string) (string, string, error) {
 		return "", "", fmt.Errorf("id %s does not contain two parts", id)
 	}
 	return idParts[0], idParts[1], nil
+}
+
+func supervisorNamespaceFromResourceData(d *schema.ResourceData, projectName, namePrefix, name string) ccitypes.SupervisorNamespace {
+	objectMeta := v1.ObjectMeta{Namespace: projectName}
+	if name != "" {
+		objectMeta.Name = name
+	} else {
+		objectMeta.GenerateName = namePrefix
+	}
+	supervisorNamespace := ccitypes.SupervisorNamespace{
+		TypeMeta: v1.TypeMeta{
+			Kind:       ccitypes.SupervisorNamespaceKind,
+			APIVersion: ccitypes.SupervisorNamespaceAPI + "/" + ccitypes.SupervisorNamespaceVersion,
+		},
+		ObjectMeta: objectMeta,
+		Spec: ccitypes.SupervisorNamespaceSpec{
+			ClassName:            d.Get("class_name").(string),
+			Description:          d.Get("description").(string),
+			ClassConfigOverrides: ccitypes.SupervisorNamespaceSpecClassConfigOverrides{},
+			InfraPolicyNames:     convertSchemaSetToSliceOfStrings(d.Get("infra_policy_names").(*schema.Set)),
+			RegionName:           d.Get("region_name").(string),
+			SegName:              d.Get("seg_name").(string),
+			SharedSubnetNames:    convertSchemaSetToSliceOfStrings(d.Get("shared_subnet_names").(*schema.Set)),
+			VpcName:              d.Get("vpc_name").(string),
+		},
+	}
+
+	contentSourcesClassConfigOverridesList := d.Get("content_sources_class_config_overrides").(*schema.Set).List()
+	if len(contentSourcesClassConfigOverridesList) > 0 {
+		contentSourcesClassConfigOverrides := make([]ccitypes.SupervisorNamespaceSpecClassConfigOverridesContentSources, len(contentSourcesClassConfigOverridesList))
+		for i, k := range contentSourcesClassConfigOverridesList {
+			contentSource := k.(map[string]interface{})
+			contentSourcesClassConfigOverrides[i] = ccitypes.SupervisorNamespaceSpecClassConfigOverridesContentSources{
+				Name: contentSource["name"].(string),
+				Type: contentSource["type"].(string),
+			}
+		}
+		supervisorNamespace.Spec.ClassConfigOverrides.ContentSources = contentSourcesClassConfigOverrides
+	}
+
+	// Deprecation compatibility: If `storage_classes_class_config_overrides` is not set, fallback to deprecated one.
+	var storageClassesClassConfigOverridesList []any
+	if v, ok := d.GetOk("storage_classes_class_config_overrides"); ok {
+		storageClassesClassConfigOverridesList = v.(*schema.Set).List()
+	} else {
+		storageClassesClassConfigOverridesList = d.Get("storage_classes_initial_class_config_overrides").(*schema.Set).List()
+	}
+	if len(storageClassesClassConfigOverridesList) > 0 {
+		storageClassesClassConfigOverrides := make([]ccitypes.SupervisorNamespaceSpecClassConfigOverridesStorageClass, len(storageClassesClassConfigOverridesList))
+		for i, k := range storageClassesClassConfigOverridesList {
+			storageClass := k.(map[string]interface{})
+			storageClassesClassConfigOverrides[i] = ccitypes.SupervisorNamespaceSpecClassConfigOverridesStorageClass{
+				Limit: storageClass["limit"].(string),
+				Name:  storageClass["name"].(string),
+			}
+		}
+		supervisorNamespace.Spec.ClassConfigOverrides.StorageClasses = storageClassesClassConfigOverrides
+	}
+
+	vmClassesClassConfigOverridesList := d.Get("vm_classes_class_config_overrides").(*schema.Set).List()
+	if len(vmClassesClassConfigOverridesList) > 0 {
+		vmClassesClassConfigOverrides := make([]ccitypes.SupervisorNamespaceSpecClassConfigOverridesVmClass, len(vmClassesClassConfigOverridesList))
+		for i, k := range vmClassesClassConfigOverridesList {
+			vmClass := k.(map[string]interface{})
+			vmClassesClassConfigOverrides[i] = ccitypes.SupervisorNamespaceSpecClassConfigOverridesVmClass{
+				Name: vmClass["name"].(string),
+			}
+		}
+		supervisorNamespace.Spec.ClassConfigOverrides.VmClasses = vmClassesClassConfigOverrides
+	}
+
+	// Deprecation compatibility: If `zones_class_config_overrides` is not set, fallback to deprecated one.
+	var zonesClassConfigOverridesList []any
+	if v, ok := d.GetOk("zones_class_config_overrides"); ok {
+		zonesClassConfigOverridesList = v.(*schema.Set).List()
+	} else {
+		zonesClassConfigOverridesList = d.Get("zones_initial_class_config_overrides").(*schema.Set).List()
+	}
+	if len(zonesClassConfigOverridesList) > 0 {
+		zonesClassConfigOverrides := make([]ccitypes.SupervisorNamespaceSpecClassConfigOverridesZone, len(zonesClassConfigOverridesList))
+		for i, k := range zonesClassConfigOverridesList {
+			zone := k.(map[string]interface{})
+			zonesClassConfigOverrides[i] = ccitypes.SupervisorNamespaceSpecClassConfigOverridesZone{
+				CpuLimit:          zone["cpu_limit"].(string),
+				CpuReservation:    zone["cpu_reservation"].(string),
+				MemoryLimit:       zone["memory_limit"].(string),
+				MemoryReservation: zone["memory_reservation"].(string),
+				Name:              zone["name"].(string),
+			}
+		}
+		supervisorNamespace.Spec.ClassConfigOverrides.Zones = zonesClassConfigOverrides
+	}
+
+	return supervisorNamespace
 }
 
 func setSupervisorNamespaceData(_ *VCDClient, d *schema.ResourceData, projectName string, supervisorNamespaceName string, supervisorNamespace ccitypes.SupervisorNamespace) error {
@@ -690,11 +743,12 @@ func setSupervisorNamespaceData(_ *VCDClient, d *schema.ResourceData, projectNam
 	conditions := make([]interface{}, 0, len(supervisorNamespace.Status.Conditions))
 	for _, condition := range supervisorNamespace.Status.Conditions {
 		c := map[string]interface{}{
-			"message":  condition.Message,
-			"reason":   condition.Reason,
-			"severity": condition.Severity,
-			"status":   condition.Status,
-			"type":     condition.Type,
+			"last_transition_time": condition.LastTransitionTime,
+			"message":              condition.Message,
+			"reason":               condition.Reason,
+			"severity":             condition.Severity,
+			"status":               condition.Status,
+			"type":                 condition.Type,
 		}
 
 		conditions = append(conditions, c)
@@ -779,15 +833,15 @@ func setSupervisorNamespaceData(_ *VCDClient, d *schema.ResourceData, projectNam
 	}
 	d.Set("vm_classes", vmClasses)
 
-	vmClassessClassConfigOverrides := make([]interface{}, 0, len(supervisorNamespace.Spec.ClassConfigOverrides.VmClasses))
+	vmClassesClassConfigOverrides := make([]interface{}, 0, len(supervisorNamespace.Spec.ClassConfigOverrides.VmClasses))
 	for _, vmClass := range supervisorNamespace.Spec.ClassConfigOverrides.VmClasses {
 		vmClassClassConfigOverride := map[string]interface{}{
 			"name": vmClass.Name,
 		}
 
-		vmClassessClassConfigOverrides = append(vmClassessClassConfigOverrides, vmClassClassConfigOverride)
+		vmClassesClassConfigOverrides = append(vmClassesClassConfigOverrides, vmClassClassConfigOverride)
 	}
-	d.Set("vm_classes_class_config_overrides", vmClassessClassConfigOverrides)
+	d.Set("vm_classes_class_config_overrides", vmClassesClassConfigOverrides)
 
 	zones := make([]interface{}, 0, len(supervisorNamespace.Status.Zones))
 	for _, zone := range supervisorNamespace.Status.Zones {
