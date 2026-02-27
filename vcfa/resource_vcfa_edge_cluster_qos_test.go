@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
 func TestAccVcfaEdgeCluster(t *testing.T) {
@@ -21,12 +22,14 @@ func TestAccVcfaEdgeCluster(t *testing.T) {
 	nsxManagerHcl, nsxManagerHclRef := getNsxManagerHcl(t)
 	vCenterHcl, vCenterHclRef := getVCenterHcl(t, nsxManagerHclRef)
 	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
+	edgeClusterHcl, edgeClusterHclRef := getEdgeClusterHcl(t, nsxManagerHclRef, regionHclRef)
+
 	var params = StringMap{
 		"Testname":        t.Name(),
 		"VcenterRef":      vCenterHclRef,
 		"RegionId":        fmt.Sprintf("%s.id", regionHclRef),
 		"RegionName":      t.Name(),
-		"EdgeClusterName": testConfig.Tm.NsxEdgeCluster,
+		"EdgeClusterName": fmt.Sprintf("%s.name", edgeClusterHclRef),
 		"SyncBeforeRead":  "true",
 
 		"Tags": "tm",
@@ -40,7 +43,7 @@ func TestAccVcfaEdgeCluster(t *testing.T) {
 	configText0 := templateFill(vCenterHcl+nsxManagerHcl+skipBinaryTest, params)
 	params["FuncName"] = t.Name() + "-step0"
 
-	preRequisites := vCenterHcl + nsxManagerHcl + regionHcl
+	preRequisites := vCenterHcl + nsxManagerHcl + regionHcl + edgeClusterHcl
 	configText1 := templateFill(preRequisites+testAccVcfaEdgeClusterQosStep1, params)
 	params["FuncName"] = t.Name() + "-step2"
 	params["SyncBeforeRead"] = "false" // TODO TM - Sync'ing resets QoS policy to unlimited (-1)
@@ -62,6 +65,8 @@ func TestAccVcfaEdgeCluster(t *testing.T) {
 		return
 	}
 
+	cachedEdgeClusterName := &testCachedFieldValue{}
+
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
 		Steps: []resource.TestStep{
@@ -71,10 +76,9 @@ func TestAccVcfaEdgeCluster(t *testing.T) {
 			{
 				Config: configText1,
 				Check: resource.ComposeTestCheckFunc(
+					cachedEdgeClusterName.cacheTestResourceFieldValue("data.vcfa_edge_cluster.demo", "name"),
 					resource.TestCheckResourceAttrSet("data.vcfa_edge_cluster.demo", "id"),
-					resource.TestCheckResourceAttrSet("data.vcfa_edge_cluster_qos.demo", "id"),
-					resource.TestCheckResourceAttrPair("data.vcfa_edge_cluster_qos.demo", "id", "data.vcfa_edge_cluster.demo", "id"),
-					resource.TestCheckResourceAttr("data.vcfa_edge_cluster.demo", "name", testConfig.Tm.NsxEdgeCluster),
+					resource.TestCheckResourceAttrPair("data.vcfa_edge_cluster.demo", "name", edgeClusterHclRef, "name"),
 					resource.TestCheckResourceAttrSet("data.vcfa_edge_cluster.demo", "region_id"),
 					resource.TestCheckResourceAttrSet("data.vcfa_edge_cluster.demo", "node_count"),
 					resource.TestCheckResourceAttrSet("data.vcfa_edge_cluster.demo", "org_count"),
@@ -84,6 +88,9 @@ func TestAccVcfaEdgeCluster(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.vcfa_edge_cluster.demo", "health_status"),
 					resource.TestCheckResourceAttrSet("data.vcfa_edge_cluster.demo", "status"),
 					resource.TestCheckResourceAttrSet("data.vcfa_edge_cluster.demo", "deployment_type"),
+
+					resource.TestCheckResourceAttrSet("data.vcfa_edge_cluster_qos.demo", "id"),
+					resource.TestCheckResourceAttrPair("data.vcfa_edge_cluster_qos.demo", "id", "data.vcfa_edge_cluster.demo", "id"),
 				),
 			},
 			{
@@ -92,7 +99,7 @@ func TestAccVcfaEdgeCluster(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.vcfa_edge_cluster.demo", "id"),
 					resource.TestCheckResourceAttrSet("data.vcfa_edge_cluster_qos.demo", "id"),
 					resource.TestCheckResourceAttrPair("data.vcfa_edge_cluster_qos.demo", "id", "data.vcfa_edge_cluster.demo", "id"),
-					resource.TestCheckResourceAttr("data.vcfa_edge_cluster.demo", "name", testConfig.Tm.NsxEdgeCluster),
+					resource.TestCheckResourceAttrPair("data.vcfa_edge_cluster.demo", "name", edgeClusterHclRef, "name"),
 
 					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "egress_committed_bandwidth_mbps", "1"),
 					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "egress_burst_size_bytes", "2"),
@@ -106,7 +113,7 @@ func TestAccVcfaEdgeCluster(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.vcfa_edge_cluster.demo", "id"),
 					resource.TestCheckResourceAttrSet("data.vcfa_edge_cluster_qos.demo", "id"),
 					resource.TestCheckResourceAttrPair("data.vcfa_edge_cluster_qos.demo", "id", "data.vcfa_edge_cluster.demo", "id"),
-					resource.TestCheckResourceAttr("data.vcfa_edge_cluster.demo", "name", testConfig.Tm.NsxEdgeCluster),
+					resource.TestCheckResourceAttrPair("data.vcfa_edge_cluster.demo", "name", edgeClusterHclRef, "name"),
 
 					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "egress_committed_bandwidth_mbps", "1"),
 					resource.TestCheckResourceAttr("vcfa_edge_cluster_qos.demo", "egress_burst_size_bytes", "2"),
@@ -119,7 +126,9 @@ func TestAccVcfaEdgeCluster(t *testing.T) {
 				ResourceName:      "vcfa_edge_cluster_qos.demo",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateId:     testConfig.Tm.Region + ImportSeparator + params["EdgeClusterName"].(string),
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					return testConfig.Tm.Region + ImportSeparator + cachedEdgeClusterName.fieldValue, nil
+				},
 			},
 			{
 				// Ensuring that the resource is removed (therefore QoS settings must be unset)
@@ -163,7 +172,7 @@ func TestAccVcfaEdgeCluster(t *testing.T) {
 
 const testAccVcfaEdgeClusterQosStep1 = `
 data "vcfa_edge_cluster" "demo" {
-  name             = "{{.EdgeClusterName}}"
+  name             = {{.EdgeClusterName}}
   region_id        = {{.RegionId}}
   sync_before_read = {{.SyncBeforeRead}}
 }
@@ -186,7 +195,7 @@ resource "vcfa_edge_cluster_qos" "demo" {
 
 const testAccVcfaEdgeClusterQosStep3 = `
 data "vcfa_edge_cluster" "demo" {
-  name             = "{{.EdgeClusterName}}"
+  name             = {{.EdgeClusterName}}
   region_id        = {{.RegionId}}
   sync_before_read = {{.SyncBeforeRead}}
 }

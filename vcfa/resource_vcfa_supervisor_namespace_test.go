@@ -36,6 +36,7 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
 	ipSpaceHcl, ipSpaceHclRef := getIpSpaceHcl(t, regionHclRef, "1", "1")
 	providerGatewayHcl, providerGatewayHclRef := getProviderGatewayHcl(t, regionHclRef, ipSpaceHclRef)
+	edgeClusterHcl, edgeClusterHclRef := getEdgeClusterHcl(t, nsxManagerHclRef, regionHclRef)
 
 	var params = StringMap{
 		"Testname":           t.Name(),
@@ -56,15 +57,15 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 		"NsxPassword":     testConfig.Tm.NsxManagerPassword,
 		"NsxUrl":          testConfig.Tm.NsxManagerUrl,
 
-		"Supervisor":     testConfig.Tm.VcenterSupervisor,
-		"RegionName":     testConfig.Tm.Region,
-		"VpcName":        testConfig.Tm.Vpc,
-		"Tier0Gateway":   testConfig.Tm.NsxTier0Gateway,
-		"NsxEdgeCluster": testConfig.Tm.NsxEdgeCluster,
-		"RegionVmClass":  "best-effort-2xlarge",
+		"Supervisor":    testConfig.Tm.VcenterSupervisor,
+		"RegionName":    testConfig.Tm.Region,
+		"VpcName":       testConfig.Tm.Vpc,
+		"Tier0Gateway":  testConfig.Tm.NsxTier0Gateway,
+		"RegionVmClass": "best-effort-2xlarge",
 
 		"RegionId":          fmt.Sprintf("%s.id", regionHclRef),
 		"ProviderGatewayId": fmt.Sprintf("%s.id", providerGatewayHclRef),
+		"EdgeClusterId":     fmt.Sprintf("%s.id", edgeClusterHclRef),
 
 		"Tags": "tm org regionQuota",
 
@@ -76,7 +77,7 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 	testParamsNotEmpty(t, params)
 
 	skipBinaryTest := "# skip-binary-test: prerequisite buildup for acceptance tests"
-	configTextPrerequisites := vCenterHcl + nsxManagerHcl + regionHcl + ipSpaceHcl + providerGatewayHcl + skipBinaryTest
+	configTextPrerequisites := vCenterHcl + nsxManagerHcl + regionHcl + ipSpaceHcl + providerGatewayHcl + edgeClusterHcl + skipBinaryTest
 
 	configText1 := templateFill(configTextPrerequisites+testAccVcfaSupervisorNamespaceStep1, params)
 
@@ -273,17 +274,12 @@ resource "vcfa_org_networking" "test" {
   log_name = "tftestsn"
 }
 
-data "vcfa_edge_cluster" "test" {
-  name      = "{{.NsxEdgeCluster}}"
-  region_id = vcfa_region.region.id
-}
-
 resource "vcfa_org_regional_networking" "test" {
   name                = "{{.Testname}}"
   org_id              = vcfa_org.test.id
   provider_gateway_id = vcfa_provider_gateway.test.id
   region_id           = vcfa_region.region.id
-  edge_cluster_id     = data.vcfa_edge_cluster.test.id
+  edge_cluster_id     = {{.EdgeClusterId}}
 
   # The explicit dependency for vcfa_org_region_quota prevents removing
   # the region quota before the regional networking settings

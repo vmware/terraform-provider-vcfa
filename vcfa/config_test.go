@@ -121,13 +121,14 @@ type TestConfig struct {
 		ContentLibrary  string   `json:"contentLibrary"`
 		Vpc             string   `json:"vpc"`
 
-		CreateNsxManager   bool   `json:"createNsxManager"`
-		NsxManagerUsername string `json:"nsxManagerUsername"`
-		NsxManagerPassword string `json:"nsxManagerPassword"`
-		NsxManagerUrl      string `json:"nsxManagerUrl"`
-		NsxEdgeCluster     string `json:"nsxEdgeCluster"`
-		NsxTier0Gateway    string `json:"nsxTier0Gateway"`
-		ProviderGateway    string `json:"providerGateway"`
+		CreateNsxManager             bool   `json:"createNsxManager"`
+		NsxManagerUsername           string `json:"nsxManagerUsername"`
+		NsxManagerPassword           string `json:"nsxManagerPassword"`
+		NsxManagerUrl                string `json:"nsxManagerUrl"`
+		NsxTier0Gateway              string `json:"nsxTier0Gateway"`
+		NsxEdgeCluster               string `json:"nsxEdgeCluster"`
+		NsxEdgeClusterSuffixRequired bool   `json:"nsxEdgeClusterSuffixRequired"`
+		ProviderGateway              string `json:"providerGateway"`
 
 		CreateVcenter         bool   `json:"createVcenter"`
 		VcenterUsername       string `json:"vcenterUsername"`
