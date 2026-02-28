@@ -23,12 +23,13 @@ func TestAccVcfaOrgRegionalNetworking(t *testing.T) {
 	regionHcl, regionHclRef := getRegionHcl(t, vCenterHclRef, nsxManagerHclRef)
 	ipSpaceHcl, ipSpaceHclRef := getIpSpaceHcl(t, regionHclRef, "1", "1")
 	providerGatewayHcl, providerGatewayHclRef := getProviderGatewayHcl(t, regionHclRef, ipSpaceHclRef)
+	edgeClusterHcl, edgeClusterHclRef := getEdgeClusterHcl(t, nsxManagerHclRef, regionHclRef)
 
 	var params = StringMap{
 		"Testname":          t.Name(),
 		"RegionId":          fmt.Sprintf("%s.id", regionHclRef),
 		"ProviderGatewayId": fmt.Sprintf("%s.id", providerGatewayHclRef),
-		"EdgeClusterName":   testConfig.Tm.NsxEdgeCluster,
+		"EdgeClusterId":     fmt.Sprintf("%s.id", edgeClusterHclRef),
 		"Tags":              "tm org",
 	}
 	testParamsNotEmpty(t, params)
@@ -40,7 +41,7 @@ func TestAccVcfaOrgRegionalNetworking(t *testing.T) {
 	configText0 := templateFill(vCenterHcl+nsxManagerHcl+skipBinaryTest, params)
 	params["FuncName"] = t.Name() + "-step0"
 
-	preRequisites := vCenterHcl + nsxManagerHcl + regionHcl + ipSpaceHcl + providerGatewayHcl
+	preRequisites := vCenterHcl + nsxManagerHcl + regionHcl + ipSpaceHcl + providerGatewayHcl + edgeClusterHcl
 	configText1 := templateFill(preRequisites+testAccVcfaOrgRegionalNetworkingStep1, params)
 	params["FuncName"] = t.Name() + "-step2"
 	configText2 := templateFill(preRequisites+testAccVcfaOrgRegionalNetworkingStep2, params)
@@ -90,7 +91,7 @@ func TestAccVcfaOrgRegionalNetworking(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "region_id"),
 
 					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "edge_cluster_id"),
-					resource.TestCheckResourceAttrPair("vcfa_org_regional_networking.test", "edge_cluster_id", "data.vcfa_edge_cluster.test", "id"),
+					resource.TestCheckResourceAttrPair("vcfa_org_regional_networking.test", "edge_cluster_id", edgeClusterHclRef, "id"),
 					resource.TestCheckResourceAttr("vcfa_org_regional_networking.test", "name", t.Name()+"-upd"),
 				),
 			},
@@ -180,17 +181,12 @@ resource "vcfa_org_regional_networking" "test" {
 `
 
 const testAccVcfaOrgRegionalNetworkingStep2 = testAccVcfaOrgRegionalNetworkingPrerequisites + `
-data "vcfa_edge_cluster" "test" {
-  name      = "{{.EdgeClusterName}}"
-  region_id = {{.RegionId}}
-}
-
 resource "vcfa_org_regional_networking" "test" {
   name                = "{{.Testname}}-upd"
   org_id              = vcfa_org.test.id
   provider_gateway_id = {{.ProviderGatewayId}}
   region_id           = {{.RegionId}}
-  edge_cluster_id     = data.vcfa_edge_cluster.test.id
+  edge_cluster_id     = {{.EdgeClusterId}}
 
   depends_on = [vcfa_org_networking.test]
 }
@@ -205,7 +201,7 @@ data "vcfa_org_regional_networking" "test" {
 
 const testAccVcfaOrgRegionalNetworkingStep4VpcQos = testAccVcfaOrgRegionalNetworkingStep2 + `
 data "vcfa_edge_cluster_qos" "test" {
-  edge_cluster_id = data.vcfa_edge_cluster.test.id
+  edge_cluster_id = {{.EdgeClusterId}}
 }
 
 data "vcfa_org_regional_networking_vpc_qos" "test" {
@@ -216,7 +212,7 @@ data "vcfa_org_regional_networking_vpc_qos" "test" {
 
 const testAccVcfaOrgRegionalNetworkingStep5VpcQos = testAccVcfaOrgRegionalNetworkingStep2 + `
 data "vcfa_edge_cluster_qos" "test" {
-  edge_cluster_id = data.vcfa_edge_cluster.test.id
+  edge_cluster_id = {{.EdgeClusterId}}
 }
 
 data "vcfa_org_regional_networking_vpc_qos" "test" {

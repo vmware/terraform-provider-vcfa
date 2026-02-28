@@ -254,6 +254,24 @@ resource "vcfa_provider_gateway" "test" {
 `, "vcfa_provider_gateway.test"
 }
 
+func getEdgeClusterHcl(t *testing.T, nsxManagerHclRef string, regionHclRef string) (string, string) {
+	if testConfig.Tm.NsxEdgeCluster == "" {
+		t.Fatalf("the property tm.edgeCluster is required but it is not present in testing JSON")
+	}
+
+	edgeClusterName := "\"" + testConfig.Tm.NsxEdgeCluster + "\""
+	if testConfig.Tm.NsxEdgeClusterSuffixRequired {
+		edgeClusterName = "format(\"%s-%s\", \"" + testConfig.Tm.NsxEdgeCluster + "\", element(split(\"-\", " + nsxManagerHclRef + ".id), 4))"
+	}
+
+	return `
+data "vcfa_edge_cluster" "test" {
+  name      = ` + edgeClusterName + `
+  region_id = ` + regionHclRef + `.id
+}
+	`, "data.vcfa_edge_cluster.test"
+}
+
 func testAccCheckOrgDestroy(orgName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		tmClient := testAccProvider.Meta().(ClientContainer).tmClient
