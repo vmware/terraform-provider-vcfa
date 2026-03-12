@@ -208,11 +208,10 @@ resource "vcfa_ip_space" "test-` + nameSuffix + `" {
   name                          = "` + k8sCompliantName + nameSuffix + `"
   description                   = "Made using Terraform"
   region_id                     = ` + regionHclRef + `.id
-  external_scope                = "43.12.` + octet3 + `.0/30"
   default_quota_max_subnet_size = 24
   default_quota_max_cidr_count  = 1
   default_quota_max_ip_count    = 1
-  internal_scope {
+  cidr_blocks {
     cidr = "32.0.` + octet3 + `.0/24"
   }
 }

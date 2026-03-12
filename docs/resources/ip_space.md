@@ -24,24 +24,29 @@ resource "vcfa_ip_space" "demo" {
   name                          = "demo-ip-space"
   description                   = "description"
   region_id                     = data.vcfa_region.demo.id
-  external_scope                = "12.12.0.0/30"
   default_quota_max_subnet_size = 24
   default_quota_max_cidr_count  = 1
   default_quota_max_ip_count    = 1
+  provider_visibility_only      = true
 
-  internal_scope {
-    name = "scope1"
+  cidr_blocks {
+    name = "block1"
     cidr = "10.0.0.0/24"
   }
 
-  internal_scope {
-    name = "scope2"
+  cidr_blocks {
+    name = "block2"
     cidr = "20.0.0.0/24"
   }
 
-  internal_scope {
-    name = "scope3"
-    cidr = "30.0.0.0/24"
+  ip_address_ranges {
+    start_ip_address = "10.0.1.1"
+    end_ip_address   = "10.0.1.255"
+  }
+
+  reserved_ip_address_ranges {
+    start_ip_address = "10.0.0.1"
+    end_ip_address   = "10.0.0.10"
   }
 }
 ```
@@ -53,24 +58,43 @@ The following arguments are supported:
 - `name` - (Required) A tenant facing name for the IP Space
 - `description` - (Optional) An optional description
 - `region_id` - (Required) A Region ID. Can be looked up using [Region data source][vcfa_region-ds]
-- `external_scope` - (Required) A CIDR (e.g. 10.0.0.0/8) for External Reachability. It represents
-  the IPs used outside the datacenter, north of the [Provider Gateway][vcfa_provider_gateway]
+- `external_scope` - (Optional, **Deprecated**) A CIDR for External Reachability. Use
+  `inbound_remote_networks` in [`vcfa_provider_gateway`][vcfa_provider_gateway] instead
 - `default_quota_max_subnet_size` - (Required) Maximum subnet size that can be allocated (e.g. 24)
 - `default_quota_max_cidr_count` - (Required) Maximum number of CIDRs that can be allocated (`-1` for unlimited)
 - `default_quota_max_ip_count` - (Required) Maximum number of floating IPs that can be allocated (`-1` for unlimited)
-- `internal_scope` - (Required) A set of IP Blocks that represent IPs used in this local datacenter,
-  south of the [Provider Gateway][vcfa_provider_gateway]. IPs within this scope are used for configuring services and
-  networks. See [internal_scope](#internal_scope-block) for more details.
+- `cidr_blocks` - (Optional) A set of CIDR blocks. Along with `ip_address_ranges`, typically defines the span of IP
+  addresses used within a Data Center. At least one of `cidr_blocks`, `internal_scope` or `ip_address_ranges` is
+  required. Conflicts with `internal_scope`. See [cidr_blocks](#cidr_blocks-block) for more details
+- `internal_scope` - (Optional, **Deprecated**) Use `cidr_blocks` instead. A set of CIDR blocks. Along with
+  `ip_address_ranges`, typically defines the span of IP addresses used within a Data Center. At least one of
+  `cidr_blocks`, `internal_scope` or `ip_address_ranges` is required. Conflicts with `cidr_blocks`. See
+  [cidr_blocks](#cidr_blocks-block) for the block structure
+- `ip_address_ranges` - (Optional) A set of IP address ranges. Along with `cidr_blocks`, typically defines the
+  span of IP addresses used within a Data Center. At least one of `cidr_blocks`, `internal_scope` or
+  `ip_address_ranges` is required. See [ip_address_ranges](#ip_address_ranges-block) for more details
+- `provider_visibility_only` - (Optional) If set to `true`, the IP Space details will be hidden from organizations
+- `reserved_ip_address_ranges` - (Optional) IP addresses that will not be considered for IP allocation. Reserved
+  IPs have to be part of one of the CIDRs or IP Ranges. See [ip_address_ranges](#ip_address_ranges-block) for the
+  block structure
 
-## internal_scope block
+## cidr_blocks block
 
-- `cidr` - (Required) CIDR for IP block (e.g. 10.0.0.0/16)
+- `cidr` - (Required) CIDR for IP block (e.g. `10.0.0.0/16`)
 - `name` - (Optional) An optional friendly name for this block
+
+## ip_address_ranges block
+
+- `start_ip_address` - (Required) Starting IP address in the range
+- `end_ip_address` - (Required) Ending IP address in the range
 
 ## Attribute Reference
 
 The following attributes are exported on this resource:
 
+- `backing_id` - ID for the matching IP Block in NSX
+- `is_imported_ip_block` - Indicates if the IP Block is imported from an existing NSX IP Block
+- `subnet_exclusive` - Whether this IP Block is exclusively for a single CIDR
 - `status` - One of:
   - `PENDING` - Desired entity configuration has been received by system and is pending realization
   - `CONFIGURING` - The system is in process of realizing the entity

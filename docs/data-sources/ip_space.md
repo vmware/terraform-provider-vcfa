@@ -20,7 +20,7 @@ data "vcfa_region" "demo" {
 
 data "vcfa_ip_space" "demo" {
   name      = "demo-ip-space"
-  region_id = data.vcfa_region.region.id
+  region_id = data.vcfa_region.demo.id
 }
 ```
 

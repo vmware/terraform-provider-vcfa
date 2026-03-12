@@ -19,23 +19,43 @@ import (
 
 const labelVcfaIpSpace = "IP Space"
 
-var ipSpaceInternalScopeSchema = &schema.Resource{
+var ipSpaceIpBlockSchema = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"id": {
 			Type:        schema.TypeString,
 			Computed:    true,
-			Description: fmt.Sprintf("ID of internal scope within %s", labelVcfaIpSpace),
+			Description: fmt.Sprintf("ID of the IP Block within %s", labelVcfaIpSpace),
 		},
 		"name": {
 			Type:        schema.TypeString,
 			Optional:    true,
 			Computed:    true,
-			Description: fmt.Sprintf("Name of internal scope within %s", labelVcfaIpSpace),
+			Description: fmt.Sprintf("Name of the IP Block within %s", labelVcfaIpSpace),
 		},
 		"cidr": {
 			Type:        schema.TypeString,
 			Required:    true,
-			Description: fmt.Sprintf("The CIDR that represents this IP block within %s", labelVcfaIpSpace),
+			Description: fmt.Sprintf("The CIDR that represents this IP Block within %s", labelVcfaIpSpace),
+		},
+	},
+}
+
+var ipSpaceIpRangeSchema = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"id": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: fmt.Sprintf("ID of IP Range within %s", labelVcfaIpSpace),
+		},
+		"start_ip_address": {
+			Type:        schema.TypeString,
+			Required:    true,
+			Description: "Starting IP address in the range",
+		},
+		"end_ip_address": {
+			Type:        schema.TypeString,
+			Required:    true,
+			Description: "Ending IP address in the range",
 		},
 	},
 }
@@ -56,6 +76,11 @@ func resourceVcfaIpSpace() *schema.Resource {
 				Required:    true,
 				Description: fmt.Sprintf("Name of %s", labelVcfaIpSpace),
 			},
+			"backing_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "ID for the matching IP Block in NSX",
+			},
 			"description": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -70,6 +95,7 @@ func resourceVcfaIpSpace() *schema.Resource {
 			"external_scope": {
 				Type:        schema.TypeString,
 				Optional:    true,
+				Deprecated:  "Use 'inbound_remote_networks' in 'vcfa_provider_gateway' resource instead",
 				Description: "External scope in CIDR format",
 			},
 			"default_quota_max_subnet_size": {
@@ -90,16 +116,61 @@ func resourceVcfaIpSpace() *schema.Resource {
 				Description:      fmt.Sprintf("Maximum number of single floating IP addresses that can be allocated from internal scope in this %s. ('-1' for unlimited)", labelVcfaIpSpace),
 				ValidateDiagFunc: IsIntAndAtLeast(-1),
 			},
+			"cidr_blocks": {
+				Type:          schema.TypeSet,
+				Optional:      true,
+				Computed:      true,
+				Description:   fmt.Sprintf("CIDR blocks of %s. Along with 'ip_address_ranges' typically defines the span of IP addresses used within a Data Center", labelVcfaIpSpace),
+				AtLeastOneOf:  []string{"cidr_blocks", "internal_scope", "ip_address_ranges"},
+				ConflictsWith: []string{"internal_scope"},
+				Elem:          ipSpaceIpBlockSchema,
+				MaxItems:      30,
+			},
 			"internal_scope": {
+				Type:          schema.TypeSet,
+				Optional:      true,
+				Computed:      true,
+				Deprecated:    "Use 'cidr_blocks' instead",
+				Description:   fmt.Sprintf("Internal scope of %s. Along with 'ip_address_ranges' typically defines the span of IP addresses used within a Data Center", labelVcfaIpSpace),
+				AtLeastOneOf:  []string{"cidr_blocks", "internal_scope", "ip_address_ranges"},
+				ConflictsWith: []string{"cidr_blocks"},
+				Elem:          ipSpaceIpBlockSchema,
+				MaxItems:      30,
+			},
+			"ip_address_ranges": {
+				Type:         schema.TypeSet,
+				Optional:     true,
+				Description:  fmt.Sprintf("IP address ranges of %s. Along with 'internal_scope' typically defines the span of IP addresses used within a Data Center", labelVcfaIpSpace),
+				AtLeastOneOf: []string{"cidr_blocks", "internal_scope", "ip_address_ranges"},
+				Elem:         ipSpaceIpRangeSchema,
+				MaxItems:     30,
+			},
+			"is_imported_ip_block": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: "Indicates if the IP Block is imported from an existing NSX IP Block",
+			},
+			"provider_visibility_only": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: fmt.Sprintf("If set to true, the %s details will be hidden from organizations", labelVcfaIpSpace),
+			},
+			"reserved_ip_address_ranges": {
 				Type:        schema.TypeSet,
-				Required:    true,
-				Description: fmt.Sprintf("Internal scope of %s", labelVcfaIpSpace),
-				Elem:        ipSpaceInternalScopeSchema,
+				Optional:    true,
+				Description: fmt.Sprintf("IP addresses that will not be considered for IP allocation. Reserved IPs have to be part of one of the CIDRs or IP Ranges of %s", labelVcfaIpSpace),
+				Elem:        ipSpaceIpRangeSchema,
+				MaxItems:    128,
 			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Description: fmt.Sprintf("Status of %s", labelVcfaIpSpace),
+			},
+			"subnet_exclusive": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: "Whether this IP Block is exclusively for a single CIDR",
 			},
 		},
 	}
@@ -184,47 +255,78 @@ func resourceVcfaIpSpaceImport(ctx context.Context, d *schema.ResourceData, meta
 
 func getIpSpaceType(tmClient *VCDClient, d *schema.ResourceData) (*types.TmIpSpace, error) {
 	t := &types.TmIpSpace{
-		Name:              d.Get("name").(string),
-		Description:       d.Get("description").(string),
-		RegionRef:         types.OpenApiReference{ID: d.Get("region_id").(string)},
-		ExternalScopeCidr: d.Get("external_scope").(string),
+		Name:                   d.Get("name").(string),
+		Description:            d.Get("description").(string),
+		RegionRef:              types.OpenApiReference{ID: d.Get("region_id").(string)},
+		ExternalScopeCidr:      d.Get("external_scope").(string),
+		ProviderVisibilityOnly: d.Get("provider_visibility_only").(bool),
 	}
 
 	// error is ignored because validation is enforced in schema fields
 	maxCidrCountInt, _ := strconv.Atoi(d.Get("default_quota_max_cidr_count").(string))
 	maxIPCountInt, _ := strconv.Atoi(d.Get("default_quota_max_ip_count").(string))
 	maxSubnetSizeInt, _ := strconv.Atoi(d.Get("default_quota_max_subnet_size").(string))
-	t.DefaultQuota = types.TmIpSpaceDefaultQuota{
+	t.DefaultQuota = types.TmIpSpaceQuota{
 		MaxCidrCount:  maxCidrCountInt,
 		MaxIPCount:    maxIPCountInt,
 		MaxSubnetSize: maxSubnetSizeInt,
 	}
 
-	// internal_scope
-	internalScope := d.Get("internal_scope").(*schema.Set)
-	internalScopeSlice := internalScope.List()
-	if len(internalScopeSlice) > 0 {
-		isSlice := make([]types.TmIpSpaceInternalScopeCidrBlocks, len(internalScopeSlice))
-		for internalScopeIndex := range internalScopeSlice {
-			internalScopeBlockStrings := convertToStringMap(internalScopeSlice[internalScopeIndex].(map[string]interface{}))
-
-			isSlice[internalScopeIndex].Name = internalScopeBlockStrings["name"]
-			isSlice[internalScopeIndex].Cidr = internalScopeBlockStrings["cidr"]
-
-			// ID of internal_scope is important for updates
-			// Terraform TypeSet cannot natively identify the ID between previous and new states
-			// To work around this, an attempt to retrieve ID from state and correlate it with new payload is done
-			// An important fact is that `cidr` field is not updatable, therefore one can be sure
-			// that ID from state can be looked up based on CIDR.
-			// If there was no such cidr in previous state - it means that this is a new 'internal_scope' block
-			// and it doesn't need an ID
-			isSlice[internalScopeIndex].ID = getInternalScopeIdFromFromPreviousState(d, internalScopeBlockStrings["name"], internalScopeBlockStrings["cidr"])
-
-		}
-		t.InternalScopeCidrBlocks = isSlice
+	if _, ok := d.GetOk("cidr_blocks"); ok {
+		t.InternalScopeCidrBlocks = getIpBlocksFromSchema(d, "cidr_blocks")
+	} else if _, ok := d.GetOk("internal_scope"); ok {
+		t.InternalScopeCidrBlocks = getIpBlocksFromSchema(d, "internal_scope")
 	}
 
+	t.IpAddressRanges = getIpRangesFromSchema(d, "ip_address_ranges")
+	t.ReservedIpAddressRanges = getIpRangesFromSchema(d, "reserved_ip_address_ranges")
+
 	return t, nil
+}
+
+func getIpBlocksFromSchema(d *schema.ResourceData, fieldName string) []types.TmIpAddressSpaceIpBlock {
+	ipBlocks := d.Get(fieldName).(*schema.Set)
+	ipBlocksSlice := ipBlocks.List()
+	if len(ipBlocksSlice) == 0 {
+		return nil
+	}
+
+	result := make([]types.TmIpAddressSpaceIpBlock, len(ipBlocksSlice))
+	for i, r := range ipBlocksSlice {
+		ipBlockMap := convertToStringMap(r.(map[string]interface{}))
+		result[i] = types.TmIpAddressSpaceIpBlock{
+			Name: ipBlockMap["name"],
+			Cidr: ipBlockMap["cidr"],
+		}
+
+		// ID of IP Block is important for updates
+		// Terraform TypeSet cannot natively identify the ID between previous and new states
+		// To work around this, an attempt to retrieve ID from state and correlate it with new payload is done
+		// An important fact is that `cidr` field is not updatable, therefore one can be sure
+		// that ID from state can be looked up based on CIDR.
+		// If there was no such cidr in previous state - it means that this is a new IP Block
+		// and it doesn't need an ID
+		result[i].ID = getIpBlockIdFromFromPreviousState(d, fieldName, ipBlockMap["name"], ipBlockMap["cidr"])
+	}
+	return result
+}
+
+func getIpRangesFromSchema(d *schema.ResourceData, fieldName string) []types.TmIpAddressSpaceRange {
+	ipRanges := d.Get(fieldName).(*schema.Set)
+	ipRangesSlice := ipRanges.List()
+	if len(ipRangesSlice) == 0 {
+		return nil
+	}
+
+	result := make([]types.TmIpAddressSpaceRange, len(ipRangesSlice))
+	for i, r := range ipRangesSlice {
+		rangeMap := convertToStringMap(r.(map[string]interface{}))
+		result[i] = types.TmIpAddressSpaceRange{
+			StartIpAddress: rangeMap["start_ip_address"],
+			EndIpAddress:   rangeMap["end_ip_address"],
+		}
+	}
+	return result
 }
 
 func setIpSpaceData(_ *VCDClient, d *schema.ResourceData, i *govcd.TmIpSpace) error {
@@ -234,64 +336,93 @@ func setIpSpaceData(_ *VCDClient, d *schema.ResourceData, i *govcd.TmIpSpace) er
 
 	d.SetId(i.TmIpSpace.ID)
 	dSet(d, "name", i.TmIpSpace.Name)
+	dSet(d, "backing_id", i.TmIpSpace.BackingId)
 	dSet(d, "description", i.TmIpSpace.Description)
-	dSet(d, "region_id", i.TmIpSpace.RegionRef.ID)
 	dSet(d, "external_scope", i.TmIpSpace.ExternalScopeCidr)
+	dSet(d, "is_imported_ip_block", i.TmIpSpace.IsImportedIpBlock)
+	dSet(d, "provider_visibility_only", i.TmIpSpace.ProviderVisibilityOnly)
+	dSet(d, "region_id", i.TmIpSpace.RegionRef.ID)
+	dSet(d, "subnet_exclusive", i.TmIpSpace.SubnetExclusive)
 	dSet(d, "status", i.TmIpSpace.Status)
 
 	dSet(d, "default_quota_max_subnet_size", strconv.Itoa(i.TmIpSpace.DefaultQuota.MaxSubnetSize))
 	dSet(d, "default_quota_max_cidr_count", strconv.Itoa(i.TmIpSpace.DefaultQuota.MaxCidrCount))
 	dSet(d, "default_quota_max_ip_count", strconv.Itoa(i.TmIpSpace.DefaultQuota.MaxIPCount))
 
-	// internal_scope
-	internalScopeInterface := make([]interface{}, len(i.TmIpSpace.InternalScopeCidrBlocks))
-	for i, val := range i.TmIpSpace.InternalScopeCidrBlocks {
-		singleScope := make(map[string]interface{})
-
-		singleScope["id"] = val.ID
-		singleScope["name"] = val.Name
-		singleScope["cidr"] = val.Cidr
-
-		internalScopeInterface[i] = singleScope
+	cidrBlocks := setIpAddressSpaceIpBlocksToState(i.TmIpSpace.InternalScopeCidrBlocks)
+	if err := d.Set("cidr_blocks", cidrBlocks); err != nil {
+		return fmt.Errorf("error storing 'cidr_blocks': %s", err)
 	}
-	err := d.Set("internal_scope", internalScopeInterface)
-	if err != nil {
+
+	if err := d.Set("internal_scope", cidrBlocks); err != nil {
 		return fmt.Errorf("error storing 'internal_scope': %s", err)
+	}
+
+	if err := d.Set("ip_address_ranges", setIpAddressSpaceRangesToState(i.TmIpSpace.IpAddressRanges)); err != nil {
+		return fmt.Errorf("error storing 'ip_address_ranges': %s", err)
+	}
+
+	if err := d.Set("reserved_ip_address_ranges", setIpAddressSpaceRangesToState(i.TmIpSpace.ReservedIpAddressRanges)); err != nil {
+		return fmt.Errorf("error storing 'reserved_ip_address_ranges': %s", err)
 	}
 
 	return nil
 }
 
-func getInternalScopeIdFromFromPreviousState(d *schema.ResourceData, desiredName, desiredCidr string) string {
-	internalScopeOld, _ := d.GetChange("internal_scope")
-	internalScopeOldSchema := internalScopeOld.(*schema.Set)
-	internalScopeOldSlice := internalScopeOldSchema.List()
+func setIpAddressSpaceIpBlocksToState(cidrBlocks []types.TmIpAddressSpaceIpBlock) []interface{} {
+	cidrBlocksInterface := make([]interface{}, len(cidrBlocks))
+	for i, cidrBlock := range cidrBlocks {
+		cidrBlocksInterface[i] = map[string]interface{}{
+			"id":   cidrBlock.ID,
+			"name": cidrBlock.Name,
+			"cidr": cidrBlock.Cidr,
+		}
+	}
+	return cidrBlocksInterface
+}
 
-	util.Logger.Printf("[TRACE] Looking for ID of 'internal_scope' with name '%s', cidr '%s'\n", desiredName, desiredCidr)
+func setIpAddressSpaceRangesToState(ranges []types.TmIpAddressSpaceRange) []interface{} {
+	rangesInterface := make([]interface{}, len(ranges))
+	for i, r := range ranges {
+		rangesInterface[i] = map[string]interface{}{
+			"id":               r.ID,
+			"start_ip_address": r.StartIpAddress,
+			"end_ip_address":   r.EndIpAddress,
+		}
+	}
+	return rangesInterface
+}
+
+func getIpBlockIdFromFromPreviousState(d *schema.ResourceData, fieldName string, desiredName, desiredCidr string) string {
+	ipBlocksOld, _ := d.GetChange(fieldName)
+	ipBlocksOldSchema := ipBlocksOld.(*schema.Set)
+	ipBlocksOldSlice := ipBlocksOldSchema.List()
+
+	util.Logger.Printf("[TRACE] Looking for ID of %s' with name '%s', cidr '%s'\n", fieldName, desiredName, desiredCidr)
 	var foundPartialId string
-	for internalScopeIndex := range internalScopeOldSlice {
-		singleScopeOld := internalScopeOldSlice[internalScopeIndex]
-		singleScopeOldMap := convertToStringMap(singleScopeOld.(map[string]interface{}))
+	for ipBlockIndex := range ipBlocksOldSlice {
+		ipBlockOld := ipBlocksOldSlice[ipBlockIndex]
+		ipBlockOldMap := convertToStringMap(ipBlockOld.(map[string]interface{}))
 
 		// exact match
-		if singleScopeOldMap["cidr"] == desiredCidr && singleScopeOldMap["name"] == desiredName {
-			util.Logger.Printf("[TRACE] Found exact match for ID '%s' of 'internal_scope' with name '%s', cidr '%s' \n", singleScopeOldMap["id"], desiredName, desiredCidr)
-			return singleScopeOldMap["id"]
+		if ipBlockOldMap["cidr"] == desiredCidr && ipBlockOldMap["name"] == desiredName {
+			util.Logger.Printf("[TRACE] Found exact match for ID '%s' of '%s' with name '%s', cidr '%s' \n", ipBlockOldMap["id"], fieldName, desiredName, desiredCidr)
+			return ipBlockOldMap["id"]
 		}
 
 		// partial match based on cidr
-		if singleScopeOldMap["cidr"] == desiredCidr {
-			util.Logger.Printf("[TRACE] Found partial match for ID '%s' of 'internal_scope' with cidr '%s'. 'name' is ignored'\n", singleScopeOldMap["id"], desiredCidr)
-			foundPartialId = singleScopeOldMap["id"]
+		if ipBlockOldMap["cidr"] == desiredCidr {
+			util.Logger.Printf("[TRACE] Found partial match for ID '%s' of '%s' with cidr '%s'. 'name' is ignored'\n", ipBlockOldMap["id"], fieldName, desiredCidr)
+			foundPartialId = ipBlockOldMap["id"]
 		}
 	}
 
 	if foundPartialId != "" {
-		util.Logger.Printf("[TRACE] Returning partial match for ID '%s' of 'internal_scope' with cidr '%s'. 'name' are ignored'\n", desiredCidr, desiredName)
+		util.Logger.Printf("[TRACE] Returning partial match for ID '%s' of '%s' with cidr '%s'. 'name' are ignored'\n", desiredCidr, fieldName, desiredName)
 		return foundPartialId
 	}
 
-	util.Logger.Printf("[TRACE] Not found 'internal_scope' ID with name '%s', cidr '%s'\n", desiredName, desiredCidr)
+	util.Logger.Printf("[TRACE] Not found '%s' ID with name '%s', cidr '%s'\n", fieldName, desiredName, desiredCidr)
 	// No ID was found at all
 	return ""
 }
