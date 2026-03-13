@@ -1,0 +1,1 @@
+- Fix filtering by `region_id` at the `vcfa_region_storage_policy` and `vcfa_storage_class` datasources [GH-166]
