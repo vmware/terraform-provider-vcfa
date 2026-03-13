@@ -59,10 +59,48 @@ func resourceVcfaProviderGateway() *schema.Resource {
 			"ip_space_ids": {
 				Type:        schema.TypeSet,
 				Required:    true,
-				Description: fmt.Sprintf("A set of supervisor IDs used in this %s", labelVcfaRegion),
+				Description: fmt.Sprintf("A set of %s IDs used in this %s", labelVcfaIpSpace, labelVcfaProviderGateway),
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+				MinItems: 1,
+				MaxItems: 5,
+			},
+			"gateway_connection_backing_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The ID of the associated Gateway Connection in NSX, if any",
+			},
+			"inbound_remote_networks": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Description: fmt.Sprintf("The total span of IP addresses to which the %s has access (e.g. '0.0.0.0/0' for the internet, '10.0.0.0/8' for a WAN)", labelVcfaProviderGateway),
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				MaxItems: 10,
+			},
+			"allow_advertising_private_ip_blocks": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				ForceNew:    true,
+				Description: fmt.Sprintf("Allows the %s to advertise their own private IP Blocks. Cannot be changed after creation", labelVcfaProviderGateway),
+			},
+			"nat_config_enabled": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: fmt.Sprintf("Whether the Outbound NAT is enabled for the %s", labelVcfaProviderGateway),
+			},
+			"nat_config_ip_space_id": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				ForceNew:    true,
+				Description: fmt.Sprintf("%s used to configure Outbound NAT. Required if Outbound NAT is enabled. Cannot be changed after creation", labelVcfaIpSpace),
+			},
+			"nat_config_logging": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "Whether logging is enabled for the Outbound NAT configuration",
 			},
 			"status": {
 				Type:        schema.TypeString,
@@ -174,14 +212,25 @@ func resourceVcfaProviderGatewayImport(ctx context.Context, d *schema.ResourceDa
 
 func getProviderGatewayType(tmClient *VCDClient, d *schema.ResourceData) (*types.TmProviderGateway, error) {
 	t := &types.TmProviderGateway{
-		Name:        d.Get("name").(string),
-		Description: d.Get("description").(string),
-		RegionRef:   types.OpenApiReference{ID: d.Get("region_id").(string)},
-		BackingRef:  types.OpenApiReference{ID: d.Get("tier0_gateway_id").(string)},
+		Name:                            d.Get("name").(string),
+		Description:                     d.Get("description").(string),
+		RegionRef:                       types.OpenApiReference{ID: d.Get("region_id").(string)},
+		BackingRef:                      types.OpenApiReference{ID: d.Get("tier0_gateway_id").(string)},
+		AllowAdvertisingPrivateIpBlocks: d.Get("allow_advertising_private_ip_blocks").(bool),
 	}
 
 	ipSpaceIds := convertSchemaSetToSliceOfStrings(d.Get("ip_space_ids").(*schema.Set))
 	t.IPSpaceRefs = convertSliceOfStringsToOpenApiReferenceIds(ipSpaceIds)
+
+	t.InboundRemoteNetworks = convertSchemaSetToSliceOfStrings(d.Get("inbound_remote_networks").(*schema.Set))
+
+	t.NatConfig = types.TmProviderGatewayNatConfig{
+		EnableSnat: d.Get("nat_config_enabled").(bool),
+		Logging:    d.Get("nat_config_logging").(bool),
+	}
+	if ipSpaceId, ok := d.GetOk("nat_config_ip_space_id"); ok && ipSpaceId != "" {
+		t.NatConfig.IpSpaceRef = &types.OpenApiReference{ID: ipSpaceId.(string)}
+	}
 
 	// Update operation fails if the ID is not set for update
 	if d.Id() != "" {
@@ -208,6 +257,18 @@ func setProviderGatewayData(tmClient *VCDClient, d *schema.ResourceData, p *govc
 	dSet(d, "region_id", p.TmProviderGateway.RegionRef.ID)
 	dSet(d, "tier0_gateway_id", p.TmProviderGateway.BackingRef.ID)
 	dSet(d, "status", p.TmProviderGateway.Status)
+	dSet(d, "gateway_connection_backing_id", p.TmProviderGateway.GatewayConnectionBackingId)
+	dSet(d, "allow_advertising_private_ip_blocks", p.TmProviderGateway.AllowAdvertisingPrivateIpBlocks)
+
+	if err := d.Set("inbound_remote_networks", p.TmProviderGateway.InboundRemoteNetworks); err != nil {
+		return fmt.Errorf("error storing 'inbound_remote_networks': %s", err)
+	}
+
+	dSet(d, "nat_config_enabled", p.TmProviderGateway.NatConfig.EnableSnat)
+	dSet(d, "nat_config_logging", p.TmProviderGateway.NatConfig.Logging)
+	if p.TmProviderGateway.NatConfig.IpSpaceRef != nil {
+		dSet(d, "nat_config_ip_space_id", p.TmProviderGateway.NatConfig.IpSpaceRef.ID)
+	}
 
 	// IP Space Associations have to be read separatelly after creation (more details at the top of file)
 	associations, err := tmClient.GetAllTmIpSpaceAssociationsByProviderGatewayId(p.TmProviderGateway.ID)

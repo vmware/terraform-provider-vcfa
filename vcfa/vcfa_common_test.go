@@ -244,11 +244,12 @@ data "vcfa_tier0_gateway" "test" {
 }
 
 resource "vcfa_provider_gateway" "test" {
-  name             = "` + testConfig.Tm.ProviderGateway + `"
-  description      = "getProviderGatewayHcl"
-  region_id        = ` + regionHclRef + `.id
-  tier0_gateway_id = data.vcfa_tier0_gateway.test.id
-  ip_space_ids     = [` + ipSpaceHclRef + `.id]
+  name                    = "` + testConfig.Tm.ProviderGateway + `"
+  description             = "getProviderGatewayHcl"
+  region_id               = ` + regionHclRef + `.id
+  tier0_gateway_id        = data.vcfa_tier0_gateway.test.id
+  ip_space_ids            = [` + ipSpaceHclRef + `.id]
+  inbound_remote_networks = ["43.12.0.0/30"]
 }
 `, "vcfa_provider_gateway.test"
 }
