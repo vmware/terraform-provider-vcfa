@@ -1,0 +1,1 @@
+- Add an example at the `vcfa_org_oidc` resource on how to auto-generate signature keys for the OIDC flow [GH-167]
