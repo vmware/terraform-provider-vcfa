@@ -56,10 +56,16 @@ func datasourceVcfaStorageClass() *schema.Resource {
 
 func datasourceVcfaStorageClassRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
+
+	region, err := tmClient.GetRegionById(d.Get("region_id").(string))
+	if err != nil {
+		return diag.Errorf("error retrieving %s with ID '%s: %s", labelVcfaRegion, d.Get("region_id").(string), err)
+	}
+
 	c := dsReadConfig[*govcd.StorageClass, types.StorageClass]{
 		entityLabel: labelVcfaStorageClass,
 		getEntityFunc: func(name string) (*govcd.StorageClass, error) {
-			return tmClient.GetStorageClassByName(name)
+			return region.GetStorageClassByName(name)
 		},
 		stateStoreFunc: setStorageClassData,
 	}
