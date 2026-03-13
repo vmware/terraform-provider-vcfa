@@ -8,7 +8,7 @@ require (
 	github.com/hashicorp/go-version v1.8.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.39.0
 	github.com/hashicorp/terraform-plugin-testing v1.14.0
-	github.com/vmware/go-vcloud-director/v3 v3.0.1-alpha.6
+	github.com/vmware/go-vcloud-director/v3 v3.0.1-alpha.7
 	k8s.io/apimachinery v0.35.2
 	k8s.io/client-go v0.35.2
 )
