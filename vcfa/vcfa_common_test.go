@@ -208,11 +208,10 @@ resource "vcfa_ip_space" "test-` + nameSuffix + `" {
   name                          = "` + k8sCompliantName + nameSuffix + `"
   description                   = "Made using Terraform"
   region_id                     = ` + regionHclRef + `.id
-  external_scope                = "43.12.` + octet3 + `.0/30"
   default_quota_max_subnet_size = 24
   default_quota_max_cidr_count  = 1
   default_quota_max_ip_count    = 1
-  internal_scope {
+  cidr_blocks {
     cidr = "32.0.` + octet3 + `.0/24"
   }
 }
@@ -245,11 +244,12 @@ data "vcfa_tier0_gateway" "test" {
 }
 
 resource "vcfa_provider_gateway" "test" {
-  name             = "` + testConfig.Tm.ProviderGateway + `"
-  description      = "getProviderGatewayHcl"
-  region_id        = ` + regionHclRef + `.id
-  tier0_gateway_id = data.vcfa_tier0_gateway.test.id
-  ip_space_ids     = [` + ipSpaceHclRef + `.id]
+  name                    = "` + testConfig.Tm.ProviderGateway + `"
+  description             = "getProviderGatewayHcl"
+  region_id               = ` + regionHclRef + `.id
+  tier0_gateway_id        = data.vcfa_tier0_gateway.test.id
+  ip_space_ids            = [` + ipSpaceHclRef + `.id]
+  inbound_remote_networks = ["43.12.0.0/30"]
 }
 `, "vcfa_provider_gateway.test"
 }

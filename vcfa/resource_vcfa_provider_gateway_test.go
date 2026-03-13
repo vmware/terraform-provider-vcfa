@@ -82,6 +82,11 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "name", k8sCompliantName),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "description", "Made using Terraform"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "ip_space_ids.#", "2"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "inbound_remote_networks.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "allow_advertising_private_ip_blocks", "false"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_enabled", "true"),
+					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "nat_config_ip_space_id"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_logging", "true"),
 				),
 			},
 			{
@@ -94,6 +99,11 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "name", k8sCompliantName),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "description", "Made using Terraform updated"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "ip_space_ids.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "inbound_remote_networks.#", "0"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "allow_advertising_private_ip_blocks", "false"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_enabled", "false"),
+					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "nat_config_ip_space_id"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_logging", "true"),
 				),
 			},
 			{
@@ -106,6 +116,11 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "name", k8sCompliantName+"-updated"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "description", ""),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "ip_space_ids.#", "3"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "inbound_remote_networks.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "allow_advertising_private_ip_blocks", "false"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_enabled", "false"),
+					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "nat_config_ip_space_id"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_logging", "false"),
 				),
 			},
 			{
@@ -129,12 +144,11 @@ resource "vcfa_ip_space" "test" {
   name                          = "{{.Testname}}"
   description                   = "description test"
   region_id                     = {{.RegionId}}
-  external_scope                = "12.12.0.0/30"
   default_quota_max_subnet_size = 24
   default_quota_max_cidr_count  = 1
   default_quota_max_ip_count    = 1
 
-  internal_scope {
+  cidr_blocks {
     cidr = "10.0.0.0/28"
   }
 }
@@ -143,12 +157,11 @@ resource "vcfa_ip_space" "test2" {
   name                          = "{{.Testname}}-2"
   description                   = "description test"
   region_id                     = {{.RegionId}}
-  external_scope                = "13.12.0.0/30"
   default_quota_max_subnet_size = 24
   default_quota_max_cidr_count  = 1
   default_quota_max_ip_count    = 1
 
-  internal_scope {
+  cidr_blocks {
     cidr = "9.0.0.0/28"
   }
 }
@@ -161,30 +174,44 @@ data "vcfa_tier0_gateway" "test" {
 
 const testAccVcfaProviderGatewayStep1 = testAccVcfaProviderGatewayPrereqs + `
 resource "vcfa_provider_gateway" "test" {
-  name             = "{{.Testname}}"
-  description      = "Made using Terraform"
-  region_id        = {{.RegionId}}
-  tier0_gateway_id = data.vcfa_tier0_gateway.test.id
-  ip_space_ids     = [ vcfa_ip_space.test.id, vcfa_ip_space.test2.id ]
+  name                                = "{{.Testname}}"
+  description                         = "Made using Terraform"
+  region_id                           = {{.RegionId}}
+  tier0_gateway_id                    = data.vcfa_tier0_gateway.test.id
+  ip_space_ids                        = [ vcfa_ip_space.test.id, vcfa_ip_space.test2.id ]
+  inbound_remote_networks             = [ "12.12.0.0/30" ]
+  allow_advertising_private_ip_blocks = false
+  nat_config_enabled                  = true
+  nat_config_ip_space_id              = vcfa_ip_space.test2.id
+  nat_config_logging                  = true
 }
 `
 
 const testAccVcfaProviderGatewayStep2 = testAccVcfaProviderGatewayPrereqs + `
 resource "vcfa_provider_gateway" "test" {
-  name             = "{{.Testname}}"
-  description      = "Made using Terraform updated"
-  region_id        = {{.RegionId}}
-  tier0_gateway_id = data.vcfa_tier0_gateway.test.id
-  ip_space_ids     = [ vcfa_ip_space.test2.id ]
+  name                                = "{{.Testname}}"
+  description                         = "Made using Terraform updated"
+  region_id                           = {{.RegionId}}
+  tier0_gateway_id                    = data.vcfa_tier0_gateway.test.id
+  ip_space_ids                        = [ vcfa_ip_space.test2.id ]
+  allow_advertising_private_ip_blocks = false
+  nat_config_enabled                  = false
+  nat_config_ip_space_id              = vcfa_ip_space.test2.id
+  nat_config_logging                  = true
 }
 `
 
 const testAccVcfaProviderGatewayStep3 = testAccVcfaProviderGatewayPrereqs + `
 resource "vcfa_provider_gateway" "test" {
-  name             = "{{.Testname}}-updated"
-  region_id        = {{.RegionId}}
-  tier0_gateway_id = data.vcfa_tier0_gateway.test.id
-  ip_space_ids     = [ vcfa_ip_space.test2.id, vcfa_ip_space.test.id, {{.IpSpace1Id}} ]
+  name                                = "{{.Testname}}-updated"
+  region_id                           = {{.RegionId}}
+  tier0_gateway_id                    = data.vcfa_tier0_gateway.test.id
+  ip_space_ids                        = [ vcfa_ip_space.test2.id, vcfa_ip_space.test.id, {{.IpSpace1Id}} ]
+  inbound_remote_networks             = [ "12.12.0.0/30" ]
+  allow_advertising_private_ip_blocks = false
+  nat_config_enabled                  = false
+  nat_config_ip_space_id              = vcfa_ip_space.test2.id
+  nat_config_logging                  = false
 }
 `
 

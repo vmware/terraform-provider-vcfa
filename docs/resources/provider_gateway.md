@@ -42,11 +42,16 @@ data "vcfa_ip_space" "demo2" {
 }
 
 resource "vcfa_provider_gateway" "demo" {
-  name             = "Demo Provider Gateway"
-  description      = "Terraform Provider Gateway"
-  region_id        = data.vcfa_region.demo.id
-  tier0_gateway_id = data.vcfa_tier0_gateway.demo.id
-  ip_space_ids     = [data.vcfa_ip_space.demo.id, data.vcfa_ip_space.demo2.id]
+  name                                = "Demo Provider Gateway"
+  description                         = "Terraform Provider Gateway"
+  region_id                           = data.vcfa_region.demo.id
+  tier0_gateway_id                    = data.vcfa_tier0_gateway.demo.id
+  ip_space_ids                        = [data.vcfa_ip_space.demo.id, data.vcfa_ip_space.demo2.id]
+  inbound_remote_networks             = ["0.0.0.0/0"]
+  allow_advertising_private_ip_blocks = false
+  nat_config_enabled                  = true
+  nat_config_ip_space_id              = data.vcfa_ip_space.demo2.id
+  nat_config_logging                  = true
 }
 ```
 
@@ -59,9 +64,20 @@ The following arguments are supported:
 - `region_id` - (Required) A [Region][vcfa_region] ID for Provider Gateway
 - `tier0_gateway_id` - (Required) An existing NSX [Tier-0 Gateway][vcfa_tier0_gateway]
 - `ip_space_ids` - (Required) A set of [IP Space][vcfa_ip_space] IDs that should be assigned to this Provider Gateway
+- `inbound_remote_networks` - (Optional) A set of CIDRs representing the total span of IP addresses to which
+  the Provider Gateway has access. This typically defines the span of IP addresses outside the bounds of a Data
+  Center (e.g. `0.0.0.0/0` for the internet, `10.0.0.0/8` for a WAN)
+- `allow_advertising_private_ip_blocks` - (Optional) Allows the Provider Gateway to advertise their own private
+  IP Blocks. Cannot be changed after creation
+- `nat_config_enabled` - (Optional) Whether Outbound NAT is enabled for the Provider Gateway. Cannot be changed
+  after creation
+- `nat_config_ip_space_id` - (Optional) [IP Space][vcfa_ip_space] used to configure Outbound NAT. Required if
+  Outbound NAT is enabled. Cannot be changed after creation
+- `nat_config_logging` - (Optional) Whether logging is enabled for the Outbound NAT configuration
 
 ## Attribute Reference
 
+- `gateway_connection_backing_id` - The ID of the associated Gateway Connection in NSX, if any
 - `status` - Current status of the entity. Possible values are:
   - `PENDING` - Desired entity configuration has been received by system and is pending realization
   - `CONFIGURING` - The system is in process of realizing the entity

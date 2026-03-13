@@ -42,10 +42,43 @@ func datasourceVcfaProviderGateway() *schema.Resource {
 			"ip_space_ids": {
 				Type:        schema.TypeSet,
 				Computed:    true,
-				Description: fmt.Sprintf("A set of supervisor IDs used in this %s", labelVcfaRegion),
+				Description: fmt.Sprintf("A set of %s IDs used in this %s", labelVcfaIpSpace, labelVcfaProviderGateway),
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+			},
+			"gateway_connection_backing_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The ID of the associated Gateway Connection in NSX, if any",
+			},
+			"inbound_remote_networks": {
+				Type:        schema.TypeSet,
+				Computed:    true,
+				Description: fmt.Sprintf("The total span of IP addresses to which the %s has access", labelVcfaProviderGateway),
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"allow_advertising_private_ip_blocks": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: fmt.Sprintf("Allows the %s to advertise their own private IP Blocks", labelVcfaProviderGateway),
+			},
+			"nat_config_enabled": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: fmt.Sprintf("Whether the Outbound NAT is enabled for the %s", labelVcfaProviderGateway),
+			},
+			"nat_config_ip_space_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("%s used to configure Outbound NAT", labelVcfaIpSpace),
+			},
+			"nat_config_logging": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: "Whether logging is enabled for the Outbound NAT configuration",
 			},
 			"status": {
 				Type:        schema.TypeString,

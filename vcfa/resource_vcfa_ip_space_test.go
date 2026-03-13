@@ -75,21 +75,35 @@ func TestAccVcfaIpSpace(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vcfa_ip_space.test", "status"),
 					resource.TestCheckResourceAttr("vcfa_ip_space.test", "name", k8sCompliantName),
 					resource.TestCheckResourceAttr("vcfa_ip_space.test", "description", "description test"),
-					resource.TestCheckResourceAttr("vcfa_ip_space.test", "external_scope", "12.12.0.0/16"),
 					resource.TestCheckResourceAttr("vcfa_ip_space.test", "default_quota_max_subnet_size", "24"),
 					resource.TestCheckResourceAttr("vcfa_ip_space.test", "default_quota_max_cidr_count", "1"),
 					resource.TestCheckResourceAttr("vcfa_ip_space.test", "default_quota_max_ip_count", "1"),
-					resource.TestCheckResourceAttr("vcfa_ip_space.test", "internal_scope.#", "3"),
-					resource.TestCheckTypeSetElemNestedAttrs("vcfa_ip_space.test", "internal_scope.*", map[string]string{
+					resource.TestCheckResourceAttr("vcfa_ip_space.test", "provider_visibility_only", "true"),
+					resource.TestCheckResourceAttr("vcfa_ip_space.test", "cidr_blocks.#", "3"),
+					resource.TestCheckTypeSetElemNestedAttrs("vcfa_ip_space.test", "cidr_blocks.*", map[string]string{
 						"name": params["IpScopePrefix"].(string) + "-1",
 						"cidr": "10.0.0.0/24",
 					}),
-					resource.TestCheckTypeSetElemNestedAttrs("vcfa_ip_space.test", "internal_scope.*", map[string]string{
+					resource.TestCheckTypeSetElemNestedAttrs("vcfa_ip_space.test", "cidr_blocks.*", map[string]string{
 						"cidr": "11.0.0.0/26",
 					}),
-					resource.TestCheckTypeSetElemNestedAttrs("vcfa_ip_space.test", "internal_scope.*", map[string]string{
+					resource.TestCheckTypeSetElemNestedAttrs("vcfa_ip_space.test", "cidr_blocks.*", map[string]string{
 						"name": params["IpScopePrefix"].(string) + "-3",
 						"cidr": "12.0.0.0/27",
+					}),
+					resource.TestCheckResourceAttr("vcfa_ip_space.test", "ip_address_ranges.#", "2"),
+					resource.TestCheckTypeSetElemNestedAttrs("vcfa_ip_space.test", "ip_address_ranges.*", map[string]string{
+						"start_ip_address": "13.0.0.1",
+						"end_ip_address":   "13.0.0.255",
+					}),
+					resource.TestCheckTypeSetElemNestedAttrs("vcfa_ip_space.test", "ip_address_ranges.*", map[string]string{
+						"start_ip_address": "14.0.0.1",
+						"end_ip_address":   "14.0.0.255",
+					}),
+					resource.TestCheckResourceAttr("vcfa_ip_space.test", "reserved_ip_address_ranges.#", "1"),
+					resource.TestCheckTypeSetElemNestedAttrs("vcfa_ip_space.test", "reserved_ip_address_ranges.*", map[string]string{
+						"start_ip_address": "14.0.0.1",
+						"end_ip_address":   "14.0.0.10",
 					}),
 				),
 			},
@@ -101,15 +115,21 @@ func TestAccVcfaIpSpace(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_ip_space.test", "status", "REALIZED"),
 					resource.TestCheckResourceAttr("vcfa_ip_space.test", "name", k8sCompliantName+"-updated"),
 					resource.TestCheckResourceAttr("vcfa_ip_space.test", "description", "description test - update"),
-					resource.TestCheckResourceAttr("vcfa_ip_space.test", "external_scope", "12.12.0.0/20"),
 					resource.TestCheckResourceAttr("vcfa_ip_space.test", "default_quota_max_subnet_size", "25"),
 					resource.TestCheckResourceAttr("vcfa_ip_space.test", "default_quota_max_cidr_count", "-1"),
 					resource.TestCheckResourceAttr("vcfa_ip_space.test", "default_quota_max_ip_count", "-1"),
-					resource.TestCheckResourceAttr("vcfa_ip_space.test", "internal_scope.#", "1"),
+					resource.TestCheckResourceAttr("vcfa_ip_space.test", "provider_visibility_only", "false"),
+					resource.TestCheckResourceAttr("vcfa_ip_space.test", "cidr_blocks.#", "1"),
 					resource.TestCheckTypeSetElemNestedAttrs("vcfa_ip_space.test", "internal_scope.*", map[string]string{
 						"name": params["IpScopePrefix"].(string) + "-3",
 						"cidr": "12.0.0.0/27",
 					}),
+					resource.TestCheckResourceAttr("vcfa_ip_space.test", "ip_address_ranges.#", "1"),
+					resource.TestCheckTypeSetElemNestedAttrs("vcfa_ip_space.test", "ip_address_ranges.*", map[string]string{
+						"start_ip_address": "14.0.0.1",
+						"end_ip_address":   "14.0.0.255",
+					}),
+					resource.TestCheckResourceAttr("vcfa_ip_space.test", "reserved_ip_address_ranges.#", "0"),
 				),
 			},
 			{
@@ -133,23 +153,38 @@ resource "vcfa_ip_space" "test" {
   name                          = "{{.Testname}}"
   description                   = "description test"
   region_id                     = {{.RegionId}}
-  external_scope                = "12.12.0.0/16"
   default_quota_max_subnet_size = 24
   default_quota_max_cidr_count  = 1
   default_quota_max_ip_count    = 1
+  provider_visibility_only      = true
 
-  internal_scope {
+  cidr_blocks {
     name = "{{.IpScopePrefix}}-1"
     cidr = "10.0.0.0/24"
   }
 
-  internal_scope {
+  cidr_blocks {
     cidr = "11.0.0.0/26"
   }
 
-  internal_scope {
+  cidr_blocks {
     name = "{{.IpScopePrefix}}-3"
     cidr = "12.0.0.0/27"
+  }
+
+  ip_address_ranges {
+    start_ip_address = "13.0.0.1"
+    end_ip_address   = "13.0.0.255"
+  }
+
+  ip_address_ranges {
+    start_ip_address = "14.0.0.1"
+    end_ip_address   = "14.0.0.255"
+  }
+
+ reserved_ip_address_ranges {
+    start_ip_address = "14.0.0.1"
+    end_ip_address   = "14.0.0.10"
   }
 }
 `
@@ -159,14 +194,18 @@ resource "vcfa_ip_space" "test" {
   name                          = "{{.Testname}}-updated"
   description                   = "description test - update"
   region_id                     = {{.RegionId}}
-  external_scope                = "12.12.0.0/20"
   default_quota_max_subnet_size = 25
   default_quota_max_cidr_count  = -1
   default_quota_max_ip_count    = -1
 
-  internal_scope {
+  cidr_blocks {
     name = "{{.IpScopePrefix}}-3"
     cidr = "12.0.0.0/27"
+  }
+
+  ip_address_ranges {
+    start_ip_address = "14.0.0.1"
+    end_ip_address   = "14.0.0.255"
   }
 }
 `
