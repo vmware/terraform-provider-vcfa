@@ -113,6 +113,37 @@ resource "vcfa_org_oidc" "oidc" {
 }
 ```
 
+## Example Usage with auto-generated keys
+
+You can auto-generate the cryptographic keys used to secure the OpenID Connect flow (signature JWT tokens) by using the [tls_private_key](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) resource from the [tls](https://registry.terraform.io/providers/hashicorp/tls/latest) Terraform provider:
+
+```hcl
+data "vcfa_org" "my_org" {
+  name = "my-org"
+}
+
+resource "tls_private_key" "private_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "vcfa_org_oidc" "oidc" {
+  org_id                 = data.vcfa_org.my_org.id
+  enabled                = true
+  prefer_id_token        = false
+  client_id              = "clientId"
+  client_secret          = "clientSecret"
+  max_clock_skew_seconds = 60
+  scopes                 = ["openid", "profile", "email", "address", "phone", "offline_access"]
+  wellknown_endpoint     = "https://my-idp.company.com/oidc/.well-known/openid-configuration"
+  key {
+    id          = tls_private_key.private_key.public_key_fingerprint_sha256
+    algorithm   = tls_private_key.private_key.algorithm
+    certificate = tls_private_key.private_key.public_key_pem
+  }
+}
+```
+
 ## Argument Reference
 
 The following arguments are supported:
