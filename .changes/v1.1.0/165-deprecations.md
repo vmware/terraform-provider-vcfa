@@ -1,0 +1,1 @@
+- Deprecate `internal_scope` in favor of `cidr_blocks` and `external_scope` in favor of `inbound_remote_networks` in `vcfa_ip_space` resource and datasource [GH-165].

@@ -1,0 +1,2 @@
+- Update `vcfa_ip_space` datasource and resource [GH-165]. Added the new attributes `cidr_blocks`, `ip_address_ranges`, `provider_visibility_only`, `reserved_ip_address_ranges`, `backing_id`, `is_imported_ip_block`, and `subnet_exclusive`.
+- Update `vcfa_provider_gateway` datasource and resource [GH-165]. Added the new attributes `inbound_remote_networks`, `allow_advertising_private_ip_blocks`, `nat_config_enabled`, `nat_config_ip_space_id`, `nat_config_logging`, and `gateway_connection_backing_id`.
