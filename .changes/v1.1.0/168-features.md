@@ -1,2 +1,2 @@
-- **New Data Source:**  `vcfa_shared_subnet` to read Shared Subnets [GH-168]
+- **New Data Source:** `vcfa_shared_subnet` to read Shared Subnets [GH-168]
 - **New Resource:** `vcfa_shared_subnet` to manage Shared Subnets [GH-168]

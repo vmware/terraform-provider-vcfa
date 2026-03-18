@@ -1,0 +1,2 @@
+- **New Data Source:** `vcfa_distributed_vlan_connection` to read Distributed VLAN Connections [GH-170]
+- **New Resource:** `vcfa_distributed_vlan_connection` to manage Distributed VLAN Connections [GH-170]

@@ -71,6 +71,7 @@ var globalDataSourceMap = map[string]*schema.Resource{
 	"vcfa_kubeconfig":                      datasourceVcfaKubeConfig(),                  // 1.0
 	"vcfa_supervisor_namespace":            datasourceVcfaSupervisorNamespace(),         // 1.0
 	"vcfa_shared_subnet":                   datasourceVcfaSharedSubnet(),                // 1.1
+	"vcfa_distributed_vlan_connection":     datasourceVcfaDistributedVlanConnection(),   // 1.1
 }
 
 var globalResourceMap = map[string]*schema.Resource{
@@ -99,6 +100,7 @@ var globalResourceMap = map[string]*schema.Resource{
 	"vcfa_provider_ldap":                   resourceVcfaProviderLdap(),                // 1.0
 	"vcfa_supervisor_namespace":            resourceVcfaSupervisorNamespace(),         // 1.0
 	"vcfa_shared_subnet":                   resourceVcfaSharedSubnet(),                // 1.1
+	"vcfa_distributed_vlan_connection":     resourceVcfaDistributedVlanConnection(),   // 1.1
 }
 
 // Provider returns a terraform.ResourceProvider.
