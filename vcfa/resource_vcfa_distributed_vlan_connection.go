@@ -52,7 +52,7 @@ func resourceVcfaDistributedVlanConnection() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Optional:    true,
-				Description: fmt.Sprintf("Reference to an IP Block that is used for the external connection for this %s", labelVcfaDistributedVlanConnection),
+				Description: fmt.Sprintf("Reference to an IP Block that is used for the external connection for this %s. Required when 'subnet_exclusive' is 'false'", labelVcfaDistributedVlanConnection),
 			},
 			"region_id": {
 				Type:        schema.TypeString,
@@ -178,6 +178,10 @@ func getDistributedVlanConnectionType(tmClient *VCDClient, d *schema.ResourceDat
 
 	if ipSpaceId, ok := d.GetOk("ip_space_id"); ok {
 		t.IpSpaceRef = &types.OpenApiReference{ID: ipSpaceId.(string)}
+	}
+
+	if !t.SubnetExclusive && t.IpSpaceRef == nil {
+		return nil, fmt.Errorf("'ip_space_id' is required when 'subnet_exclusive' is 'false'")
 	}
 
 	return t, nil

@@ -62,7 +62,9 @@ The following arguments are supported:
 - `region_id` - (Required) The ID of the [Region][vcfa_region] for this Distributed VLAN Connection.
   This field cannot be updated after creation. Can be looked up using the [Region data source][vcfa_region-ds]
 - `gateway_cidr` - (Required) The gateway CIDR for the Distributed VLAN Connection (e.g. `32.0.1.1/24`)
-- `ip_space_id` - (Optional) Reference to an [IP Space][vcfa_ip_space] that is used for the external connection. If not provided, an IP Space is automatically created when `subnet_exclusive` is `true`
+- `ip_space_id` - (Optional) Reference to an [IP Space][vcfa_ip_space] that is used for the external connection.
+  Required when `subnet_exclusive` is `false`. When `subnet_exclusive` is `true` and this is not provided, an
+  IP Space is automatically created
 - `subnet_exclusive` - (Required) Whether this Distributed VLAN Connection is exclusively for the gateway CIDR only. This field cannot be updated after creation
 - `vlan_id` - (Required) The VLAN ID for the external traffic
 - `zone_ids` - (Optional) A set of Supervisor Zone IDs that this Distributed VLAN Connection spans
