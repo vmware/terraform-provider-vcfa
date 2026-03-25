@@ -87,6 +87,45 @@ func datasourceVcfaContentLibrary() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("Version number of this %s", labelVcfaContentLibrary),
 			},
+			"is_project_scoped": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: fmt.Sprintf("Whether this %s is scoped to specific projects in the %s", labelVcfaContentLibrary, labelVcfaOrg),
+			},
+			"all_projects_permission": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("Permissions to apply to all projects in the %s for this %s. Can be 'READ_ONLY' or 'READ_WRITE'", labelVcfaOrg, labelVcfaContentLibrary),
+			},
+			"project_permissions": {
+				Type:        schema.TypeSet,
+				Computed:    true,
+				Description: fmt.Sprintf("A set of project permissions for this %s", labelVcfaContentLibrary),
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"permissions": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "The type of project permission ('READ_ONLY' or 'READ_WRITE')",
+						},
+						"project_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "The ID of the project that this permission applies to",
+						},
+						"project_name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "The name of the project that this permission applies to",
+						},
+					},
+				},
+			},
+			"status": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("Status of this %s. Can be 'READY', 'NOT_READY', 'FAILED' or 'PARTIALLY_READY'", labelVcfaContentLibrary),
+			},
 		},
 	}
 }

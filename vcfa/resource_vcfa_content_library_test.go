@@ -116,6 +116,10 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "library_type", "PROVIDER"),
 					resource.TestCheckResourceAttr(resourceName, "subscription_config.#", "0"),
 					resource.TestMatchResourceAttr(resourceName, "version_number", regexp.MustCompile("[0-9]")),
+					resource.TestCheckResourceAttr(resourceName, "is_project_scoped", "false"),
+					resource.TestCheckResourceAttr(resourceName, "all_projects_permission", ""),
+					resource.TestCheckResourceAttr(resourceName, "project_permissions.#", "0"),
+					resource.TestCheckResourceAttrSet(resourceName, "status"),
 
 					// Subscribed Content Library
 					resource.TestCheckResourceAttr(resourceNameSubscribed, "name", t.Name()+"Subscribed"),
@@ -131,6 +135,10 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 					resource.TestCheckResourceAttrPair(resourceNameSubscribed, "subscription_config.0.subscription_url", "vsphere_content_library.publisher_content_library", "publication.0.publish_url"),
 					resource.TestCheckResourceAttr(resourceNameSubscribed, "subscription_config.0.password", "password"),
 					resource.TestMatchResourceAttr(resourceNameSubscribed, "version_number", regexp.MustCompile("[0-9]")),
+					resource.TestCheckResourceAttr(resourceNameSubscribed, "is_project_scoped", "false"),
+					resource.TestCheckResourceAttr(resourceNameSubscribed, "all_projects_permission", ""),
+					resource.TestCheckResourceAttr(resourceNameSubscribed, "project_permissions.#", "0"),
+					resource.TestCheckResourceAttrSet(resourceNameSubscribed, "status"),
 				),
 			},
 			{
@@ -294,6 +302,7 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 		"RegionVmClassRefs":   strings.Join(vmClassesRefs, ".id,\n    ") + ".id",
 		"VcfaUrl":             testConfig.Provider.Url,
 		"Tags":                "tm contentlibrary",
+		"ProjectName":         "tf-project",
 	}
 	testParamsNotEmpty(t, params)
 
@@ -329,6 +338,8 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 	cl2 := "vcfa_content_library.cl2"
 	cl3 := "vcfa_content_library.cl3"
 	clSubscribed := "vcfa_content_library.cl_subscribed"
+	clAllProjectsScoped := "vcfa_content_library.cl_all_projects_scoped"
+	clProjectScoped := "vcfa_content_library.cl_project_scoped"
 
 	cachedId := &testCachedFieldValue{}
 
@@ -382,6 +393,10 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 					resource.TestCheckResourceAttr(cl1, "library_type", "TENANT"),
 					resource.TestCheckResourceAttr(cl1, "subscription_config.#", "0"),
 					resource.TestMatchResourceAttr(cl1, "version_number", regexp.MustCompile("[1-9]")),
+					resource.TestCheckResourceAttr(cl1, "is_project_scoped", "false"),
+					resource.TestCheckResourceAttr(cl1, "all_projects_permission", ""),
+					resource.TestCheckResourceAttr(cl1, "project_permissions.#", "0"),
+					resource.TestCheckResourceAttrSet(cl1, "status"),
 
 					// Second content library
 					resource.TestCheckResourceAttr(cl2, "name", t.Name()+"2"),
@@ -395,13 +410,17 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 					resource.TestCheckResourceAttr(cl2, "library_type", "TENANT"),
 					resource.TestCheckResourceAttr(cl2, "subscription_config.#", "0"),
 					resource.TestMatchResourceAttr(cl2, "version_number", regexp.MustCompile("[1-9]")),
+					resource.TestCheckResourceAttr(cl2, "is_project_scoped", "false"),
+					resource.TestCheckResourceAttr(cl2, "all_projects_permission", ""),
+					resource.TestCheckResourceAttr(cl2, "project_permissions.#", "0"),
+					resource.TestCheckResourceAttrSet(cl2, "status"),
 
 					// Subscribed Content Library
 					resource.TestCheckResourceAttr(clSubscribed, "name", t.Name()+"Subscribed"),
 					resource.TestCheckResourceAttrPair(clSubscribed, "org_id", "vcfa_org.test", "id"),
 					resource.TestMatchResourceAttr(clSubscribed, "description", regexp.MustCompile(".*")), // Description is taken from publisher library
 					resource.TestCheckResourceAttr(clSubscribed, "storage_class_ids.#", "1"),
-					resource.TestCheckResourceAttr(clSubscribed, "auto_attach", "true"), // Always true for PROVIDER libraries
+					resource.TestCheckResourceAttr(clSubscribed, "auto_attach", "true"), // Defaults to true for TENANT librariess
 					resource.TestCheckResourceAttrSet(clSubscribed, "creation_date"),
 					resource.TestCheckResourceAttr(clSubscribed, "is_shared", "false"), // Always false for TENANT libraries
 					resource.TestCheckResourceAttr(clSubscribed, "is_subscribed", "true"),
@@ -410,6 +429,10 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 					resource.TestCheckResourceAttrPair(clSubscribed, "subscription_config.0.subscription_url", "vsphere_content_library.publisher_content_library", "publication.0.publish_url"),
 					resource.TestCheckResourceAttr(clSubscribed, "subscription_config.0.password", "password"),
 					resource.TestMatchResourceAttr(clSubscribed, "version_number", regexp.MustCompile("[0-9]")),
+					resource.TestCheckResourceAttr(clSubscribed, "is_project_scoped", "false"),
+					resource.TestCheckResourceAttr(clSubscribed, "all_projects_permission", ""),
+					resource.TestCheckResourceAttr(clSubscribed, "project_permissions.#", "0"),
+					resource.TestCheckResourceAttrSet(clSubscribed, "status"),
 				),
 			},
 			{
@@ -426,7 +449,10 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 			{
 				ProviderFactories: multipleFactories(),
 				ExternalProviders: externalProviders,
-				Config:            configText3,
+				PreConfig: func() {
+					createProject(t, params["Org"].(string), params["Username"].(string), params["Password"].(string), params["ProjectName"].(string))
+				},
+				Config: configText3,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					// Tenant content library
 					resource.TestCheckResourceAttr(cl3, "name", t.Name()+"3"),
@@ -440,6 +466,44 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 					resource.TestCheckResourceAttr(cl3, "library_type", "TENANT"),
 					resource.TestCheckResourceAttr(cl3, "subscription_config.#", "0"),
 					resource.TestMatchResourceAttr(cl3, "version_number", regexp.MustCompile("[1-9]")),
+					resource.TestCheckResourceAttr(cl3, "is_project_scoped", "false"),
+					resource.TestCheckResourceAttr(cl3, "all_projects_permission", ""),
+					resource.TestCheckResourceAttr(cl3, "project_permissions.#", "0"),
+					resource.TestCheckResourceAttrSet(cl3, "status"),
+
+					// Tenant Project Scoped Content Library for all projects in the organization
+					resource.TestCheckResourceAttr(clAllProjectsScoped, "name", t.Name()+"3AllProjectsScoped"),
+					resource.TestCheckResourceAttrPair(clAllProjectsScoped, "org_id", "vcfa_org.test", "id"),
+					resource.TestCheckResourceAttr(clAllProjectsScoped, "storage_class_ids.#", "1"),
+					resource.TestCheckResourceAttr(clAllProjectsScoped, "auto_attach", "true"), // Defaults to true for TENANT libraries
+					resource.TestCheckResourceAttrSet(clAllProjectsScoped, "creation_date"),
+					resource.TestCheckResourceAttr(clAllProjectsScoped, "is_shared", "false"), // Always false for TENANT libraries
+					resource.TestCheckResourceAttr(clAllProjectsScoped, "is_subscribed", "false"),
+					resource.TestCheckResourceAttr(clAllProjectsScoped, "library_type", "TENANT"),
+					resource.TestCheckResourceAttr(clAllProjectsScoped, "subscription_config.#", "0"),
+					resource.TestMatchResourceAttr(clAllProjectsScoped, "version_number", regexp.MustCompile("[1-9]")),
+					resource.TestCheckResourceAttr(clAllProjectsScoped, "is_project_scoped", "true"),
+					resource.TestCheckResourceAttr(clAllProjectsScoped, "all_projects_permission", "READ_ONLY"),
+					resource.TestCheckResourceAttr(clAllProjectsScoped, "project_permissions.#", "0"),
+					resource.TestCheckResourceAttrSet(clAllProjectsScoped, "status"),
+
+					// Tenant Project Scoped Content Library for a specific project in the organization
+					resource.TestCheckResourceAttr(clProjectScoped, "name", t.Name()+"3ProjectScoped"),
+					resource.TestCheckResourceAttrPair(clProjectScoped, "org_id", "vcfa_org.test", "id"),
+					resource.TestCheckResourceAttr(clProjectScoped, "storage_class_ids.#", "1"),
+					resource.TestCheckResourceAttr(clProjectScoped, "auto_attach", "true"), // Defaults to true for TENANT libraries
+					resource.TestCheckResourceAttrSet(clProjectScoped, "creation_date"),
+					resource.TestCheckResourceAttr(clProjectScoped, "is_shared", "false"), // Always false for TENANT libraries
+					resource.TestCheckResourceAttr(clProjectScoped, "is_subscribed", "false"),
+					resource.TestCheckResourceAttr(clProjectScoped, "library_type", "TENANT"),
+					resource.TestCheckResourceAttr(clProjectScoped, "subscription_config.#", "0"),
+					resource.TestMatchResourceAttr(clProjectScoped, "version_number", regexp.MustCompile("[1-9]")),
+					resource.TestCheckResourceAttr(clProjectScoped, "is_project_scoped", "true"),
+					resource.TestCheckResourceAttr(clProjectScoped, "all_projects_permission", ""),
+					resource.TestCheckResourceAttr(clProjectScoped, "project_permissions.#", "1"),
+					resource.TestCheckResourceAttr(clProjectScoped, "project_permissions.0.permissions", "READ_WRITE"),
+					resource.TestCheckResourceAttr(clProjectScoped, "project_permissions.0.project_name", params["ProjectName"].(string)),
+					resource.TestCheckResourceAttrSet(clProjectScoped, "status"),
 				),
 			},
 			{
@@ -482,7 +546,39 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 						"subscription_config.0.%", // Does not have password
 						"subscription_config.0.password",
 					}),
+					resourceFieldsEqual(clAllProjectsScoped, "data.vcfa_content_library.cl_all_projects_scoped_dstenant", []string{
+						"%",
+						"delete_recursive",
+						"delete_force",
+						"subscription_config.0.%", // Does not have password
+						"subscription_config.0.password",
+					}),
+					resourceFieldsEqual(clProjectScoped, "data.vcfa_content_library.cl_project_scoped_dstenant", []string{
+						"%",
+						"delete_recursive",
+						"delete_force",
+						"subscription_config.0.%", // Does not have password
+						"subscription_config.0.password",
+					}),
 				),
+			},
+			{
+				// Shrink config so Terraform destroys tenant libraries that reference the API-created project
+				// (still needed through the datasource step above).
+				ProviderFactories: multipleFactories(),
+				ExternalProviders: externalProviders,
+				Config:            configText2,
+				Check:             resource.ComposeTestCheckFunc(),
+			},
+			{
+				// Project-scoped libraries are gone; safe to delete the project before import (import does not use it).
+				PreConfig: func() {
+					removeProject(t, params["Org"].(string), params["Username"].(string), params["Password"].(string), params["ProjectName"].(string))
+				},
+				ProviderFactories: multipleFactories(),
+				ExternalProviders: externalProviders,
+				Config:            configText2,
+				Check:             resource.ComposeTestCheckFunc(),
 			},
 			{
 				// Note: Without environment variables, this does not work. It complains about
@@ -647,6 +743,10 @@ resource "vcfa_content_library" "cl_subscribed" {
 const testAccVcfaContentLibraryTenantStep3 = testAccVcfaContentLibraryTenantStep1 + `
 # skip-binary-test: Requires an extra provider configuration block with a tenant user
 
+variable "project_id" {
+  type = string
+}
+
 data "vcfa_storage_class" "sc-tenant" {
   provider  = vcfatenant
   region_id = {{.RegionId}}
@@ -669,6 +769,41 @@ resource "vcfa_content_library" "cl3" {
   # but as we created the Region Quota at same time, we need to guarantee dependencies
   # so they are removed correctly afterwards.
   # Also depends on the logged in user.
+  depends_on = [vcfa_org_region_quota.test, vcfa_org_local_user.user]
+}
+
+resource "vcfa_content_library" "cl_all_projects_scoped" {
+  provider    = vcfatenant
+  org_id      = vcfa_org.test.id
+  name        = "{{.Name3}}AllProjectsScoped"
+  storage_class_ids = [
+    data.vcfa_storage_class.sc-tenant.id
+  ]
+  delete_force      = true # Should be ignored, otherwise it would fail
+  delete_recursive  = true
+  is_project_scoped = true
+  all_projects_permission = "READ_ONLY"
+
+  # Explicit dependency on Region Quota.
+  depends_on = [vcfa_org_region_quota.test, vcfa_org_local_user.user]
+}
+
+resource "vcfa_content_library" "cl_project_scoped" {
+  provider    = vcfatenant
+  org_id      = vcfa_org.test.id
+  name        = "{{.Name3}}ProjectScoped"
+  storage_class_ids = [
+    data.vcfa_storage_class.sc-tenant.id
+  ]
+  delete_force      = true # Should be ignored, otherwise it would fail
+  delete_recursive  = true
+  is_project_scoped = true
+  project_permissions {
+    permissions = "READ_WRITE"
+    project_id  = var.project_id
+  }
+
+  # Explicit dependency on Region Quota.
   depends_on = [vcfa_org_region_quota.test, vcfa_org_local_user.user]
 }
 `
@@ -704,5 +839,17 @@ data "vcfa_content_library" "cl_subscribed_ds" {
   provider = vcfa
   org_id   = vcfa_org.test.id
   name     = vcfa_content_library.cl_subscribed.name
+}
+
+data "vcfa_content_library" "cl_all_projects_scoped_dstenant" {
+  provider = vcfatenant
+  org_id   = vcfa_org.test.id
+  name     = vcfa_content_library.cl_all_projects_scoped.name
+}
+
+data "vcfa_content_library" "cl_project_scoped_dstenant" {
+  provider = vcfatenant
+  org_id   = vcfa_org.test.id
+  name     = vcfa_content_library.cl_project_scoped.name
 }
 `
