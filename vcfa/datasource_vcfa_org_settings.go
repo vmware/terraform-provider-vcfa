@@ -33,6 +33,11 @@ func datasourceVcfaOrgSettings() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("Whether to quarantine new %ss for file inspection", labelVcfaContentLibraryItem),
 			},
+			"can_subscribe_to_third_party_libraries": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: fmt.Sprintf("Whether the %s can create content libraries that are subscribed to official third-party sources", labelVcfaOrg),
+			},
 		},
 	}
 }

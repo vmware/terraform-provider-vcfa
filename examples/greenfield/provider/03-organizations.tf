@@ -10,9 +10,10 @@ resource "vcfa_org" "example" {
 
 # https://registry.terraform.io/providers/vmware/vcfa/latest/docs/resources/org_settings
 resource "vcfa_org_settings" "example" {
-  org_id                           = vcfa_org.example.id
-  can_create_subscribed_libraries  = true
-  quarantine_content_library_items = false
+  org_id                                 = vcfa_org.example.id
+  can_create_subscribed_libraries        = true
+  quarantine_content_library_items       = false
+  can_subscribe_to_third_party_libraries = true
 }
 
 # https://registry.terraform.io/providers/vmware/vcfa/latest/docs/data-sources/role

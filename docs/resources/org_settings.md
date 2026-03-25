@@ -21,9 +21,10 @@ data "vcfa_org" "demo" {
 }
 
 resource "vcfa_org_settings" "demo" {
-  org_id                           = data.vcfa_org.demo.id
-  can_create_subscribed_libraries  = true
-  quarantine_content_library_items = true
+  org_id                                 = data.vcfa_org.demo.id
+  can_create_subscribed_libraries        = true
+  quarantine_content_library_items       = true
+  can_subscribe_to_third_party_libraries = true
 }
 ```
 
@@ -34,6 +35,7 @@ The following arguments are supported:
 - `org_id` - (Required) An [Organization](/providers/vmware/vcfa/latest/docs/data-sources/organization) ID for which the settings are to be changed
 - `can_create_subscribed_libraries` - (Required) Whether the Organization can create [Content Libraries](/providers/vmware/vcfa/latest/docs/resources/content_library) that are subscribed to external sources
 - `quarantine_content_library_items` - (Required) Whether to quarantine new [Content Library Items](/providers/vmware/vcfa/latest/docs/resources/content_library_item) for file inspection
+- `can_subscribe_to_third_party_libraries` - (Optional) Defaults to `false`. Whether the Organization can create [Content Libraries](/providers/vmware/vcfa/latest/docs/resources/content_library) that are subscribed to official third-party sources
 
 ~> Be careful as `quarantine_content_library_items=true` will make all the [`vcfa_content_library_item`](/providers/vmware/vcfa/latest/docs/resources/content_library_item) uploads for that
 Organization to be blocked, waiting for manual upload approval

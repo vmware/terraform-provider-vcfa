@@ -67,6 +67,7 @@ func TestAccVcfaOrg(t *testing.T) {
 					// Test Organization settings
 					resource.TestCheckResourceAttr("vcfa_org_settings.allow", "can_create_subscribed_libraries", "true"),
 					resource.TestCheckResourceAttr("vcfa_org_settings.allow", "quarantine_content_library_items", "true"),
+					resource.TestCheckResourceAttr("vcfa_org_settings.allow", "can_subscribe_to_third_party_libraries", "true"),
 				),
 			},
 			{
@@ -77,6 +78,7 @@ func TestAccVcfaOrg(t *testing.T) {
 					// Settings are destroyed
 					resource.TestCheckResourceAttr("data.vcfa_org_settings.allow_ds", "can_create_subscribed_libraries", "false"),
 					resource.TestCheckResourceAttr("data.vcfa_org_settings.allow_ds", "quarantine_content_library_items", "false"),
+					resource.TestCheckResourceAttr("data.vcfa_org_settings.allow_ds", "can_subscribe_to_third_party_libraries", "false"),
 				),
 			},
 			{
@@ -107,9 +109,10 @@ resource "vcfa_org" "test" {
 }
 
 resource "vcfa_org_settings" "allow" {
-  org_id                           = vcfa_org.test.id
-  can_create_subscribed_libraries  = true
-  quarantine_content_library_items = true
+  org_id                                 = vcfa_org.test.id
+  can_create_subscribed_libraries        = true
+  quarantine_content_library_items       = true
+  can_subscribe_to_third_party_libraries = true
 }
 `
 
