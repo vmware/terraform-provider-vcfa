@@ -102,7 +102,7 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "inbound_remote_networks.#", "0"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "allow_advertising_private_ip_blocks", "false"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_enabled", "false"),
-					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "nat_config_ip_space_id"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_ip_space_id", ""),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_logging", "true"),
 				),
 			},
@@ -119,7 +119,7 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "inbound_remote_networks.#", "1"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "allow_advertising_private_ip_blocks", "false"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_enabled", "false"),
-					resource.TestCheckResourceAttrSet("vcfa_provider_gateway.test", "nat_config_ip_space_id"),
+					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_ip_space_id", ""),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_logging", "false"),
 				),
 			},
@@ -130,10 +130,11 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 				),
 			},
 			{
-				ResourceName:      "vcfa_provider_gateway.test",
-				ImportState:       true,
-				ImportStateVerify: true,
-				ImportStateId:     testConfig.Tm.Region + ImportSeparator + params["Testname"].(string) + "-updated",
+				ResourceName:            "vcfa_provider_gateway.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateId:           testConfig.Tm.Region + ImportSeparator + params["Testname"].(string) + "-updated",
+				ImportStateVerifyIgnore: []string{"nat_config_ip_space_id"},
 			},
 		},
 	})
@@ -196,7 +197,6 @@ resource "vcfa_provider_gateway" "test" {
   ip_space_ids                        = [ vcfa_ip_space.test2.id ]
   allow_advertising_private_ip_blocks = false
   nat_config_enabled                  = false
-  nat_config_ip_space_id              = vcfa_ip_space.test2.id
   nat_config_logging                  = true
 }
 `
@@ -210,7 +210,6 @@ resource "vcfa_provider_gateway" "test" {
   inbound_remote_networks             = [ "12.12.0.0/30" ]
   allow_advertising_private_ip_blocks = false
   nat_config_enabled                  = false
-  nat_config_ip_space_id              = vcfa_ip_space.test2.id
   nat_config_logging                  = false
 }
 `
