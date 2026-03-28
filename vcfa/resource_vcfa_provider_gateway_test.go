@@ -102,7 +102,6 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "inbound_remote_networks.#", "0"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "allow_advertising_private_ip_blocks", "false"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_enabled", "false"),
-					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_ip_space_id", ""),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_logging", "true"),
 				),
 			},
@@ -119,14 +118,13 @@ func TestAccVcfaProviderGateway(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "inbound_remote_networks.#", "1"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "allow_advertising_private_ip_blocks", "false"),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_enabled", "false"),
-					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_ip_space_id", ""),
 					resource.TestCheckResourceAttr("vcfa_provider_gateway.test", "nat_config_logging", "false"),
 				),
 			},
 			{
 				Config: configText4,
 				Check: resource.ComposeTestCheckFunc(
-					resourceFieldsEqual("vcfa_provider_gateway.test", "data.vcfa_provider_gateway.test", nil),
+					resourceFieldsEqual("vcfa_provider_gateway.test", "data.vcfa_provider_gateway.test", []string{"nat_config_ip_space_id"}),
 				),
 			},
 			{
