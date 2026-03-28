@@ -69,10 +69,9 @@ The following arguments are supported:
   Center (e.g. `0.0.0.0/0` for the internet, `10.0.0.0/8` for a WAN)
 - `allow_advertising_private_ip_blocks` - (Optional) Allows the Provider Gateway to advertise their own private
   IP Blocks. Cannot be changed after creation
-- `nat_config_enabled` - (Optional) Whether Outbound NAT is enabled for the Provider Gateway. Cannot be changed
-  after creation
+- `nat_config_enabled` - (Optional) Whether Outbound NAT is enabled for the Provider Gateway
 - `nat_config_ip_space_id` - (Optional) [IP Space][vcfa_ip_space] used to configure Outbound NAT. Required if
-  Outbound NAT is enabled. Cannot be changed after creation
+  Outbound NAT is enabled
 - `nat_config_logging` - (Optional) Whether logging is enabled for the Outbound NAT configuration
 
 ## Attribute Reference
