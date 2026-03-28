@@ -43,6 +43,12 @@ func resourceVcfaOrgSettings() *schema.Resource {
 				Required:    true,
 				Description: fmt.Sprintf("Whether to quarantine new %ss for file inspection", labelVcfaContentLibraryItem),
 			},
+			"can_subscribe_to_third_party_libraries": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: fmt.Sprintf("Whether the %s can create content libraries that are subscribed to official third-party sources", labelVcfaOrg),
+			},
 		},
 	}
 }
@@ -119,8 +125,9 @@ func resourceVcfaOrgSettingsDelete(ctx context.Context, d *schema.ResourceData, 
 
 	// reset settings
 	resetSettings := &types.TmOrgSettings{
-		CanCreateSubscribedLibraries:  addrOf(false),
-		QuarantineContentLibraryItems: addrOf(false),
+		CanCreateSubscribedLibraries:      addrOf(false),
+		QuarantineContentLibraryItems:     addrOf(false),
+		CanSubscribeToThirdPartyLibraries: addrOf(false),
 	}
 
 	_, err = org.UpdateSettings(resetSettings)
@@ -146,8 +153,9 @@ func resourceVcfaOrgSettingsImport(_ context.Context, d *schema.ResourceData, me
 
 func getOrgSettingsType(_ *VCDClient, d *schema.ResourceData) (*types.TmOrgSettings, error) {
 	t := &types.TmOrgSettings{
-		CanCreateSubscribedLibraries:  addrOf(d.Get("can_create_subscribed_libraries").(bool)),
-		QuarantineContentLibraryItems: addrOf(d.Get("quarantine_content_library_items").(bool)),
+		CanCreateSubscribedLibraries:      addrOf(d.Get("can_create_subscribed_libraries").(bool)),
+		QuarantineContentLibraryItems:     addrOf(d.Get("quarantine_content_library_items").(bool)),
+		CanSubscribeToThirdPartyLibraries: addrOf(d.Get("can_subscribe_to_third_party_libraries").(bool)),
 	}
 
 	return t, nil
@@ -162,6 +170,9 @@ func setOrgSettingsData(_ *VCDClient, d *schema.ResourceData, orgSettings *types
 	}
 	if orgSettings.QuarantineContentLibraryItems != nil {
 		dSet(d, "quarantine_content_library_items", *orgSettings.QuarantineContentLibraryItems)
+	}
+	if orgSettings.CanSubscribeToThirdPartyLibraries != nil {
+		dSet(d, "can_subscribe_to_third_party_libraries", *orgSettings.CanSubscribeToThirdPartyLibraries)
 	}
 	return nil
 }

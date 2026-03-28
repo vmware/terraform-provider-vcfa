@@ -1,0 +1,1 @@
+- Update `vcfa_org_settings` datasource and resource properties to add the new optional attribute `can_subscribe_to_third_party_libraries` [GH-173]
