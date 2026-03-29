@@ -227,10 +227,12 @@ func getProviderGatewayType(tmClient *VCDClient, d *schema.ResourceData) (*types
 		EnableSnat: d.Get("nat_config_enabled").(bool),
 		Logging:    d.Get("nat_config_logging").(bool),
 	}
-	if ipSpaceId, ok := d.GetOk("nat_config_ip_space_id"); ok && ipSpaceId != "" {
-		t.NatConfig.IpSpaceRef = &types.OpenApiReference{ID: ipSpaceId.(string)}
-	} else if d.Get("nat_config_enabled").(bool) {
-		return nil, fmt.Errorf("`nat_config_ip_space_id` is required when `nat_config_enabled` is set to true")
+	if d.Get("nat_config_enabled").(bool) {
+		if ipSpaceId, ok := d.GetOk("nat_config_ip_space_id"); ok && ipSpaceId != "" {
+			t.NatConfig.IpSpaceRef = &types.OpenApiReference{ID: ipSpaceId.(string)}
+		} else {
+			return nil, fmt.Errorf("`nat_config_ip_space_id` is required when `nat_config_enabled` is set to true")
+		}
 	}
 
 	// Update operation fails if the ID is not set for update
@@ -266,10 +268,10 @@ func setProviderGatewayData(tmClient *VCDClient, d *schema.ResourceData, p *govc
 	}
 
 	dSet(d, "nat_config_enabled", p.TmProviderGateway.NatConfig.EnableSnat)
-	dSet(d, "nat_config_logging", p.TmProviderGateway.NatConfig.Logging)
-	if p.TmProviderGateway.NatConfig.IpSpaceRef != nil {
+	if p.TmProviderGateway.NatConfig.EnableSnat && p.TmProviderGateway.NatConfig.IpSpaceRef != nil {
 		dSet(d, "nat_config_ip_space_id", p.TmProviderGateway.NatConfig.IpSpaceRef.ID)
 	}
+	dSet(d, "nat_config_logging", p.TmProviderGateway.NatConfig.Logging)
 
 	// IP Space Associations have to be read separatelly after creation (more details at the top of file)
 	associations, err := tmClient.GetAllTmIpSpaceAssociationsByProviderGatewayId(p.TmProviderGateway.ID)
