@@ -1,0 +1,1 @@
+- Update `vcfa_content_library` datasource and resource to allow reading and managing Project Scoped Content Libraries [GH-180]. Added the new attributes `is_project_scoped`. `all_projects_permission`, and `project_permissions`.
