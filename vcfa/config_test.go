@@ -29,9 +29,11 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/vmware/go-vcloud-director/v3/ccitypes"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 	"github.com/vmware/go-vcloud-director/v3/util"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // #nosec G101 -- These credentials are fake for testing purposes
@@ -1450,4 +1452,50 @@ func runPriorityTestsOnce(t *testing.T) {
 
 	priorityTestCleanupFunc = cleanup
 	fmt.Printf("# Continuing run of %s test after priority tests are now done\n", t.Name())
+}
+
+func createProject(t *testing.T, orgName string, username string, password string, projectName string) {
+	tmClient := createTemporaryOrgConnection(orgName, username, password)
+	projectCfg := &ccitypes.Project{
+		TypeMeta: v1.TypeMeta{
+			Kind:       ccitypes.ProjectKind,
+			APIVersion: ccitypes.ProjectAPI + "/" + ccitypes.ProjectVersion,
+		},
+		ObjectMeta: v1.ObjectMeta{
+			Name: projectName,
+		},
+		Spec: ccitypes.ProjectSpec{
+			Description: fmt.Sprintf("Terraform test project [%s]", projectName),
+		},
+	}
+
+	newProjectAddr, err := tmClient.Client.GetEntityUrl(ccitypes.ProjectsURL)
+	if err != nil {
+		t.Fatalf("error creating URL for new project: %s", err)
+	}
+
+	newProject := &ccitypes.Project{}
+	err = tmClient.Client.PostEntity(newProjectAddr, nil, projectCfg, newProject, nil)
+	if err != nil {
+		t.Fatalf("error creating project %s: %s", projectCfg.Name, err)
+	}
+
+	err = os.Setenv("TF_VAR_project_id", fmt.Sprintf("urn:vcloud:projectAssignment:%s", string(newProject.UID)))
+	if err != nil {
+		t.Fatalf("error setting project_id environment variable: %s", err)
+	}
+}
+
+func removeProject(t *testing.T, orgName string, username string, password string, projectName string) {
+	tmClient := createTemporaryOrgConnection(orgName, username, password)
+
+	projectAddr, err := tmClient.Client.GetEntityUrl(ccitypes.ProjectsURL, "/", projectName)
+	if err != nil {
+		t.Fatalf("error creating URL for get project: %s", err)
+	}
+
+	err = tmClient.Client.DeleteEntity(projectAddr, nil, nil)
+	if err != nil {
+		t.Fatalf("failed removing Project: %s", err)
+	}
 }

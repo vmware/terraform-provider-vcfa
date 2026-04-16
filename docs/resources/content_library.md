@@ -211,6 +211,13 @@ The following arguments are supported:
 - `subscription_config` - (Optional) A block representing subscription settings of a Content Library:
   - `subscription_url` - Subscription URL of this Content Library. For example, a published library from vCenter: `https://my-vcenter/cls/vcsp/lib/972a669e-c668-48f6-91e9-410962befbe4/lib.json`
   - `password` - Password to use to authenticate with the publisher
+- `is_project_scoped` - (Optional) Whether this Content Library is scoped to specific projects in the Organization. Cannot be changed after creation. Only applicable for `TENANT` type Content Libraries.
+- `all_projects_permission` - (Optional) Permissions to apply to all projects in the Organization for this Content Library.
+  Can be `READ_ONLY` or `READ_WRITE`. Only applicable when `is_project_scoped` is set to `true`
+- `project_permissions` - (Optional) A set of project permissions for this Content Library. Only applicable when `is_project_scoped` is set to `true`.
+  Each element has the following:
+  - `permissions` - (Required) The type of project permission (`READ_ONLY` or `READ_WRITE`)
+  - `project_id` - (Required) The ID of the project that this permission applies to
 
 ~> To use `subscription_config` block in `TENANT` type Content Libraries, check that the [`vcfa_org_settings`][vcfa_org_settings]
 of the target Organization allows it.
@@ -223,6 +230,9 @@ of the target Organization allows it.
 - `library_type` - The type of content library, can be either `PROVIDER` (Content Library that is scoped to a provider) or
   `TENANT` (Content Library that is scoped to a tenant organization)
 - `version_number` - Version number of this Content library
+- `status` - Status of this Content Library. Can be `READY`, `NOT_READY`, `FAILED` or `PARTIALLY_READY`
+- `project_permissions` also exports:
+  - `project_name` - The name of the project that this permission applies to
 
 ## Importing
 

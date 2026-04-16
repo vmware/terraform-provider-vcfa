@@ -16,8 +16,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
-	"github.com/vmware/go-vcloud-director/v3/ccitypes"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func TestAccVcfaSupervisorNamespace(t *testing.T) {
@@ -134,7 +132,7 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 				PreConfig: func() {
 					// TODO: Introduce retries when Supervisor Namespace is created, instead of a patch in the test
 					time.Sleep(70 * time.Second) // Give time for Namespace Classes to be allocated after the Organization is created
-					createProject(t, params)
+					createProject(t, params["OrgName"].(string), params["OrgUser"].(string), params["OrgPassword"].(string), params["ProjectName"].(string))
 				}, //Setup project
 				Config: configText2,
 				Check: resource.ComposeTestCheckFunc(
@@ -205,7 +203,9 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 			},
 			{
 				// Namespace already removed, removing project using SDK and leaving for Terraform to teardwon
-				PreConfig:         func() { removeProject(t, params) },
+				PreConfig: func() {
+					removeProject(t, params["OrgName"].(string), params["OrgUser"].(string), params["OrgPassword"].(string), params["ProjectName"].(string))
+				},
 				ProviderFactories: multipleFactories(),
 				Config:            configText1,
 				Check:             resource.ComposeTestCheckFunc(),
@@ -365,44 +365,3 @@ data "vcfa_kubeconfig" "test-namespace" {
   supervisor_namespace_name = vcfa_supervisor_namespace.test.name
 }
 `
-
-func createProject(t *testing.T, params StringMap) {
-	tmClient := createTemporaryOrgConnection(params["OrgName"].(string), params["OrgUser"].(string), params["OrgPassword"].(string))
-	projectCfg := &ccitypes.Project{
-		TypeMeta: v1.TypeMeta{
-			Kind:       ccitypes.ProjectKind,
-			APIVersion: ccitypes.ProjectAPI + "/" + ccitypes.ProjectVersion,
-		},
-		ObjectMeta: v1.ObjectMeta{
-			Name: params["ProjectName"].(string),
-		},
-		Spec: ccitypes.ProjectSpec{
-			Description: fmt.Sprintf("Terraform test project [%s]", params["ProjectName"].(string)),
-		},
-	}
-
-	newProjectAddr, err := tmClient.Client.GetEntityUrl(ccitypes.ProjectsURL)
-	if err != nil {
-		t.Fatalf("error creating URL for new project")
-	}
-
-	newProject := &ccitypes.Project{}
-	// Create
-	err = tmClient.Client.PostEntity(newProjectAddr, nil, projectCfg, newProject, nil)
-	if err != nil {
-		t.Fatalf("error creating project %s: %s", projectCfg.Name, err)
-	}
-}
-
-func removeProject(t *testing.T, params StringMap) {
-	tmClient := createTemporaryOrgConnection(params["OrgName"].(string), params["OrgUser"].(string), params["OrgPassword"].(string))
-
-	projectAddr, err := tmClient.Client.GetEntityUrl(ccitypes.ProjectsURL, "/", params["ProjectName"].(string))
-	if err != nil {
-		t.Fatalf("error getting Project url: %s", err)
-	}
-	err = tmClient.Client.DeleteEntity(projectAddr, nil, nil)
-	if err != nil {
-		t.Fatalf("failed removing Project: %s", err)
-	}
-}
