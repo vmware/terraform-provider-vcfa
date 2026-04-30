@@ -128,6 +128,10 @@ See [CODING_GUIDELINES.md][coding-guidelines] for more advice on how to write co
 Read [TROUBLESHOOTING.md][troubleshooting] to learn how to configure and understand logs, and how to
 diagnose common errors.
 
+## Support
+
+Because this Terraform provider is developed as an open-source project and follows standard GitHub community practices, we encourage customers to submit bug reports and enhancement requests directly in the project's GitHub repository. However, we recognize that some situations may require formal technical support through our Global Support Services (GSS) process. In those cases, please open a case through the Broadcom support portal, referencing the provider, the provider version, and any related GitHub issue(s). When opening your case, please select VMware ESXi as the Product and choose VCF Terraform from the components drop-down menu.
+
 ## License
 
 © Broadcom. All Rights Reserved.
