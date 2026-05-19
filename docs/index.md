@@ -5,7 +5,7 @@ description: |-
   The VMware Cloud Foundation Automation provider is used to interact with the resources supported by VMware Cloud Foundation Automation. The provider needs to be configured with the proper credentials before it can be used.
 ---
 
-# VMware Cloud Foundation Automation Provider
+# VMware Cloud Foundation Automation Provider 1.1.0
 
 The VMware Cloud Foundation Automation provider is used to interact with the resources supported by VMware Cloud Foundation Automation. The provider needs to be configured with the proper credentials before it can be used.
 
