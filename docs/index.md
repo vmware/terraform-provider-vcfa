@@ -5,7 +5,7 @@ description: |-
   The VMware Cloud Foundation Automation provider is used to interact with the resources supported by VMware Cloud Foundation Automation. The provider needs to be configured with the proper credentials before it can be used.
 ---
 
-# VMware Cloud Foundation Automation Provider 1.0
+# VMware Cloud Foundation Automation Provider
 
 The VMware Cloud Foundation Automation provider is used to interact with the resources supported by VMware Cloud Foundation Automation. The provider needs to be configured with the proper credentials before it can be used.
 
@@ -20,9 +20,9 @@ The following VCFA versions are supported by this provider:
 - 9.0
 - 9.1
 
-## Connecting as System Administrator
+## Connecting to VCFA
 
-When you want to manage resources across different organizations from a single configuration.
+Declare the VCFA provider, so that Terraform can install and use it:
 
 ```hcl
 terraform {
@@ -33,8 +33,13 @@ terraform {
     }
   }
 }
+```
 
-# Configure the VMware Cloud Foundation Automation Provider
+Then configure the provider using one the following authentication methods:
+
+### Example usage (user / password)
+
+```hcl
 provider "vcfa" {
   user                 = "serviceadministrator"
   password             = var.vcfa_pass
@@ -53,7 +58,7 @@ data "vcfa_version" "version" {
 }
 ```
 
-## Example usage (API token)
+### Example usage (API token)
 
 ```hcl
 provider "vcfa" {
@@ -73,7 +78,7 @@ data "vcfa_version" "version" {
 }
 ```
 
-## Example usage (API token file)
+### Example usage (API token file)
 
 ```hcl
 provider "vcfa" {

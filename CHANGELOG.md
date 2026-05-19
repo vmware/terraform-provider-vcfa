@@ -1,3 +1,36 @@
+## 1.1.0 (May 18, 2026)
+
+### FEATURES
+- Add support for VCFA 9.1 ([#129](https://github.com/vmware/terraform-provider-vcfa/pull/129))
+- Add support for vcfa_supervisor_namespace resource updates ([#156](https://github.com/vmware/terraform-provider-vcfa/pull/156))
+- **New Data Source:** `vcfa_shared_subnet` to read Shared Subnets ([#168](https://github.com/vmware/terraform-provider-vcfa/pull/168))
+- **New Resource:** `vcfa_shared_subnet` to manage Shared Subnets ([#168](https://github.com/vmware/terraform-provider-vcfa/pull/168))
+- **New Data Source:** `vcfa_distributed_vlan_connection` to read Distributed VLAN Connections ([#170](https://github.com/vmware/terraform-provider-vcfa/pull/170))
+- **New Resource:** `vcfa_distributed_vlan_connection` to manage Distributed VLAN Connections ([#170](https://github.com/vmware/terraform-provider-vcfa/pull/170))
+
+### IMPROVEMENTS
+- Update `vcfa_supervisor_namespace` resource and datasource to support the latest `v1alpha3` CCI changes [[#153](https://github.com/vmware/terraform-provider-vcfa/pull/153)]. Added the new attributes `conditions`, `content_libraries`, `content_sources_class_config_overrides`, `infra_policies`, `infra_policy_names`, `seg_name`, `shared_subnet_names`, `storage_classes`, `vm_classes`, `vm_classes_class_config_overrides`, and `zones`.
+- Update `vcfa_ip_space` datasource and resource [[#165](https://github.com/vmware/terraform-provider-vcfa/pull/165)]. Added the new attributes `cidr_blocks`, `ip_address_ranges`, `provider_visibility_only`, `reserved_ip_address_ranges`, `backing_id`, `is_imported_ip_block`, and `subnet_exclusive`.
+- Update `vcfa_provider_gateway` datasource and resource [[#165](https://github.com/vmware/terraform-provider-vcfa/pull/165)]. Added the new attributes `inbound_remote_networks`, `allow_advertising_private_ip_blocks`, `nat_config_enabled`, `nat_config_ip_space_id`, `nat_config_logging`, and `gateway_connection_backing_id`.
+- Add an example at the `vcfa_org_oidc` resource on how to auto-generate signature keys for the OIDC flow ([#167](https://github.com/vmware/terraform-provider-vcfa/pull/167))
+- Update `vcfa_org_settings` datasource and resource properties to add the new optional attribute `can_subscribe_to_third_party_libraries` ([#173](https://github.com/vmware/terraform-provider-vcfa/pull/173))
+- Update `vcfa_content_library` datasource and resource to allow reading and managing Project Scoped Content Libraries [[#180](https://github.com/vmware/terraform-provider-vcfa/pull/180)]. Added the new attributes `is_project_scoped`. `all_projects_permission`, and `project_permissions`.
+
+### BUG FIXES
+- Fix filtering by `region_id` at the `vcfa_region_storage_policy` and `vcfa_storage_class` datasources ([#166](https://github.com/vmware/terraform-provider-vcfa/pull/166))
+
+### DEPRECATIONS
+- Deprecate `storage_classes_initial_class_config_overrides` in favor of `storage_classes_class_config_overrides` and `zones_initial_class_config_overrides` in favor of `zones_class_config_overrides` in `vcfa_supervisor_namespace` resource and datasource ([#153](https://github.com/vmware/terraform-provider-vcfa/pull/153))
+- Deprecate `internal_scope` in favor of `cidr_blocks` and `external_scope` in favor of `inbound_remote_networks` in `vcfa_ip_space` resource and datasource [[#165](https://github.com/vmware/terraform-provider-vcfa/pull/165)].
+
+### NOTES
+- Increase sleep for `TestAccVcfaSupervisorNamespace` test so it does not fail intermittently ([#104](https://github.com/vmware/terraform-provider-vcfa/pull/104), [#105](https://github.com/vmware/terraform-provider-vcfa/pull/105))
+- Amend IP Space names in tests to be compatible with Kubernetes naming convention ([#118](https://github.com/vmware/terraform-provider-vcfa/pull/118), [#119](https://github.com/vmware/terraform-provider-vcfa/pull/119))
+- Fix Supervisor Namespace tests by setting the proper dependency on region network settings ([#144](https://github.com/vmware/terraform-provider-vcfa/pull/144))
+- Make VPC name configurable in SupervisorNamespace tests ([#146](https://github.com/vmware/terraform-provider-vcfa/pull/146))
+- Update tests to dynamically get the Edge Cluster name ([#157](https://github.com/vmware/terraform-provider-vcfa/pull/157))
+- Bump golang and dependencies ([#192](https://github.com/vmware/terraform-provider-vcfa/pull/192))
+
 ## 1.0.0 (June 18, 2025)
 
 ### FEATURES
