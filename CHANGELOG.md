@@ -1,4 +1,4 @@
-## 1.1.0 (May 18, 2026)
+## 1.1.0 (May 19, 2026)
 
 ### FEATURES
 - Add support for VCFA 9.1 ([#129](https://github.com/vmware/terraform-provider-vcfa/pull/129))
