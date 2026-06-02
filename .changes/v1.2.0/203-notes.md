@@ -1,0 +1,1 @@
+- Add new Terraform Plugin Framework provider [GH-203]
