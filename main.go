@@ -5,11 +5,27 @@
 package main
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
-	"github.com/vmware/terraform-provider-vcfa/vcfa"
+	"context"
+	"log"
+	"os"
+
+	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
+	"github.com/hashicorp/terraform-plugin-go/tfprotov6/tf6server"
+
+	"github.com/vmware/terraform-provider-vcfa/internal/mux"
 )
 
+const providerAddress = "registry.terraform.io/vmware/vcfa"
+
 func main() {
-	plugin.Serve(&plugin.ServeOpts{
-		ProviderFunc: vcfa.Provider})
+	ctx := context.Background()
+
+	muxServer, err := mux.NewMuxServer(ctx)
+	if err != nil {
+		log.Println(err.Error())
+		os.Exit(1)
+	}
+
+	opts := []tf6server.ServeOpt{}
+	tf6server.Serve(providerAddress, func() tfprotov6.ProviderServer { return muxServer }, opts...)
 }

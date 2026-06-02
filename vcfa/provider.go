@@ -234,6 +234,10 @@ type ClientContainer struct {
 	tmClient *VCDClient
 }
 
+func (c ClientContainer) GetTMClient() *VCDClient {
+	return c.tmClient
+}
+
 func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	if err := validateProviderSchema(d); err != nil {
 		return nil, diag.Errorf("[provider validation] :%s", err)
