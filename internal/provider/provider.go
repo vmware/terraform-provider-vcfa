@@ -14,6 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 
+	"github.com/vmware/terraform-provider-vcfa/internal/provider/vksclusterclass"
 	"github.com/vmware/terraform-provider-vcfa/internal/provider/vkskubernetesrelease"
 )
 
@@ -125,6 +126,7 @@ func (p *VcfaFrameworkProvider) Resources(_ context.Context) []func() resource.R
 // DataSources returns the list of framework-based data sources.
 func (p *VcfaFrameworkProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		vksclusterclass.NewVcfaVksClusterClassDataSource,
 		vkskubernetesrelease.NewVcfaVksKubernetesReleaseDataSource,
 	}
 }
