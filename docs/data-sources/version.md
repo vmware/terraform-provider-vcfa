@@ -16,9 +16,9 @@ _Used by: **Provider**_
 ## Example Usage
 
 ```hcl
-# This data source will assert that the VCFA version is exactly 9.0.0, otherwise it will fail
+# This data source will assert that the VCFA version is exactly 9.1.0, otherwise it will fail
 data "vcfa_version" "eq_9" {
-  condition         = "= 9.0.0"
+  condition         = "= 9.1.0"
   fail_if_not_match = true
 }
 
@@ -38,15 +38,15 @@ data "vcfa_version" "lt_91" {
   fail_if_not_match = true
 }
 
-# This data source will assert that the VCFA version is 9.0.X
-data "vcfa_version" "is_90" {
-  condition         = "~> 9.0"
+# This data source will assert that the VCFA version is 9.1.X
+data "vcfa_version" "is_91" {
+  condition         = "~> 9.1"
   fail_if_not_match = true
 }
 
-# This data source will assert that the VCFA version is not 9.1
-data "vcfa_version" "not_91" {
-  condition         = "!= 9.1"
+# This data source will assert that the VCFA version is not 9.0
+data "vcfa_version" "not_90" {
+  condition         = "!= 9.0"
   fail_if_not_match = true
 }
 
