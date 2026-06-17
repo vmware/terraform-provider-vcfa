@@ -1,0 +1,1 @@
+- Update the documentation to clarify that version v1.1.x of the provider requires VCFA 9.1+ [GH-208]
