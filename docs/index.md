@@ -17,7 +17,6 @@ to track feature additions.
 
 The following VCFA versions are supported by this provider:
 
-- 9.0
 - 9.1
 
 ## Connecting to VCFA
@@ -53,7 +52,7 @@ provider "vcfa" {
 
 # Fetch the VCFA version
 data "vcfa_version" "version" {
-  condition         = ">= 9.0.0"
+  condition         = ">= 9.1.0"
   fail_if_not_match = false
 }
 ```
@@ -73,7 +72,7 @@ provider "vcfa" {
 
 # Fetch the VCFA version
 data "vcfa_version" "version" {
-  condition         = ">= 9.0.0"
+  condition         = ">= 9.1.0"
   fail_if_not_match = false
 }
 ```
@@ -93,7 +92,7 @@ provider "vcfa" {
 
 # Fetch the VCFA version
 data "vcfa_version" "version" {
-  condition         = ">= 9.0.0"
+  condition         = ">= 9.1.0"
   fail_if_not_match = false
 }
 ```
