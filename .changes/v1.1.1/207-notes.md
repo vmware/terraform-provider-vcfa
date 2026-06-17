@@ -1,0 +1,1 @@
+- Bump go-vcloud-director to v3.1.1 and k8s.io/apimachinery and k8s.io/client-go to v0.36.2 [GH-207]
