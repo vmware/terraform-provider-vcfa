@@ -1,6 +1,11 @@
-## 1.1.1 (Unreleased)
+## 1.1.1 (June 17, 2026)
 
-Changes in progress for v1.1.1 are available at [.changes/v1.1.1](https://github.com/vmware/terraform-provider-vcfa/tree/main/.changes/v1.1.1) until the release.
+### BUG FIXES
+- Update the documentation to clarify that version v1.1.x of the provider requires VCFA 9.1+ ([#208](https://github.com/vmware/terraform-provider-vcfa/pull/208))
+
+### NOTES
+- Bump go-vcloud-director to v3.1.1 and k8s.io/apimachinery and k8s.io/client-go to v0.36.2 ([#207](https://github.com/vmware/terraform-provider-vcfa/pull/207))
+
 
 ## 1.1.0 (May 19, 2026)
 
