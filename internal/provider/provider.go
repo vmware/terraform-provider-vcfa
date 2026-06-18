@@ -16,6 +16,7 @@ import (
 
 	"github.com/vmware/terraform-provider-vcfa/internal/provider/vkscluster"
 	"github.com/vmware/terraform-provider-vcfa/internal/provider/vksclusterclass"
+	"github.com/vmware/terraform-provider-vcfa/internal/provider/vksclusterkubeconfig"
 	"github.com/vmware/terraform-provider-vcfa/internal/provider/vkskubernetesrelease"
 )
 
@@ -132,5 +133,6 @@ func (p *VcfaFrameworkProvider) DataSources(_ context.Context) []func() datasour
 		vksclusterclass.NewVcfaVksClusterClassDataSource,
 		vkscluster.NewVcfaVksClusterDataSource,
 		vkskubernetesrelease.NewVcfaVksKubernetesReleaseDataSource,
+		vksclusterkubeconfig.NewVcfaVksClusterKubeconfigDataSource,
 	}
 }
