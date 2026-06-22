@@ -12,7 +12,7 @@ require (
 	github.com/hashicorp/terraform-plugin-mux v0.23.1
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.40.1
 	github.com/hashicorp/terraform-plugin-testing v1.16.0
-	github.com/vmware/go-vcloud-director/v3 v3.1.0
+	github.com/vmware/go-vcloud-director/v3 v3.1.1
 	k8s.io/apimachinery v0.36.2
 	k8s.io/client-go v0.36.2
 )
