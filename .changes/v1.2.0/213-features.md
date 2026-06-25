@@ -1,0 +1,5 @@
+- **New Resource:** `vcfa_vks_cluster` to manage VKS Clusters [GH-213]
+- **New Data Source:** `vcfa_vks_cluster` to read VKS Clusters [GH-213]
+- **New Data Source:** `vcfa_vks_cluster_kubeconfig` to read the Kubeconfig of VKS Clusters [GH-213]
+- **New Data Source:** `vcfa_vks_kubernetes_release` to read VKS Kubernetes Releases [GH-213]
+- **New Data Source:** `vcfa_vks_cluster_class` to read VKS ClusterClasses [GH-213]
