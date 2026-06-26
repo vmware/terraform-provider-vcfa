@@ -458,11 +458,11 @@ func (r *vcfaVksClusterResource) Delete(ctx context.Context, req resource.Delete
 }
 
 func (r *vcfaVksClusterResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	parts := strings.Split(req.ID, ":")
+	parts := strings.SplitN(req.ID, vcfa.ImportSeparator, 4)
 	if len(parts) != 3 {
 		resp.Diagnostics.AddError(
 			"invalid import ID format",
-			fmt.Sprintf("expected project:namespace:name, got: %s", req.ID),
+			fmt.Sprintf("expected project%snamespace%sname, got: %s", vcfa.ImportSeparator, vcfa.ImportSeparator, req.ID),
 		)
 		return
 	}

@@ -334,7 +334,8 @@ The `status` attribute has the following structure:
 
 ~> **Note:** The current implementation of Terraform import can only import resources into the state. It does not generate configuration. However, an experimental feature in Terraform 1.5+ allows also code generation. See [Importing resources][importing-resources] for more information.
 
-An existing VKS Cluster can be [imported][docs-import] into this resource via its composite identifier:
+An existing VKS Cluster can be [imported][docs-import] into this resource via its composite identifier.
+For example, using this structure, representing an existing VKS Cluster that was **not** created using Terraform:
 
 ```hcl
 resource "vcfa_vks_cluster" "existing" {
@@ -375,11 +376,13 @@ resource "vcfa_vks_cluster" "existing" {
 }
 ```
 
+You can import such VKS Cluster into terraform state using this command:
+
 ```shell
-terraform import vcfa_vks_cluster.existing "my-project:my-namespace:my-cluster"
+terraform import vcfa_vks_cluster.existing "my-project.my-namespace.my-cluster"
 ```
 
-The import ID format is `project:namespace:name`.
+_NOTE_: The default separator `.` can be changed using provider's `import_separator` argument or environment variable `VCFA_IMPORT_SEPARATOR`
 
 [docs-import]: https://developer.hashicorp.com/terraform/cli/import
 [importing-resources]: /providers/vmware/vcfa/latest/docs/guides/importing_resources
