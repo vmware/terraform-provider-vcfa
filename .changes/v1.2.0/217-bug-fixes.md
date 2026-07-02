@@ -1,0 +1,1 @@
+- Fix `vcfa_vks_cluster` resource import [GH-217]
