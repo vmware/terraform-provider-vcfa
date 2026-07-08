@@ -83,6 +83,8 @@ The following arguments are supported:
 
 -> The `version` attribute accepts both the VKS Kubernetes Release `name` and `version`. If the Kubernetes Release `name` is provided (e.g. `v1.34.1---vmware.1-vkr.4`), the backend converts it to its canonical form (e.g. `v1.34.1+vmware.1`), which will show as a diff on subsequent plans. Use the VKS Kubernetes Release `version` to avoid this, or add `version` to the [lifecycle.ignore_changes](https://developer.hashicorp.com/terraform/language/meta-arguments/lifecycle#ignore_changes) resource argument.
 
+~> **Note:** The `dry_run_validation` attribute is an experimental technical preview. Its behavior may change without compatibility guarantees until VKS 3.8.0 is generally available.
+
 ## Attribute Reference
 
 In addition to the arguments above, the following computed attributes are exported:
