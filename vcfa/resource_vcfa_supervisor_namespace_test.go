@@ -180,7 +180,7 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"name_prefix"},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					return params["ProjectName"].(string) + ImportSeparator + cachedNamespaceName.fieldValue, nil
+					return params["ProjectName"].(string) + ImportSeparator + cachedNamespaceName.FieldValue(), nil
 				},
 			},
 			{

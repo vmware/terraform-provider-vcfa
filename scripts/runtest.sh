@@ -33,7 +33,8 @@ function check_exit_code {
 }
 
 accepted_commands=(static token short acceptance sequential-acceptance binary
-    binary-prepare short-provider acceptance-orguser short-provider-orguser binary-validate)
+    binary-prepare short-provider acceptance-orguser acceptance-cci acceptance-vks
+    short-provider-orguser binary-validate)
 
 accepted="[${accepted_commands[*]}]"
 
@@ -57,20 +58,18 @@ fi
 # Run test
 echo "==> Run test $wanted"
 
-cd vcfa
-
-source_dir=$PWD
+source_dir="$PWD/vcfa"
 
 function check_for_config_file {
-    config_file=vcfa_test_config.json
+    config_file="$source_dir/vcfa_test_config.json"
     if [ -n "${VCFA_CONFIG}" ]
     then
         echo "Using configuration file from variable \$VCFA_CONFIG"
         config_file=$VCFA_CONFIG
     fi
-    if [ ! -f $config_file ]
+    if [ ! -f "$config_file" ]
     then
-        echo "ERROR: test configuration file $config_file is missing"; \
+        echo "ERROR: test configuration file $config_file is missing"
         exit 1
     fi
 
@@ -79,55 +78,60 @@ function check_for_config_file {
 function unit_test {
     if [ -n "$VERBOSE" ]
     then
-        echo "go test -tags unit ${TEST} || exit 1"
-        echo "go test -tags unit -v -timeout 5m"
+        echo "go test -tags unit ${TEST} ./vcfa || exit 1"
+        echo "go test -tags unit -v -timeout 5m ./vcfa"
     fi
     if [ -z "$DRY_RUN" ]
     then
-        go test -tags unit ${TEST} || exit 1
-        go test -tags unit -v -timeout 5m
+        go test -tags unit ${TEST} ./vcfa || exit 1
+        go test -tags unit -v -timeout 5m ./vcfa
     fi
 }
 
 function short_test {
     # If we are creating binary test files, we remove the old ones,
     # to avoid leftovers from previous runs to affect the current test
-    if [ -n "$VCFA_ADD_PROVIDER" -a -n "$MORE_TAGS" -a -d ./test-artifacts ]
+    if [ -n "$VCFA_ADD_PROVIDER" -a -n "$MORE_TAGS" -a -d "$source_dir/test-artifacts" ]
     then
-        rm -f ./test-artifacts/*.tf
+        rm -f "$source_dir/test-artifacts"/*.tf
     fi
     if [ -n "$VERBOSE" ]
     then
-        echo "VCFA_SHORT_TEST=1 go test -race -tags '$MORE_TAGS' -v -timeout 5m"
+        echo "VCFA_SHORT_TEST=1 go test -race -tags '$MORE_TAGS' -v -timeout 5m ./vcfa"
     fi
     if [ -z "$DRY_RUN" ]
     then
-        VCFA_SHORT_TEST=1 go test -race -tags "$MORE_TAGS" -v -timeout 5m
+        VCFA_SHORT_TEST=1 go test -race -tags "$MORE_TAGS" -v -timeout 5m ./vcfa
         check_exit_code
     fi
     if [ -n "$VCFA_TEST_ORG_USER" ]
     then
-        rm -f test-artifacts/cust.*.tf
+        rm -f "$source_dir/test-artifacts/cust.*.tf"
     fi
 }
 
 function acceptance_test {
     tags="$1"
     testoptions="$2"
+    dir="$3"
     if [ -z "$tags" ]
     then
         tags=functional
     fi
+    if [ -z "$dir" ]
+    then
+        dir="./vcfa"
+    fi
     if [ -n "$VERBOSE" ]
     then
         echo "# check for config file"
-        echo "TF_ACC=1 go test -tags '$tags' -vcfa-add-provider -v -timeout $timeout"
+        echo "TF_ACC=1 go test -tags '$tags' $dir $testoptions -vcfa-add-provider -v -timeout $timeout"
     fi
 
     if [ -z "$DRY_RUN" ]
     then
         check_for_config_file
-        TF_ACC=1 go test -tags "$tags" $testoptions -vcfa-add-provider -v -timeout $timeout
+        TF_ACC=1 go test -tags "$tags" $dir $testoptions -vcfa-add-provider -v -timeout $timeout
         check_exit_code
     fi
 }
@@ -296,7 +300,7 @@ function check_static {
         $static_check -version
         echo -n "## Checking "
         pwd
-        $static_check -tags ALL .
+        $static_check -tags ALL ./vcfa
         exit_code=$?
         if [ "$exit_code" != "0" ]
         then
@@ -362,6 +366,9 @@ case $wanted in
         ;;
     acceptance-cci)
         acceptance_test "unit cci" "-vcfa-skip-priority-tests -vcfa-test-org-user -vcfa-skip-leftovers-removal"
+        ;;
+    acceptance-vks)
+        acceptance_test "vks" "-vcfa-skip-priority-tests -vcfa-test-org-user -vcfa-skip-leftovers-removal" ./internal/provider/...
         ;;
     acceptance)
         acceptance_test "unit functional"

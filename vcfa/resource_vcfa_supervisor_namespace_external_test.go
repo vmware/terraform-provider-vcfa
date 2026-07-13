@@ -14,8 +14,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
-	"github.com/vmware/go-vcloud-director/v3/ccitypes"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/vmware/terraform-provider-vcfa/internal/testutils"
 )
 
 func TestAccVcfaSupervisorNamespaceExternal(t *testing.T) {
@@ -58,7 +58,7 @@ func TestAccVcfaSupervisorNamespaceExternal(t *testing.T) {
 	testParamsNotEmpty(t, params)
 
 	// Setup project and defer cleanup
-	cleanup := setupProject(t, params["ProjectName"].(string))
+	cleanup := testutils.SetupProject(t, params["ProjectName"].(string))
 	defer cleanup()
 
 	configText1 := templateFill(testAccVcfaSupervisorNamespaceExternalStep1, params)
@@ -74,7 +74,7 @@ func TestAccVcfaSupervisorNamespaceExternal(t *testing.T) {
 	debugPrintf("#[DEBUG] CONFIGURATION step3: %s\n", configText3)
 	debugPrintf("#[DEBUG] CONFIGURATION step5: %s\n", configText5)
 
-	cachedNamespaceName := &testCachedFieldValue{}
+	cachedNamespaceName := &testutils.TestCachedFieldValue{}
 
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
@@ -99,7 +99,7 @@ func TestAccVcfaSupervisorNamespaceExternal(t *testing.T) {
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "zones_class_config_overrides.0.cpu_limit", params["ZoneCpuLimit"].(string)),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "zones_class_config_overrides.0.memory_limit", params["ZoneMemoryLimit"].(string)),
 					resource.TestCheckResourceAttr("vcfa_supervisor_namespace.test", "zones_initial_class_config_overrides.#", "1"),
-					cachedNamespaceName.cacheTestResourceFieldValue("vcfa_supervisor_namespace.test", "name"), // capturing computed 'name' to use for other test steps
+					cachedNamespaceName.CacheTestResourceFieldValue("vcfa_supervisor_namespace.test", "name"), // capturing computed 'name' to use for other test steps
 				),
 			},
 			{
@@ -126,7 +126,7 @@ func TestAccVcfaSupervisorNamespaceExternal(t *testing.T) {
 				Config: configText3,
 				Check: resource.ComposeTestCheckFunc(
 					// Data source does not have 'name_prefix' therefore field count (%) differs
-					resourceFieldsEqual("data.vcfa_supervisor_namespace.test", "vcfa_supervisor_namespace.test", []string{"%"}),
+					testutils.ResourceFieldsEqual("data.vcfa_supervisor_namespace.test", "vcfa_supervisor_namespace.test", []string{"%"}),
 				),
 			},
 			{
@@ -135,14 +135,14 @@ func TestAccVcfaSupervisorNamespaceExternal(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"name_prefix"},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					return params["ProjectName"].(string) + ImportSeparator + cachedNamespaceName.fieldValue, nil
+					return params["ProjectName"].(string) + ImportSeparator + cachedNamespaceName.FieldValue(), nil
 				},
 			},
 			{
 				Config: configText5,
 				Check: resource.ComposeTestCheckFunc(
-					cachedNamespaceName.testCheckCachedResourceFieldValuePattern("data.vcfa_kubeconfig.test-namespace", "id", fmt.Sprintf("%s:%%s:%s", testConfig.Org.Name, params["ProjectName"].(string))),
-					cachedNamespaceName.testCheckCachedResourceFieldValuePattern("data.vcfa_kubeconfig.test-namespace", "context_name", fmt.Sprintf("%s:%%s:%s", testConfig.Org.Name, params["ProjectName"].(string))),
+					cachedNamespaceName.TestCheckCachedResourceFieldValuePattern("data.vcfa_kubeconfig.test-namespace", "id", fmt.Sprintf("%s:%%s:%s", testConfig.Org.Name, params["ProjectName"].(string))),
+					cachedNamespaceName.TestCheckCachedResourceFieldValuePattern("data.vcfa_kubeconfig.test-namespace", "context_name", fmt.Sprintf("%s:%%s:%s", testConfig.Org.Name, params["ProjectName"].(string))),
 					resource.TestCheckResourceAttr("data.vcfa_kubeconfig.test-namespace", "insecure_skip_tls_verify", fmt.Sprintf("%t", testConfig.Provider.AllowInsecure)),
 					resource.TestCheckResourceAttr("data.vcfa_kubeconfig.test-namespace", "user", fmt.Sprintf("%s:%s@%s", testConfig.Org.Name, testConfig.Org.User, ref.Host)),
 					resource.TestCheckResourceAttrSet("data.vcfa_kubeconfig.test-namespace", "token"),
@@ -240,45 +240,3 @@ data "vcfa_kubeconfig" "test-namespace" {
   supervisor_namespace_name = vcfa_supervisor_namespace.test.name
 }
 `
-
-func setupProject(t *testing.T, projectName string) func() {
-	// setup project
-	tmClient := createTemporaryVCFAConnection(false)
-
-	projectCfg := &ccitypes.Project{
-		TypeMeta: v1.TypeMeta{
-			Kind:       ccitypes.ProjectKind,
-			APIVersion: ccitypes.ProjectAPI + "/" + ccitypes.ProjectVersion,
-		},
-		ObjectMeta: v1.ObjectMeta{
-			Name: projectName,
-		},
-		Spec: ccitypes.ProjectSpec{
-			Description: fmt.Sprintf("Terraform test project [%s]", projectName),
-		},
-	}
-
-	newProjectAddr, err := tmClient.Client.GetEntityUrl(ccitypes.ProjectsURL)
-	if err != nil {
-		t.Fatalf("error creating URL for new project")
-	}
-
-	newProject := &ccitypes.Project{}
-	// Create
-	err = tmClient.Client.PostEntity(newProjectAddr, nil, projectCfg, newProject, nil)
-	if err != nil {
-		t.Fatalf("error creating project %s: %s", projectCfg.Name, err)
-	}
-
-	// defer project cleanup
-	return func() {
-		projectAddr, err := tmClient.Client.GetEntityUrl(ccitypes.ProjectsURL, "/", projectCfg.Name)
-		if err != nil {
-			t.Fatalf("error getting Project url: %s", err)
-		}
-		err = tmClient.Client.DeleteEntity(projectAddr, nil, nil)
-		if err != nil {
-			t.Fatalf("failed removing Project: %s", err)
-		}
-	}
-}

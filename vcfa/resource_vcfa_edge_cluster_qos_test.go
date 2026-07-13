@@ -127,7 +127,7 @@ func TestAccVcfaEdgeCluster(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					return testConfig.Tm.Region + ImportSeparator + cachedEdgeClusterName.fieldValue, nil
+					return testConfig.Tm.Region + ImportSeparator + cachedEdgeClusterName.FieldValue(), nil
 				},
 			},
 			{

@@ -10,6 +10,8 @@ import (
 	"strings"
 
 	"github.com/vmware/go-vcloud-director/v3/govcd"
+
+	"github.com/vmware/terraform-provider-vcfa/internal/testutils"
 )
 
 // This file contains routines that clean up the test suite after failed tests
@@ -261,7 +263,7 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose, isFinalCleanup bool) er
 	// --------------------------------------------------------------
 	// NSX Managers
 	// --------------------------------------------------------------
-	if tmClient.Client.IsSysAdmin && (isFinalCleanup || vcfaSkipPriorityTests) {
+	if tmClient.Client.IsSysAdmin && (isFinalCleanup || testutils.VcfaSkipPriorityTests) {
 		allNsxManagers, err := tmClient.GetAllNsxtManagersOpenApi(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving provider NSX Managers: %s", err)
@@ -281,7 +283,7 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose, isFinalCleanup bool) er
 	// --------------------------------------------------------------
 	// vCenters
 	// --------------------------------------------------------------
-	if tmClient.Client.IsSysAdmin && (isFinalCleanup || vcfaSkipPriorityTests) {
+	if tmClient.Client.IsSysAdmin && (isFinalCleanup || testutils.VcfaSkipPriorityTests) {
 		allVcs, err := tmClient.GetAllVCenters(nil)
 		if err != nil {
 			return fmt.Errorf("error retrieving provider vCenters: %s", err)

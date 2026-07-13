@@ -87,6 +87,10 @@ testacc-cci:
 testacc-orguser: testunit
 	@sh -c "'$(CURDIR)/scripts/runtest.sh' acceptance-orguser"
 
+# Runs the vks acceptance test as Org user
+testacc-vks:
+	@sh -c "'$(CURDIR)/scripts/runtest.sh' acceptance-vks"
+
 # Runs the full acceptance test as system administrator
 testacc: testunit
 	@sh -c "'$(CURDIR)/scripts/runtest.sh' acceptance"
