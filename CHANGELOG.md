@@ -1,6 +1,21 @@
-## 1.2.0 (Unreleased)
+## 1.2.0 (July 14, 2026)
 
-Changes in progress for v1.2.0 are available at [.changes/v1.2.0](https://github.com/vmware/terraform-provider-vcfa/tree/main/.changes/v1.2.0) until the release.
+### FEATURES
+- **New Resource:** `vcfa_vks_cluster` to manage VKS Clusters ([#213](https://github.com/vmware/terraform-provider-vcfa/pull/213))
+- **New Data Source:** `vcfa_vks_cluster` to read VKS Clusters ([#213](https://github.com/vmware/terraform-provider-vcfa/pull/213))
+- **New Data Source:** `vcfa_vks_cluster_kubeconfig` to read the Kubeconfig of VKS Clusters ([#213](https://github.com/vmware/terraform-provider-vcfa/pull/213))
+- **New Data Source:** `vcfa_vks_kubernetes_release` to read VKS Kubernetes Releases ([#213](https://github.com/vmware/terraform-provider-vcfa/pull/213))
+- **New Data Source:** `vcfa_vks_cluster_class` to read VKS ClusterClasses ([#213](https://github.com/vmware/terraform-provider-vcfa/pull/213))
+
+### BUG FIXES
+- Fix `vcfa_vks_cluster` resource import ([#217](https://github.com/vmware/terraform-provider-vcfa/pull/217))
+
+### NOTES
+- Add new Terraform Plugin Framework provider ([#203](https://github.com/vmware/terraform-provider-vcfa/pull/203))
+- Bump golang and dependencies ([#219](https://github.com/vmware/terraform-provider-vcfa/pull/219))
+- Move common test utils to an internal common package ([#221](https://github.com/vmware/terraform-provider-vcfa/pull/221))
+- Add acceptance tests for VKS resources ([#221](https://github.com/vmware/terraform-provider-vcfa/pull/221))
+
 
 ## 1.1.1 (June 17, 2026)
 
