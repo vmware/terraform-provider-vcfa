@@ -36,6 +36,21 @@
     "storagePolicy": "vSAN Default Storage Policy",
     "supervisorZone": "vcfa-gen-wl-vc08-cl1-zone1"
 },
+"vks": {
+    "//": "configuration used by VKS acceptance tests",
+    "clusterClassName": "tanzukubernetescluster",
+    "clusterClassNamespace": "vmware-system-vks-public",
+    "kubernetesVersion": "v1.34.1+vmware.1",
+    "servicesCidr": "10.96.0.0/12",
+    "vmClass": "best-effort-small",
+    "storageClass": "vSAN Default Storage Policy",
+    "controlPlaneReplicas": "1",
+    "workerReplicas": "1",
+    "//datasource": "context used by read-only VKS datasource tests (e.g. vcfa_vks_kubernetes_release)",
+    "project": "my-project",
+    "namespace": "my-supervisor-namespace",
+    "kubernetesReleaseName": "v1.34.1---vmware.1-fips.1"
+},
   "tm": {
     "org": "tf-test",
     "createRegion": true,

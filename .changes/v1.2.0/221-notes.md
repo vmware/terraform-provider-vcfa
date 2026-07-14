@@ -1,0 +1,2 @@
+- Move common test utils to an internal common package [GH-221]
+- Add acceptance tests for VKS resources [GH-221]

@@ -15,13 +15,21 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+
+	"github.com/vmware/terraform-provider-vcfa/internal/testutils"
 )
+
+func init() {
+	// Ensure VCFA flags are registered even when config_test.go is excluded by
+	// build tags (e.g. -tags 'unit vks'). RegisterTestFlags is idempotent, so
+	// calling it here and again from config_test.go's init() is safe.
+	testutils.RegisterTestFlags()
+}
 
 // These variables are needed by tests running under any tags
 var (
-	vcfaTestVerbose       = os.Getenv("VCFA_TEST_VERBOSE") != ""
-	vcfaTestTrace         = os.Getenv("VCFA_TEST_TRACE") != ""
-	vcfaSkipPriorityTests = os.Getenv("VCFA_SKIP_PRIORITY_TESTS") != ""
+	vcfaTestVerbose = os.Getenv("VCFA_TEST_VERBOSE") != ""
+	vcfaTestTrace   = os.Getenv("VCFA_TEST_TRACE") != ""
 	// Collection of defined tags in the current test run
 	testingTags = make(map[string]string)
 	// This library major version
@@ -79,16 +87,6 @@ func TestTags(t *testing.T) {
 	if vcfaTestVerbose {
 		showTags()
 	}
-}
-
-// Checks if a directory exists
-func dirExists(filename string) bool {
-	f, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		return false
-	}
-	fileMode := f.Mode()
-	return fileMode.IsDir()
 }
 
 // Finds the current directory, through the path of this running test

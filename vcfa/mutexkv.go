@@ -70,11 +70,3 @@ func newMutexKV() *mutexKV {
 		store: make(map[string]*sync.Mutex),
 	}
 }
-
-// newMutexKVSilent returns a properly initalized mutexKV with the silent property set
-func newMutexKVSilent() *mutexKV {
-	return &mutexKV{
-		store:  make(map[string]*sync.Mutex),
-		silent: true,
-	}
-}
