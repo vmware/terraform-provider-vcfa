@@ -21,7 +21,7 @@ require (
 	k8s.io/apiextensions-apiserver v0.36.2
 	k8s.io/apimachinery v0.36.2
 	k8s.io/client-go v0.36.2
-	sigs.k8s.io/cluster-api v1.13.3
+	sigs.k8s.io/cluster-api v1.13.4
 )
 
 require (
