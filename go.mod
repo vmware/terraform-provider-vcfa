@@ -17,9 +17,9 @@ require (
 	github.com/hashicorp/terraform-plugin-testing v1.16.0
 	github.com/vmware/go-vcloud-director/v3 v3.1.2-alpha.1
 	gopkg.in/evanphx/json-patch.v4 v4.13.0
-	k8s.io/api v0.36.2
+	k8s.io/api v0.36.3
 	k8s.io/apiextensions-apiserver v0.36.2
-	k8s.io/apimachinery v0.36.2
+	k8s.io/apimachinery v0.36.3
 	k8s.io/client-go v0.36.2
 	sigs.k8s.io/cluster-api v1.13.3
 )
