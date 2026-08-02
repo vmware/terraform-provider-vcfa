@@ -1,0 +1,5 @@
+- Upgrade k8s.io/api to v0.36.3 [GH-231]
+- Upgrade k8s.io/apiextensions-apiserver to v0.36.3 [GH-231]
+- Upgrade k8s.io/apimachinery to v0.36.3 [GH-231]
+- Upgrade k8s.io/client-go to v0.36.3 [GH-231]
+- Upgrade sigs.k8s.io/cluster-api to v1.13.4 [GH-231]
