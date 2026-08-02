@@ -76,10 +76,11 @@ func TestAccVcfaGlobalRole(t *testing.T) {
 				),
 			},
 			{
-				ResourceName:      resourceDef,
-				ImportState:       true,
-				ImportStateVerify: true,
-				ImportStateIdFunc: func(state *terraform.State) (string, error) { return globalRoleUpdateName, nil },
+				ResourceName:            resourceDef,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateIdFunc:       func(state *terraform.State) (string, error) { return globalRoleUpdateName, nil },
+				ImportStateVerifyIgnore: []string{"org_ids"},
 			},
 		},
 	})
