@@ -7,21 +7,34 @@ description: |-
 
 # vcfa_kubeconfig
 
-Provides a data source to fetch the [kubeconfig](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/) data from VMware Cloud Foundation Automation.
+Provides a data source to fetch the [kubeconfig][kubeconfig] data from VMware Cloud Foundation Automation.
 
-_Used by: **Provider**, **Tenant**_
+_Used by: **Tenant**_
 
-## Example Usage
+## Example Usage for a VCFA context
+
+To retrieve a [kubeconfig][kubeconfig] that allows managing VCFA Kubernetes resources:
 
 ```hcl
 data "vcfa_kubeconfig" "kube_config" {}
+```
 
+## Example Usage for a VCFA Namespace context
+
+To retrieve a [kubeconfig][kubeconfig] that allows managing Kubernetes resources inside a VCFA namespace:
+
+``` hcl
 data "vcfa_kubeconfig" "kube_config_supervisor_namespace" {
   project_name              = "default-project"
   supervisor_namespace_name = "demo-supervisor-namespace"
 }
+```
 
-# The kubeconfig can be used to configure the Kubernetes provider
+## Example Usage for the Kubernetes Provider
+
+The datasource attributes can be used to configure the [Kubernetes provider][kubernetes_provider]:
+
+```hcl
 provider "kubernetes" {
   host     = data.vcfa_kubeconfig.kube_config.host
   insecure = data.vcfa_kubeconfig.kube_config.insecure_skip_tls_verify
@@ -46,3 +59,5 @@ The following arguments are supported:
 - `kube_config_raw` - Raw kubeconfig
 
 [vcfa_supervisor_namespace-ds]: /providers/vmware/vcfa/latest/docs/data-sources/supervisor_namespace
+[kubeconfig]: https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/
+[kubernetes_provider]: https://registry.terraform.io/providers/hashicorp/kubernetes
