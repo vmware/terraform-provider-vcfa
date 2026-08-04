@@ -1,0 +1,2 @@
+- Update `vcfa_kubeconfig` datasource documentation [GH-232]
+- Fix `vcfa_content_library_item` resource example [GH-232]
