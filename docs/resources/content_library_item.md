@@ -20,8 +20,13 @@ The target [Content Library][vcfa_content_library] can be located inside an [Org
 When uploading an OVF file, be sure that all required inner elements are specified:
 
 ```hcl
+data "vcfa_org" "system" {
+  name = "System"
+}
+
 data "vcfa_content_library" "cl" {
-  name = "My Library"
+  org_id = data.vcfa_org.system.id
+  name   = "My Library"
 }
 
 resource "vcfa_content_library_item" "ova" {
