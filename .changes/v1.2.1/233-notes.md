@@ -1,0 +1,1 @@
+- Update `vcfa_content_library_item` tests: only check for the `status` attribute to be set instead of checking if it has a specific value.[GH-233]
