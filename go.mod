@@ -15,7 +15,7 @@ require (
 	github.com/hashicorp/terraform-plugin-mux v0.23.1
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.40.1
 	github.com/hashicorp/terraform-plugin-testing v1.16.0
-	github.com/vmware/go-vcloud-director/v3 v3.1.2-alpha.1
+	github.com/vmware/go-vcloud-director/v3 v3.1.2-alpha.2
 	gopkg.in/evanphx/json-patch.v4 v4.13.0
 	k8s.io/api v0.36.3
 	k8s.io/apiextensions-apiserver v0.36.3
