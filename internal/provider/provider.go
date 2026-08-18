@@ -6,6 +6,7 @@ package provider
 
 import (
 	"context"
+	"os"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -41,6 +42,29 @@ func (p *VcfaFrameworkProvider) Metadata(_ context.Context, _ provider.MetadataR
 }
 
 func (p *VcfaFrameworkProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
+	// The SDKv2 provider (vcfa.Provider()) declares "org" and "url" as Required with an
+	// EnvDefaultFunc fallback. terraform-plugin-sdk's schema-to-protocol conversion flips such
+	// attributes to Optional whenever the environment variable is set (see
+	// helper/schema.Schema.coreConfigSchemaAttribute). Both providers are muxed together and
+	// their schemas must be byte-identical, so this mirrors that same env-dependent behavior here.
+	orgAttribute := schema.StringAttribute{
+		Description: "The VCFA Org for API operations",
+	}
+	if os.Getenv("VCFA_ORG") != "" {
+		orgAttribute.Optional = true
+	} else {
+		orgAttribute.Required = true
+	}
+
+	urlAttribute := schema.StringAttribute{
+		Description: "The VCFA url for VCFA API operations.",
+	}
+	if os.Getenv("VCFA_URL") != "" {
+		urlAttribute.Optional = true
+	} else {
+		urlAttribute.Required = true
+	}
+
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"user": schema.StringAttribute{
@@ -86,14 +110,8 @@ func (p *VcfaFrameworkProvider) Schema(_ context.Context, _ provider.SchemaReque
 				Optional:    true,
 				Description: "The VCFA Org for user authentication",
 			},
-			"org": schema.StringAttribute{
-				Required:    true,
-				Description: "The VCFA Org for API operations",
-			},
-			"url": schema.StringAttribute{
-				Required:    true,
-				Description: "The VCFA url for VCFA API operations.",
-			},
+			"org": orgAttribute,
+			"url": urlAttribute,
 			"allow_unverified_ssl": schema.BoolAttribute{
 				Optional:    true,
 				Description: "If set, VCFAClient will permit unverifiable SSL certificates.",
