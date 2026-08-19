@@ -1,0 +1,1 @@
+- Fix provider `org`/`url` schemas inconsistent issue [GH-236]

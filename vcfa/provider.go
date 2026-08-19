@@ -400,5 +400,9 @@ func validateProviderSchema(d *schema.ResourceData) error {
 		return fmt.Errorf(`both "org" and "sysorg" properties are empty`)
 	}
 
+	if d.Get("url").(string) == "" {
+		return fmt.Errorf(`the "url" property is empty`)
+	}
+
 	return nil
 }
