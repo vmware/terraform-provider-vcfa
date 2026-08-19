@@ -1,7 +1,19 @@
 
-## 1.2.1 (Unreleased)
+## 1.2.1 (August 19, 2026)
 
-Changes in progress for v1.2.1 are available at [.changes/v1.2.1](https://github.com/vmware/terraform-provider-vcfa/tree/main/.changes/v1.2.1) until the release.
+### BUG FIXES
+- Fix provider `org`/`url` schemas inconsistent issue ([#236](https://github.com/vmware/terraform-provider-vcfa/pull/236))
+
+### NOTES
+- Do not verify org_ids at global_role import tests ([#230](https://github.com/vmware/terraform-provider-vcfa/pull/230))
+- Upgrade k8s.io/api to v0.36.3 ([#231](https://github.com/vmware/terraform-provider-vcfa/pull/231))
+- Upgrade k8s.io/apiextensions-apiserver to v0.36.3 ([#231](https://github.com/vmware/terraform-provider-vcfa/pull/231))
+- Upgrade k8s.io/apimachinery to v0.36.3 ([#231](https://github.com/vmware/terraform-provider-vcfa/pull/231))
+- Upgrade k8s.io/client-go to v0.36.3 ([#231](https://github.com/vmware/terraform-provider-vcfa/pull/231))
+- Upgrade sigs.k8s.io/cluster-api to v1.13.4 ([#231](https://github.com/vmware/terraform-provider-vcfa/pull/231))
+- Update `vcfa_kubeconfig` datasource documentation ([#232](https://github.com/vmware/terraform-provider-vcfa/pull/232))
+- Fix `vcfa_content_library_item` resource example ([#232](https://github.com/vmware/terraform-provider-vcfa/pull/232))
+- Update `vcfa_content_library_item` tests: only check for the `status` attribute to be set instead of checking if it has a specific value.([#233](https://github.com/vmware/terraform-provider-vcfa/pull/233))
 
 ## 1.2.0 (July 14, 2026)
 
