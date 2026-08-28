@@ -1,3 +1,7 @@
+## 1.2.2 (Unreleased)
+
+Changes in progress for v1.2.2 are available at [.changes/v1.2.2](https://github.com/vmware/terraform-provider-vcfa/tree/main/.changes/v1.2.2) until the release.
+
 
 ## 1.2.1 (August 19, 2026)
 

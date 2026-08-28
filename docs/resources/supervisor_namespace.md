@@ -80,11 +80,11 @@ The following arguments are supported:
 - `infra_policy_names` - (Optional) List of non-mandatory Infra Policies to associate with the Supervisor Namespace
 - `seg_name` - (Optional) Service Engine Group associated with the Supervisor Namespace
 - `shared_subnet_names` - (Optional) List of shared subnets associated with the Supervisor Namespace
-- `storage_classes_class_config_overrides` - (Optional) Class Config Overrides for Storage Classes. At least one of this or `storage_classes_initial_class_config_overrides` is required. See [Storage Classes Class Config Overrides](#storage-classes-class-config-overrides)
-- `storage_classes_initial_class_config_overrides` - (Optional, **Deprecated**) Use `storage_classes_class_config_overrides` instead. Exactly one of this or `storage_classes_class_config_overrides` must be set. See [Storage Classes Class Config Overrides](#storage-classes-class-config-overrides)
+- `storage_classes_class_config_overrides` - (Optional) Class Config Overrides for Storage Classes. Cannot be set together with `storage_classes_initial_class_config_overrides`. See [Storage Classes Class Config Overrides](#storage-classes-class-config-overrides)
+- `storage_classes_initial_class_config_overrides` - (Optional, **Deprecated**) Use `storage_classes_class_config_overrides` instead. Cannot be set together with `storage_classes_class_config_overrides`. See [Storage Classes Class Config Overrides](#storage-classes-class-config-overrides)
 - `vm_classes_class_config_overrides` - (Optional) Class Config Overrides for VM Classes. See [VM Classes Class Config Overrides](#vm-classes-class-config-overrides)
-- `zones_class_config_overrides` - (Optional) Class Config Overrides for Zones. At least one of this or `zones_initial_class_config_overrides` is required. See [Zones Class Config Overrides](#zones-class-config-overrides)
-- `zones_initial_class_config_overrides` - (Optional, **Deprecated**) Use `zones_class_config_overrides` instead. Exactly one of this or `zones_class_config_overrides` must be set. See [Zones Class Config Overrides](#zones-class-config-overrides)
+- `zones_class_config_overrides` - (Optional) Class Config Overrides for Zones. Cannot be set together with `zones_initial_class_config_overrides`. See [Zones Class Config Overrides](#zones-class-config-overrides)
+- `zones_initial_class_config_overrides` - (Optional, **Deprecated**) Use `zones_class_config_overrides` instead. Cannot be set together with `zones_class_config_overrides`. See [Zones Class Config Overrides](#zones-class-config-overrides)
 
 ## Attribute Reference
 
