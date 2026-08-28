@@ -1,0 +1,1 @@
+- Fix `vcfa_supervisor_namespace` schema: `storage_classes_class_config_overrides`/`storage_classes_initial_class_config_overrides` and `zones_class_config_overrides`/`zones_initial_class_config_overrides` no longer require at least one of each pair to be set [GH-245]
