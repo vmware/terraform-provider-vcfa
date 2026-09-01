@@ -1,7 +1,10 @@
-## 1.2.2 (Unreleased)
+## 1.2.2 (September 1, 2026)
 
-Changes in progress for v1.2.2 are available at [.changes/v1.2.2](https://github.com/vmware/terraform-provider-vcfa/tree/main/.changes/v1.2.2) until the release.
+### BUG FIXES
+- Fix `vcfa_supervisor_namespace` schema: `storage_classes_class_config_overrides`/`storage_classes_initial_class_config_overrides` and `zones_class_config_overrides`/`zones_initial_class_config_overrides` no longer require at least one of each pair to be set ([#245](https://github.com/vmware/terraform-provider-vcfa/pull/245))
 
+### NOTES
+- Bump k8s.io golang dependencies to v0.37.0 ([#249](https://github.com/vmware/terraform-provider-vcfa/pull/249))
 
 ## 1.2.1 (August 19, 2026)
 
