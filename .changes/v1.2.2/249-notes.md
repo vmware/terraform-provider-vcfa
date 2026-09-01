@@ -1,0 +1,1 @@
+- Bump k8s.io golang dependencies to v0.37.0 [GH-249]
