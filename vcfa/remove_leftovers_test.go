@@ -105,12 +105,22 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose, isFinalCleanup bool) er
 			return fmt.Errorf("error retrieving All Regional Networking Settings: %s", err)
 		}
 		for _, one := range all {
-			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, one.TmRegionalNetworkingSetting.Name, "vcfa_org_regional_networking", 3, verbose)
+			name := one.TmRegionalNetworkingSetting.Name
+			// The setting's own name is a fixed system-generated string (e.g. "ProviderConsumptionOrg<region>")
+			// that never matches the Test-prefix convention this sweep relies on, so an orphaned setting left
+			// behind by a test (e.g. after its last Distributed VLAN Connection is removed) is never matched on
+			// its own name. Fall back to the backing Region's name, which does carry the convention and is what
+			// the setting would otherwise block from being deleted.
+			checkName := name
+			if !isTest.MatchString(checkName) && isTest.MatchString(one.TmRegionalNetworkingSetting.RegionRef.Name) {
+				checkName = one.TmRegionalNetworkingSetting.RegionRef.Name
+			}
+			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, checkName, "vcfa_org_regional_networking", 3, verbose)
 			if toBeDeleted {
-				fmt.Printf("\t REMOVING All %s Settings %s\n", labelVcfaRegionalNetworkingSetting, one.TmRegionalNetworkingSetting.Name)
+				fmt.Printf("\t REMOVING All %s Settings %s\n", labelVcfaRegionalNetworkingSetting, name)
 				err := one.Delete()
 				if err != nil {
-					return fmt.Errorf("error deleting %s Settings '%s': %s", labelVcfaRegionalNetworkingSetting, one.TmRegionalNetworkingSetting.Name, err)
+					return fmt.Errorf("error deleting %s Settings '%s': %s", labelVcfaRegionalNetworkingSetting, name, err)
 				}
 			}
 		}
