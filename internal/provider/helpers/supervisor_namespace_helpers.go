@@ -33,6 +33,10 @@ func GetSupervisorNamespaceEndpointURL(tmClient *vcfa.VCDClient, projectName str
 		return "", fmt.Errorf("error getting supervisor namespace %s in project %s: %s", supervisorNamespaceName, projectName, err)
 	}
 
+	if supervisorNamespace.Status == nil {
+		return "", fmt.Errorf("supervisor namespace %s in project %s has no status yet", supervisorNamespaceName, projectName)
+	}
+
 	readyStatus := false
 	for _, condition := range supervisorNamespace.Status.Conditions {
 		if strings.ToLower(condition.Type) == "ready" {

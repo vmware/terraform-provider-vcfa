@@ -1,0 +1,1 @@
+- Fix panic in vcfa_vks_cluster ModifyPlan when namespace is unknown [GH-255]
