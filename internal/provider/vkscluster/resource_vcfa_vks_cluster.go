@@ -533,6 +533,17 @@ func (r *vcfaVksClusterResource) ModifyPlan(ctx context.Context, req resource.Mo
 		return
 	}
 
+	// Skip early if the project or namespace within the context are not yet
+	// known — this happens when the context object itself is known but one of
+	// its attributes is derived from another resource that has not been
+	// applied yet (e.g. context.namespace = vcfa_supervisor_namespace.x.name).
+	if vcfContext.Project.IsNull() || vcfContext.Project.IsUnknown() {
+		return
+	}
+	if vcfContext.Namespace.IsNull() || vcfContext.Namespace.IsUnknown() {
+		return
+	}
+
 	project := vcfContext.Project.ValueString()
 	namespace := vcfContext.Namespace.ValueString()
 	name := plan.Name.ValueString()
