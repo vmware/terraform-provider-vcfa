@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
 func TestAccVcfaSharedSubnet(t *testing.T) {
@@ -106,8 +107,57 @@ func TestAccVcfaSharedSubnet(t *testing.T) {
 				ImportStateVerify: true,
 				ImportStateId:     testConfig.Tm.Region + ImportSeparator + params["Testname"].(string) + "-updated",
 			},
+			{
+				// The backend intentionally leaves the Regional Network Settings it auto-created for
+				// this Shared Subnet in place once the last Distributed VLAN Connection under it is
+				// removed, as the setting may still host other shared network resources. Dropping
+				// "vcfa_shared_subnet.test" from the config here destroys it, then the orphaned setting
+				// is deleted directly - otherwise the Region above fails to be destroyed once this test
+				// finishes.
+				Config: preRequisites,
+				Check: func(s *terraform.State) error {
+					return deleteOrphanedRegionalNetworkingSetting(s, regionHclRef)
+				},
+			},
 		},
 	})
+}
+
+// deleteOrphanedRegionalNetworkingSetting deletes the Regional Network Settings that the backend
+// auto-creates for a Region's default consumption Org the first time a Shared Subnet is added to it.
+// Since 9.2, removing the last Distributed VLAN Connection under a Shared Subnet no longer deletes
+// that setting, so it must be cleaned up explicitly here or the Region identified by
+// regionResourceAddr cannot be destroyed once this test finishes.
+func deleteOrphanedRegionalNetworkingSetting(s *terraform.State, regionResourceAddr string) error {
+	rs, ok := s.RootModule().Resources[regionResourceAddr]
+	if !ok {
+		return fmt.Errorf("could not find %s in state", regionResourceAddr)
+	}
+	regionId := rs.Primary.ID
+
+	tmClient, err := getTestVCFAFromJson(testConfig)
+	if err != nil {
+		return fmt.Errorf("error getting a client: %s", err)
+	}
+	err = ProviderAuthenticate(tmClient, testConfig.Provider.User, testConfig.Provider.Password, testConfig.Provider.Token,
+		testConfig.Provider.SysOrg, testConfig.Provider.ApiToken, testConfig.Provider.ApiTokenFile, testConfig.Provider.ServiceAccountTokenFile)
+	if err != nil {
+		return fmt.Errorf("error authenticating: %s", err)
+	}
+
+	all, err := tmClient.GetAllTmRegionalNetworkingSettings(nil)
+	if err != nil {
+		return fmt.Errorf("error retrieving %s: %s", labelVcfaRegionalNetworkingSetting, err)
+	}
+	for _, one := range all {
+		if one.TmRegionalNetworkingSetting.RegionRef.ID != regionId {
+			continue
+		}
+		if err := one.Delete(); err != nil {
+			return fmt.Errorf("error deleting orphaned %s '%s': %s", labelVcfaRegionalNetworkingSetting, one.TmRegionalNetworkingSetting.Name, err)
+		}
+	}
+	return nil
 }
 
 const testAccVcfaSharedSubnetStep1 = `
