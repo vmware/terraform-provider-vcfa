@@ -126,6 +126,8 @@ func (r *vcfaVksClusterResource) Create(ctx context.Context, req resource.Create
 
 	plan.ID = types.StringValue(fmt.Sprintf("%s:%s:%s", project, namespace, name))
 
+	warnOnClusterClassRebase(ctx, plan.ClusterClass, &created, name, &resp.Diagnostics)
+
 	if waitForAvailable {
 		if err := r.waitForClusterAvailable(ctx, k8sClient, project, namespace, name, createTimeout); err != nil {
 			resp.Diagnostics.AddError(
@@ -324,6 +326,7 @@ func (r *vcfaVksClusterResource) Update(ctx context.Context, req resource.Update
 		// changes will surface on the next plan.
 		planVersion := plan.Version
 		planVariables := plan.Variables
+		planClusterClass := plan.ClusterClass
 
 		// Planned control-plane variable overrides.
 		var planCPOverrides types.Set
@@ -350,6 +353,18 @@ func (r *vcfaVksClusterResource) Update(ctx context.Context, req resource.Update
 		mapVksClusterToResourceModel(ctx, &updatedCluster, &plan, &resp.Diagnostics)
 
 		plan.Version = planVersion
+
+		// The backend may rebase the cluster onto a newer compatible ClusterClass
+		// (e.g. when the new version is not supported by the current one). Keep the
+		// planned name to avoid an inconsistent result; the next Read surfaces the
+		// actual ClusterClass as an in-place diff.
+		if warnOnClusterClassRebase(ctx, planClusterClass, &updatedCluster, name, &resp.Diagnostics) {
+			var planned, actual vksClusterClassRefModel
+			resp.Diagnostics.Append(planClusterClass.As(ctx, &planned, basetypes.ObjectAsOptions{})...)
+			resp.Diagnostics.Append(plan.ClusterClass.As(ctx, &actual, basetypes.ObjectAsOptions{})...)
+			actual.Name = planned.Name
+			plan.ClusterClass = helpers.ObjFrom(ctx, vksClusterClassRefAttrTypes, &actual, &resp.Diagnostics)
+		}
 
 		// Restore fields whose API response may differ from the planned values
 		// mid-reconciliation (e.g. backend-injected variables, resource_version,
@@ -842,4 +857,27 @@ func (r *vcfaVksClusterResource) waitForClusterDeleted(ctx context.Context, k8sC
 	}
 
 	return nil
+}
+
+// warnOnClusterClassRebase adds a warning when the backend has rebased the cluster
+// onto a different ClusterClass than the planned one, and reports whether it did.
+func warnOnClusterClassRebase(ctx context.Context, plannedClass types.Object, cluster *vcfatypes.VksCluster, name string, diags *diag.Diagnostics) bool {
+	if plannedClass.IsNull() || plannedClass.IsUnknown() || !cluster.Spec.Topology.IsDefined() {
+		return false
+	}
+	var planned vksClusterClassRefModel
+	if d := plannedClass.As(ctx, &planned, basetypes.ObjectAsOptions{}); d.HasError() || planned.Name.IsUnknown() {
+		return false
+	}
+	actualName := cluster.Spec.Topology.ClassRef.Name
+	if actualName == "" || actualName == planned.Name.ValueString() {
+		return false
+	}
+	diags.AddWarning(
+		fmt.Sprintf("%s %s was moved to ClusterClass %s", vcfatypes.LabelVksCluster, name, actualName),
+		fmt.Sprintf("The backend replaced ClusterClass %q with the compatible ClusterClass %q. "+
+			"Set cluster_class.name = %q in your configuration; otherwise the next plan will show an in-place change back to %q.",
+			planned.Name.ValueString(), actualName, actualName, planned.Name.ValueString()),
+	)
+	return true
 }

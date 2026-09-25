@@ -1,0 +1,1 @@
+- `vcfa_vks_cluster` `cluster_class.name` can now be changed in-place (ClusterClass rebase) instead of forcing a replacement of the cluster, so `cluster_class` and `version` can be upgraded together in a single apply. Changing `cluster_class.namespace` still forces replacement [GH-258]

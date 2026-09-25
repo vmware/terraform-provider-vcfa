@@ -1,0 +1,1 @@
+- Fix `vcfa_vks_cluster` failing with "Provider produced inconsistent result after apply" and then forcing a replacement when upgrading `version` caused VKS to automatically rebase the cluster onto a newer compatible ClusterClass (e.g. `builtin-generic-v3.6.0` to `builtin-generic-v3.7.0`). The provider now emits a warning asking to update `cluster_class.name` instead [GH-258]
