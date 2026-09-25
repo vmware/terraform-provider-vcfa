@@ -222,7 +222,7 @@ func resolveConfigFileName() string {
 }
 
 func fileExists(filename string) bool {
-	info, err := os.Stat(filepath.Clean(filename))
+	info, err := os.Stat(filepath.Clean(filename)) //nolint:gosec // G703: path comes from the test operator (VCFA_CONFIG) or fixed locations
 	if err != nil {
 		return false
 	}
