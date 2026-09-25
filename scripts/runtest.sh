@@ -78,13 +78,13 @@ function check_for_config_file {
 function unit_test {
     if [ -n "$VERBOSE" ]
     then
-        echo "go test -tags unit ${TEST} ./vcfa || exit 1"
-        echo "go test -tags unit -v -timeout 5m ./vcfa"
+        echo "go test -tags unit ${TEST} ./vcfa ./internal/... || exit 1"
+        echo "go test -tags unit -v -timeout 5m ./vcfa ./internal/..."
     fi
     if [ -z "$DRY_RUN" ]
     then
-        go test -tags unit ${TEST} ./vcfa || exit 1
-        go test -tags unit -v -timeout 5m ./vcfa
+        go test -tags unit ${TEST} ./vcfa ./internal/... || exit 1
+        go test -tags unit -v -timeout 5m ./vcfa ./internal/...
     fi
 }
 
