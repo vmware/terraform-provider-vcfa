@@ -1,0 +1,1 @@
+- Add unit tests for the `vcfa_vks_cluster` resource, and run `internal/...` unit tests as part of `make testunit` [GH-259]
