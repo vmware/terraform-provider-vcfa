@@ -1041,10 +1041,11 @@ func buildOsImageAnnotationValue(m vksClusterOsImageModel) string {
 
 func parseOsImageAnnotationValue(annotation string) (name, version string) {
 	for _, part := range strings.Split(annotation, ",") {
-		if len(part) > 8 && part[:8] == "os-name=" {
-			name = part[8:]
-		} else if len(part) > 10 && part[:10] == "os-version=" {
-			version = part[10:]
+		part = strings.TrimSpace(part)
+		if v, ok := strings.CutPrefix(part, "os-name="); ok {
+			name = v
+		} else if v, ok := strings.CutPrefix(part, "os-version="); ok {
+			version = v
 		}
 	}
 	return

@@ -1,0 +1,1 @@
+- Fix `vcfa_vks_cluster` perpetual drift on `os_image.version` in `control_plane` and `machine_deployments`, caused by the version being dropped when reading the OS image annotation back from the cluster [GH-257]
