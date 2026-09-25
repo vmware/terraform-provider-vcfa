@@ -69,7 +69,7 @@ The following arguments are supported:
 
 - `name` - (Required, Forces new resource) Name of the VKS Cluster. Must be RFC 1123 DNS subdomain compliant.
 - `context` - (Required, Forces new resource) VCF Automation context for managing this cluster; changing either field forces replacement. See [Context](#context).
-- `cluster_class` - (Required, Forces new resource) Reference to the ClusterClass used by this cluster. See [Cluster Class](#cluster-class).
+- `cluster_class` - (Required) Reference to the ClusterClass used by this cluster. See [Cluster Class](#cluster-class).
 - `version` - (Required) Desired Kubernetes Release version for the cluster (e.g. `v1.34.1+vmware.1`).
 - `cluster_network` - (Required, Forces new resource) Cluster-wide network configuration. See [Cluster Network](#cluster-network).
 - `control_plane` - (Required) Topology configuration for the control plane. See [Control Plane](#control-plane).
@@ -106,8 +106,14 @@ The `context` block contains the following required attributes:
 
 The `cluster_class` argument has the following structure:
 
-- `name` - (Required) Name of the ClusterClass (1–253 characters; DNS subdomain format).
-- `namespace` - (Optional) Namespace of the ClusterClass (1–63 characters; DNS label format).
+- `name` - (Required) Name of the ClusterClass (1–253 characters; DNS subdomain format). Changing it rebases
+  the cluster onto the new ClusterClass in-place; the backend rejects ClusterClasses that are not compatible.
+- `namespace` - (Optional, Forces new resource) Namespace of the ClusterClass (1–63 characters; DNS label format).
+
+~> When upgrading `version` to a Kubernetes release that the current ClusterClass does not support, the backend
+may automatically move the cluster to the newest compatible ClusterClass (e.g. `builtin-generic-v3.6.0` to
+`builtin-generic-v3.7.0`). To avoid a follow-up diff, update `cluster_class.name` and `version` together in the
+same apply.
 
 ## Cluster Network
 

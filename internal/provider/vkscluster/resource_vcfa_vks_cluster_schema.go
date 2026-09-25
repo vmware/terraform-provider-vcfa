@@ -154,10 +154,9 @@ func (r *vcfaVksClusterResource) Schema(ctx context.Context, _ resource.SchemaRe
 			"cluster_class": schema.SingleNestedAttribute{
 				Required:    true,
 				Description: "Reference to the ClusterClass",
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.RequiresReplace(),
-				},
 				Attributes: map[string]schema.Attribute{
+					// Changing the name rebases the cluster onto another ClusterClass in-place;
+					// the backend rejects rebases to incompatible classes.
 					"name": schema.StringAttribute{
 						Required:    true,
 						Description: "Name of the ClusterClass (1–253 characters; DNS subdomain format)",
@@ -172,6 +171,7 @@ func (r *vcfaVksClusterResource) Schema(ctx context.Context, _ resource.SchemaRe
 						Description: "Namespace of the ClusterClass (1–63 characters; DNS label format)",
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.RequiresReplace(),
 						},
 						Validators: []validator.String{
 							stringvalidator.LengthBetween(1, 63),
