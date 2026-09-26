@@ -1,6 +1,27 @@
-## 1.2.3 (Unreleased)
+## 1.2.3 (September 26, 2026)
 
-Changes in progress for v1.2.3 are available at [.changes/v1.2.3](https://github.com/vmware/terraform-provider-vcfa/tree/main/.changes/v1.2.3) until the release.
+### IMPROVEMENTS
+- `vcfa_vks_cluster` `cluster_class.name` can now be changed in-place (ClusterClass rebase) instead of forcing a replacement of the cluster, so `cluster_class` and `version` can be upgraded together in a single apply. Changing `cluster_class.namespace` still forces replacement ([#258](https://github.com/vmware/terraform-provider-vcfa/pull/258))
+
+### BUG FIXES
+- Fix panic in vcfa_vks_cluster ModifyPlan when namespace is unknown ([#255](https://github.com/vmware/terraform-provider-vcfa/pull/255))
+- Fix `vcfa_vks_cluster` perpetual drift on `os_image.version` in `control_plane` and `machine_deployments`, caused by the version being dropped when reading the OS image annotation back from the cluster ([#257](https://github.com/vmware/terraform-provider-vcfa/pull/257))
+- Fix `vcfa_vks_cluster` failing with "Provider produced inconsistent result after apply" and then forcing a replacement when upgrading `version` caused VKS to automatically rebase the cluster onto a newer compatible ClusterClass (e.g. `builtin-generic-v3.6.0` to `builtin-generic-v3.7.0`). The provider now emits a warning asking to update `cluster_class.name` instead ([#258](https://github.com/vmware/terraform-provider-vcfa/pull/258))
+
+### NOTES
+- Bump golang.org/x/crypto to v0.57.0 ([#253](https://github.com/vmware/terraform-provider-vcfa/pull/253))
+- Bump golang.org/x/mod to v0.41.0 ([#253](https://github.com/vmware/terraform-provider-vcfa/pull/253))
+- Bump golang.org/x/net to v0.59.0 ([#253](https://github.com/vmware/terraform-provider-vcfa/pull/253))
+- Bump golang.org/x/sync to v0.23.0 ([#253](https://github.com/vmware/terraform-provider-vcfa/pull/253))
+- Bump golang.org/x/sys to v0.48.0 ([#253](https://github.com/vmware/terraform-provider-vcfa/pull/253))
+- Bump golang.org/x/term to v0.46.0 ([#253](https://github.com/vmware/terraform-provider-vcfa/pull/253))
+- Bump golang.org/x/text to v0.42.0 ([#253](https://github.com/vmware/terraform-provider-vcfa/pull/253))
+- Bump golang.org/x/tools to v0.49.0 ([#253](https://github.com/vmware/terraform-provider-vcfa/pull/253))
+- Bump google.golang.org/genproto/googleapis/rpc to v0.0.0-20260908043556-f8649ddbbfe6 ([#253](https://github.com/vmware/terraform-provider-vcfa/pull/253))
+- Bump google.golang.org/grpc to v1.83.2 ([#253](https://github.com/vmware/terraform-provider-vcfa/pull/253))
+- Bump google.golang.org/protobuf to v1.36.12 ([#253](https://github.com/vmware/terraform-provider-vcfa/pull/253))
+- Explicity remove RegionalNetworkingSettings when cleaning up from test ([#254](https://github.com/vmware/terraform-provider-vcfa/pull/254))
+- Add unit tests for the `vcfa_vks_cluster` resource, and run `internal/...` unit tests as part of `make testunit` ([#259](https://github.com/vmware/terraform-provider-vcfa/pull/259))
 
 ## 1.2.2 (September 1, 2026)
 
