@@ -1,0 +1,1 @@
+- Accept both `redirect_uri` formats in vcfa_org_oidc acceptance test [GH-266]
