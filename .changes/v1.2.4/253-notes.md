@@ -1,0 +1,5 @@
+- Bump github.com/hashicorp/terraform-plugin-framework-jsontypes to v0.2.0 [GH-267]
+- Bump k8s.io/api to v0.37.1 [GH-267]
+- Bump k8s.io/apiextensions-apiserver to v0.37.1 [GH-267]
+- Bump k8s.io/apimachinery to v0.37.1 [GH-267]
+- Bump k8s.io/client-go to v0.37.1 [GH-267]
