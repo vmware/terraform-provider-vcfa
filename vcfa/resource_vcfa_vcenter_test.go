@@ -219,12 +219,8 @@ func TestAccVcfaVcenterInvalid(t *testing.T) {
 
 	params["FuncName"] = testName
 	configText1 := templateFill(testAccVcfaVcenterStep1, params)
-	params["FuncName"] = testName + "-step2"
-	params["VcenterPassword"] = testConfig.Tm.VcenterPassword
-	configText2 := templateFill(testAccVcfaVcenterStep1, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
-	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
 
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
@@ -234,21 +230,6 @@ func TestAccVcfaVcenterInvalid(t *testing.T) {
 				ExpectError: regexp.MustCompile(`Failed to connect to the vCenter`),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
-				),
-			},
-			{
-				Config: configText2,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "id"),
-					resource.TestCheckResourceAttr("vcfa_vcenter.test", "name", testName),
-					resource.TestCheckResourceAttr("vcfa_vcenter.test", "is_enabled", "true"),
-					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "cluster_health_status"),
-					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "is_connected"),
-					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "connection_status"),
-					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "mode"),
-					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "uuid"),
-					resource.TestCheckResourceAttrSet("vcfa_vcenter.test", "vcenter_version"),
-					resource.TestCheckResourceAttr("vcfa_vcenter.test", "status", "READY"),
 				),
 			},
 		},

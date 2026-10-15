@@ -14,7 +14,16 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
+func init() {
+	// A Supervisor can only belong to one Region, so this test must run before the shared Region
+	// (tm.shareRegion) is created
+	registeredPriorityTests = append(registeredPriorityTests,
+		priorityTest{Name: "TestAccVcfaRegion", Test: TestAccVcfaRegion},
+	)
+}
+
 func TestAccVcfaRegion(t *testing.T) {
+	testName := "TestAccVcfaRegion" // Triggering the test at priority will create incorrect t.Name() value
 	preTestChecks(t)
 	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
@@ -23,8 +32,8 @@ func TestAccVcfaRegion(t *testing.T) {
 	vCenterHcl, vCenterHclRef := getVCenterHcl(t, nsxManagerHclRef)
 
 	var params = StringMap{
-		"Testname":   t.Name(),
-		"RegionName": strings.ToLower(t.Name()), // to match 'rfc1123LabelNameRegex'
+		"Testname":   testName,
+		"RegionName": strings.ToLower(testName), // to match 'rfc1123LabelNameRegex'
 
 		"VcenterRefId":    fmt.Sprintf("%s.id", vCenterHclRef),
 		"NsxManagerRefId": fmt.Sprintf("%s.id", nsxManagerHclRef),
@@ -47,11 +56,11 @@ func TestAccVcfaRegion(t *testing.T) {
 	prerequisites := vCenterHcl + nsxManagerHcl
 
 	configText1 := templateFill(prerequisites+testAccVcfaRegionStep1, params)
-	params["FuncName"] = t.Name() + "-step1"
+	params["FuncName"] = testName + "-step1"
 	configText2 := templateFill(prerequisites+testAccVcfaRegionStep2, params)
-	params["FuncName"] = t.Name() + "-step2"
+	params["FuncName"] = testName + "-step2"
 	configText3 := templateFill(prerequisites+testAccVcfaRegionStep3DS, params)
-	params["FuncName"] = t.Name() + "-step3"
+	params["FuncName"] = testName + "-step3"
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)

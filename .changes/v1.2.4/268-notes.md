@@ -1,0 +1,1 @@
+- Speed up functional tests: optional shared region, shorter VcenterInvalid [GH-268]

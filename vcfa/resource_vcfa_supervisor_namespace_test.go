@@ -39,6 +39,7 @@ func TestAccVcfaSupervisorNamespace(t *testing.T) {
 	var params = StringMap{
 		"Testname":           t.Name(),
 		"SupervisorName":     testConfig.Tm.VcenterSupervisor,
+		"VcenterRef":         vCenterHclRef,
 		"SupervisorZoneName": testConfig.Tm.VcenterSupervisorZone,
 
 		"StorageClass": testConfig.Tm.StorageClass,
@@ -221,19 +222,24 @@ data "vcfa_region_vm_class" "region_vm_class0" {
 }
 
 data "vcfa_region_zone" "test" {
-  region_id = vcfa_region.region.id
+  region_id = {{.RegionId}}
   name      = "{{.SupervisorZoneName}}"
 }
 
 data "vcfa_region_storage_policy" "sp" {
   name      = "{{.StorageClass}}"
-  region_id = vcfa_region.region.id
+  region_id = {{.RegionId}}
+}
+
+data "vcfa_supervisor" "ns_supervisor" {
+  name       = "{{.SupervisorName}}"
+  vcenter_id = {{.VcenterRef}}.id
 }
 
 resource "vcfa_org_region_quota" "test" {
   org_id         = vcfa_org.test.id
   region_id      = {{.RegionId}}
-  supervisor_ids = [data.vcfa_supervisor.supervisor.id]
+  supervisor_ids = [data.vcfa_supervisor.ns_supervisor.id]
   zone_resource_allocations {
     region_zone_id         = data.vcfa_region_zone.test.id
     cpu_limit_mhz          = 2000
@@ -278,7 +284,7 @@ resource "vcfa_org_regional_networking" "test" {
   name                = "{{.Testname}}"
   org_id              = vcfa_org.test.id
   provider_gateway_id = vcfa_provider_gateway.test.id
-  region_id           = vcfa_region.region.id
+  region_id           = {{.RegionId}}
   edge_cluster_id     = {{.EdgeClusterId}}
 
   # The explicit dependency for vcfa_org_region_quota prevents removing

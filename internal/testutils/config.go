@@ -73,8 +73,11 @@ type TestConfig struct {
 		WorkerReplicas        string `json:"workerReplicas"`
 	} `json:"vks"`
 	Tm struct {
-		Org             string   `json:"org"`
-		CreateRegion    bool     `json:"createRegion"`
+		Org          string `json:"org"`
+		CreateRegion bool   `json:"createRegion"`
+		// ShareRegion creates the Region once, together with the shared vCenter and NSX Manager, instead
+		// of creating and destroying it on every test that needs it. Requires CreateRegion.
+		ShareRegion     bool     `json:"shareRegion"`
 		Region          string   `json:"region"`
 		StorageClass    string   `json:"storageClass"`
 		RegionVmClasses []string `json:"regionVmClasses"`

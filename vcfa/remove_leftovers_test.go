@@ -58,6 +58,11 @@ var alwaysShow = []string{
 	"vcfa_nsx_manager",
 }
 
+// isSharedRegion returns true if the given Region is the one shared by the whole test run
+func isSharedRegion(name string) bool {
+	return testutils.SharedRegionName != "" && name == testutils.SharedRegionName
+}
+
 func removeLeftovers(tmClient *govcd.VCDClient, verbose, isFinalCleanup bool) error {
 	if verbose {
 		fmt.Printf("Start leftovers removal\n")
@@ -236,6 +241,14 @@ func removeLeftovers(tmClient *govcd.VCDClient, verbose, isFinalCleanup bool) er
 		}
 		for _, region := range regions {
 			toBeDeleted := shouldDeleteEntity(alsoDelete, doNotDelete, region.Region.Name, "vcfa_region", 1, verbose)
+			// The shared Region is needed by the remaining tests, so (like the shared vCenter and NSX Manager)
+			// it is only removed in the final cleanup, which deletes it explicitly before the leftovers removal
+			if toBeDeleted && isSharedRegion(region.Region.Name) && !isFinalCleanup {
+				if verbose {
+					fmt.Printf("\t KEEPING shared %s %s until the final cleanup\n", labelVcfaRegion, region.Region.Name)
+				}
+				continue
+			}
 			if toBeDeleted {
 				fmt.Printf("\t REMOVING %s %s\n", labelVcfaRegion, region.Region.Name)
 				err := region.Delete()

@@ -47,6 +47,10 @@ type TestSuiteHooks struct {
 	StartTime time.Time
 }
 
+// SharedRegionName is the name of the Region created once for the whole run (tm.shareRegion).
+// It is empty if there is no shared Region. The leftovers removal keeps it until the final cleanup.
+var SharedRegionName string
+
 // package-level suite state — owned by testutils, shared across all tests in
 // a binary that calls SetSuiteHooks.
 var (

@@ -428,6 +428,12 @@ func TestMain(m *testing.M) {
 			fmt.Printf("error writing to file '%s': %s\n", entTestFileName, err)
 		}
 	}
+	// The shared Region depends on the shared vCenter and NSX Manager, so it must be removed before them
+	if sharedRegionCleanupFunc != nil {
+		if err := sharedRegionCleanupFunc(); err != nil {
+			fmt.Printf("# got error while cleaning up shared Region: %s\n", err)
+		}
+	}
 	if testutils.VcfaShowCount {
 		fmt.Printf("Pass: %5d - Skip: %5d - Fail: %5d\n", testutils.SuitePassCount(), testutils.SuiteSkipCount(), testutils.SuiteFailCount())
 	}
@@ -481,6 +487,15 @@ func setupVcAndNsx() (func() error, error) {
 		return nil, fmt.Errorf("nil vCenter after creation")
 	}
 
+	if testConfig.Tm.ShareRegion {
+		regionCleanup, err := getOrCreateSharedRegion(tmClient.VCDClient, vc, nsxManager)
+		if err != nil {
+			return nil, fmt.Errorf("got error after Region creation: %s", err)
+		}
+		sharedRegionCleanupFunc = regionCleanup
+		testutils.SharedRegionName = testConfig.Tm.Region
+	}
+
 	cleanupFunc := func() error {
 		if vcfaTestVerbose {
 			fmt.Println("# Cleaning up shared vCenter and NSX Manager")
@@ -499,6 +514,57 @@ func setupVcAndNsx() (func() error, error) {
 	}
 
 	return cleanupFunc, nil
+}
+
+// sharedRegionCleanupFunc removes the Region created by getOrCreateSharedRegion, if any
+var sharedRegionCleanupFunc func() error
+
+// getOrCreateSharedRegion creates the Region configured in tm.region, so tests can reuse it
+// (getRegionHcl then returns a data source) instead of creating and destroying it each time.
+// It is enabled with tm.shareRegion. The returned cleanup function is nil if the Region already existed.
+func getOrCreateSharedRegion(tmClient *govcd.VCDClient, vc *govcd.VCenter, nsxManager *govcd.NsxtManagerOpenApi) (func() error, error) {
+	if testConfig.Tm.Region == "" {
+		return nil, fmt.Errorf("the property tm.region is required to share a Region")
+	}
+	_, err := tmClient.GetRegionByName(testConfig.Tm.Region)
+	if err == nil {
+		return nil, nil
+	}
+	if !govcd.ContainsNotFound(err) {
+		return nil, err
+	}
+	if !testConfig.Tm.CreateRegion {
+		return nil, fmt.Errorf("Region creation disabled")
+	}
+
+	supervisor, err := vc.GetSupervisorByName(testConfig.Tm.VcenterSupervisor)
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving Supervisor '%s': %s", testConfig.Tm.VcenterSupervisor, err)
+	}
+
+	printfVerbose("# Creating shared Region %s\n", testConfig.Tm.Region)
+	region, err := tmClient.CreateRegion(&types.Region{
+		Name:            testConfig.Tm.Region,
+		Description:     testConfig.Tm.Region,
+		NsxManager:      &types.OpenApiReference{ID: nsxManager.NsxtManagerOpenApi.ID},
+		Supervisors:     []types.OpenApiReference{{ID: supervisor.Supervisor.SupervisorID}},
+		StoragePolicies: []string{testConfig.Tm.VcenterStorageProfile},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return func() error {
+		printfVerbose("# Deleting shared Region %s\n", region.Region.Name)
+		r, err := tmClient.GetRegionByName(region.Region.Name)
+		if err != nil {
+			if govcd.ContainsNotFound(err) {
+				return nil
+			}
+			return err
+		}
+		return r.Delete()
+	}, nil
 }
 
 func getOrCreateNsxtManager(tmClient *govcd.VCDClient) (*govcd.NsxtManagerOpenApi, func() error, error) {
