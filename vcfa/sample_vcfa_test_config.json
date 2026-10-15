@@ -54,6 +54,7 @@
   "tm": {
     "org": "tf-test",
     "createRegion": true,
+    "shareRegion": false,
     "region": "one-region",
     "storageClass": "vSAN Default Storage Policy",
     "vdc": "one-vdc",
