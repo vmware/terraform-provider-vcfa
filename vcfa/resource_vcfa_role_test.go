@@ -27,7 +27,7 @@ func TestAccVcfaRole(t *testing.T) {
 	var roleUpdateDescription = "A shorter description."
 
 	var params = StringMap{
-		"Org":                   testConfig.Tm.Org,
+		"Org":                   testOrgName(t),
 		"RoleName":              roleName,
 		"RoleUpdateName":        roleUpdateName,
 		"RoleDescription":       roleDescription,
@@ -52,7 +52,7 @@ func TestAccVcfaRole(t *testing.T) {
 
 	resourceRole := "vcfa_role." + roleName
 	resourceOrg := "vcfa_org.org1"
-	resource.Test(t, resource.TestCase{
+	parallelTest(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
 		CheckDestroy:      testAccCheckRoleDestroy(resourceOrg, resourceRole),
 		Steps: []resource.TestStep{
@@ -78,7 +78,7 @@ func TestAccVcfaRole(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateIdFunc: func(state *terraform.State) (string, error) {
-					return testConfig.Tm.Org + ImportSeparator + roleUpdateName, nil
+					return testOrgName(t) + ImportSeparator + roleUpdateName, nil
 				},
 			},
 		},

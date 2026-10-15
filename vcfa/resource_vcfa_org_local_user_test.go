@@ -39,7 +39,7 @@ func TestAccVcfaOrgLocalUser(t *testing.T) {
 		return
 	}
 
-	resource.Test(t, resource.TestCase{
+	parallelTest(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
 		Steps: []resource.TestStep{
 			{

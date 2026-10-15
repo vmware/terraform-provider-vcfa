@@ -73,7 +73,7 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 
 	cachedId := &testCachedFieldValue{}
 
-	resource.Test(t, resource.TestCase{
+	parallelTest(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
 		ExternalProviders: map[string]resource.ExternalProvider{
 			"vsphere": {
@@ -282,7 +282,7 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 	vmClassesHcl, vmClassesRefs := getRegionVmClassesHcl(t, regionHclRef)
 
 	var params = StringMap{
-		"Org":                 testConfig.Tm.Org,
+		"Org":                 testOrgName(t),
 		"Username":            "test-user",
 		"Password":            "long-change-ME1",
 		"Name":                t.Name(),
@@ -352,7 +352,7 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 				return testAccProvider, nil
 			},
 			"vcfatenant": func() (*schema.Provider, error) {
-				return testOrgProvider(testConfig.Tm.Org, params["Username"].(string), params["Password"].(string)), nil
+				return testOrgProvider(testOrgName(t), params["Username"].(string), params["Password"].(string)), nil
 			},
 		}
 	}
@@ -368,7 +368,7 @@ func TestAccVcfaContentLibraryTenant(t *testing.T) {
 	// remains cached.
 	defer cachedVCDClients.reset()
 
-	resource.Test(t, resource.TestCase{
+	parallelTest(t, resource.TestCase{
 		Steps: []resource.TestStep{
 			{
 				ProviderFactories: testAccProviders,

@@ -27,7 +27,7 @@ func TestAccVcfaRightsBundle(t *testing.T) {
 	var rightsBundleUpdateDescription = "A shorter description."
 
 	var params = StringMap{
-		"Org":                           testConfig.Tm.Org,
+		"Org":                           testOrgName(t),
 		"RightsBundleName":              rightsBundleName,
 		"RightsBundleUpdateName":        rightsBundleUpdateName,
 		"RightsBundleDescription":       rightsBundleDescription,

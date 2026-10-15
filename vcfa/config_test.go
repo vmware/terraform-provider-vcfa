@@ -16,10 +16,12 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/vmware/go-vcloud-director/v3/ccitypes"
 	"github.com/vmware/go-vcloud-director/v3/govcd"
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
@@ -334,6 +336,11 @@ func TestMain(m *testing.M) {
 		},
 		HandlePartitioning: handlePartitioning,
 		OnTestFailure: func(t *testing.T) {
+			// Other parallel tests may still be running, and the leftovers removal could delete their
+			// entities. Leftovers of parallel tests are removed in the final cleanup
+			if _, isParallel := parallelTests.Load(t.Name()); isParallel {
+				return
+			}
 			tmClient, err := getTestVCFAFromJson(testConfig)
 			if err != nil {
 				t.Logf("error getting a govcd client: %s\n", err)
@@ -487,14 +494,7 @@ func setupVcAndNsx() (func() error, error) {
 		return nil, fmt.Errorf("nil vCenter after creation")
 	}
 
-	if testConfig.Tm.ShareRegion {
-		regionCleanup, err := getOrCreateSharedRegion(tmClient.VCDClient, vc, nsxManager)
-		if err != nil {
-			return nil, fmt.Errorf("got error after Region creation: %s", err)
-		}
-		sharedRegionCleanupFunc = regionCleanup
-		testutils.SharedRegionName = testConfig.Tm.Region
-	}
+	sharedVcenter, sharedNsxManager = vc, nsxManager
 
 	cleanupFunc := func() error {
 		if vcfaTestVerbose {
@@ -514,6 +514,38 @@ func setupVcAndNsx() (func() error, error) {
 	}
 
 	return cleanupFunc, nil
+}
+
+// shared vCenter and NSX Manager, set by setupVcAndNsx
+var (
+	sharedVcenter    *govcd.VCenter
+	sharedNsxManager *govcd.NsxtManagerOpenApi
+)
+
+// setupSharedRegion creates the shared Region (tm.shareRegion) using the shared vCenter and NSX Manager
+func setupSharedRegion() error {
+	if !testConfig.Tm.ShareRegion || sharedVcenter == nil || sharedNsxManager == nil {
+		return nil
+	}
+	tmClient := createSystemTemporaryVCFAConnection()
+	regionCleanup, err := getOrCreateSharedRegion(tmClient.VCDClient, sharedVcenter, sharedNsxManager)
+	if err != nil {
+		return fmt.Errorf("got error after Region creation: %s", err)
+	}
+	sharedRegionCleanupFunc = regionCleanup
+	testutils.SharedRegionName = testConfig.Tm.Region
+	return nil
+}
+
+// parallelTests stores the names of the tests that run with parallelTest
+var parallelTests sync.Map
+
+// parallelTest runs the given test case in parallel with other parallel tests. Tests using it must create entities
+// with names unique to the test (not shared with other tests, like the Org in the testing configuration)
+func parallelTest(t *testing.T, c resource.TestCase) {
+	t.Helper()
+	parallelTests.Store(t.Name(), true)
+	resource.ParallelTest(t, c)
 }
 
 // sharedRegionCleanupFunc removes the Region created by getOrCreateSharedRegion, if any
@@ -799,17 +831,24 @@ type priorityTest struct {
 
 var registeredPriorityTests = []priorityTest{}
 
+// registeredPostSetupPriorityTests are priority tests that need the shared vCenter and NSX Manager, but must
+// run before the shared Region is created
+var registeredPostSetupPriorityTests = []priorityTest{}
+
 // runPriorityTestsOnce runs each registered priority test and records the result
 // via recordResult so that testutils.PreTestChecks can skip a test that already ran.
 // It also sets up the shared vCenter / NSX Manager infrastructure.
 func runPriorityTestsOnce(t *testing.T, recordResult func(name string, passed bool)) {
 	fmt.Printf("# Running priority tests before shared vCenter and NSX Manager is created, so they do not collide later (can be skipped with '-vcfa-skip-priority-tests' flag)\n")
-	for _, test := range registeredPriorityTests {
-		fmt.Printf("# Running priority test '%s' as a subtest of '%s':\n", test.Name, t.Name())
-		t.Run(test.Name, test.Test)
-		printfTrace("## Storing test to executed test list '%s'\n", test.Name)
-		recordResult(test.Name, !t.Failed())
+	runPriorityTests := func(tests []priorityTest) {
+		for _, test := range tests {
+			fmt.Printf("# Running priority test '%s' as a subtest of '%s':\n", test.Name, t.Name())
+			t.Run(test.Name, test.Test)
+			printfTrace("## Storing test to executed test list '%s'\n", test.Name)
+			recordResult(test.Name, !t.Failed())
+		}
 	}
+	runPriorityTests(registeredPriorityTests)
 
 	// setup shared components for other tests
 	fmt.Printf("# Setting up shared vCenter and NSX Manager\n")
@@ -818,8 +857,14 @@ func runPriorityTestsOnce(t *testing.T, recordResult func(name string, passed bo
 		fmt.Printf("error setting up shared VC and NSX: %s", err)
 	}
 	fmt.Printf("# Done setting up shared vCenter and NSX Manager\n")
-
 	priorityTestCleanupFunc = cleanup
+
+	// These tests reuse the shared vCenter and NSX Manager, but need the Supervisor to be free of any Region
+	runPriorityTests(registeredPostSetupPriorityTests)
+
+	if err := setupSharedRegion(); err != nil {
+		fmt.Printf("error setting up shared Region: %s\n", err)
+	}
 	fmt.Printf("# Continuing run of %s test after priority tests are now done\n", t.Name())
 }
 
