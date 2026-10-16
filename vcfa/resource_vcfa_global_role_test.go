@@ -27,7 +27,7 @@ func TestAccVcfaGlobalRole(t *testing.T) {
 	var globalRoleUpdateDescription = "A shorter description."
 
 	var params = StringMap{
-		"Org":                         testConfig.Tm.Org,
+		"Org":                         testOrgName(t),
 		"GlobalRoleName":              globalRoleName,
 		"GlobalRoleUpdateName":        globalRoleUpdateName,
 		"GlobalRoleDescription":       globalRoleDescription,

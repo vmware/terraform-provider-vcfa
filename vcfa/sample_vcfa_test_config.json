@@ -62,6 +62,7 @@
     "vpc": "default-one-region",
 
     "createVcenter": true,
+    "runVcenterInvalid": false,
     "vcenterUsername": "user@vsphere.local",
     "vcenterPassword": "",
     "vcenterUrl": "https://vcenter.my-company.com",

@@ -63,7 +63,7 @@ func TestAccVcfaOrgOidc(t *testing.T) {
 	skipFunc := func() (bool, error) {
 		return skip, nil
 	}
-	resource.Test(t, resource.TestCase{
+	parallelTest(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
 		ErrorCheck: func(err error) error {
 			if strings.Contains(err.Error(), "could not establish a connection") {

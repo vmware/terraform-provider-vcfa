@@ -26,7 +26,7 @@ func TestAccVcfaOrgLdap(t *testing.T) {
 	}
 
 	var params = StringMap{
-		"Org":                       testConfig.Tm.Org,
+		"Org":                       testOrgName(t),
 		"LdapServer":                testConfig.Ldap.Host,
 		"LdapPort":                  testConfig.Ldap.Port,
 		"LdapIsSsl":                 testConfig.Ldap.IsSsl,
@@ -59,7 +59,7 @@ func TestAccVcfaOrgLdap(t *testing.T) {
 	orgDef := "vcfa_org.org1"
 	ldapResourceDef := "vcfa_org_ldap.ldap"
 	ldapDatasourceDef := "data.vcfa_org_ldap.ldap-ds"
-	resource.Test(t, resource.TestCase{
+	parallelTest(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
 		Steps: []resource.TestStep{
 			{
@@ -113,7 +113,7 @@ func TestAccVcfaOrgLdap(t *testing.T) {
 				ResourceName:            ldapResourceDef,
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateIdFunc:       func(state *terraform.State) (string, error) { return testConfig.Tm.Org, nil },
+				ImportStateIdFunc:       func(state *terraform.State) (string, error) { return testOrgName(t), nil },
 				ImportStateVerifyIgnore: []string{"auto_trust_certificate", "custom_settings.0.password"},
 			},
 		},

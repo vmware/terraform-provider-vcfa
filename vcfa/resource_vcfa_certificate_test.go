@@ -28,7 +28,7 @@ func TestAccVcfaCertificateResource(t *testing.T) {
 
 	// String map to fill the template
 	var params = StringMap{
-		"Org":                      testConfig.Tm.Org,
+		"Org":                      testOrgName(t),
 		"Alias":                    "TestAccVcfaLibraryCertificateResource",
 		"AliasUpdate":              "TestAccVcfaLibraryCertificateResourceUpdated",
 		"AliasSystem":              "TestAccVcfaLibraryCertificateResourceSys",
@@ -69,7 +69,7 @@ func TestAccVcfaCertificateResource(t *testing.T) {
 	resourceAddressSysCert := "vcfa_certificate.sysCertificate"
 	resourceAddressSysPrivateCert := "vcfa_certificate.sysCertificateWithPrivate"
 
-	resource.Test(t, resource.TestCase{
+	parallelTest(t, resource.TestCase{
 		ProviderFactories: testAccProviders,
 		Steps: []resource.TestStep{
 			{
@@ -120,7 +120,7 @@ func TestAccVcfaCertificateResource(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateIdFunc: func(*terraform.State) (string, error) {
-					return testConfig.Tm.Org +
+					return testOrgName(t) +
 						ImportSeparator +
 						params["AliasUpdate"].(string), nil
 				},

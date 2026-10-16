@@ -16,8 +16,8 @@ import (
 
 func init() {
 	// A Supervisor can only belong to one Region, so this test must run before the shared Region
-	// (tm.shareRegion) is created
-	registeredPriorityTests = append(registeredPriorityTests,
+	// (tm.shareRegion) is created. It reuses the shared vCenter and NSX Manager
+	registeredPostSetupPriorityTests = append(registeredPostSetupPriorityTests,
 		priorityTest{Name: "TestAccVcfaRegion", Test: TestAccVcfaRegion},
 	)
 }

@@ -196,6 +196,9 @@ func TestAccVcfaVcenterInvalid(t *testing.T) {
 	preTestChecks(t)
 	defer postTestChecks(t)
 	skipIfNotSysAdmin(t)
+	if !testConfig.Tm.RunVcenterInvalid {
+		t.Skip("TestAccVcfaVcenterInvalid is slow, set tm.runVcenterInvalid=true in the testing configuration to run it")
+	}
 
 	// test fails on purpose
 	if vcfaShortTest {

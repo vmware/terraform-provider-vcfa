@@ -308,3 +308,9 @@ func testAccCheckVcfaOrgExists(orgResource string) resource.TestCheckFunc {
 		return nil
 	}
 }
+
+// testOrgName returns an Org name unique to the test, built from the Org in the testing configuration and
+// the test name. Tests that create their own Org must not share a name, so they can run in parallel
+func testOrgName(t *testing.T) string {
+	return testConfig.Tm.Org + "-" + t.Name()
+}
