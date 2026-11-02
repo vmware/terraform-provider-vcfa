@@ -7,7 +7,6 @@ require (
 	github.com/hashicorp/go-cty v1.5.0
 	github.com/hashicorp/go-version v1.9.0
 	github.com/hashicorp/terraform-plugin-framework v1.19.0
-	github.com/hashicorp/terraform-plugin-framework-jsontypes v0.2.0
 	github.com/hashicorp/terraform-plugin-framework-nettypes v0.3.0
 	github.com/hashicorp/terraform-plugin-framework-timeouts v0.7.0
 	github.com/hashicorp/terraform-plugin-framework-timetypes v0.5.0
@@ -16,7 +15,7 @@ require (
 	github.com/hashicorp/terraform-plugin-mux v0.23.1
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.40.1
 	github.com/hashicorp/terraform-plugin-testing v1.16.0
-	github.com/vmware/go-vcloud-director/v3 v3.1.2-alpha.1
+	github.com/vmware/go-vcloud-director/v3 v3.1.2
 	gopkg.in/evanphx/json-patch.v4 v4.13.0
 	k8s.io/api v0.37.1
 	k8s.io/apiextensions-apiserver v0.37.1
