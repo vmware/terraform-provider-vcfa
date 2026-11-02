@@ -1,0 +1,4 @@
+- Bump k8s.io/api to v0.37.2 [GH-276]
+- Bump k8s.io/apiextensions-apiserver to v0.37.2 [GH-276]
+- Bump k8s.io/apimachinery to v0.37.2 [GH-276]
+- Bump k8s.io/client-go to v0.37.2 [GH-276]
