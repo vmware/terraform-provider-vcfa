@@ -267,8 +267,8 @@ func getIpSpaceType(tmClient *VCDClient, d *schema.ResourceData) (*types.TmIpSpa
 	maxIPCountInt, _ := strconv.Atoi(d.Get("default_quota_max_ip_count").(string))
 	maxSubnetSizeInt, _ := strconv.Atoi(d.Get("default_quota_max_subnet_size").(string))
 	t.DefaultQuota = types.TmIpSpaceQuota{
-		MaxCidrCount:  maxCidrCountInt,
-		MaxIPCount:    maxIPCountInt,
+		MaxCidrCount:  &maxCidrCountInt,
+		MaxIPCount:    &maxIPCountInt,
 		MaxSubnetSize: maxSubnetSizeInt,
 	}
 
@@ -346,8 +346,8 @@ func setIpSpaceData(_ *VCDClient, d *schema.ResourceData, i *govcd.TmIpSpace) er
 	dSet(d, "status", i.TmIpSpace.Status)
 
 	dSet(d, "default_quota_max_subnet_size", strconv.Itoa(i.TmIpSpace.DefaultQuota.MaxSubnetSize))
-	dSet(d, "default_quota_max_cidr_count", strconv.Itoa(i.TmIpSpace.DefaultQuota.MaxCidrCount))
-	dSet(d, "default_quota_max_ip_count", strconv.Itoa(i.TmIpSpace.DefaultQuota.MaxIPCount))
+	dSet(d, "default_quota_max_cidr_count", strconv.Itoa(derefOr(i.TmIpSpace.DefaultQuota.MaxCidrCount)))
+	dSet(d, "default_quota_max_ip_count", strconv.Itoa(derefOr(i.TmIpSpace.DefaultQuota.MaxIPCount)))
 
 	cidrBlocks := setIpAddressSpaceIpBlocksToState(i.TmIpSpace.InternalScopeCidrBlocks)
 	if err := d.Set("cidr_blocks", cidrBlocks); err != nil {

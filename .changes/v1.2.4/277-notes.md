@@ -1,0 +1,1 @@
+- Bump go-vcloud-director to v3.2.0-alpha.6 [GH-277]
