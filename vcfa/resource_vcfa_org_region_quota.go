@@ -172,7 +172,7 @@ func createStoragePoliciesInRegionQuota(d *schema.ResourceData, tmClient *VCDCli
 			RegionStoragePolicy: types.OpenApiReference{
 				ID: regionStoragePolicy["region_storage_policy_id"].(string),
 			},
-			StorageLimitMiB: int64(regionStoragePolicy["storage_limit_mib"].(int)),
+			StorageLimitMiB: addrOf(int64(regionStoragePolicy["storage_limit_mib"].(int))),
 			VirtualDatacenter: types.OpenApiReference{
 				ID: regionQuotaId,
 			},
@@ -201,7 +201,7 @@ func updateStoragePoliciesInRegionQuota(d *schema.ResourceData, tmClient *VCDCli
 				ID: oldSp["region_storage_policy_id"].(string),
 			},
 			Name:            oldSp["name"].(string),
-			StorageLimitMiB: int64(newSp["storage_limit_mib"].(int)),
+			StorageLimitMiB: addrOf(int64(newSp["storage_limit_mib"].(int))),
 			VirtualDatacenter: types.OpenApiReference{
 				ID: regionQuotaId,
 			},
@@ -218,7 +218,7 @@ func updateStoragePoliciesInRegionQuota(d *schema.ResourceData, tmClient *VCDCli
 			RegionStoragePolicy: types.OpenApiReference{
 				ID: newSp["region_storage_policy_id"].(string),
 			},
-			StorageLimitMiB: int64(newSp["storage_limit_mib"].(int)),
+			StorageLimitMiB: addrOf(int64(newSp["storage_limit_mib"].(int))),
 			VirtualDatacenter: types.OpenApiReference{
 				ID: regionQuotaId,
 			},
@@ -277,7 +277,7 @@ func saveRegionStoragePoliciesInState(d *schema.ResourceData, regionQuota *govcd
 		spAttr := make(map[string]interface{})
 		spAttr["id"] = sp.VirtualDatacenterStoragePolicy.ID
 		spAttr["region_storage_policy_id"] = sp.VirtualDatacenterStoragePolicy.RegionStoragePolicy.ID // Can't be nil
-		spAttr["storage_limit_mib"] = int(sp.VirtualDatacenterStoragePolicy.StorageLimitMiB)
+		spAttr["storage_limit_mib"] = int(derefOr(sp.VirtualDatacenterStoragePolicy.StorageLimitMiB))
 		spAttr["name"] = sp.VirtualDatacenterStoragePolicy.Name
 		spAttr["storage_used_mib"] = int(sp.VirtualDatacenterStoragePolicy.StorageUsedMiB)
 		spsAttr[i] = spAttr
@@ -429,10 +429,10 @@ func getOrgRegionQuotaType(tmClient *VCDClient, d *schema.ResourceData) (*types.
 				ID: singleZoneMap["region_zone_id"].(string),
 			},
 			ResourceAllocation: types.TmVdcResourceAllocation{
-				CPULimitMHz:          singleZoneMap["cpu_limit_mhz"].(int),
-				CPUReservationMHz:    singleZoneMap["cpu_reservation_mhz"].(int),
-				MemoryLimitMiB:       singleZoneMap["memory_limit_mib"].(int),
-				MemoryReservationMiB: singleZoneMap["memory_reservation_mib"].(int),
+				CPULimitMHz:          addrOf(int64(singleZoneMap["cpu_limit_mhz"].(int))),
+				CPUReservationMHz:    addrOf(int64(singleZoneMap["cpu_reservation_mhz"].(int))),
+				MemoryLimitMiB:       addrOf(int64(singleZoneMap["memory_limit_mib"].(int))),
+				MemoryReservationMiB: addrOf(int64(singleZoneMap["memory_reservation_mib"].(int))),
 			},
 		}
 		r[zoneIndex] = singleZoneType
@@ -475,10 +475,10 @@ func setOrgRegionQuotaData(_ *VCDClient, d *schema.ResourceData, rq *govcd.Regio
 		oneZone := make(map[string]interface{})
 		oneZone["region_zone_name"] = zone.Zone.Name
 		oneZone["region_zone_id"] = zone.Zone.ID
-		oneZone["memory_limit_mib"] = zone.ResourceAllocation.MemoryLimitMiB
-		oneZone["memory_reservation_mib"] = zone.ResourceAllocation.MemoryReservationMiB
-		oneZone["cpu_limit_mhz"] = zone.ResourceAllocation.CPULimitMHz
-		oneZone["cpu_reservation_mhz"] = zone.ResourceAllocation.CPUReservationMHz
+		oneZone["memory_limit_mib"] = int(derefOr(zone.ResourceAllocation.MemoryLimitMiB))
+		oneZone["memory_reservation_mib"] = int(derefOr(zone.ResourceAllocation.MemoryReservationMiB))
+		oneZone["cpu_limit_mhz"] = int(derefOr(zone.ResourceAllocation.CPULimitMHz))
+		oneZone["cpu_reservation_mhz"] = int(derefOr(zone.ResourceAllocation.CPUReservationMHz))
 
 		zoneCompute[zoneIndex] = oneZone
 	}

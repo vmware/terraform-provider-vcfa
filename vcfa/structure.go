@@ -139,3 +139,22 @@ func searchSetAndApply(set1, set2 *schema.Set, attributeKey string,
 	}
 	return nil
 }
+
+// derefOr returns the value pointed by p, or the zero value of T when p is nil
+func derefOr[T any](p *T) T {
+	var zero T
+	if p == nil {
+		return zero
+	}
+	return *p
+}
+
+// convertSliceOfStringsToContentLibraryStorageClasses converts []string to []types.ContentLibraryStorageClass
+// by filling types.ContentLibraryStorageClass.ID fields
+func convertSliceOfStringsToContentLibraryStorageClasses(ids []string) []types.ContentLibraryStorageClass {
+	result := make([]types.ContentLibraryStorageClass, len(ids))
+	for i, v := range ids {
+		result[i].ID = v
+	}
+	return result
+}

@@ -908,8 +908,21 @@ func removeProject(t *testing.T, orgName string, username string, password strin
 		t.Fatalf("error creating URL for get project: %s", err)
 	}
 
-	err = tmClient.Client.DeleteEntity(projectAddr, nil, nil)
-	if err != nil {
-		t.Fatalf("failed removing Project: %s", err)
+	// Dependent objects (Supervisor Namespaces, Content Libraries) are deleted asynchronously, so the
+	// Project can still be "in use" (409 Conflict) right after Terraform finished removing them.
+	const (
+		timeout  = 3 * time.Minute
+		interval = 10 * time.Second
+	)
+	deadline := time.Now().Add(timeout)
+	for {
+		err = tmClient.Client.DeleteEntity(projectAddr, nil, nil)
+		if err == nil {
+			return
+		}
+		if !strings.Contains(err.Error(), "409") || time.Now().Add(interval).After(deadline) {
+			t.Fatalf("failed removing Project: %s", err)
+		}
+		time.Sleep(interval)
 	}
 }
