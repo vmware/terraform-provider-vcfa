@@ -75,6 +75,13 @@ func TestAccVcfaOrgRegionalNetworking(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "status"),
 					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "org_id"),
 					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "provider_gateway_id"),
+					ifVcfaVersionAtLeast("9.1.0",
+						resource.TestCheckResourceAttr("vcfa_org_regional_networking.test", "distributed_vlan_connection_id", ""),
+						resource.TestCheckResourceAttr("vcfa_org_regional_networking.test", "virtual_network_appliance_cluster_id", ""),
+					),
+					ifVcfaVersionAtLeast("9.1.1",
+						resource.TestCheckResourceAttr("vcfa_org_regional_networking.test", "distributed_vxlan_connection_id", ""),
+					),
 					resource.TestCheckResourceAttrSet("vcfa_org_regional_networking.test", "region_id"),
 					resource.TestCheckResourceAttr("vcfa_org_regional_networking.test", "name", t.Name()),
 					// Edge Cluster ID was not specified, but it is automatically picked
@@ -98,7 +105,7 @@ func TestAccVcfaOrgRegionalNetworking(t *testing.T) {
 			{
 				Config: configText3,
 				Check: resource.ComposeTestCheckFunc(
-					resourceFieldsEqual("vcfa_org_regional_networking.test", "data.vcfa_org_regional_networking.test", nil),
+					resourceFieldsEqual("vcfa_org_regional_networking.test", "data.vcfa_org_regional_networking.test", []string{"%", "default_vpc_private_subnet_cidr_override", "project_tgw_private_subnet_cidr_override"}),
 				),
 			},
 			{

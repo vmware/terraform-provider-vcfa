@@ -73,6 +73,8 @@ The following arguments are supported:
 - `last_successful_sync` - The ISO-8601 timestamp representing when this Content Library Item was last synced if subscribed
 - `owner_org_id` - The reference to the organization that the Content Library Item belongs to
 - `status` - Status of this Content Library Item
+- `size_bytes` - The size in bytes of this Content Library Item
+- `placeholder` - Whether this Content Library Item is a placeholder, i.e. its content is not stored locally
 - `version` - The version of this Content Library Item. For a subscribed library, this version is same as in publisher library
 
 ## Importing

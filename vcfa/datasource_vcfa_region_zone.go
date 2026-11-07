@@ -61,6 +61,21 @@ func datasourceVcfaRegionZone() *schema.Resource {
 				Computed:    true,
 				Description: "CPU reservation in MHz",
 			},
+			"max_namespace_cpu_reservation_mhz": {
+				Type:        schema.TypeInt,
+				Computed:    true,
+				Description: "Maximum CPU reservation in MHz that a single Namespace can request in this Zone",
+			},
+			"max_namespace_memory_reservation_mib": {
+				Type:        schema.TypeInt,
+				Computed:    true,
+				Description: "Maximum memory reservation in MiB that a single Namespace can request in this Zone",
+			},
+			"network_stack": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Network stack of the Zone",
+			},
 		},
 	}
 }
@@ -94,6 +109,9 @@ func setZoneData(_ *VCDClient, d *schema.ResourceData, z *govcd.Zone) error {
 	dSet(d, "cpu_limit_mhz", z.Zone.CPULimitMhz)
 	dSet(d, "cpu_reservation_mhz", z.Zone.CPUReservationMhz)
 	dSet(d, "cpu_reservation_used_mhz", z.Zone.CPUReservationUsedMhz)
+	dSet(d, "max_namespace_cpu_reservation_mhz", z.Zone.MaxNamespaceCPUReservationMHz)
+	dSet(d, "max_namespace_memory_reservation_mib", z.Zone.MaxNamespaceMemoryReservationMiB)
+	dSet(d, "network_stack", z.Zone.NetworkStack)
 
 	return nil
 }

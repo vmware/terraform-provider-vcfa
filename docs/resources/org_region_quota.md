@@ -80,6 +80,8 @@ The following arguments are supported:
 - `zone_resource_allocations` - (Required) A set of Zone Resource Allocation definitions. See [Zone Resource Allocations](#zone-resource-allocations)
 - `region_vm_class_ids` - (Required) A set of Region VM Class IDs. These can be fetched with [`vcfa_region_vm_class` data source](/providers/vmware/vcfa/latest/docs/data-sources/region_vm_class)
 - `region_storage_policy` - (Required) A set of Region Storage Policies. See [Region Storage Policies](#region-storage-policies)
+- `is_full_allocation` - (Optional) Whether this Organization Region Quota receives all the resources of its Region. If not
+  set, the value chosen by VCFA is exported. Requires VCFA 9.1.0 or later
 
 ## Zone Resource Allocations
 

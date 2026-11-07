@@ -80,6 +80,11 @@ func datasourceVcfaProviderGateway() *schema.Resource {
 				Computed:    true,
 				Description: "Whether logging is enabled for the Outbound NAT configuration",
 			},
+			"sub_provider_org_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("ID of the Sub-Provider Organization this %s belongs to. Empty if it is available to more than one Organization", labelVcfaProviderGateway),
+			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,

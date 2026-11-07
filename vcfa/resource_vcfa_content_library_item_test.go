@@ -98,6 +98,10 @@ func TestAccVcfaContentLibraryItemProvider(t *testing.T) {
 					resource.TestCheckResourceAttrSet(cli1, "status"),
 					resource.TestCheckResourceAttr(cli1, "last_successful_sync", ""),
 					resource.TestCheckResourceAttr(cli1, "version", "1"),
+					ifVcfaVersionAtLeast("9.1.2",
+						resource.TestCheckResourceAttrSet(cli1, "size_bytes"),
+						resource.TestCheckResourceAttrSet(cli1, "placeholder"),
+					),
 
 					// CLI 2: ISO
 					resource.TestCheckResourceAttr(cli2, "name", t.Name()+"2"),

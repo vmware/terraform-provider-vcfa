@@ -42,6 +42,16 @@ func datasourceVcfaStorageClass() *schema.Resource {
 				Description: fmt.Sprintf("For tenants, this represents the total storage given to all namespaces consuming from this %s in mebibytes. "+
 					"For providers, this represents the total storage given to tenants from this %s in mebibytes.", labelVcfaStorageClass, labelVcfaStorageClass),
 			},
+			"kubernetes_compliant_name": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("Kubernetes-compliant name of the %s", labelVcfaStorageClass),
+			},
+			"is_restricted": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: fmt.Sprintf("Whether the %s is restricted to system-owned namespaces", labelVcfaStorageClass),
+			},
 			"zone_ids": {
 				Type:        schema.TypeSet,
 				Computed:    true,
@@ -80,6 +90,8 @@ func setStorageClassData(_ *VCDClient, d *schema.ResourceData, sc *govcd.Storage
 	dSet(d, "name", sc.StorageClass.Name)
 	dSet(d, "storage_capacity_mib", sc.StorageClass.StorageCapacityMiB)
 	dSet(d, "storage_consumed_mib", sc.StorageClass.StorageConsumedMiB)
+	dSet(d, "kubernetes_compliant_name", sc.StorageClass.KubernetesCompliantName)
+	dSet(d, "is_restricted", sc.StorageClass.IsRestricted)
 	regionId := ""
 	if sc.StorageClass.Region != nil {
 		regionId = sc.StorageClass.Region.ID

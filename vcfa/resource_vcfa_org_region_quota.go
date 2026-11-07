@@ -56,6 +56,12 @@ func resourceVcfaOrgRegionQuota() *schema.Resource {
 				Elem:        orgRegionQuotaZoneResourceAllocation,
 				Description: fmt.Sprintf("A set of %ss and their resource allocations", labelVcfaRegionZone),
 			},
+			"is_full_allocation": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Computed:    true,
+				Description: fmt.Sprintf("Whether the %s receives all the resources of its Region", labelVcfaOrgRegionQuota),
+			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -417,6 +423,10 @@ func getOrgRegionQuotaType(tmClient *VCDClient, d *schema.ResourceData) (*types.
 		Region:      &types.OpenApiReference{ID: d.Get("region_id").(string)},
 	}
 
+	if v := d.GetRawConfig().GetAttr("is_full_allocation"); !v.IsNull() && v.IsKnown() {
+		t.IsFullAllocation = addrOf(v.True())
+	}
+
 	supervisorIds := convertSchemaSetToSliceOfStrings(d.Get("supervisor_ids").(*schema.Set))
 	t.Supervisors = convertSliceOfStringsToOpenApiReferenceIds(supervisorIds)
 
@@ -451,6 +461,7 @@ func setOrgRegionQuotaData(_ *VCDClient, d *schema.ResourceData, rq *govcd.Regio
 	dSet(d, "name", rq.TmVdc.Name)
 	dSet(d, "description", rq.TmVdc.Description)
 	dSet(d, "status", rq.TmVdc.Status)
+	dSet(d, "is_full_allocation", derefOr(rq.TmVdc.IsFullAllocation))
 
 	orgId := ""
 	if rq.TmVdc.Org != nil {

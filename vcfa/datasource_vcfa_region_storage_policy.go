@@ -44,12 +44,34 @@ func datasourceVcfaRegionStoragePolicy() *schema.Resource {
 			"storage_capacity_mb": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: fmt.Sprintf("Storage capacity in megabytes for this %s", labelVcfaRegionStoragePolicy),
+				Description: fmt.Sprintf("Storage capacity in mebibytes for this %s", labelVcfaRegionStoragePolicy),
+				Deprecated:  "Use `storage_capacity_mib` instead. The value is expressed in mebibytes",
 			},
 			"storage_consumed_mb": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: fmt.Sprintf("Consumed storage in megabytes for this %s", labelVcfaRegionStoragePolicy),
+				Description: fmt.Sprintf("Consumed storage in mebibytes for this %s", labelVcfaRegionStoragePolicy),
+				Deprecated:  "Use `storage_consumed_mib` instead. The value is expressed in mebibytes",
+			},
+			"storage_capacity_mib": {
+				Type:        schema.TypeInt,
+				Computed:    true,
+				Description: fmt.Sprintf("Storage capacity in mebibytes for this %s", labelVcfaRegionStoragePolicy),
+			},
+			"storage_consumed_mib": {
+				Type:        schema.TypeInt,
+				Computed:    true,
+				Description: fmt.Sprintf("Consumed storage in mebibytes for this %s", labelVcfaRegionStoragePolicy),
+			},
+			"kubernetes_compliant_name": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("Kubernetes-compliant name of the %s", labelVcfaRegionStoragePolicy),
+			},
+			"is_restricted": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: fmt.Sprintf("Whether the %s is restricted to system-owned namespaces", labelVcfaRegionStoragePolicy),
 			},
 		},
 	}
@@ -87,6 +109,10 @@ func setRegionStoragePolicyData(_ *VCDClient, d *schema.ResourceData, rsp *govcd
 	dSet(d, "region_id", regionId)
 	dSet(d, "storage_capacity_mb", rsp.RegionStoragePolicy.StorageCapacityMiB)
 	dSet(d, "storage_consumed_mb", rsp.RegionStoragePolicy.StorageConsumedMiB)
+	dSet(d, "storage_capacity_mib", rsp.RegionStoragePolicy.StorageCapacityMiB)
+	dSet(d, "storage_consumed_mib", rsp.RegionStoragePolicy.StorageConsumedMiB)
+	dSet(d, "kubernetes_compliant_name", rsp.RegionStoragePolicy.KubernetesCompliantName)
+	dSet(d, "is_restricted", derefOr(rsp.RegionStoragePolicy.IsRestricted))
 	dSet(d, "status", rsp.RegionStoragePolicy.Status)
 
 	d.SetId(rsp.RegionStoragePolicy.ID)

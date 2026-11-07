@@ -50,4 +50,6 @@ The following arguments are supported:
 - `storage_consumed_mib` - For tenants, this represents the total storage given to all namespaces consuming from this
   Storage Class in mebibytes. For providers, this represents the total storage given to tenants from this Storage Class
   in mebibytes
+- `kubernetes_compliant_name` - Kubernetes-compliant name of the Storage Class. Requires VCFA 9.1.0 or later.
+- `is_restricted` - Whether the Storage Class is restricted to system-owned namespaces. Requires VCFA 9.1.2 or later.
 - `zone_ids` - A set with all the IDs of the zones available to the Storage Class

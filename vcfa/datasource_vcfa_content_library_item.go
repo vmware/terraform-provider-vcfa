@@ -71,6 +71,16 @@ func datasourceVcfaContentLibraryItem() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("Status of this %s", labelVcfaContentLibraryItem),
 			},
+			"size_bytes": {
+				Type:        schema.TypeInt,
+				Computed:    true,
+				Description: fmt.Sprintf("The size in bytes of this %s", labelVcfaContentLibraryItem),
+			},
+			"placeholder": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: fmt.Sprintf("Whether this %s is a placeholder, i.e. its content is not stored locally", labelVcfaContentLibraryItem),
+			},
 			"version": {
 				Type:        schema.TypeInt,
 				Computed:    true,
