@@ -140,7 +140,7 @@ func getTmRegionalNetworkingSettingType(tmClient *VCDClient, d *schema.ResourceD
 		Name:               d.Get("name").(string),
 		OrgRef:             types.OpenApiReference{ID: d.Get("org_id").(string)},
 		RegionRef:          types.OpenApiReference{ID: d.Get("region_id").(string)},
-		ProviderGatewayRef: types.OpenApiReference{ID: d.Get("provider_gateway_id").(string)},
+		ProviderGatewayRef: &types.OpenApiReference{ID: d.Get("provider_gateway_id").(string)},
 	}
 
 	edgeClusterId := d.Get("edge_cluster_id").(string)

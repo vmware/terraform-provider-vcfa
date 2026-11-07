@@ -1,0 +1,2 @@
+- Bump go-vcloud-director to v3.2.0-alpha.6 [GH-277]
+- Retry project deletion in tests on 409 Conflict [GH-277]

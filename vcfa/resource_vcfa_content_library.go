@@ -328,7 +328,7 @@ func getContentLibraryType(d *schema.ResourceData) *types.ContentLibrary {
 		Name:                  d.Get("name").(string),
 		Description:           d.Get("description").(string),
 		AutoAttach:            d.Get("auto_attach").(bool),
-		StorageClasses:        convertSliceOfStringsToOpenApiReferenceIds(convertTypeListToSliceOfStrings(d.Get("storage_class_ids").(*schema.Set).List())),
+		StorageClasses:        convertSliceOfStringsToContentLibraryStorageClasses(convertTypeListToSliceOfStrings(d.Get("storage_class_ids").(*schema.Set).List())),
 		IsProjectScoped:       d.Get("is_project_scoped").(bool),
 		AllProjectsPermission: d.Get("all_projects_permission").(string),
 	}
