@@ -51,6 +51,11 @@ func datasourceVcfaOrgRegionQuota() *schema.Resource {
 				Elem:        orgRegionQuotaDsZoneResourceAllocation,
 				Description: "A set of Region Zones and their resource allocations",
 			},
+			"is_full_allocation": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: fmt.Sprintf("Whether the %s receives all the resources of its Region", labelVcfaOrgRegionQuota),
+			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,

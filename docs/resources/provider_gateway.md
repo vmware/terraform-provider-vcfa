@@ -77,6 +77,8 @@ The following arguments are supported:
 ## Attribute Reference
 
 - `gateway_connection_backing_id` - The ID of the associated Gateway Connection in NSX, if any
+- `sub_provider_org_id` - ID of the Sub-Provider Organization this Provider Gateway belongs to. Empty if it is available to
+  more than one Organization. Only returned by VCFA versions that support three personas networking
 - `status` - Current status of the entity. Possible values are:
   - `PENDING` - Desired entity configuration has been received by system and is pending realization
   - `CONFIGURING` - The system is in process of realizing the entity

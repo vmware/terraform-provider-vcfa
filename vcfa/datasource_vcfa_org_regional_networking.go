@@ -34,6 +34,21 @@ func datasourceVcfaOrgRegionalNetworking() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("Parent %s ID for %s", labelVcfaProviderGateway, labelVcfaRegionalNetworkingSetting),
 			},
+			"distributed_vlan_connection_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("Distributed VLAN Connection ID used for egress by the %s", labelVcfaRegionalNetworkingSetting),
+			},
+			"distributed_vxlan_connection_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("Distributed VXLAN Connection ID used for egress by the %s", labelVcfaRegionalNetworkingSetting),
+			},
+			"virtual_network_appliance_cluster_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("Virtual Network Appliance Cluster ID used with a distributed connection in the %s", labelVcfaRegionalNetworkingSetting),
+			},
 			"region_id": {
 				Type:        schema.TypeString,
 				Computed:    true,

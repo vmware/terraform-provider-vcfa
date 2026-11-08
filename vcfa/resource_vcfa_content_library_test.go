@@ -101,6 +101,12 @@ func TestAccVcfaContentLibraryProvider(t *testing.T) {
 					resource.TestCheckResourceAttrPair(dsStorageClass, "region_id", regionHclRef, "id"),
 					resource.TestCheckResourceAttrSet(dsStorageClass, "storage_capacity_mib"),
 					resource.TestCheckResourceAttrSet(dsStorageClass, "storage_consumed_mib"),
+					ifVcfaVersionAtLeast("9.1.0",
+						resource.TestCheckResourceAttrSet(dsStorageClass, "kubernetes_compliant_name"),
+					),
+					ifVcfaVersionAtLeast("9.1.2",
+						resource.TestCheckResourceAttrSet(dsStorageClass, "is_restricted"),
+					),
 					resource.TestMatchResourceAttr(dsStorageClass, "zone_ids.#", regexp.MustCompile("[0-9]+")),
 
 					// Content Library

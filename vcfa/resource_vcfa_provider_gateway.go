@@ -101,6 +101,11 @@ func resourceVcfaProviderGateway() *schema.Resource {
 				Optional:    true,
 				Description: "Whether logging is enabled for the Outbound NAT configuration",
 			},
+			"sub_provider_org_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("ID of the Sub-Provider Organization this %s belongs to. Empty if it is available to more than one Organization", labelVcfaProviderGateway),
+			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -260,6 +265,7 @@ func setProviderGatewayData(tmClient *VCDClient, d *schema.ResourceData, p *govc
 	dSet(d, "region_id", p.TmProviderGateway.RegionRef.ID)
 	dSet(d, "tier0_gateway_id", p.TmProviderGateway.BackingRef.ID)
 	dSet(d, "status", p.TmProviderGateway.Status)
+	dSet(d, "sub_provider_org_id", refId(p.TmProviderGateway.SubProviderOrgRef))
 	dSet(d, "gateway_connection_backing_id", p.TmProviderGateway.GatewayConnectionBackingId)
 	dSet(d, "allow_advertising_private_ip_blocks", p.TmProviderGateway.AllowAdvertisingPrivateIpBlocks)
 

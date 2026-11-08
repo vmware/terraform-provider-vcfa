@@ -90,6 +90,11 @@ func resourceVcfaRegion() *schema.Resource {
 				Computed:    true,
 				Description: "Memory reservation in MiB",
 			},
+			"load_balancer_type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("Type of load balancer used by the %s", labelVcfaRegion),
+			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -201,6 +206,7 @@ func setRegionData(_ *VCDClient, d *schema.ResourceData, r *govcd.Region) error 
 	dSet(d, "memory_capacity_mib", r.Region.MemoryCapacityMiB)
 	dSet(d, "memory_reservation_capacity_mib", r.Region.MemoryReservationCapacityMiB)
 	dSet(d, "status", r.Region.Status)
+	dSet(d, "load_balancer_type", r.Region.LoadBalancerType)
 
 	err := d.Set("supervisor_ids", extractIdsFromOpenApiReferences(r.Region.Supervisors))
 	if err != nil {

@@ -59,7 +59,18 @@ The following arguments are supported:
 - `name` - (Required) A name for Organization Regional Networking Configuration
 - `org_id` - (Required) An [Organization][vcfa_org] ID for which the Regional Networking Settings are to be
   configured
-- `provider_gateway_id` - (Required) [Provider Gateway][vcfa_provider_gateway] ID that should be used for this Organization
+- `provider_gateway_id` - (Optional) [Provider Gateway][vcfa_provider_gateway] ID that should be used for this Organization.
+  Exactly one of `provider_gateway_id`, `distributed_vlan_connection_id` or `distributed_vxlan_connection_id` must be set
+- `distributed_vlan_connection_id` - (Optional) [Distributed VLAN Connection][vcfa_distributed_vlan_connection-ds] ID used
+  for egress, as an alternative to a Provider Gateway. Requires VCFA 9.1.0 or later
+- `distributed_vxlan_connection_id` - (Optional) Distributed VXLAN Connection ID used for egress, as an alternative to a
+  Provider Gateway. Requires VCFA 9.1.1 or later
+- `virtual_network_appliance_cluster_id` - (Optional) Virtual Network Appliance Cluster ID used with a distributed
+  connection. Requires VCFA 9.1.0 or later
+- `default_vpc_private_subnet_cidr_override` - (Optional) IPv4 CIDR override for the default VPC's private subnet. It can
+  only be set on creation. Requires VCFA 9.1.0 or later
+- `project_tgw_private_subnet_cidr_override` - (Optional) IPv4 CIDR override for the project transit gateway's private
+  subnet. It can only be set on creation. Requires VCFA 9.1.0 or later
 - `region_id` - (Required) [Region][vcfa_region] ID that should be used for this Organization
 - `edge_cluster_id` - (Optional) [Edge Cluster][vcfa_edge_cluster-ds] ID that can be used for this Organization. Can be left out so
   that it is picked automatically
@@ -90,3 +101,4 @@ at this stage will show the difference between the minimal configuration file an
 [vcfa_provider_gateway]: /providers/vmware/vcfa/latest/docs/resources/provider_gateway
 [vcfa_region]: /providers/vmware/vcfa/latest/docs/resources/region
 [vcfa_edge_cluster-ds]: /providers/vmware/vcfa/latest/docs/data-sources/edge_cluster
+[vcfa_distributed_vlan_connection-ds]: /providers/vmware/vcfa/latest/docs/data-sources/distributed_vlan_connection

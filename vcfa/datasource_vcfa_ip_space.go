@@ -135,6 +135,21 @@ func datasourceVcfaIpSpace() *schema.Resource {
 				Description: fmt.Sprintf("IP addresses that will not be considered for IP allocation within %s", labelVcfaIpSpace),
 				Elem:        dsIpSpaceIpRangeSchema,
 			},
+			"type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("Type of the %s: PUBLIC or PRIVATE", labelVcfaIpSpace),
+			},
+			"org_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("ID of the Organization that owns the %s, if it is PRIVATE", labelVcfaIpSpace),
+			},
+			"dedicated_distributed_vlan_connection_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("ID of the Distributed VLAN Connection exclusively associated with the %s", labelVcfaIpSpace),
+			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,

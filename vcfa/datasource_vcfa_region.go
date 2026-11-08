@@ -54,6 +54,11 @@ func datasourceVcfaRegion() *schema.Resource {
 				Computed:    true,
 				Description: "Memory reservation in MiB",
 			},
+			"load_balancer_type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("Type of load balancer used by the %s", labelVcfaRegion),
+			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,

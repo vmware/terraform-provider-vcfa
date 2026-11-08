@@ -46,3 +46,6 @@ The following arguments are supported:
 - `memory_reservation_mib` - Total amount of reserved and unreserved memory resources used in MiB.
   For Tenants, this value represents the total given to all of a Tenant's Namespaces. For Providers,
   this value represents the total given to all Tenants
+- `max_namespace_cpu_reservation_mhz` - Maximum CPU reservation in MHz that a single Namespace can request in this Zone. Requires VCFA 9.1.0 or later.
+- `max_namespace_memory_reservation_mib` - Maximum memory reservation in MiB that a single Namespace can request in this Zone. Requires VCFA 9.1.0 or later.
+- `network_stack` - Network stack of the Zone. Possible values are `FULL_STACK_VPC` and `VLAN_BACKED_VPC`. Requires VCFA 9.1.1 or later.

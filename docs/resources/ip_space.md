@@ -95,6 +95,11 @@ The following attributes are exported on this resource:
 - `backing_id` - ID for the matching IP Block in NSX
 - `is_imported_ip_block` - Indicates if the IP Block is imported from an existing NSX IP Block
 - `subnet_exclusive` - Whether this IP Block is exclusively for a single CIDR
+- `type` - Type of the IP Space: `PUBLIC` or `PRIVATE`. Only returned by VCFA versions that support three personas networking
+- `org_id` - ID of the Organization that owns the IP Space, if it is `PRIVATE`. Only returned by VCFA versions that support
+  three personas networking
+- `dedicated_distributed_vlan_connection_id` - ID of the Distributed VLAN Connection exclusively associated with the IP
+  Space. Requires VCFA 9.1.0 or later
 - `status` - One of:
   - `PENDING` - Desired entity configuration has been received by system and is pending realization
   - `CONFIGURING` - The system is in process of realizing the entity

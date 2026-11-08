@@ -100,6 +100,16 @@ func resourceVcfaContentLibraryItem() *schema.Resource {
 				Computed:    true,
 				Description: fmt.Sprintf("Status of this %s", labelVcfaContentLibraryItem),
 			},
+			"size_bytes": {
+				Type:        schema.TypeInt,
+				Computed:    true,
+				Description: fmt.Sprintf("The size in bytes of this %s", labelVcfaContentLibraryItem),
+			},
+			"placeholder": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: fmt.Sprintf("Whether this %s is a placeholder, i.e. its content is not stored locally", labelVcfaContentLibraryItem),
+			},
 			"version": {
 				Type:        schema.TypeInt,
 				Computed:    true,
@@ -293,6 +303,8 @@ func setContentLibraryItemData(_ *VCDClient, d *schema.ResourceData, cli *govcd.
 	}
 	dSet(d, "status", cli.ContentLibraryItem.Status)
 	dSet(d, "version", cli.ContentLibraryItem.Version)
+	dSet(d, "size_bytes", cli.ContentLibraryItem.SizeBytes)
+	dSet(d, "placeholder", derefOr(cli.ContentLibraryItem.Placeholder))
 	d.SetId(cli.ContentLibraryItem.ID)
 
 	return nil

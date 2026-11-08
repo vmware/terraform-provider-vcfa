@@ -32,6 +32,21 @@ func datasourceVcfaSupervisor() *schema.Resource {
 				Computed:    true,
 				Description: "Parent Region ID",
 			},
+			"nsx_manager_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "ID of the NSX Manager associated with the Supervisor",
+			},
+			"load_balancer_type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Type of load balancer used by the Supervisor",
+			},
+			"is_dedicated_for_classic_tenants": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: "Whether the Supervisor is dedicated for classic tenants",
+			},
 		},
 	}
 }
@@ -67,6 +82,14 @@ func setSupervisorData(d *schema.ResourceData, s *types.Supervisor) error {
 	}
 
 	dSet(d, "region_id", regionId)
+
+	nsxManagerId := ""
+	if s.NsxManager != nil {
+		nsxManagerId = s.NsxManager.ID
+	}
+	dSet(d, "nsx_manager_id", nsxManagerId)
+	dSet(d, "load_balancer_type", s.LoadBalancerType)
+	dSet(d, "is_dedicated_for_classic_tenants", s.IsDedicatedForClassicTenants)
 
 	return nil
 }

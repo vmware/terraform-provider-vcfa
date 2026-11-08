@@ -57,6 +57,7 @@ The following attributes are exported on this resource:
 - `cpu_reservation_capacity_mhz` - Total CPU reservation resources in MHz available to this Region
 - `memory_capacity_mib` - Total memory resources (in mebibytes) available to this Region
 - `memory_reservation_capacity_mib` - Total memory reservation resources (in mebibytes) available to this Region
+- `load_balancer_type` - Type of load balancer used by the Region
 - `status` - The creation status of the Region. Possible values are `READY`, `NOT_READY`, `ERROR`,
   `FAILED`. A Region needs to be ready and enabled to be usable
 

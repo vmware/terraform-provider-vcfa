@@ -140,6 +140,14 @@ func searchSetAndApply(set1, set2 *schema.Set, attributeKey string,
 	return nil
 }
 
+// refId returns the ID of an OpenApiReference, or an empty string if it is nil
+func refId(r *types.OpenApiReference) string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
 // derefOr returns the value pointed by p, or the zero value of T when p is nil
 func derefOr[T any](p *T) T {
 	var zero T

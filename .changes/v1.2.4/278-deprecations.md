@@ -1,0 +1,1 @@
+- Deprecate `storage_capacity_mb` and `storage_consumed_mb` in `vcfa_region_storage_policy` data source in favor of `storage_capacity_mib` and `storage_consumed_mib`, as the values are expressed in mebibytes [GH-278]

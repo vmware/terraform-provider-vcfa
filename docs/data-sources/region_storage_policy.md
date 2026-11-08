@@ -44,5 +44,9 @@ The following arguments are supported:
 
 - `description` - Description of the Region Storage Policy
 - `status` - The creation status of the Region Storage Policy. Can be `NOT_READY` or `READY`
-- `storage_capacity_mb` - Storage capacity in megabytes for this Region Storage Policy
-- `storage_consumed_mb` - Consumed storage in megabytes for this Region Storage Policy
+- `storage_capacity_mib` - Storage capacity in mebibytes for this Region Storage Policy
+- `storage_consumed_mib` - Consumed storage in mebibytes for this Region Storage Policy
+- `kubernetes_compliant_name` - Kubernetes-compliant name of the Region Storage Policy. Requires VCFA 9.1.0 or later.
+- `is_restricted` - Whether the Region Storage Policy is restricted to system-owned namespaces. Requires VCFA 9.1.2 or later.
+- `storage_capacity_mb` - **Deprecated**, use `storage_capacity_mib`. The value is expressed in mebibytes
+- `storage_consumed_mb` - **Deprecated**, use `storage_consumed_mib`. The value is expressed in mebibytes

@@ -162,6 +162,21 @@ func resourceVcfaIpSpace() *schema.Resource {
 				Elem:        ipSpaceIpRangeSchema,
 				MaxItems:    128,
 			},
+			"type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("Type of the %s: PUBLIC or PRIVATE", labelVcfaIpSpace),
+			},
+			"org_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("ID of the Organization that owns the %s, if it is PRIVATE", labelVcfaIpSpace),
+			},
+			"dedicated_distributed_vlan_connection_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: fmt.Sprintf("ID of the Distributed VLAN Connection exclusively associated with the %s", labelVcfaIpSpace),
+			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -344,6 +359,9 @@ func setIpSpaceData(_ *VCDClient, d *schema.ResourceData, i *govcd.TmIpSpace) er
 	dSet(d, "region_id", i.TmIpSpace.RegionRef.ID)
 	dSet(d, "subnet_exclusive", i.TmIpSpace.SubnetExclusive)
 	dSet(d, "status", i.TmIpSpace.Status)
+	dSet(d, "type", i.TmIpSpace.Type)
+	dSet(d, "org_id", refId(i.TmIpSpace.OrgRef))
+	dSet(d, "dedicated_distributed_vlan_connection_id", refId(i.TmIpSpace.DedicatedDistributedVlanConnectionRef))
 
 	dSet(d, "default_quota_max_subnet_size", strconv.Itoa(i.TmIpSpace.DefaultQuota.MaxSubnetSize))
 	dSet(d, "default_quota_max_cidr_count", strconv.Itoa(derefOr(i.TmIpSpace.DefaultQuota.MaxCidrCount)))
