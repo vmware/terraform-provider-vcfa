@@ -272,6 +272,59 @@ data "vcfa_edge_cluster" "test" {
 	`, "data.vcfa_edge_cluster.test"
 }
 
+// getVnaClusterHcl returns the HCL that creates a Virtual Network Appliance Cluster in NSX with the NSX-T Terraform
+// provider, and a Virtual Network Appliance Cluster data source that imports it into VCFA. It returns the HCL as first
+// returned parameter and the data source HCL reference as second one. The test using it must also set the external
+// providers returned by getNsxtExternalProviders. The test is skipped if "createNsxManager=false" in the testing
+// configuration, as the NSX Manager credentials are then not guaranteed to be available.
+func getVnaClusterHcl(t *testing.T, regionHclRef string) (string, string) {
+	if !testConfig.Tm.CreateNsxManager {
+		t.Skip("Skipping Virtual Network Appliance Cluster creation: NSX Manager configuration is not allowed in config file")
+		return "", ""
+	}
+
+	return `
+provider "nsxt" {
+  host                 = "` + testConfig.Tm.NsxManagerUrl + `"
+  username             = "` + testConfig.Tm.NsxManagerUsername + `"
+  password             = "` + testConfig.Tm.NsxManagerPassword + `"
+  allow_unverified_ssl = true
+}
+
+data "nsxt_policy_transport_zone" "overlay" {
+  transport_type = "OVERLAY_STANDARD"
+  is_default     = true
+}
+
+resource "nsxt_policy_virtual_network_appliance_cluster" "test" {
+  display_name          = "` + t.Name() + `"
+  description           = "` + t.Name() + `"
+  appliance_form_factor = "MEDIUM"
+  service_type          = "VPC_SERVICES"
+
+  advanced_configuration {
+    overlay_transport_zone_path = data.nsxt_policy_transport_zone.overlay.path
+  }
+}
+
+data "vcfa_virtual_network_appliance_cluster" "test" {
+  name             = nsxt_policy_virtual_network_appliance_cluster.test.display_name
+  region_id        = ` + regionHclRef + `.id
+  sync_before_read = true
+}
+	`, "data.vcfa_virtual_network_appliance_cluster.test"
+}
+
+// getNsxtExternalProviders returns the external providers required by the HCL returned by getVnaClusterHcl
+func getNsxtExternalProviders() map[string]resource.ExternalProvider {
+	return map[string]resource.ExternalProvider{
+		"nsxt": {
+			VersionConstraint: nsxtProviderVersion,
+			Source:            "vmware/nsxt",
+		},
+	}
+}
+
 func testAccCheckOrgDestroy(orgName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		tmClient := testAccProvider.Meta().(ClientContainer).tmClient
