@@ -1,0 +1,1 @@
+- **New Data Source:** `vcfa_virtual_network_appliance_cluster` to read a Virtual Network Appliance Cluster [GH-279]

@@ -34,6 +34,9 @@ import (
 // vsphereProviderVersion specifies the version of vSphere Terraform Provider
 var vsphereProviderVersion = "~> 2.11"
 
+// nsxtProviderVersion specifies the version of NSX-T Terraform Provider
+var nsxtProviderVersion = "~> 3.12"
+
 func init() {
 	// All flag names, env-var mappings, and help text are defined once in
 	// testutils.RegisterTestFlags. After flag.Parse(), TestMain syncs the
