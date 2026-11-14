@@ -15,6 +15,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 
+	"github.com/vmware/terraform-provider-vcfa/internal/provider/orgexternalgroup"
+	"github.com/vmware/terraform-provider-vcfa/internal/provider/orgexternaluser"
 	"github.com/vmware/terraform-provider-vcfa/internal/provider/vkscluster"
 	"github.com/vmware/terraform-provider-vcfa/internal/provider/vksclusterclass"
 	"github.com/vmware/terraform-provider-vcfa/internal/provider/vksclusterkubeconfig"
@@ -141,16 +143,20 @@ func (p *VcfaFrameworkProvider) Configure(_ context.Context, req provider.Config
 // Resources returns the list of framework-based resources.
 func (p *VcfaFrameworkProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		vkscluster.NewVcfaVksClusterResource,
+		vkscluster.NewVcfaVksClusterResource,             // 1.2
+		orgexternalgroup.NewVcfaOrgExternalGroupResource, // 1.3
+		orgexternaluser.NewVcfaOrgExternalUserResource,   // 1.3
 	}
 }
 
 // DataSources returns the list of framework-based data sources.
 func (p *VcfaFrameworkProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		vksclusterclass.NewVcfaVksClusterClassDataSource,
-		vkscluster.NewVcfaVksClusterDataSource,
-		vkskubernetesrelease.NewVcfaVksKubernetesReleaseDataSource,
-		vksclusterkubeconfig.NewVcfaVksClusterKubeconfigDataSource,
+		vksclusterclass.NewVcfaVksClusterClassDataSource,           // 1.2
+		vkscluster.NewVcfaVksClusterDataSource,                     // 1.2
+		vkskubernetesrelease.NewVcfaVksKubernetesReleaseDataSource, // 1.2
+		vksclusterkubeconfig.NewVcfaVksClusterKubeconfigDataSource, // 1.2
+		orgexternalgroup.NewVcfaOrgExternalGroupDataSource,         // 1.3
+		orgexternaluser.NewVcfaOrgExternalUserDataSource,           // 1.3
 	}
 }

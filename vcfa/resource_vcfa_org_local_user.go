@@ -15,16 +15,16 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
-const labelLocalUser = "Org Local User"
+const labelOrgLocalUser = "Org Local User"
 
-func resourceVcfaLocalUser() *schema.Resource {
+func resourceVcfaOrgLocalUser() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceVcfaLocalUserCreate,
-		ReadContext:   resourceVcfaLocalUserRead,
-		UpdateContext: resourceVcfaLocalUserUpdate,
-		DeleteContext: resourceVcfaLocalUserDelete,
+		CreateContext: resourceVcfaOrgLocalUserCreate,
+		ReadContext:   resourceVcfaOrgLocalUserRead,
+		UpdateContext: resourceVcfaOrgLocalUserUpdate,
+		DeleteContext: resourceVcfaOrgLocalUserDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: resourceVcfaLocalUserImport,
+			StateContext: resourceVcfaOrgLocalUserImport,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -32,30 +32,30 @@ func resourceVcfaLocalUser() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
-				Description: fmt.Sprintf("Parent %s ID for %s", labelVcfaOrg, labelLocalUser),
+				Description: fmt.Sprintf("Parent %s ID for %s", labelVcfaOrg, labelOrgLocalUser),
 			},
 			"role_ids": {
 				Type:        schema.TypeSet,
 				Required:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: fmt.Sprintf("%ss to use for %s", labelVcfaRole, labelLocalUser),
+				Description: fmt.Sprintf("%ss to use for %s", labelVcfaRole, labelOrgLocalUser),
 			},
 			"username": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: fmt.Sprintf("%s username", labelLocalUser),
+				Description: fmt.Sprintf("%s username", labelOrgLocalUser),
 			},
 			"password": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Sensitive:   true,
-				Description: fmt.Sprintf("Password for %s", labelLocalUser),
+				Description: fmt.Sprintf("Password for %s", labelOrgLocalUser),
 			},
 		},
 	}
 }
 
-func resourceVcfaLocalUserCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVcfaOrgLocalUserCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 	tenantContext, err := getTenantContextFromOrgId(tmClient, d.Get("org_id").(string))
 	if err != nil {
@@ -67,16 +67,16 @@ func resourceVcfaLocalUserCreate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	c := crudConfig[*govcd.OpenApiUser, types.OpenApiUser]{
-		entityLabel:      labelLocalUser,
-		getTypeFunc:      getLocalUserType,
-		stateStoreFunc:   setLocalUserData,
+		entityLabel:      labelOrgLocalUser,
+		getTypeFunc:      getOrgLocalUserType,
+		stateStoreFunc:   setOrgLocalUserData,
 		createFunc:       createFunc,
-		resourceReadFunc: resourceVcfaLocalUserRead,
+		resourceReadFunc: resourceVcfaOrgLocalUserRead,
 	}
 	return createResource(ctx, d, meta, c)
 }
 
-func resourceVcfaLocalUserUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVcfaOrgLocalUserUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 	tenantContext, err := getTenantContextFromOrgId(tmClient, d.Get("org_id").(string))
 	if err != nil {
@@ -88,16 +88,16 @@ func resourceVcfaLocalUserUpdate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	c := crudConfig[*govcd.OpenApiUser, types.OpenApiUser]{
-		entityLabel:      labelLocalUser,
-		getTypeFunc:      getLocalUserType,
+		entityLabel:      labelOrgLocalUser,
+		getTypeFunc:      getOrgLocalUserType,
 		getEntityFunc:    getByIdFunc,
-		resourceReadFunc: resourceVcfaLocalUserRead,
+		resourceReadFunc: resourceVcfaOrgLocalUserRead,
 	}
 
 	return updateResource(ctx, d, meta, c)
 }
 
-func resourceVcfaLocalUserRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVcfaOrgLocalUserRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 	tenantContext, err := getTenantContextFromOrgId(tmClient, d.Get("org_id").(string))
 	if err != nil {
@@ -113,14 +113,14 @@ func resourceVcfaLocalUserRead(ctx context.Context, d *schema.ResourceData, meta
 	}
 
 	c := crudConfig[*govcd.OpenApiUser, types.OpenApiUser]{
-		entityLabel:    labelLocalUser,
+		entityLabel:    labelOrgLocalUser,
 		getEntityFunc:  getByIdFunc,
-		stateStoreFunc: setLocalUserData,
+		stateStoreFunc: setOrgLocalUserData,
 	}
 	return readResource(ctx, d, meta, c)
 }
 
-func resourceVcfaLocalUserDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVcfaOrgLocalUserDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 
 	tenantContext, err := getTenantContextFromOrgId(tmClient, d.Get("org_id").(string))
@@ -132,14 +132,14 @@ func resourceVcfaLocalUserDelete(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	c := crudConfig[*govcd.OpenApiUser, types.OpenApiUser]{
-		entityLabel:   labelLocalUser,
+		entityLabel:   labelOrgLocalUser,
 		getEntityFunc: getByIdFunc,
 	}
 
 	return deleteResource(ctx, d, meta, c)
 }
 
-func resourceVcfaLocalUserImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceVcfaOrgLocalUserImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	tmClient := meta.(ClientContainer).tmClient
 
 	idSlice := strings.Split(d.Id(), ImportSeparator)
@@ -159,7 +159,7 @@ func resourceVcfaLocalUserImport(ctx context.Context, d *schema.ResourceData, me
 
 	user, err := tmClient.GetUserByName(idSlice[1], tenantContext)
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving %s: %s", labelLocalUser, err)
+		return nil, fmt.Errorf("error retrieving %s: %s", labelOrgLocalUser, err)
 	}
 
 	d.SetId(user.User.ID)
@@ -168,7 +168,7 @@ func resourceVcfaLocalUserImport(ctx context.Context, d *schema.ResourceData, me
 	return []*schema.ResourceData{d}, nil
 }
 
-func getLocalUserType(tmClient *VCDClient, d *schema.ResourceData) (*types.OpenApiUser, error) {
+func getOrgLocalUserType(tmClient *VCDClient, d *schema.ResourceData) (*types.OpenApiUser, error) {
 	org, err := tmClient.GetTmOrgById(d.Get("org_id").(string))
 	if err != nil {
 		return nil, fmt.Errorf("error getting %s: %s", labelVcfaOrg, err)
@@ -189,7 +189,7 @@ func getLocalUserType(tmClient *VCDClient, d *schema.ResourceData) (*types.OpenA
 		t.ID = d.Id()
 		user, err := tmClient.GetUserById(d.Id(), nil)
 		if err != nil {
-			return nil, fmt.Errorf("error retrieving %s by ID %s: %s", labelLocalUser, d.Id(), err)
+			return nil, fmt.Errorf("error retrieving %s by ID %s: %s", labelOrgLocalUser, d.Id(), err)
 		}
 		// Name In Source must be set to "previous" username when performing update
 		t.NameInSource = user.User.Username
@@ -203,7 +203,7 @@ func getLocalUserType(tmClient *VCDClient, d *schema.ResourceData) (*types.OpenA
 	return t, nil
 }
 
-func setLocalUserData(_ *VCDClient, d *schema.ResourceData, user *govcd.OpenApiUser) error {
+func setOrgLocalUserData(_ *VCDClient, d *schema.ResourceData, user *govcd.OpenApiUser) error {
 	if user == nil || user.User == nil {
 		return fmt.Errorf("nil user structure")
 	}

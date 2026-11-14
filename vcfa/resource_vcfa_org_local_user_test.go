@@ -25,11 +25,11 @@ func TestAccVcfaOrgLocalUser(t *testing.T) {
 	}
 	testParamsNotEmpty(t, params)
 
-	configText1 := templateFill(testAccVcfaLocalUserStep1, params)
+	configText1 := templateFill(testAccVcfaOrgLocalUserStep1, params)
 	params["FuncName"] = t.Name() + "-step2"
-	configText2 := templateFill(testAccVcfaLocalUserStep2, params)
+	configText2 := templateFill(testAccVcfaOrgLocalUserStep2, params)
 	params["FuncName"] = t.Name() + "-step3"
-	configText3 := templateFill(testAccVcfaLocalUserStep4DS, params)
+	configText3 := templateFill(testAccVcfaOrgLocalUserStep4DS, params)
 
 	debugPrintf("#[DEBUG] CONFIGURATION step1: %s\n", configText1)
 	debugPrintf("#[DEBUG] CONFIGURATION step2: %s\n", configText2)
@@ -78,7 +78,7 @@ func TestAccVcfaOrgLocalUser(t *testing.T) {
 	})
 }
 
-const testAccVcfaLocalUserPrerequisites = `
+const testAccVcfaOrgLocalUserPrerequisites = `
 resource "vcfa_org" "test" {
   name         = "{{.Testname}}"
   display_name = "terraform-test"
@@ -97,7 +97,7 @@ data "vcfa_role" "org-user" {
 }
 `
 
-const testAccVcfaLocalUserStep1 = testAccVcfaLocalUserPrerequisites + `
+const testAccVcfaOrgLocalUserStep1 = testAccVcfaOrgLocalUserPrerequisites + `
 resource "vcfa_org_local_user" "test" {
   org_id    = vcfa_org.test.id
   role_ids  = [data.vcfa_role.org-admin.id]
@@ -106,7 +106,7 @@ resource "vcfa_org_local_user" "test" {
 }
 `
 
-const testAccVcfaLocalUserStep2 = testAccVcfaLocalUserPrerequisites + `
+const testAccVcfaOrgLocalUserStep2 = testAccVcfaOrgLocalUserPrerequisites + `
 resource "vcfa_org_local_user" "test" {
   org_id    = vcfa_org.test.id
   role_ids  = [data.vcfa_role.org-user.id, data.vcfa_role.org-admin.id]
@@ -115,7 +115,7 @@ resource "vcfa_org_local_user" "test" {
 }
 `
 
-const testAccVcfaLocalUserStep4DS = testAccVcfaLocalUserStep2 + `
+const testAccVcfaOrgLocalUserStep4DS = testAccVcfaOrgLocalUserStep2 + `
 data "vcfa_org_local_user" "test" {
   org_id   = vcfa_org.test.id
   username = vcfa_org_local_user.test.username
