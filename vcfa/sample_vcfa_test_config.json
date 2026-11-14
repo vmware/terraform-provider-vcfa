@@ -106,6 +106,8 @@
     "username": "admin",
     "password": "StrongPassword",
     "baseDistinguishedName": "OU=demo,DC=foo,DC=bar,DC=test,DC=net",
-    "type": "ACTIVE_DIRECTORY"
+    "type": "ACTIVE_DIRECTORY",
+    "importUser": "ldap-user",
+    "importGroup": "ldap-group"
   }
 }

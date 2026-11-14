@@ -365,7 +365,7 @@ case $wanted in
         acceptance_test functional
         ;;
     acceptance-cci)
-        acceptance_test "unit cci" "-vcfa-skip-priority-tests -vcfa-test-org-user -vcfa-skip-leftovers-removal"
+        acceptance_test "unit cci" "-vcfa-skip-priority-tests -vcfa-test-org-user -vcfa-skip-leftovers-removal" "./vcfa ./internal/provider/..."
         ;;
     acceptance-vks)
         acceptance_test "vks" "-vcfa-skip-priority-tests -vcfa-test-org-user -vcfa-skip-leftovers-removal" ./internal/provider/...

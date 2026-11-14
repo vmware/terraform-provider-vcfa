@@ -122,6 +122,8 @@ type TestConfig struct {
 		Password              string `json:"password"`
 		BaseDistinguishedName string `json:"baseDistinguishedName"`
 		Type                  string `json:"type"`
+		ImportUser            string `json:"importUser"`
+		ImportGroup           string `json:"importGroup"`
 	} `json:"ldap,omitempty"`
 	Logging struct {
 		Enabled         bool   `json:"enabled,omitempty"`

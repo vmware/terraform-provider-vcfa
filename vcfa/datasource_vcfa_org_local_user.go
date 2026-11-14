@@ -14,32 +14,32 @@ import (
 	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
-func datasourceVcfaLocalUser() *schema.Resource {
+func datasourceVcfaOrgLocalUser() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: datasourceVcfaLocalUserRead,
+		ReadContext: datasourceVcfaOrgLocalUserRead,
 
 		Schema: map[string]*schema.Schema{
 			"org_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: fmt.Sprintf("Parent %s ID for %s", labelVcfaOrg, labelLocalUser),
+				Description: fmt.Sprintf("Parent %s ID for %s", labelVcfaOrg, labelOrgLocalUser),
 			},
 			"username": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: fmt.Sprintf("%s User Name", labelLocalUser),
+				Description: fmt.Sprintf("%s User Name", labelOrgLocalUser),
 			},
 			"role_ids": {
 				Type:        schema.TypeSet,
 				Computed:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: fmt.Sprintf("%ss to use for %s", labelVcfaRole, labelLocalUser),
+				Description: fmt.Sprintf("%ss to use for %s", labelVcfaRole, labelOrgLocalUser),
 			},
 		},
 	}
 }
 
-func datasourceVcfaLocalUserRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceVcfaOrgLocalUserRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	tmClient := meta.(ClientContainer).tmClient
 	tenantContext, err := getTenantContextFromOrgId(tmClient, d.Get("org_id").(string))
 	if err != nil {
@@ -51,9 +51,9 @@ func datasourceVcfaLocalUserRead(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	c := dsReadConfig[*govcd.OpenApiUser, types.OpenApiUser]{
-		entityLabel:              labelLocalUser,
+		entityLabel:              labelOrgLocalUser,
 		getEntityFunc:            getByNameFunc,
-		stateStoreFunc:           setLocalUserData,
+		stateStoreFunc:           setOrgLocalUserData,
 		overrideDefaultNameField: "username",
 	}
 	return readDatasource(ctx, d, meta, c)

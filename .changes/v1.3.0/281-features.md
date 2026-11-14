@@ -1,0 +1,4 @@
+- **New Resource:** `vcfa_org_external_user` to import a user from an identity provider (LDAP, OAuth or SAML) into an Organization [GH-281]
+- **New Data Source:** `vcfa_org_external_user` to read an Organization user imported from an identity provider [GH-281]
+- **New Resource:** `vcfa_org_external_group` to import a group from an identity provider (LDAP or SAML) into an Organization [GH-281]
+- **New Data Source:** `vcfa_org_external_group` to read an Organization group imported from an identity provider [GH-281]
