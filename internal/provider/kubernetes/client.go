@@ -7,12 +7,10 @@ package kubernetes
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"reflect"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/vmware/go-vcloud-director/v3/util"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -24,9 +22,9 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	clientcmdapi "k8s.io/client-go/tools/clientcmd/api/v1"
 
 	"github.com/vmware/terraform-provider-vcfa/internal/provider/helpers"
+	"github.com/vmware/terraform-provider-vcfa/internal/vcfatypes"
 	"github.com/vmware/terraform-provider-vcfa/vcfa"
 )
 
@@ -40,12 +38,53 @@ type Client struct {
 	warnings      *warningCollector
 }
 
+// NewClient builds a Client scoped to either a base CCI endpoint, or to a specific,
+// already-existing Supervisor Namespace.
 func NewClient(tmClient *vcfa.VCDClient, projectName string, supervisorNamespaceName string) (*Client, error) {
-	restConfig, err := getKubernetesRestConfig(tmClient, projectName, supervisorNamespaceName)
+	clusterServer := fmt.Sprintf(vcfatypes.KubernetesSubpath, tmClient.Client.VCDHREF.Scheme, tmClient.Client.VCDHREF.Host)
+	clusterName := fmt.Sprintf("%s:%s", tmClient.Org, tmClient.Client.VCDHREF.Host)
+	contextName := fmt.Sprintf("%s:%s", tmClient.Org, projectName)
+
+	if supervisorNamespaceName != "" {
+		var err error
+		clusterServer, err = helpers.GetSupervisorNamespaceEndpointURL(tmClient, projectName, supervisorNamespaceName)
+		if err != nil {
+			return nil, err
+		}
+
+		clusterName = fmt.Sprintf("%s:%s@%s", tmClient.Org, supervisorNamespaceName, tmClient.Client.VCDHREF.Host)
+		contextName = fmt.Sprintf("%s:%s:%s", tmClient.Org, supervisorNamespaceName, projectName)
+	}
+
+	restConfig, err := buildKubernetesRestConfig(tmClient, clusterServer, clusterName, contextName)
 	if err != nil {
 		return nil, fmt.Errorf("error creating Kubernetes rest config: %w", err)
 	}
 
+	return newClientFromRestConfig(restConfig)
+}
+
+func buildKubernetesRestConfig(tmClient *vcfa.VCDClient, clusterServer string, clusterName string, contextName string) (*rest.Config, error) {
+	kubeconfig, err := BuildKubeconfig(tmClient, clusterServer, clusterName, contextName)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert to rest.Config using clientcmd API
+	configBytes, err := json.Marshal(kubeconfig)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling kubeconfig: %w", err)
+	}
+
+	restConfig, err := clientcmd.RESTConfigFromKubeConfig(configBytes)
+	if err != nil {
+		return nil, fmt.Errorf("error building rest config: %w", err)
+	}
+
+	return restConfig, nil
+}
+
+func newClientFromRestConfig(restConfig *rest.Config) (*Client, error) {
 	restConfig.WrapTransport = func(rt http.RoundTripper) http.RoundTripper {
 		return &kubernetesloggingRoundTripper{wrapped: rt}
 	}
@@ -66,6 +105,41 @@ func NewClient(tmClient *vcfa.VCDClient, projectName string, supervisorNamespace
 	return &Client{mainClientSet: mainClientSet, dynamicClient: dynamicClient, warnings: warnCollector}, nil
 }
 
+func (k *Client) CreateClusterScopedResource(ctx context.Context, gvr schema.GroupVersionResource, payload any, outType any, dryRun bool) error {
+	util.Logger.Printf("[K8S] Creating resource %s (target type: %s)", gvr.String(), reflect.TypeOf(outType))
+
+	unstructuredMap, err := runtime.DefaultUnstructuredConverter.ToUnstructured(payload)
+	if err != nil {
+		return fmt.Errorf("error converting payload of type %s to unstructured: %w", reflect.TypeOf(payload), err)
+	}
+
+	result, err := k.dynamicClient.Resource(gvr).Create(
+		ctx,
+		&unstructured.Unstructured{Object: unstructuredMap},
+		metav1.CreateOptions{
+			DryRun: func() []string {
+				if dryRun {
+					return []string{"All"}
+				}
+				return []string{}
+			}(),
+			FieldManager: defaultFieldManager,
+		},
+	)
+	if err != nil {
+		if dryRun {
+			return err
+		}
+		return fmt.Errorf("error creating resource %s: %w", gvr.String(), err)
+	}
+
+	if err = runtime.DefaultUnstructuredConverter.FromUnstructured(result.Object, outType); err != nil {
+		return fmt.Errorf("error converting %s result to resource object %s: %w", gvr.String(), reflect.TypeOf(outType), err)
+	}
+
+	return nil
+}
+
 func (k *Client) ReadClusterScopedResource(ctx context.Context, name string, gvr schema.GroupVersionResource, outType any) error {
 	util.Logger.Printf("[K8S] Reading resource %s %s into target type %s", gvr.String(), name, reflect.TypeOf(outType))
 
@@ -80,6 +154,85 @@ func (k *Client) ReadClusterScopedResource(ctx context.Context, name string, gvr
 
 	if err = runtime.DefaultUnstructuredConverter.FromUnstructured(result.Object, outType); err != nil {
 		return fmt.Errorf("error converting %s result to resource object %s: %w", gvr.String(), reflect.TypeOf(outType), err)
+	}
+
+	return nil
+}
+
+// ListClusterScopedResources lists the resources matching labelSelector into outType, which
+// must point to a List type.
+func (k *Client) ListClusterScopedResources(ctx context.Context, gvr schema.GroupVersionResource, labelSelector string, outType any) error {
+	util.Logger.Printf("[K8S] Listing resources %s with selector %q into target type %s", gvr.String(), labelSelector, reflect.TypeOf(outType))
+
+	result, err := k.dynamicClient.Resource(gvr).List(
+		ctx,
+		metav1.ListOptions{LabelSelector: labelSelector},
+	)
+	if err != nil {
+		return fmt.Errorf("error listing resources %s: %w", gvr.String(), err)
+	}
+
+	if err = runtime.DefaultUnstructuredConverter.FromUnstructured(result.UnstructuredContent(), outType); err != nil {
+		return fmt.Errorf("error converting %s list result to resource object %s: %w", gvr.String(), reflect.TypeOf(outType), err)
+	}
+
+	return nil
+}
+
+func (k *Client) UpdateClusterScopedResource(ctx context.Context, gvr schema.GroupVersionResource, payload any, outType any, dryRun bool) error {
+	util.Logger.Printf("[K8S] Updating resource %s (target type: %s)", gvr.String(), reflect.TypeOf(outType))
+
+	unstructuredMap, err := runtime.DefaultUnstructuredConverter.ToUnstructured(payload)
+	if err != nil {
+		return fmt.Errorf("error converting payload of type %s to unstructured: %w", reflect.TypeOf(payload), err)
+	}
+
+	result, err := k.dynamicClient.Resource(gvr).Update(
+		ctx,
+		&unstructured.Unstructured{Object: unstructuredMap},
+		metav1.UpdateOptions{
+			DryRun: func() []string {
+				if dryRun {
+					return []string{"All"}
+				}
+				return []string{}
+			}(),
+			FieldManager: defaultFieldManager,
+		},
+	)
+	if err != nil {
+		if dryRun {
+			return err
+		}
+		return fmt.Errorf("error updating resource %s: %w", gvr.String(), err)
+	}
+
+	if err = runtime.DefaultUnstructuredConverter.FromUnstructured(result.Object, outType); err != nil {
+		return fmt.Errorf("error converting %s result to resource object %s: %w", gvr.String(), reflect.TypeOf(outType), err)
+	}
+
+	return nil
+}
+
+func (k *Client) DeleteClusterScopedResource(ctx context.Context, name string, gvr schema.GroupVersionResource, dryRun bool) error {
+	util.Logger.Printf("[K8S] Deleting resource %s %s", gvr.String(), name)
+
+	if err := k.dynamicClient.Resource(gvr).Delete(
+		ctx,
+		name,
+		metav1.DeleteOptions{
+			DryRun: func() []string {
+				if dryRun {
+					return []string{"All"}
+				}
+				return []string{}
+			}(),
+		},
+	); err != nil {
+		if dryRun {
+			return err
+		}
+		return fmt.Errorf("error deleting resource %s %s: %w", gvr.String(), name, err)
 	}
 
 	return nil
@@ -135,6 +288,26 @@ func (k *Client) ReadNamespaceScopedResource(ctx context.Context, namespace, nam
 
 	if err = runtime.DefaultUnstructuredConverter.FromUnstructured(result.Object, outType); err != nil {
 		return fmt.Errorf("error converting %s result to resource object %s: %w", gvr.String(), reflect.TypeOf(outType), err)
+	}
+
+	return nil
+}
+
+// ListNamespaceScopedResources lists the resources matching labelSelector into outType, which
+// must point to a List type. An empty namespace lists across all namespaces.
+func (k *Client) ListNamespaceScopedResources(ctx context.Context, namespace string, gvr schema.GroupVersionResource, labelSelector string, outType any) error {
+	util.Logger.Printf("[K8S] Listing resources %s in namespace %q with selector %q into target type %s", gvr.String(), namespace, labelSelector, reflect.TypeOf(outType))
+
+	result, err := k.dynamicClient.Resource(gvr).Namespace(namespace).List(
+		ctx,
+		metav1.ListOptions{LabelSelector: labelSelector},
+	)
+	if err != nil {
+		return fmt.Errorf("error listing resources %s in namespace %q: %w", gvr.String(), namespace, err)
+	}
+
+	if err = runtime.DefaultUnstructuredConverter.FromUnstructured(result.UnstructuredContent(), outType); err != nil {
+		return fmt.Errorf("error converting %s list result to resource object %s: %w", gvr.String(), reflect.TypeOf(outType), err)
 	}
 
 	return nil
@@ -245,76 +418,4 @@ func (k *Client) ReadSecret(ctx context.Context, namespace string, name string) 
 	}
 
 	return secret, nil
-}
-
-func getKubernetesRestConfig(tmClient *vcfa.VCDClient, projectName string, supervisorNamespaceName string) (*rest.Config, error) {
-	// Get Supervisor Namespace URL
-	clusterName := fmt.Sprintf("%s:%s@%s", tmClient.Org, supervisorNamespaceName, tmClient.Client.VCDHREF.Host)
-	contextName := fmt.Sprintf("%s:%s:%s", tmClient.Org, supervisorNamespaceName, projectName)
-
-	supervisorNamespaceEndpointURL, err := helpers.GetSupervisorNamespaceEndpointURL(tmClient, projectName, supervisorNamespaceName)
-	if err != nil {
-		return nil, err
-	}
-	clusterServer := supervisorNamespaceEndpointURL
-
-	// Parse JWT token to extract username.
-	// ParseUnverified is intentional: the provider cannot obtain the signing key
-	// for VCFA-issued session tokens, so signature verification is not possible.
-	// The token is used only to extract the preferred_username claim; it is then
-	// forwarded as a bearer token to the Kubernetes API, which performs its own
-	// validation against the VCFA identity provider.
-	token, _, err := new(jwt.Parser).ParseUnverified(tmClient.Client.VCDToken, jwt.MapClaims{})
-	if err != nil {
-		return nil, fmt.Errorf("error parsing JWT token: %w", err)
-	}
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok {
-		return nil, errors.New("could not parse claims from JWT token")
-	}
-	preferredUsername, ok := claims["preferred_username"].(string)
-	if !ok {
-		return nil, errors.New("could not parse preferred username from JWT token claims")
-	}
-	username := fmt.Sprintf("%s:%s@%s", tmClient.Org, preferredUsername, tmClient.Client.VCDHREF.Host)
-
-	// Build kubeconfig
-	kubeconfig := &clientcmdapi.Config{
-		Kind:       "Config",
-		APIVersion: clientcmdapi.SchemeGroupVersion.Version,
-		Clusters: []clientcmdapi.NamedCluster{{
-			Name: clusterName,
-			Cluster: clientcmdapi.Cluster{
-				InsecureSkipTLSVerify: tmClient.InsecureFlag,
-				Server:                clusterServer,
-			},
-		}},
-		Contexts: []clientcmdapi.NamedContext{{
-			Name: contextName,
-			Context: clientcmdapi.Context{
-				Cluster:  clusterName,
-				AuthInfo: username,
-			},
-		}},
-		AuthInfos: []clientcmdapi.NamedAuthInfo{{
-			Name: username,
-			AuthInfo: clientcmdapi.AuthInfo{
-				Token: token.Raw,
-			},
-		}},
-		CurrentContext: contextName,
-	}
-
-	// Convert to rest.Config using clientcmd API
-	configBytes, err := json.Marshal(kubeconfig)
-	if err != nil {
-		return nil, fmt.Errorf("error marshaling kubeconfig: %w", err)
-	}
-
-	restConfig, err := clientcmd.RESTConfigFromKubeConfig(configBytes)
-	if err != nil {
-		return nil, fmt.Errorf("error building rest config: %w", err)
-	}
-
-	return restConfig, nil
 }

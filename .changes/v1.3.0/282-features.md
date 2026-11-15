@@ -1,0 +1,2 @@
+- **New Resource:** `vcfa_project` to manage a Project and the users and groups that have access to it [GH-282]
+- **New Data Source:** `vcfa_project` to read a Project and the users and groups that have access to it [GH-282]

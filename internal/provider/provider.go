@@ -17,6 +17,7 @@ import (
 
 	"github.com/vmware/terraform-provider-vcfa/internal/provider/orgexternalgroup"
 	"github.com/vmware/terraform-provider-vcfa/internal/provider/orgexternaluser"
+	"github.com/vmware/terraform-provider-vcfa/internal/provider/project"
 	"github.com/vmware/terraform-provider-vcfa/internal/provider/vkscluster"
 	"github.com/vmware/terraform-provider-vcfa/internal/provider/vksclusterclass"
 	"github.com/vmware/terraform-provider-vcfa/internal/provider/vksclusterkubeconfig"
@@ -146,6 +147,7 @@ func (p *VcfaFrameworkProvider) Resources(_ context.Context) []func() resource.R
 		vkscluster.NewVcfaVksClusterResource,             // 1.2
 		orgexternalgroup.NewVcfaOrgExternalGroupResource, // 1.3
 		orgexternaluser.NewVcfaOrgExternalUserResource,   // 1.3
+		project.NewVcfaProjectResource,                   // 1.3
 	}
 }
 
@@ -158,5 +160,6 @@ func (p *VcfaFrameworkProvider) DataSources(_ context.Context) []func() datasour
 		vksclusterkubeconfig.NewVcfaVksClusterKubeconfigDataSource, // 1.2
 		orgexternalgroup.NewVcfaOrgExternalGroupDataSource,         // 1.3
 		orgexternaluser.NewVcfaOrgExternalUserDataSource,           // 1.3
+		project.NewVcfaProjectDataSource,                           // 1.3
 	}
 }
