@@ -221,3 +221,13 @@ func NullifyUnknownsInTftypesValue(v tftypes.Value) tftypes.Value {
 		return v
 	}
 }
+
+// Elements returns the elements of a known set, or nil when the set is null or unknown.
+func Elements[T any](ctx context.Context, set types.Set, diags *diag.Diagnostics) []T {
+	if set.IsNull() || set.IsUnknown() {
+		return nil
+	}
+	var out []T
+	diags.Append(set.ElementsAs(ctx, &out, false)...)
+	return out
+}

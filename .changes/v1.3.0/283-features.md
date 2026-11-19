@@ -1,0 +1,2 @@
+- **New Resource:** `vcfa_supervisor_namespace_class` to manage a Supervisor Namespace Class, combining its class and its configuration [GH-283]
+- **New Data Source:** `vcfa_supervisor_namespace_class` to read a Supervisor Namespace Class, combining its class and its configuration [GH-283]
